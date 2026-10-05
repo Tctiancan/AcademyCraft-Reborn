@@ -220,7 +220,7 @@ repositories {
         content {
             includeGroup("org.academy")
             includeGroup("net.neoforged")
-            includeGroup("lovely.cane.jmsdfgen")
+//            includeGroup("lovely.cane.jmsdfgen")
         }
     }
     maven {
@@ -233,9 +233,6 @@ repositories {
     maven {
         name = "Jared's maven"
         setUrl("https://maven.blamejared.com/")
-        content {
-            includeGroup("mezz.jei")
-        }
     }
     maven {
         name = "Curios"
@@ -278,12 +275,19 @@ repositories {
             includeGroup("thedarkcolour")
         }
     }
+    flatDir {
+        dirs("libs")
+    }
     mavenCentral()
 }
 
 neoForge {
     version = neoVersion
     ideSyncTask(generateModMetadata)
+    parchment {
+        minecraftVersion.set(project.property("parchment_minecraft_version").toString())
+        mappingsVersion.set(project.property("parchment_mappings_version").toString())
+    }
     interfaceInjectionData {
         val path = "src/main/resources/interface_injections.json"
         from(path)
@@ -337,18 +341,18 @@ neoForge {
                 "-Dneoforge.rendernurse.renderdoc.library=${renderDocLibraryFile.absolutePath}"
             )
         }
-        register("clientData") {
-            clientData()
-            programArguments.addAll(
-                "--mod",
-                modId,
-                "--all",
-                "--output",
-                file("src/generated/resources/").absolutePath,
-                "--existing",
-                file("src/main/resources/").absolutePath
-            )
-        }
+//        register("clientData") {
+//            clientData()
+//            programArguments.addAll(
+//                "--mod",
+//                modId,
+//                "--all",
+//                "--output",
+//                file("src/generated/resources/").absolutePath,
+//                "--existing",
+//                file("src/main/resources/").absolutePath
+//            )
+//        }
         register("gameTestServer") {
             type.set("gameTestServer")
             environment("IS_DEV", "true")
@@ -490,7 +494,7 @@ dependencies {
         "arm", "arm32" -> "-arm32"
         else -> ""
     }
-    testRuntimeOnly("org.lwjgl:lwjgl::natives-$lwjglNativeOs$lwjglNativeArch")
+//    testRuntimeOnly("org.lwjgl:lwjgl::natives-$lwjglNativeOs$lwjglNativeArch")
 
     "editorTestImplementation"(platform("org.junit:junit-bom:5.10.2"))
     "editorTestImplementation"("org.junit.jupiter:junit-jupiter")

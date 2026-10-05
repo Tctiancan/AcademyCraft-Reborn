@@ -1,21 +1,21 @@
 [versions]
 academy = "0.0.4-alpha"
 
-java = "25"
-minecraft = "26.2.0"
-neoforge = "26.2.0.70"
-loader = "[6.3.0,)"
+java = "21"
+minecraft = "1.21.1"
+neoforge = "21.1.252"
+loader = "[5.12.0,)"
 
 renderdoc = "1.44"
 rendernurse = "0.0.26"
 
-kotlinforforge = "6.3.0"
-geckolib = "5.5"
-sodium = "mc26.2-0.9.1-neoforge"
-iris = "1.11.2+26.2-neoforge"
-jade = "26.2.8+neoforge"
-jei = "30.11.0.66"
-curios = "16.0.0+26.2"
+kotlinforforge = "5.12.0"
+geckolib = "4.9.3"
+sodium = "mc1.21.1-0.8.13-neoforge"
+iris = "1.8.14-beta.1+1.21.1-neoforge"
+jade = "15.10.6+neoforge"
+jei = "19.57.0.450"
+curios = "9.5.1+1.21.1"
 misaka = "26.2.0.1"
 jmsdfgen = "0.0.2"
 
@@ -29,12 +29,12 @@ plugin-moddevgradle = "2.0.144"
 download = "5.7.0"
 [libraries]
 kotlinforforge = { group = "thedarkcolour", name = "kotlinforforge-neoforge", version.ref = "kotlinforforge" }
-geckolib = { group = "com.geckolib", name = "geckolib-neoforge-26.1", version.ref = "geckolib" }
+geckolib = { group = "com.geckolib", name = "geckolib-neoforge-1.21.1", version.ref = "geckolib" }
 sodium = { group = "maven.modrinth", name = "sodium", version.ref = "sodium" }
 iris = { group = "maven.modrinth", name = "iris", version.ref = "iris" }
 jade = { group = "maven.modrinth", name = "jade", version.ref = "jade" }
-jei = { group = "mezz.jei", name = "jei-26.2-neoforge", version.ref = "jei" }
-jei-api = { group = "mezz.jei", name = "jei-26.2-neoforge-api", version.ref = "jei" }
+jei = { group = "mezz.jei", name = "jei-1.21.1-neoforge", version.ref = "jei" }
+jei-api = { group = "mezz.jei", name = "jei-1.21.1-neoforge-api", version.ref = "jei" }
 curios = { group = "top.theillusivec4.curios", name = "curios-neoforge", version.ref = "curios" }
 misaka = { group = "org.academy", name = "misaka-network", version.ref = "misaka" }
 jmsdfgen-core = { group = "lovely.cane.jmsdfgen", name = "jmsdfgen-core", version.ref = "jmsdfgen" }
