@@ -62,8 +62,8 @@ final class MentalControlProtection {
     static void notifyBlocked(ServerPlayer controller, LivingEntity subject, boolean intervention) {
         var kind = kind(subject, intervention);
         if (controller == null || subject == null || kind == null) return;
-        controller.sendOverlayMessage(MentalControlFeedbackRegistry.resolve(
-                controller, subject, Component.translatable(kind.feedbackKey)));
+        controller.displayClientMessage(MentalControlFeedbackRegistry.resolve(
+                controller, subject, Component.translatable(kind.feedbackKey)), true);
         if (!(subject instanceof ServerPlayer player)) return;
         var direction = controller.getBoundingBox().getCenter()
                 .subtract(player.getBoundingBox().getCenter());

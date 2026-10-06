@@ -17,7 +17,7 @@ public final class DamageComposition {
     public static boolean hurt(Entity target, ServerLevel level, DamageSource source,
                                float total, float maximumHealthPart) {
         return withMaximumHealthPart(target, source, maximumHealthPart,
-                () -> target.hurtServer(level, source, total));
+                () -> target.hurt( source, total));
     }
 
     public static boolean withMaximumHealthPart(Entity target, DamageSource source,

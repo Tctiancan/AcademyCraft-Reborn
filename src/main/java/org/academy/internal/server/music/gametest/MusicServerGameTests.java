@@ -8,9 +8,6 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -39,22 +36,29 @@ import java.util.UUID;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MusicServerGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("music_server_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
-    }
-
     @SubscribeEvent
     private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("room_queue_add_starts_playback", "room_idle_tick_advances", "jukebox_request_starts_playback", "room_persistence_round_trip")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("music/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("music_" + scenario), new Instance(new TestData<>(
-                    environment, ResourceLocation.withDefaultNamespace("empty"), 40, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
-        }
+        event.register(MusicServerGameTests.class);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void music_room_queue_add_starts_playback(GameTestHelper helper) {
+        runScenario(helper, "room_queue_add_starts_playback");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void music_room_idle_tick_advances(GameTestHelper helper) {
+        runScenario(helper, "room_idle_tick_advances");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void music_jukebox_request_starts_playback(GameTestHelper helper) {
+        runScenario(helper, "jukebox_request_starts_playback");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void music_room_persistence_round_trip(GameTestHelper helper) {
+        runScenario(helper, "room_persistence_round_trip");
     }
 
     private static ServerPlayer createPlayer(GameTestHelper helper, String name) {
@@ -141,33 +145,5 @@ public final class MusicServerGameTests {
             default -> throw new IllegalArgumentException(scenario);
         }
         helper.succeed();
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runScenario(helper, scenario);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Music server regression");
-        }
     }
 }

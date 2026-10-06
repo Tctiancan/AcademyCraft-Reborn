@@ -351,7 +351,7 @@ public final class CommandPositioning extends Skill {
         }
 
         private static void feedback(ServerPlayer player, String key, Object... arguments) {
-            player.sendOverlayMessage(Component.translatable(key, arguments));
+            player.displayClientMessage(Component.translatable(key, arguments), true);
         }
     }
 

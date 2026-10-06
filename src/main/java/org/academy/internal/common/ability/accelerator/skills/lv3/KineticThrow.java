@@ -257,8 +257,8 @@ public final class KineticThrow extends Skill {
                     || !(player.level() instanceof ServerLevel level)) return;
             var hit = lookedAtBlock(player);
             if (hit == null) {
-                player.sendOverlayMessage(Component.translatable(
-                        "message.academy.kinetic_throw.block_target_required"));
+                player.displayClientMessage(Component.translatable(
+                        "message.academy.kinetic_throw.block_target_required"), true);
                 return;
             }
             CHARGES.put(player.getUUID(), new ChargeState(
@@ -309,8 +309,8 @@ public final class KineticThrow extends Skill {
                     policy
             );
             if (!selection.succeeded()) {
-                player.sendOverlayMessage(Component.translatable(
-                        "message.academy.kinetic_throw.capture_rejected"));
+                player.displayClientMessage(Component.translatable(
+                        "message.academy.kinetic_throw.capture_rejected"), true);
                 return;
             }
             var forward = Vec3.directionFromRotation(0.0f, player.getYRot());
@@ -319,8 +319,8 @@ public final class KineticThrow extends Skill {
             var positions = BlockStructureApi.cropImmediatelyBlocked(
                     level, playerSafeSelection, Direction.UP);
             if (positions.isEmpty() || !positions.contains(seed)) {
-                player.sendOverlayMessage(Component.translatable(
-                        "message.academy.kinetic_throw.capture_rejected"));
+                player.displayClientMessage(Component.translatable(
+                        "message.academy.kinetic_throw.capture_rejected"), true);
                 return;
             }
 
@@ -343,8 +343,8 @@ public final class KineticThrow extends Skill {
                 );
                 var structure = captured.structure().orElse(null);
                 if (structure == null) {
-                    player.sendOverlayMessage(Component.translatable(
-                            "message.academy.kinetic_throw.capture_rejected"));
+                    player.displayClientMessage(Component.translatable(
+                            "message.academy.kinetic_throw.capture_rejected"), true);
                     return;
                 }
                 releaseHeld(player.getUUID());
@@ -425,8 +425,7 @@ public final class KineticThrow extends Skill {
             var blockCount = impact.structure().snapshot().blockCount();
             var damage = structureDamage(blockCount);
             if (target instanceof LivingEntity living && damage > 0.0f) {
-                if (living.hurtServer(
-                        player.level(),
+                if (living.hurt(
                         SkillDamageSource.ofDirect(
                                 player,
                                 Skills.KINETIC_THROW.get(),
@@ -466,8 +465,7 @@ public final class KineticThrow extends Skill {
                     target -> canAffect(player, target)
                             && target.getBoundingBox().getCenter().distanceToSqr(center)
                             <= targetRadius * targetRadius)) {
-                if (target.hurtServer(
-                        level,
+                if (target.hurt(
                         SkillDamageSource.ofDirect(
                                 player,
                                 Skills.KINETIC_THROW.get(),

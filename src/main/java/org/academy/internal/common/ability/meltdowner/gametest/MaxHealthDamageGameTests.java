@@ -5,10 +5,7 @@ import com.mojang.serialization.MapCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -39,23 +36,17 @@ import java.util.UUID;
 /** Verify the actual projectile pipeline, not only the skill's formula helper. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MaxHealthDamageGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("max_health_damage_function");
-
     private MaxHealthDamageGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> DamageTest.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(MaxHealthDamageGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(AcademyCraft.academy("max_health_damage"),
-                new TestEnvironmentDefinition.AllOf(List.of()));
-        var data = new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
-                40, 0, true, Rotation.NONE, false, 1, 1, false, 16);
-        event.registerTest(AcademyCraft.academy("max_health_damage_beam"), new DamageTest(data));
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void max_health_damage_beam(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static void verify(GameTestHelper helper) {
@@ -83,7 +74,7 @@ public final class MaxHealthDamageGameTests {
             target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0);
             target.setHealth(1000.0f);
             var origin = helper.absoluteVec(new Vec3(3.5, 2.5, 1.5));
-            player.snapTo(origin.x, origin.y, origin.z - 2, 0, 0);
+            player.moveTo(origin.x, origin.y, origin.z - 2, 0, 0);
             var damage = Disintegrate.Server.DAMAGE;
             beam.configure(player, Skills.DISINTEGRATE.get(), damage.baseDamage(),
                     damage.maxHealthRatio(), 2.0f, false, false);
@@ -105,28 +96,4 @@ public final class MaxHealthDamageGameTests {
         }
         helper.succeed();
     }
-
-    private static final class DamageTest extends GameTestInstance {
-        private static final MapCodec<DamageTest> CODEC = TestData.CODEC.xmap(DamageTest::new, DamageTest::info);
-
-        private DamageTest(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Maximum-health skill damage balance");
-        }
-    }
 }
-

@@ -170,7 +170,7 @@ public class ElectricalContact extends Skill {
                     system.getPlayerDamageMultiplier(player.getUUID())
             );
             for (var target : targets) {
-                target.hurtServer(serverLevel, damageSource, damage);
+                target.hurt( damageSource, damage);
                 serverLevel.sendParticles(ParticleTypes.ELECTRIC_SPARK,
                         target.getX(), target.getY(0.6), target.getZ(),
                         8, 0.25, 0.45, 0.25, 0.04);
@@ -196,7 +196,7 @@ public class ElectricalContact extends Skill {
                                 system.getPlayerAbilityPowerMultiplier(player.getUUID()),
                                 system.getPlayerDamageMultiplier(player.getUUID())
                         );
-                        livingAttacker.hurtServer(serverLevel,
+                        livingAttacker.hurt(
                                 SkillDamageSource.of(player, skill,
                                         DamageTypes.ELECTRO_DAMAGE),
                                 damage);

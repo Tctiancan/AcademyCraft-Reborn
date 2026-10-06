@@ -104,7 +104,7 @@ public final class ElectromasterReworkGameTests {
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
         var position = helper.absoluteVec(new Vec3(x, y, z));
-        player.snapTo(position.x, position.y, position.z, 0, 0);
+        player.moveTo(position.x, position.y, position.z, 0, 0);
         player.setNoGravity(true);
         return player;
     }
@@ -153,7 +153,7 @@ public final class ElectromasterReworkGameTests {
                 ((Object[]) items.get(npc.getEntityData()))[accessor.id()];
         item.setValue(90f);
         close(helper, 73, account.current(), "Direct DataItem value setter is protected");
-        npc.hurtServer(helper.getLevel(), npc.damageSources().generic(), 10);
+        npc.hurt( npc.damageSources().generic(), 10);
         close(helper, 100, npc.getHealth(), "Ordinary damage does not lose health with sufficient MP");
         close(helper, 64, account.current(), "Ordinary damage pays once");
         EntityControlApi.forceSetTrueHealth(npc, 90);
@@ -193,7 +193,7 @@ public final class ElectromasterReworkGameTests {
         check(helper, org.academy.internal.common.entitycontrol.TrueHealthOffsetRuntime.install(projected, 80), "Projection setup");
         var projectedMass = new TestAccount(100);
         HealthLossGuards.set(projected, key, projectedMass, 1, true);
-        projected.hurtServer(helper.getLevel(), projected.damageSources().generic(), 20);
+        projected.hurt( projected.damageSources().generic(), 20);
         close(helper, 80, projected.getHealth(), "Ordinary damage respects existing projection");
         close(helper, 80, projectedMass.current(), "Existing projected loss is not charged again");
         HealthLossGuards.set(projected, key, projectedMass, 1, false);
@@ -253,7 +253,7 @@ public final class ElectromasterReworkGameTests {
     private static void attacks(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) {
         var system = learn(attacker);
         var base = helper.absoluteVec(new Vec3(6, 4, 4));
-        attacker.snapTo(base.x, base.y, base.z, 0, 0);
+        attacker.moveTo(base.x, base.y, base.z, 0, 0);
         var target = helper.spawn(EntityType.HUSK, 6, 4, 8);
         target.setNoAi(true);
         target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
@@ -309,7 +309,7 @@ public final class ElectromasterReworkGameTests {
 
     private static void support(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) {
         var position = helper.absoluteVec(new Vec3(6.5, 12, 6.5));
-        attacker.snapTo(position.x, position.y, position.z, 0, 0);
+        attacker.moveTo(position.x, position.y, position.z, 0, 0);
         var query = new MagneticSupportQuery();
         helper.setBlock(11, 12, 6, Blocks.STONE);
         check(helper, !query.supported(helper.getLevel(), attacker.getBoundingBox(), 4), "Distant wall outside base support");
@@ -343,7 +343,7 @@ public final class ElectromasterReworkGameTests {
     private static void groundReference(GameTestHelper helper, ServerPlayer attacker) {
         for (var y = 6; y <= 9; y++) helper.setBlock(4, y, 4, Blocks.AIR);
         var feet = helper.absoluteVec(new Vec3(4.5, 8, 4.5));
-        attacker.snapTo(feet.x, feet.y, feet.z, 0, 0);
+        attacker.moveTo(feet.x, feet.y, feet.z, 0, 0);
         var query = new MagneticSupportQuery();
         check(helper, query.groundBelow(helper.getLevel(), attacker.getBoundingBox(), 4) == null,
                 "Floating over a void has no ground reference");
@@ -381,7 +381,7 @@ public final class ElectromasterReworkGameTests {
 
         var speed = MagneticFieldTuning.FLIGHT_SPEED_PER_TICK;
         var start = helper.absoluteVec(new Vec3(3.5, 4.5, 6.5));
-        attacker.snapTo(start.x, start.y, start.z, -90, 0);
+        attacker.moveTo(start.x, start.y, start.z, -90, 0);
         // Already cruising: the bug dropped achieved speed, so start from it and require it be kept.
         attacker.setDeltaMovement(new Vec3(speed, 0, 0));
         var movement = new MagneticLevitation();
@@ -408,7 +408,7 @@ public final class ElectromasterReworkGameTests {
             attacker.move(MoverType.SELF, step.velocity());
             var ground = movement.ground();
             if (ground != null) worstClearance = Math.min(worstClearance, attacker.getY() - ground.surfaceY());
-            defender.snapTo(attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0);
+            defender.moveTo(attacker.getX(), attacker.getY(), attacker.getZ(), 0, 0);
         }
         check(helper, worstClearance < Double.MAX_VALUE,
                 "Ground reference must be found while crossing connected terrain");
@@ -423,7 +423,7 @@ public final class ElectromasterReworkGameTests {
         check(helper, offEdge.supported(), "The last block of the run still anchors the mover");
         var venturing = new MagneticLevitation();
         var away = helper.absoluteVec(new Vec3(60.5, 40.0, 6.5));
-        attacker.snapTo(away.x, away.y, away.z, -90, 0);
+        attacker.moveTo(away.x, away.y, away.z, -90, 0);
         var unsupported = venturing.step(attacker, 1, 0, 0, speed, radius, tuning);
         check(helper, !unsupported.supported(),
                 "Away from any collidable block the field must report no support");
@@ -448,7 +448,7 @@ public final class ElectromasterReworkGameTests {
         var radius = MagneticFieldTuning.supportRadius(0);
         var tuning = LevitationTuning.DEFAULT;
         var start = helper.absoluteVec(new Vec3(7.5, 3.5, 7.5));
-        attacker.snapTo(start.x, start.y, start.z, 0, 0);
+        attacker.moveTo(start.x, start.y, start.z, 0, 0);
         attacker.setDeltaMovement(Vec3.ZERO);
         var movement = new MagneticLevitation();
         var rise = 0.0;
@@ -500,7 +500,7 @@ public final class ElectromasterReworkGameTests {
     private static final class NotifyingCow extends net.minecraft.world.entity.animal.Cow {
         int notifications;
         NotifyingCow(ServerLevel level) { super(EntityType.COW, level); }
-        @Override public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
+        @Override public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
             notifications++;
             setHealth(getHealth() - 4);
             return true;

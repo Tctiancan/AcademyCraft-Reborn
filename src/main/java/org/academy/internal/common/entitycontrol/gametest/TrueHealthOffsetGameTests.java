@@ -29,21 +29,17 @@ import java.util.List;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TrueHealthOffsetGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("true_health_offset_function");
-    private TrueHealthOffsetGameTests() {}
-
-    @SubscribeEvent
-    public static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> OffsetTest.CODEC);
+    private TrueHealthOffsetGameTests() {
     }
 
     @SubscribeEvent
     public static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(AcademyCraft.academy("true_health_offset"),
-                new TestEnvironmentDefinition.AllOf(List.of()));
-        var data = new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
-                460, 0, true, Rotation.NONE, false, 1, 1, false, 16);
-        event.registerTest(AcademyCraft.academy("true_health_offset"), new OffsetTest(data));
+        event.register(TrueHealthOffsetGameTests.class);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 460)
+    public static void true_health_offset(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static void verify(GameTestHelper helper) {
@@ -80,7 +76,7 @@ public final class TrueHealthOffsetGameTests {
         ordinary.heal(10);
         close(helper, 80, ordinary.getHealth(), "Vanilla healing writes through");
         ordinary.invulnerableTime = 0;
-        ordinary.hurtServer(level, ordinary.damageSources().generic(), 10);
+        ordinary.hurt( ordinary.damageSources().generic(), 10);
         close(helper, 70, ordinary.getHealth(), "Ordinary damage uses effective health");
         ordinary.setHealth(100);
         close(helper, 70, ordinary.getHealth(), "Rollback cannot undo committed ordinary damage");
@@ -186,13 +182,4 @@ public final class TrueHealthOffsetGameTests {
             if (locked) super.setHealth(100);
         }
     }
-
-    private static final class OffsetTest extends GameTestInstance {
-        private static final MapCodec<OffsetTest> CODEC = TestData.CODEC.xmap(OffsetTest::new, OffsetTest::info);
-        private OffsetTest(TestData<Holder<TestEnvironmentDefinition<?>>> info) { super(info); }
-        @Override public void run(GameTestHelper helper) { verify(helper); }
-        @Override public MapCodec<? extends GameTestInstance> codec() { return CODEC; }
-        @Override protected MutableComponent typeDescription() { return Component.literal("True health projection"); }
-    }
 }
-

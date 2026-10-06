@@ -386,7 +386,7 @@ public final class DarkmatterEquipmentEvents {
                 float penetration
         ) {
             var armor = target.getAttribute(Attributes.ARMOR);
-            if (armor == null || penetration <= 0.0f) return target.hurtServer(level, source, damage);
+            if (armor == null || penetration <= 0.0f) return target.hurt( source, damage);
             var existing = armor.getModifier(ENCHANTMENT_PENETRATION_ID);
             if (existing != null) armor.removeModifier(ENCHANTMENT_PENETRATION_ID);
             armor.addTransientModifier(new AttributeModifier(
@@ -394,7 +394,7 @@ public final class DarkmatterEquipmentEvents {
                     -Math.clamp(penetration, 0.0f, 0.50f),
                     AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
             try {
-                return target.hurtServer(level, source, damage);
+                return target.hurt( source, damage);
             } finally {
                 armor.removeModifier(ENCHANTMENT_PENETRATION_ID);
                 if (existing != null) armor.addTransientModifier(existing);

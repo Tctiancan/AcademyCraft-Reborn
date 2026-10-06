@@ -2,7 +2,6 @@ package org.academy.mixin.common;
 
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.player.Player;
 import org.academy.internal.common.ability.level0.skills.OutputControl;
@@ -14,12 +13,12 @@ import org.spongepowered.asm.mixin.Mixin;
 @Mixin(Player.class)
 public abstract class MixinPlayerDamageContext {
     @WrapMethod(method = "actuallyHurt")
-    private void academy$damageContext(ServerLevel level, DamageSource source, float amount, Operation<Void> original) {
+    private void academy$damageContext(DamageSource source, float amount, Operation<Void> original) {
         if (CategoryDamageRuntime.blocksOutgoingDamage(source)) return;
         PlayerAttributeRuntime.pushDamageContext(source);
         OutputControl.pushDamageContext(source);
         try {
-            original.call(level, source, amount);
+            original.call(source, amount);
         } finally {
             OutputControl.popDamageContext();
             PlayerAttributeRuntime.popDamageContext();

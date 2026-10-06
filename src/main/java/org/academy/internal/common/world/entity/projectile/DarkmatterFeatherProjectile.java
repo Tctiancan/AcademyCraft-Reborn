@@ -84,7 +84,7 @@ public final class DarkmatterFeatherProjectile extends AbstractArrow implements 
         this.exposureBurstDamage = Math.max(
                 0.0f, Float.isFinite(exposureBurstDamage) ? exposureBurstDamage : 0.0f);
         this.outputAdjustmentBypassed = outputAdjustmentBypassed;
-        snapTo(owner.getX(), owner.getEyeY() - 0.15, owner.getZ(),
+        moveTo(owner.getX(), owner.getEyeY() - 0.15, owner.getZ(),
                 owner.getYRot(), owner.getXRot());
         var initial = target == null
                 ? direction

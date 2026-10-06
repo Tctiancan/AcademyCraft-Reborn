@@ -1,4 +1,4 @@
-﻿package org.academy.internal.client.gui.screen;
+package org.academy.internal.client.gui.screen;
 
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLPaths;

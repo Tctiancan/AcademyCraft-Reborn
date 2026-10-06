@@ -480,7 +480,7 @@ public final class MentalIntrusionManager {
     }
 
     private static void feedback(ServerPlayer player, String key) {
-        player.sendOverlayMessage(Component.translatable(key));
+        player.displayClientMessage(Component.translatable(key), true);
     }
 
     private static void writeUuid(ByteBuf buf, UUID uuid) {

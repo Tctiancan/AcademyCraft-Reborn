@@ -1,10 +1,11 @@
 package org.academy.api.client.renderer;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
 import org.academy.api.client.render.post.Phase;
 import org.joml.Matrix4f;
 
@@ -28,7 +29,7 @@ public final class CylinderRenderer {
             var x = floats[0];
             var y = floats[1];
             var z = floats[2];
-            vertexConsumer.addVertex(matrix4f, x, y, z).setColor(red, green, blue, alpha).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightCoordsUtil.FULL_BRIGHT);
+            vertexConsumer.addVertex(matrix4f, x, y, z).setColor(red, green, blue, alpha).setOverlay(OverlayTexture.NO_OVERLAY).setLight(LightTexture.FULL_BRIGHT);
         }
     }
 
@@ -55,6 +56,8 @@ public final class CylinderRenderer {
 
     public static void renderCylinderWireframe(PoseStack poseStack, VertexConsumer vertexConsumer, float[][] vertexBuffer,
                                                float red, float green, float blue, float alpha) {
+        var pose = poseStack.last();
+        RenderSystem.lineWidth((float) Minecraft.getInstance().getWindow().getGuiScale());
         for (var vertexData : vertexBuffer) {
             var x = vertexData[0];
             var y = vertexData[1];
@@ -63,10 +66,9 @@ public final class CylinderRenderer {
             var ny = vertexData[4];
             var nz = vertexData[5];
 
-            vertexConsumer.addVertex(poseStack.last().pose(), x, y, z)
+            vertexConsumer.addVertex(pose.pose(), x, y, z)
                     .setColor(red, green, blue, alpha)
-                    .setNormal(poseStack.last(), nx, ny, nz)
-                    .setLineWidth(Minecraft.getInstance().getWindow().getAppropriateLineWidth());
+                    .setNormal(pose, nx, ny, nz);
         }
     }
 }

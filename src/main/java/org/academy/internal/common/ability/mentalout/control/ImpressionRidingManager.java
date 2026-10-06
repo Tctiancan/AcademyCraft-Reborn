@@ -357,7 +357,7 @@ public final class ImpressionRidingManager {
 
     private static void feedback(ServerPlayer player, String key) {
         if (player != null && key != null && !key.isBlank()) {
-            player.sendOverlayMessage(Component.translatable(key));
+            player.displayClientMessage(Component.translatable(key), true);
         }
     }
 

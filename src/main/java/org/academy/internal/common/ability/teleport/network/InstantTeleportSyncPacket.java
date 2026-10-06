@@ -102,7 +102,7 @@ public final class InstantTeleportSyncPacket
             var yRot = resolveRotation(localPlayer && packet.preserveViewRotation, entity.getYRot(), packet.yRot);
             var xRot = resolveRotation(localPlayer && packet.preserveViewRotation, entity.getXRot(), packet.xRot);
             entity.getPositionCodec().setBase(packet.position);
-            entity.snapTo(packet.position, yRot, xRot);
+            entity.moveTo(packet.position, yRot, xRot);
             entity.setOldPosAndRot();
         }
 

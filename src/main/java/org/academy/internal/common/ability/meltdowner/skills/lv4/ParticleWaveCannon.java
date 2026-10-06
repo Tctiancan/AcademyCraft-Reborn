@@ -313,7 +313,7 @@ public final class ParticleWaveCannon extends Skill {
                 for (var delay = 20; delay <= 60; delay += 20) {
                     TimedSkillEffectRuntime.schedule(player, delay, () -> {
                         if (target.isAlive() && target.level() == initialLevel) {
-                            target.hurtServer(initialLevel,
+                            target.hurt(
                                     SkillDamageSource.of(player, Skills.PARTICLE_WAVE_CANNON.get()), damage);
                         }
                     });

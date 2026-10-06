@@ -406,7 +406,7 @@ public final class HighSpeedJetNozzle extends Entity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (source.getEntity() instanceof ServerPlayer player && isOwnedBy(player)) {
             discard();
             return true;

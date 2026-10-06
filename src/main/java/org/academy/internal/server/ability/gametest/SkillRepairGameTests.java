@@ -105,7 +105,7 @@ public final class SkillRepairGameTests {
                 helper.assertTrue(mining.hasProficiencyMilestone(player, 3), "Silk Touch must be unlocked");
             }
             var origin = helper.absoluteVec(new Vec3(2.5, 3.5, 5.5));
-            player.snapTo(origin.x, origin.y, origin.z, -90, 0);
+            player.moveTo(origin.x, origin.y, origin.z, -90, 0);
             if (scenario.startsWith("container_")) {
                 verifyContainer(helper, player, scenario.equals("container_full"));
             } else if (scenario.equals("block_normals")) {
@@ -145,7 +145,7 @@ public final class SkillRepairGameTests {
                     data.setAcademyMaxCp(100_000);
                     data.getCpData().setMaxCP(100_000);
                     data.getCpData().setAvailableCP(100_000);
-                    player.snapTo(origin.x, origin.y - player.getEyeHeight(), origin.z, -90, 0);
+                    player.moveTo(origin.x, origin.y - player.getEyeHeight(), origin.z, -90, 0);
                     var constructor = MiningBeam.Context.class.getDeclaredConstructor(ServerPlayer.class);
                     constructor.setAccessible(true);
                     var context = constructor.newInstance(player);
@@ -258,7 +258,7 @@ public final class SkillRepairGameTests {
                 helper.assertTrue(normal.equals(Optional.of(new ProgramDirection(
                         face.getStepX(), face.getStepY(), face.getStepZ()))), runtime.getClass().getSimpleName() + " normal " + face);
             }
-            player.snapTo(pos.getX() - 2.0, pos.getY() + 0.5 - player.getEyeHeight(), pos.getZ() + 0.5, -90, 0);
+            player.moveTo(pos.getX() - 2.0, pos.getY() + 0.5 - player.getEyeHeight(), pos.getZ() + 0.5, -90, 0);
             player.setYHeadRot(-90);
             var normal = runtime.blockNormalFromView(player, 4);
             helper.assertTrue(normal.equals(Optional.of(new ProgramDirection(-1, 0, 0))),

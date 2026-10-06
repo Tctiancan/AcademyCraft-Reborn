@@ -742,7 +742,7 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
     }
 
     private int resolveHotbarSlot(int configuredSlot) {
-        if (configuredSlot == 0) return player.getInventory().getSelectedSlot();
+        if (configuredSlot == 0) return player.getInventory().selected;
         if (configuredSlot < 1 || configuredSlot > 9) {
             throw new IllegalArgumentException("Teleport hotbar slot must be between 1 and 9");
         }

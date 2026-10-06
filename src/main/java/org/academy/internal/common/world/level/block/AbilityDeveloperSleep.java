@@ -43,7 +43,7 @@ public final class AbilityDeveloperSleep {
                         .map(sleepPosition::equals)
                         .orElse(false));
         if (occupied) {
-            player.sendOverlayMessage(Component.translatable("block.minecraft.bed.occupied"));
+            player.displayClientMessage(Component.translatable("block.minecraft.bed.occupied"), true);
             return;
         }
 

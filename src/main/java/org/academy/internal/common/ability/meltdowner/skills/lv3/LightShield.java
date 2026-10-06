@@ -383,7 +383,7 @@ public final class LightShield extends Skill {
                             skill.hasProficiencyMilestone(player, 2) ? 0.78 : 0.65);
                     target.push(direction.x, 0.25, direction.z);
                 }
-                target.hurtServer(initialLevel, source, damage);
+                target.hurt( source, damage);
             }
         }
 

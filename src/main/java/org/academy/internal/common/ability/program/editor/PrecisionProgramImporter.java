@@ -1,4 +1,4 @@
-﻿package org.academy.internal.common.ability.program.editor;
+package org.academy.internal.common.ability.program.editor;
 
 import org.academy.internal.common.ability.program.migration.PrecisionProgramAliases;
 import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;

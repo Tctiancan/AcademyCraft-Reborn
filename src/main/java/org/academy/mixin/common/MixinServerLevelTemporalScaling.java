@@ -8,7 +8,7 @@ import net.minecraft.world.entity.raid.Raids;
 import net.minecraft.world.level.BlockEventData;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.border.WorldBorder;
-import net.minecraft.world.level.dimension.end.EnderDragonFight;
+import net.minecraft.world.level.dimension.end.EndDragonFight;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.ticks.LevelTicks;
 import org.academy.api.server.vanilla.MinecraftServerContext;
@@ -120,10 +120,10 @@ public abstract class MixinServerLevelTemporalScaling {
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/dimension/end/EnderDragonFight;tick()V"
+                    target = "Lnet/minecraft/world/level/dimension/end/EndDragonFight;tick()V"
             )
     )
-    private void academy$dispatchDragonFightTicks(EnderDragonFight fight) {
+    private void academy$dispatchDragonFightTicks(EndDragonFight fight) {
         var level = (ServerLevel) (Object) this;
         var context = (MinecraftServerContext) level.getServer();
         if (!context.hasAcademyCraftServer()) {

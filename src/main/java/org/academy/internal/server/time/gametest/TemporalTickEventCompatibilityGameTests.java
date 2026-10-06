@@ -4,10 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -40,45 +37,17 @@ import java.util.UUID;
 /** End-to-end validation for NeoForge tick-event interoperability. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalTickEventCompatibilityGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE = AcademyCraft.academy(
-            "temporal_tick_event_compatibility_function"
-    );
-
     private TemporalTickEventCompatibilityGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> TemporalTickEventCompatibilityTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(TemporalTickEventCompatibilityGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("time/tick_event_compatibility"),
-                new TestEnvironmentDefinition.AllOf(List.of())
-        );
-        var data = new TestData<>(
-                environment,
-                ResourceLocation.withDefaultNamespace("empty"),
-                60,
-                0,
-                true,
-                Rotation.NONE,
-                false,
-                1,
-                1,
-                false,
-                16
-        );
-        event.registerTest(
-                AcademyCraft.academy("time_tick_event_compatibility"),
-                new TemporalTickEventCompatibilityTestInstance(data)
-        );
+    @GameTest(template = "empty", timeoutTicks = 60)
+    public static void time_tick_event_compatibility(GameTestHelper helper) {
+        runCompatibilityTest(helper);
     }
 
     private static void runCompatibilityTest(GameTestHelper helper) {
@@ -263,40 +232,4 @@ public final class TemporalTickEventCompatibilityGameTests {
             if (event.getEntity().getUUID().equals(targetId)) entityPostTicks++;
         }
     }
-
-    private static final class TemporalTickEventCompatibilityTestInstance
-            extends GameTestInstance {
-        private static final MapCodec<TemporalTickEventCompatibilityTestInstance>
-                CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        TestData.CODEC.forGetter(
-                                TemporalTickEventCompatibilityTestInstance::info
-                        )
-                ).apply(
-                        instance,
-                        TemporalTickEventCompatibilityTestInstance::new
-                ));
-
-        private TemporalTickEventCompatibilityTestInstance(
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runCompatibilityTest(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporal tick event compatibility"
-                    .toLowerCase(Locale.ROOT));
-        }
-    }
 }
-

@@ -121,7 +121,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
         Minecraft.getInstance().execute(() -> {
             var minecraft = Minecraft.getInstance();
             var message = Component.translatable(packet.result.translationKey());
-            if (minecraft.player != null) minecraft.player.sendOverlayMessage(message);
+            if (minecraft.player != null) minecraft.player.displayClientMessage(message, true);
             if (minecraft.gui.screen() instanceof DarkmatterCreationScreen screen) {
                 screen.summonStatus = message.getString();
                 if (packet.result == DarkmatterCreation.SummonResult.SUMMONED) {

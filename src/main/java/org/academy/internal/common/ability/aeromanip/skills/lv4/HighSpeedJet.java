@@ -343,14 +343,14 @@ public final class HighSpeedJet extends Skill {
                             .filter(nozzle -> nozzle.isAttachedTo(projectile))
                             .toList();
                     if (!activateNozzles(player, skill, projectileNozzles)) {
-                        player.sendOverlayMessage(Component.translatable(
-                                "message.academy.high_speed_jet.projectile_launch_rejected"));
+                        player.displayClientMessage(Component.translatable(
+                                "message.academy.high_speed_jet.projectile_launch_rejected"), true);
                     }
                     return;
                 }
                 if (!(target instanceof BlockPlacement block)) {
-                    player.sendOverlayMessage(Component.translatable(
-                            "message.academy.high_speed_jet.structure_target_required"));
+                    player.displayClientMessage(Component.translatable(
+                            "message.academy.high_speed_jet.structure_target_required"), true);
                     return;
                 }
                 var duration = Math.max(1, Math.round(
@@ -371,8 +371,8 @@ public final class HighSpeedJet extends Skill {
                         1.0f
                 );
                 if (launched.isEmpty()) {
-                    player.sendOverlayMessage(Component.translatable(
-                            "message.academy.high_speed_jet.structure_launch_rejected"));
+                    player.displayClientMessage(Component.translatable(
+                            "message.academy.high_speed_jet.structure_launch_rejected"), true);
                 }
                 return;
             }

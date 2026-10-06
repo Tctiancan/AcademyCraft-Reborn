@@ -148,8 +148,8 @@ public final class MindDestruction extends Skill {
             if (result.preventedDeath()) {
                 MentalControlApi.suppressMentalProtection(target);
                 close(effect);
-                controller.sendOverlayMessage(Component.translatable(
-                        "message.academy.mentalout.protection_stripped", target.getDisplayName()));
+                controller.displayClientMessage(Component.translatable(
+                        "message.academy.mentalout.protection_stripped", target.getDisplayName()), true);
                 continue;
             }
             var damaged = result.value();
@@ -317,7 +317,7 @@ public final class MindDestruction extends Skill {
         }
 
         private static void feedback(ServerPlayer player, String key) {
-            player.sendOverlayMessage(Component.translatable(key));
+            player.displayClientMessage(Component.translatable(key), true);
         }
     }
 

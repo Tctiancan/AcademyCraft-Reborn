@@ -56,21 +56,17 @@ import java.util.function.Supplier;
 /** Runs with the live NeoForge event bus and applied damage mixins. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DamagePolicyGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("damage_policy_function");
     private static UUID targetId;
     private static boolean weaken;
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> DamageTest.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(DamagePolicyGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("damage_policy"), new DamageTest(new TestData<>(
-                environment, ResourceLocation.withDefaultNamespace("empty"), 100, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void damage_policy(GameTestHelper helper) {
+        verify(helper);
     }
 
     @SubscribeEvent
@@ -114,7 +110,7 @@ public final class DamagePolicyGameTests {
                     DamageComposition.withMaximumHealthPart(target, source, 50.0f,
                             () -> DamageTypes.usesVerifiedTrueHealth(type)
                                     ? SkillDamageUtil.applyVerifiedTrueHealth(target, source, total)
-                                    : target.hurtServer(level, source, total));
+                                    : target.hurt( source, total));
                     var expected = purePercentage ? 950.0f : 940.0f;
                     helper.assertTrue(Math.abs(target.getHealth() - expected) < 0.01f,
                             type.toString() + " percentageOnly=" + purePercentage
@@ -169,12 +165,12 @@ public final class DamagePolicyGameTests {
                 target.setNoAi(true);
                 target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0);
                 target.setHealth(1000.0f);
-                player.snapTo(target.getX() - 2, target.getY(), target.getZ(), 0, 0);
+                player.moveTo(target.getX() - 2, target.getY(), target.getZ(), 0, 0);
                 var source = SkillDamageSource.of(player, Skills.ELECTRICAL_CONTACT.get(), type);
                 DamageComposition.withMaximumHealthPart(target, source, 50.0f,
                         () -> DamageTypes.usesVerifiedTrueHealth(type)
                                 ? SkillDamageUtil.applyVerifiedTrueHealth(target, source, 60.0f)
-                                : target.hurtServer(helper.getLevel(), source, 60.0f));
+                                : target.hurt( source, 60.0f));
                 var expected = 940.0f;
                 helper.assertTrue(Math.abs(target.getHealth() - expected) < 0.01f,
                         "Chest Item event modifiers must not change Academy damage: " + type
@@ -197,13 +193,13 @@ public final class DamagePolicyGameTests {
         var arc = SkillDamageSource.of(player, Skills.ARC_GENERATE.get());
         for (var hit = 0; hit < 4; hit++) {
             electric.invulnerableTime = 0;
-            electric.hurtServer(level, arc, 1);
+            electric.hurt( arc, 1);
         }
         helper.assertTrue(AbilityHitEffects.electricalCharge(electric) == 4,
                 "Four ordinary arc hits must accumulate four points");
         var originalSpeed = electric.getAttributeValue(Attributes.MOVEMENT_SPEED);
         electric.invulnerableTime = 0;
-        electric.hurtServer(level, arc, 1);
+        electric.hurt( arc, 1);
         helper.assertTrue(AbilityHitEffects.isParalyzed(electric),
                 "Fifth charge point must trigger paralysis");
         helper.assertTrue(AbilityHitEffects.electricalCharge(electric) == 0,
@@ -212,7 +208,7 @@ public final class DamagePolicyGameTests {
                 "Paralysis must reduce movement speed by exactly 80%");
         var receiver = helper.spawn(EntityType.COW, 4, 2, 5);
         receiver.setNoAi(true);
-        receiver.hurtServer(level, electric.damageSources().mobAttack(electric), 10);
+        receiver.hurt( electric.damageSources().mobAttack(electric), 10);
         helper.assertTrue(receiver.getHealth() == receiver.getMaxHealth(),
                 "Extra electrical interruption must cancel mob outgoing hurt");
         helper.assertTrue(!electric.doHurtTarget(level, receiver), "Mob attack must be canceled before execution");
@@ -221,14 +217,14 @@ public final class DamagePolicyGameTests {
         var arrow = new Arrow(level, electric,
                 new ItemStack(Items.ARROW), null);
         var arrowSource = electric.damageSources().arrow(arrow, electric);
-        helper.assertTrue(!receiver.hurtServer(level, arrowSource, 10), "Attributed projectiles must also be canceled");
+        helper.assertTrue(!receiver.hurt( arrowSource, 10), "Attributed projectiles must also be canceled");
         var cta = new DamageSource(level.registryAccess()
                 .lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.CTA), electric);
         helper.assertTrue(!SkillDamageUtil.applyVerifiedTrueHealth(receiver, cta, 10),
                 "Direct true health damage from an interrupted mob must be canceled");
         electric.invulnerableTime = 0;
         var electricHealthBefore = electric.getHealth();
-        helper.assertTrue(electric.hurtServer(level, player.damageSources().playerAttack(player), 1)
+        helper.assertTrue(electric.hurt( player.damageSources().playerAttack(player), 1)
                         && electric.getHealth() < electricHealthBefore,
                 "A mob with interrupted attacks must still take incoming damage");
         arrow.discard();
@@ -238,7 +234,7 @@ public final class DamagePolicyGameTests {
         var blocked = helper.spawn(EntityType.COW, 3, 2, 5);
         blocked.getAttribute(Attributes.MAX_ABSORPTION).setBaseValue(100);
         blocked.setAbsorptionAmount(100);
-        blocked.hurtServer(level, arc, 5);
+        blocked.hurt( arc, 5);
         helper.assertTrue(AbilityHitEffects.electricalCharge(blocked) == 0,
                 "An absorption-only hit must not award electrical charge");
         blocked.discard();
@@ -287,7 +283,7 @@ public final class DamagePolicyGameTests {
         var chest = new ItemStack(Items.DIAMOND_CHESTPLATE);
         armored.setItemSlot(EquipmentSlot.CHEST, chest);
         var aero = SkillDamageSource.of(player, Skills.LAMINAR_CUTTER.get(), DamageTypes.LAMINAR_CUT);
-        armored.hurtServer(level, aero, 10);
+        armored.hurt( aero, 10);
         helper.assertTrue(chest.getDamageValue() >= 9, "Air cutting must add durability wear to actual hits");
         var beforeWear = chest.getDamageValue();
         AbilityHitEffects.damageEquipment(armored, 80, true);
@@ -346,28 +342,4 @@ public final class DamagePolicyGameTests {
         helper.assertTrue(drops.size() == 1, "Teleport roll must not duplicate an existing head");
         zombie.discard();
     }
-
-    private static final class DamageTest extends GameTestInstance {
-        private static final MapCodec<DamageTest> CODEC = TestData.CODEC.xmap(DamageTest::new, DamageTest::info);
-
-        private DamageTest(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Isolated category damage and flash resistance");
-        }
-    }
 }
-

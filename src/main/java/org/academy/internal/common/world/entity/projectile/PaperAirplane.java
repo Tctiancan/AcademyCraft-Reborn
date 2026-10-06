@@ -123,7 +123,7 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
                 var damage = BOOSTED_DAMAGE
                         * AbilitySystemServer.getSystem(booster)
                         .getPlayerDamageMultiplier(booster.getUUID());
-                target.hurtServer(serverLevel,
+                target.hurt(
                         SkillDamageSource.of(booster, Skills.AIRFLOW_JET.get()), damage);
             }
         }

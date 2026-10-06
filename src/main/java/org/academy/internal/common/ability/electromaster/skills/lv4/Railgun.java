@@ -584,7 +584,7 @@ public final class Railgun extends Skill {
                 for (var target : owner.level().getEntities(owner, new AABB(center, center).inflate(4.0),
                         entity -> entity.isAlive() && entity != primary && !TeamRelations.areAllied(owner, entity)
                                 && !PvpSetting.shouldPrevent(owner, entity))) {
-                    target.hurtServer(owner.level(), source, damage);
+                    target.hurt( source, damage);
                     var away = target.position().subtract(center);
                     if (away.lengthSqr() > 1.0e-8) {
                         target.setDeltaMovement(target.getDeltaMovement()

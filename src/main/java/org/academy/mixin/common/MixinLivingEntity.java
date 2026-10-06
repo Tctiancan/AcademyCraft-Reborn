@@ -185,11 +185,11 @@ public abstract class MixinLivingEntity {
     }
 
     @Inject(
-            method = "actuallyHurt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)V",
+            method = "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V",
             at = @At("HEAD"),
             cancellable = true
     )
-    private void academy$beginDamageContext(ServerLevel level, DamageSource source, float damage, CallbackInfo ci) {
+    private void academy$beginDamageContext(DamageSource source, float damage, CallbackInfo ci) {
         if ((Object) this instanceof Player player && DamageTypes.isImmunePlayer(player, source)) {
             ci.cancel();
             return;
@@ -203,7 +203,7 @@ public abstract class MixinLivingEntity {
                     if (!VectorReflection.Server.usesFullInstanceProtection(player)
                             && remaining > 0.0f && Float.isFinite(remaining)) {
                         ((LivingEntityDamageInvoker) this)
-                                .academy$actuallyHurt(level, source, remaining);
+                                .academy$actuallyHurt(source, remaining);
                     }
                     return;
                 }

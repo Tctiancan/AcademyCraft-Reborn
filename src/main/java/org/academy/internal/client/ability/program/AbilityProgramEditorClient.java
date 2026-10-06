@@ -426,7 +426,7 @@ public final class AbilityProgramEditorClient {
                     ? Component.translatable("message.academy.program.editor.invalid_program_detail", slot + 1, detail)
                     : Component.translatable(key, slot + 1, detail);
             if (player != null) {
-                player.sendOverlayMessage(message.copy().withStyle(ChatFormatting.RED));
+                player.displayClientMessage(message.copy().withStyle(ChatFormatting.RED), true);
                 player.sendSystemMessage(message.copy().withStyle(ChatFormatting.RED));
             }
         }
@@ -458,7 +458,7 @@ public final class AbilityProgramEditorClient {
     ) {
         var player = Minecraft.getInstance().player;
         if (player != null) {
-            player.sendOverlayMessage(Component.translatable(key, arguments).withStyle(formatting));
+            player.displayClientMessage(Component.translatable(key, arguments).withStyle(formatting), true);
         }
     }
 

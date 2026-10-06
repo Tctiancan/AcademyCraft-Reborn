@@ -293,7 +293,7 @@ public final class BlockStructureEntity extends Entity
                     : level.damageSources().generic();
             var source = new DamageSource(
                     original.typeHolder(), this, controller);
-            if (!living.hurtServer(level, source, damage)) return;
+            if (!living.hurt( source, damage)) return;
         }
 
         var knockback = BlockStructureKinetics.collisionKnockback(
@@ -463,7 +463,7 @@ public final class BlockStructureEntity extends Entity
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         return false;
     }
 

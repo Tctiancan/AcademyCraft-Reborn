@@ -526,7 +526,7 @@ public class LevelUtil {
                         && e.isAlive()
                         && e.getType() != EntityTypes.HIGH_SPEED_ELECTRON_BEAM.get()
         )) {
-            entity.hurtServer(serverLevel, damageSource, damage);
+            entity.hurt( damageSource, damage);
         }
     }
 

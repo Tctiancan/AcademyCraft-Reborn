@@ -59,12 +59,12 @@ public final class AeromanipChargeHud {
         if (player == null || activeSkill == null) return;
         var tier = PROGRESS.tier();
         var label = Component.translatable(tierTranslationKey(tier));
-        player.sendOverlayMessage(Component.translatable(
+        player.displayClientMessage(Component.translatable(
                 "hud.academy.aeromanip_charge",
                 activeSkill.getTranslatedName(),
                 PROGRESS.awaitingConfirmation(Math.max(0, currentTick - startTick))
                         ? Component.translatable("hud.academy.aeromanip_charge.confirming", label) : label
-        ));
+        ), true);
     }
 
     public static void confirm(long serverGesture, int tier, boolean released) {
@@ -78,8 +78,8 @@ public final class AeromanipChargeHud {
         if (!PROGRESS.accept(serverGesture, tier)) return;
         var player = Minecraft.getInstance().player;
         if (released && player != null && lastSkill != null) {
-            player.sendOverlayMessage(Component.translatable("message.academy.aeromanip.released",
-                    lastSkill.getTranslatedName(), Component.translatable(tierTranslationKey(AeromanipChargeTier.values()[tier]))));
+            player.displayClientMessage(Component.translatable("message.academy.aeromanip.released",
+                    lastSkill.getTranslatedName(), Component.translatable(tierTranslationKey(AeromanipChargeTier.values()[tier]))), true);
         }
     }
 
@@ -94,6 +94,6 @@ public final class AeromanipChargeHud {
     private static void clear() {
         var player = Minecraft.getInstance().player;
         activeSkill = null;
-        if (player != null) player.sendOverlayMessage(Component.empty());
+        if (player != null) player.displayClientMessage(Component.empty(), true);
     }
 }

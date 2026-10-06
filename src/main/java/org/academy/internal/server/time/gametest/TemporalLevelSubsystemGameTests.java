@@ -5,10 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -16,7 +13,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
-import net.minecraft.world.level.gamerules.GameRules;
+import net.minecraft.world.level.GameRules;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -44,37 +41,13 @@ public final class TemporalLevelSubsystemGameTests {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> TemporalLevelSubsystemTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(TemporalLevelSubsystemGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("time/level_subsystem_pause_resume"),
-                new TestEnvironmentDefinition.AllOf(List.of())
-        );
-        var data = new TestData<>(
-                environment,
-                ResourceLocation.withDefaultNamespace("empty"),
-                40,
-                0,
-                true,
-                Rotation.NONE,
-                false,
-                1,
-                1,
-                false,
-                16
-        );
-        event.registerTest(
-                AcademyCraft.academy("time_level_subsystem_pause_resume"),
-                new TemporalLevelSubsystemTestInstance(data)
-        );
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void time_level_subsystem_pause_resume(GameTestHelper helper) {
+        runPauseResumeTest(helper);
     }
 
     private static void runPauseResumeTest(GameTestHelper helper) {
@@ -335,36 +308,6 @@ public final class TemporalLevelSubsystemGameTests {
                     advanceWeather,
                     level.getServer()
             );
-        }
-    }
-
-    private static final class TemporalLevelSubsystemTestInstance
-            extends GameTestInstance {
-        private static final MapCodec<TemporalLevelSubsystemTestInstance> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        TestData.CODEC.forGetter(TemporalLevelSubsystemTestInstance::info)
-                ).apply(instance, TemporalLevelSubsystemTestInstance::new));
-
-        private TemporalLevelSubsystemTestInstance(
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runPauseResumeTest(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporal level subsystem pause resume"
-                    .toLowerCase(Locale.ROOT));
         }
     }
 }

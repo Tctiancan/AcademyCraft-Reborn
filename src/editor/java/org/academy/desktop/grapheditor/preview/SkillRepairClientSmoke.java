@@ -145,7 +145,7 @@ public final class SkillRepairClientSmoke {
             data.getCpData().setMaxCP(1_000_000);
             data.getCpData().setAvailableCP(1_000_000);
             subject = net.minecraft.world.entity.EntityTypes.COW.create(player.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
-            subject.snapTo(0, 81, 177, 123, -12);
+            subject.moveTo(0, 81, 177, 123, -12);
             subject.setYHeadRot(123); subject.setYBodyRot(123);
             subject.setPersistenceRequired();
             player.level().addFreshEntity(subject);

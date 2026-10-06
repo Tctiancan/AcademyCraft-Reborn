@@ -32,14 +32,12 @@ import java.util.UUID;
 /** Live server motion regression: packet aggregation must preserve every former directional push. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class WingFlightNetworkGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("wing_network_function");
-    @SubscribeEvent private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
-    }
     @SubscribeEvent private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(AcademyCraft.academy("wing_network"), new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("wing_network_motion"), new Instance(new TestData<>(environment,
-                ResourceLocation.withDefaultNamespace("empty"), 100, 0, true, Rotation.NONE, false, 1, 1, false, 16), "motion"));
+        event.register(WingFlightNetworkGameTests.class);
+    }
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void wing_network_motion(GameTestHelper helper) {
+        runMotion(helper);
     }
     private static void runMotion(GameTestHelper helper) {
         var profile = new GameProfile(UUID.randomUUID(), "wing-network");
@@ -88,15 +86,5 @@ public final class WingFlightNetworkGameTests {
             }
             helper.succeed();
         } finally { players.remove(player); }
-    }
-    private static final class Instance extends GameTestInstance {
-        static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info), Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        final String scenario;
-        Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) { super(info); this.scenario = scenario; }
-        @Override public void run(GameTestHelper helper) { runMotion(helper); }
-        @Override public MapCodec<? extends GameTestInstance> codec() { return CODEC; }
-        @Override protected MutableComponent typeDescription() { return Component.literal("Wing input aggregation regression"); }
     }
 }

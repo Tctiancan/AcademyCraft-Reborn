@@ -268,7 +268,7 @@ public final class RejectingWind extends Skill {
             for (var target : targets) {
                 if (handled++ >= cap) break;
                 if (target instanceof LivingEntity living) {
-                    if (!living.hurtServer(level, source, damage)) continue;
+                    if (!living.hurt( source, damage)) continue;
                     skill.onHurt(player, living, damage);
                 }
                 var radial = target.getBoundingBox().getCenter().subtract(center);

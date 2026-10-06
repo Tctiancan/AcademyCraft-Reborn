@@ -4,7 +4,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
 import net.minecraft.world.entity.animal.Dolphin;
 import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.monster.Breeze;
+import net.minecraft.world.entity.monster.breeze.Breeze;
 import net.minecraft.world.entity.monster.AbstractIllager;
 import org.academy.api.common.entitycontrol.AttackDecision;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;

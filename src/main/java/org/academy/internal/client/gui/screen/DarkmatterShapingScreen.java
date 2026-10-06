@@ -752,8 +752,8 @@ public final class DarkmatterShapingScreen extends UiScreen {
         requestPending = false;
         if (result == DarkmatterShaping.Result.SHAPED) {
             if (Minecraft.getInstance().player != null) {
-                Minecraft.getInstance().player.sendOverlayMessage(
-                        Component.translatable(result.translationKey()));
+                Minecraft.getInstance().player.displayClientMessage(
+                        Component.translatable(result.translationKey()), true);
             }
             Minecraft.getInstance().gui.setScreen(null);
             return;

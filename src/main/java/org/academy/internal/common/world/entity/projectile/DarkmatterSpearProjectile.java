@@ -58,7 +58,7 @@ public final class DarkmatterSpearProjectile extends AbstractArrow implements It
         this.launchSpeed = DarkmatterShaping.Server.spearSpeed(this.betaPower);
         var range = DarkmatterShaping.Server.spearRange(alphaPower);
         this.maximumLifetime = Math.max(2, Mth.ceil(range / launchSpeed));
-        snapTo(owner.getX(), owner.getEyeY() - 0.12, owner.getZ(), owner.getYRot(), owner.getXRot());
+        moveTo(owner.getX(), owner.getEyeY() - 0.12, owner.getZ(), owner.getYRot(), owner.getXRot());
         shootFromRotation(owner, owner.getXRot(), owner.getYRot(), 0.0f, launchSpeed, 0.0f);
     }
 

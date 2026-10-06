@@ -629,7 +629,7 @@ public class KineticEnergyApplied extends Skill {
                         player, target.getUUID(), skill, "reverberation_cd", 20, 0.0f)) {
                     TimedSkillEffectRuntime.schedule(player, 6, () -> {
                         if (!target.isAlive() || target.level() != level) return;
-                        target.hurtServer(level, source, damage * 0.3f);
+                        target.hurt( source, damage * 0.3f);
                     });
                 }
             }

@@ -63,7 +63,7 @@ public final class ControlledEquipment {
 
     /** Melee fallback for passive mobs without the vanilla attack-damage attribute. */
     public static boolean attackWithoutAttribute(Mob subject, ServerLevel level, LivingEntity target) {
-        var hit = target.hurtServer(level, subject.damageSources().mobAttack(subject), 6.0F);
+        var hit = target.hurt( subject.damageSources().mobAttack(subject), 6.0F);
         if (hit) subject.setLastHurtMob(target);
         return hit;
     }

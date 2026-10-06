@@ -70,7 +70,7 @@ public final class TrueDamageCompatibility {
         var probe = new HurtProbe(target, source);
         HURT_PROBE.set(probe);
         try {
-            org.academy.api.server.damage.HealthLossGuards.maintenance(target, () -> target.hurtServer(level, source, amount));
+            org.academy.api.server.damage.HealthLossGuards.maintenance(target, () -> target.hurt( source, amount));
         } catch (Throwable error) {
             LOGGER.warn(
                     "Custom true-damage hurt notification failed for {}",

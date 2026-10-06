@@ -99,14 +99,14 @@ public abstract class MixinEntity {
                 (Entity) (Object) this, new Vec3(x, y, z))) ci.cancel();
     }
 
-    @Inject(method = "snapTo(DDD)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "moveTo(DDD)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardPositionSnap(double x, double y, double z, CallbackInfo ci) {
         if (EntityMotionGuard.shouldBlockPositionSnap(
                 (Entity) (Object) this, new Vec3(x, y, z))) ci.cancel();
     }
 
     @Inject(
-            method = "snapTo(Lnet/minecraft/world/phys/Vec3;)V",
+            method = "moveTo(Lnet/minecraft/world/phys/Vec3;)V",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -115,7 +115,7 @@ public abstract class MixinEntity {
     }
 
     @Inject(
-            method = "snapTo(Lnet/minecraft/core/BlockPos;FF)V",
+            method = "moveTo(Lnet/minecraft/core/BlockPos;FF)V",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -127,7 +127,7 @@ public abstract class MixinEntity {
     }
 
     @Inject(
-            method = "snapTo(Lnet/minecraft/world/phys/Vec3;FF)V",
+            method = "moveTo(Lnet/minecraft/world/phys/Vec3;FF)V",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -137,7 +137,7 @@ public abstract class MixinEntity {
         if (EntityMotionGuard.shouldBlockPositionSnap((Entity) (Object) this, position)) ci.cancel();
     }
 
-    @Inject(method = "snapTo(DDDFF)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "moveTo(DDDFF)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardPositionAndRotationSnap(
             double x, double y, double z, float yRot, float xRot, CallbackInfo ci
     ) {

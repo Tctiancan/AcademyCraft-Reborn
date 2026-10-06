@@ -10,10 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -75,44 +72,114 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DarkmatterResourceGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE =
-            AcademyCraft.academy("darkmatter_resource_function");
     private static final AtomicInteger NEXT_PLAYER_ID = new AtomicInteger();
 
     private DarkmatterResourceGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TEST_INSTANCE_TYPE,
-                () -> DarkmatterResourceTestInstance.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(DarkmatterResourceGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : Scenario.values()) {
-            var environment = event.registerEnvironment(
-                    AcademyCraft.academy("darkmatter/resource/" + scenario.serializedName),
-                    new TestEnvironmentDefinition.AllOf(List.of())
-            );
-            var data = new TestData<>(
-                    environment,
-                    ResourceLocation.withDefaultNamespace("empty"),
-                    scenario.maxTicks,
-                    0,
-                    true,
-                    Rotation.NONE,
-                    false,
-                    1,
-                    1,
-                    false,
-                    16
-            );
-            event.registerTest(
-                    AcademyCraft.academy("darkmatter_resource_" + scenario.serializedName),
-                    new DarkmatterResourceTestInstance(scenario, data)
-            );
-        }
+    private static void run(GameTestHelper helper, Scenario scenario) {
+        helper.setBlock(1, 1, 1, Blocks.STONE);
+        scenario.run(helper);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_created_pool_releases_cp_debt(GameTestHelper helper) {
+        run(helper, Scenario.CREATED_POOL_RELEASES_CP_DEBT);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 80)
+    public static void darkmatter_resource_natural_recovery_respects_effective_capacity(GameTestHelper helper) {
+        run(helper, Scenario.NATURAL_RECOVERY_RESPECTS_EFFECTIVE_CAPACITY);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void darkmatter_resource_damage_conversion_precedes_defense(GameTestHelper helper) {
+        run(helper, Scenario.DAMAGE_CONVERSION_PRECEDES_DEFENSE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void darkmatter_resource_generic_kill_consumes_available_mp(GameTestHelper helper) {
+        run(helper, Scenario.GENERIC_KILL_CONSUMES_AVAILABLE_MP);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 240)
+    public static void darkmatter_resource_phase_tuning_uses_level_relative_points(GameTestHelper helper) {
+        run(helper, Scenario.PHASE_TUNING_USES_LEVEL_RELATIVE_POINTS);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_phase_upgrade_preserves_percentage(GameTestHelper helper) {
+        run(helper, Scenario.PHASE_UPGRADE_PRESERVES_PERCENTAGE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_shaping_contexts_consume_and_mutate_server_inventory(GameTestHelper helper) {
+        run(helper, Scenario.SHAPING_CONTEXTS_CONSUME_AND_MUTATE_SERVER_INVENTORY);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_native_tool_phase_and_integrity_are_operational(GameTestHelper helper) {
+        run(helper, Scenario.NATIVE_TOOL_PHASE_AND_INTEGRITY_ARE_OPERATIONAL);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_disassemble_alpha_chain_reaches_real_blocks(GameTestHelper helper) {
+        run(helper, Scenario.DISASSEMBLE_ALPHA_CHAIN_REACHES_REAL_BLOCKS);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_disassemble_beta_and_entity_phases_are_operational(GameTestHelper helper) {
+        run(helper, Scenario.DISASSEMBLE_BETA_AND_ENTITY_PHASES_ARE_OPERATIONAL);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_disassemble_kill_credits_uncapped_matter(GameTestHelper helper) {
+        run(helper, Scenario.DISASSEMBLE_KILL_CREDITS_UNCAPPED_MATTER);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_disassemble_m3_sends_drops_to_inventory(GameTestHelper helper) {
+        run(helper, Scenario.DISASSEMBLE_M3_SENDS_DROPS_TO_INVENTORY);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_cut_phases_and_shared_law_mark_are_operational(GameTestHelper helper) {
+        run(helper, Scenario.CUT_PHASES_AND_SHARED_LAW_MARK_ARE_OPERATIONAL);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_feather_visually_exits_without_second_damage(GameTestHelper helper) {
+        run(helper, Scenario.FEATHER_VISUALLY_EXITS_WITHOUT_SECOND_DAMAGE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 60)
+    public static void darkmatter_resource_interference_channel_feathers_and_exposure_are_operational(GameTestHelper helper) {
+        run(helper, Scenario.INTERFERENCE_CHANNEL_FEATHERS_AND_EXPOSURE_ARE_OPERATIONAL);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_darkmatter_network_members_are_protected(GameTestHelper helper) {
+        run(helper, Scenario.DARKMATTER_NETWORK_MEMBERS_ARE_PROTECTED);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void darkmatter_resource_non_team_players_ignore_global_pvp_for_darkmatter(GameTestHelper helper) {
+        run(helper, Scenario.NON_TEAM_PLAYERS_IGNORE_GLOBAL_PVP_FOR_DARKMATTER);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_repair_tick_healing_accepts_true_damage(GameTestHelper helper) {
+        run(helper, Scenario.REPAIR_TICK_HEALING_ACCEPTS_TRUE_DAMAGE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void darkmatter_resource_repair_productive_pulses_are_operational(GameTestHelper helper) {
+        run(helper, Scenario.REPAIR_PRODUCTIVE_PULSES_ARE_OPERATIONAL);
     }
 
     private static ServerPlayer createPlayer(GameTestHelper helper, int level) {
@@ -140,7 +207,7 @@ public final class DarkmatterResourceGameTests {
             }
         };
         var position = helper.absoluteVec(Vec3.atBottomCenterOf(new BlockPos(1, 2, 1)));
-        player.snapTo(position.x, position.y, position.z, 0.0F, 0.0F);
+        player.moveTo(position.x, position.y, position.z, 0.0F, 0.0F);
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
@@ -169,7 +236,7 @@ public final class DarkmatterResourceGameTests {
     }
 
     private static void pinTarget(LivingEntity target, Vec3 position) {
-        target.snapTo(position);
+        target.moveTo(position);
         target.setDeltaMovement(Vec3.ZERO);
     }
 
@@ -252,7 +319,7 @@ public final class DarkmatterResourceGameTests {
                     helper.assertTrue(!player.isInvulnerableTo(helper.getLevel(), source),
                             "Embedded player remained invulnerable to mob damage; creative="
                                     + player.isCreative() + ", spectator=" + player.isSpectator());
-                    helper.assertTrue(player.hurtServer(helper.getLevel(),
+                    helper.assertTrue(player.hurt(
                                     source, 10.0f),
                             "Mob damage was rejected after login invulnerability expired");
                     assertClose(helper, 15.0f, player.getHealth(),
@@ -272,7 +339,7 @@ public final class DarkmatterResourceGameTests {
                 helper.assertTrue(manager.debugSetPools(player, 7.0f, 3.0f, 6.0f, 0.0f),
                         "Failed to initialize mixed MP pools");
                 helper.runAfterDelay(65, () -> {
-                    player.hurtServer(helper.getLevel(),
+                    player.hurt(
                             helper.getLevel().damageSources().genericKill(), Float.MAX_VALUE);
                     assertClose(helper, 0.0f, manager.getView(player).totalMatter(),
                             "Generic-kill damage did not pass through MP conversion");
@@ -817,7 +884,7 @@ public final class DarkmatterResourceGameTests {
 
                 var health = beetle.getHealth();
                 var source = SkillDamageSource.of(owner, Skills.DARKMATTER_CUT.get());
-                helper.assertTrue(!beetle.hurtServer(helper.getLevel(), source, 8.0f),
+                helper.assertTrue(!beetle.hurt( source, 8.0f),
                         "A dark-matter skill damaged a dark-matter network member");
                 helper.assertTrue(!SkillDamageUtil.applyDirect(
                                 helper.getLevel(), beetle, source, 8.0f),
@@ -834,7 +901,7 @@ public final class DarkmatterResourceGameTests {
             void run(GameTestHelper helper) {
                 var attacker = createPlayer(helper, 3, false);
                 var target = createPlayer(helper, 1, false);
-                target.snapTo(helper.absoluteVec(new Vec3(3.5, 2.0, 1.5)));
+                target.moveTo(helper.absoluteVec(new Vec3(3.5, 2.0, 1.5)));
                 helper.assertTrue(!attacker.canHarmPlayer(target),
                         "GameTest attacker did not emulate disabled server PVP");
                 helper.assertTrue(DarkmatterTargeting.isEnemyTarget(attacker, target),
@@ -1063,16 +1130,6 @@ public final class DarkmatterResourceGameTests {
             }
         };
 
-        private static final Codec<Scenario> CODEC = Codec.STRING.comapFlatMap(
-                name -> {
-                    for (var scenario : values()) {
-                        if (scenario.serializedName.equals(name)) return DataResult.success(scenario);
-                    }
-                    return DataResult.error(() -> "Unknown darkmatter resource scenario: " + name);
-                },
-                scenario -> scenario.serializedName
-        );
-
         private final String serializedName;
         private final int maxTicks;
 
@@ -1083,40 +1140,4 @@ public final class DarkmatterResourceGameTests {
 
         abstract void run(GameTestHelper helper);
     }
-
-    private static final class DarkmatterResourceTestInstance extends GameTestInstance {
-        private static final MapCodec<DarkmatterResourceTestInstance> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        Scenario.CODEC.fieldOf("scenario").forGetter(test -> test.scenario),
-                        TestData.CODEC.forGetter(DarkmatterResourceTestInstance::info)
-                ).apply(instance, DarkmatterResourceTestInstance::new));
-
-        private final Scenario scenario;
-
-        private DarkmatterResourceTestInstance(
-                Scenario scenario,
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            helper.setBlock(1, 1, 1, Blocks.STONE);
-            scenario.run(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Darkmatter resource "
-                    + scenario.name().toLowerCase(Locale.ROOT));
-        }
-    }
 }
-

@@ -64,7 +64,7 @@ public final class DarkmatterCreatureProjectile extends AbstractArrow implements
         this.speed = Math.max(0.4f, finitePositive(speed));
         this.outputAdjustmentBypassed = outputAdjustmentBypassed;
         maximumLifetime = Math.max(20, Math.round(48.0f / this.speed));
-        snapTo(creator.getX(), creator.getEyeY(), creator.getZ(), creator.getYRot(), creator.getXRot());
+        moveTo(creator.getX(), creator.getEyeY(), creator.getZ(), creator.getYRot(), creator.getXRot());
         var direction = target.getBoundingBox().getCenter().subtract(position());
         if (direction.lengthSqr() < 1.0e-8) direction = creator.getLookAngle();
         setDeltaMovement(direction.normalize().scale(this.speed));

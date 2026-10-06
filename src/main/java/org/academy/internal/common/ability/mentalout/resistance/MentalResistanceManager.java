@@ -241,16 +241,16 @@ public final class MentalResistanceManager {
         MentalControlRuntime.releaseBySubject(subject.level().getServer(), subject.getUUID());
 
         sendInactive(subject);
-        subject.sendOverlayMessage(Component.translatable(
+        subject.displayClientMessage(Component.translatable(
                 "message.academy.mentalout.break_free.success",
                 resistanceTicks / 20
-        ));
+        ), true);
         for (var controllerId : controllerIds) {
             var controller = subject.level().getServer().getPlayerList().getPlayer(controllerId);
-            if (controller != null) controller.sendOverlayMessage(Component.translatable(
+            if (controller != null) controller.displayClientMessage(Component.translatable(
                     "message.academy.mentalout.break_free.controller",
                     subject.getDisplayName()
-            ));
+            ), true);
         }
     }
 
@@ -268,8 +268,8 @@ public final class MentalResistanceManager {
             CHALLENGES.remove(id);
             PlayerControlSessionManager.breakFree(player);
             sendInactive(player);
-            player.sendOverlayMessage(Component.translatable(
-                    "message.academy.mentalout.break_free.success", MentalResistanceTracker.BLOCK_TICKS / 20));
+            player.displayClientMessage(Component.translatable(
+                    "message.academy.mentalout.break_free.success", MentalResistanceTracker.BLOCK_TICKS / 20), true);
         } else {
             PlayerControlSessionManager.releaseEntity(id);
         }

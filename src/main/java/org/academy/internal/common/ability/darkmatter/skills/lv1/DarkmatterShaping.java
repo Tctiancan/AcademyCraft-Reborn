@@ -466,8 +466,8 @@ public final class DarkmatterShaping extends Skill {
             if (minecraft.gui.screen() instanceof DarkmatterShapingScreen screen) {
                 screen.acceptServerResult(packet.result());
             } else if (minecraft.player != null) {
-                minecraft.player.sendOverlayMessage(Component.translatable(
-                        packet.result().translationKey()));
+                minecraft.player.displayClientMessage(Component.translatable(
+                        packet.result().translationKey()), true);
             }
         }
     }

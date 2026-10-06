@@ -213,8 +213,7 @@ public final class HighSpeedJetStructureService {
         damage *= system.getPlayerAbilityPowerMultiplier(player.getUUID())
                 * system.getPlayerDamageMultiplier(player.getUUID());
         if (target instanceof LivingEntity living && damage > 0.0f) {
-            var damaged = living.hurtServer(
-                    player.level(),
+            var damaged = living.hurt(
                     SkillDamageSource.ofDirect(
                             player,
                             Skills.HIGH_SPEED_JET.get(),

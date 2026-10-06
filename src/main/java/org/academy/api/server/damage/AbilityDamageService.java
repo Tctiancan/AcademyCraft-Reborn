@@ -79,7 +79,7 @@ public final class AbilityDamageService {
         var health = target.getHealth();
         var absorption = target.getAbsorptionAmount();
         var applied = org.academy.api.common.damage.DamageComposition.withMaximumHealthPart(target, source,
-                request.maximumHealthPart(), () -> target.hurtServer(level, source, request.amount()));
+                request.maximumHealthPart(), () -> target.hurt( source, request.amount()));
         return new Result(applied, Math.max(0, health - target.getHealth()), Math.max(0, absorption - target.getAbsorptionAmount()));
     }
 

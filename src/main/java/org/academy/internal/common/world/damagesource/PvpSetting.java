@@ -116,8 +116,8 @@ public final class PvpSetting {
             startSwitchCooldown(player);
         } else if (result == ChangeResult.COOLDOWN) {
             var remainingSeconds = Math.max(1, (remainingTicks + 19) / 20);
-            player.sendOverlayMessage(Component.translatable(
-                    "message.academy.pvp.switch_cooldown", remainingSeconds));
+            player.displayClientMessage(Component.translatable(
+                    "message.academy.pvp.switch_cooldown", remainingSeconds), true);
         }
         syncState(player);
         return result;
@@ -203,7 +203,7 @@ public final class PvpSetting {
                     && now - previous.gameTime < FEEDBACK_COOLDOWN_TICKS) return;
             FEEDBACK_STATES.put(player, new FeedbackState(reason, now));
         }
-        player.sendOverlayMessage(Component.translatable(reason.feedbackKey));
+        player.displayClientMessage(Component.translatable(reason.feedbackKey), true);
     }
 
     public enum ProtectionReason {

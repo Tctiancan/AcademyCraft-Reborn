@@ -1,4 +1,4 @@
-﻿package org.academy.internal.client.render.vfx;
+package org.academy.internal.client.render.vfx;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ParticleStatus;

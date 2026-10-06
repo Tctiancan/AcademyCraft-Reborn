@@ -84,7 +84,7 @@ public final class ShieldAndMagneticRegressionGameTests {
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
         var position = helper.absoluteVec(new Vec3(x, y, z));
-        player.snapTo(position.x, position.y, position.z, 0, 0);
+        player.moveTo(position.x, position.y, position.z, 0, 0);
         player.setNoGravity(true);
         return player;
     }
@@ -134,7 +134,7 @@ public final class ShieldAndMagneticRegressionGameTests {
                 helper.getLevel());
         beam.configure(attacker, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get(), 2.0f, 0, 1, false, false);
         var start = attacker.getBoundingBox().getCenter();
-        beam.snapTo(start.x, start.y, start.z, -90, 0);
+        beam.moveTo(start.x, start.y, start.z, -90, 0);
         beam.setBeamLength(12);
         // Invoke the firing entry directly so the test is independent of learned skills/charge time.
         var fire = HighSpeedElectronBeam.class.getDeclaredMethod("fire",
@@ -152,7 +152,7 @@ public final class ShieldAndMagneticRegressionGameTests {
         resistance.setBaseValue(2);
         var melt = SkillDamageSource.of(attacker, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get());
         var meltBefore = defender.getHealth();
-        defender.hurtServer(helper.getLevel(), melt, 2);
+        defender.hurt( melt, 2);
         check(helper, Math.abs(defender.getHealth() - (meltBefore - 2)) < 0.01,
                 "Melt damage explicitly bypasses true resistance");
         defender.setHealth(defender.getMaxHealth());
@@ -161,12 +161,12 @@ public final class ShieldAndMagneticRegressionGameTests {
             resistance.setBaseValue(points);
             defender.invulnerableTime = 0;
             var before = defender.getHealth();
-            defender.hurtServer(helper.getLevel(), source, 2);
+            defender.hurt( source, 2);
             check(helper, Math.abs(defender.getHealth() - (before - 2 * (1 - points * 0.1))) < 0.01,
                     "Server damage must apply true resistance exactly once: resistance=" + points + ", before=" + before + ", after=" + defender.getHealth());
         }
         defender.invulnerableTime = 0;
-        defender.hurtServer(helper.getLevel(), source, 1000);
+        defender.hurt( source, 1000);
         check(helper, defender.getHealth() == 0 && defender.isDeadOrDying(),
                 "Lethal damage must leave zero health and complete the death flow");
     }
@@ -175,7 +175,7 @@ public final class ShieldAndMagneticRegressionGameTests {
             throws ReflectiveOperationException {
         for (var pos : BlockPos.betweenClosed(1, 2, 1, 14, 2, 14)) helper.setBlock(pos, Blocks.STONE);
         var feet = helper.absoluteVec(new Vec3(4.5, 6, 4.5));
-        subject.snapTo(feet.x, feet.y, feet.z, 0, 0);
+        subject.moveTo(feet.x, feet.y, feet.z, 0, 0);
         var movement = new org.academy.api.server.ability.electromaster.MagneticLevitation();
         check(helper, movement.supported(subject, 4), "Stone must support levitation without magnetism");
         var initialZ = subject.getZ();

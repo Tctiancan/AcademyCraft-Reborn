@@ -192,7 +192,7 @@ public final class JetStrike extends Skill {
                     target -> target.isAlive()
                             && MeltdownerTargeting.canAffectNegatively(player, target)
             );
-            for (var target : targets) target.hurtServer(level, source, damage);
+            for (var target : targets) target.hurt( source, damage);
             if (delta.lengthSqr() > 1.0e-8) {
                 AbilitySystemServer.registerContext(new TrailContext(player, milestone, damage));
             }
@@ -288,7 +288,7 @@ public final class JetStrike extends Skill {
                                 && MeltdownerTargeting.canAffectNegatively(player, target)
                                 && !hitTargets.contains(target.getUUID()))) {
                     hitTargets.add(target.getUUID());
-                    target.hurtServer(initialLevel, source, damage * 0.4f);
+                    target.hurt( source, damage * 0.4f);
                 }
             }
         }

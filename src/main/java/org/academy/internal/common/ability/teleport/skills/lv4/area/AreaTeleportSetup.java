@@ -30,10 +30,10 @@ public final class AreaTeleportSetup {
             if (packet.action == MarkPacket.ACTION_SWAP) {
                 if (milestone >= 3 && policy.allowAreaTeleportSwap()) {
                     var enabled = AreaTeleportState.toggleSwap(player.getUUID());
-                    player.sendOverlayMessage(Component.translatable(
+                    player.displayClientMessage(Component.translatable(
                             enabled
                                     ? "message.academy.area_teleport.swap_enabled"
-                                    : "message.academy.area_teleport.swap_disabled"));
+                                    : "message.academy.area_teleport.swap_disabled"), true);
                     AreaTeleportSelect.Server.sync(player);
                 }
                 return;

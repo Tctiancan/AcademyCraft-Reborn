@@ -1,5 +1,6 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
+import net.minecraft.gametest.framework.*;
 import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
 
 
@@ -9,10 +10,6 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.chat.Component;
@@ -54,7 +51,6 @@ import java.util.UUID;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class ChunkSwapGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("chunk_swap_function");
     private static final int ROUND_TRIP_CHUNK_X = 400;
     private static final int SECTION_BYTES_CHUNK_X = 404;
     private static final int CROSS_DIMENSION_SOURCE_CHUNK_X = 408;
@@ -65,29 +61,28 @@ public final class ChunkSwapGameTests {
     }
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> SwapTest.CODEC);
-    }
-
-    @SubscribeEvent
     private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(AcademyCraft.academy("chunk_swap"),
-                new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("chunk_swap_restores_world"),
-                new SwapTest(data(environment), SwapScenario.ROUND_TRIP));
-        event.registerTest(AcademyCraft.academy("chunk_swap_section_byte_round_trip"),
-                new SwapTest(data(environment), SwapScenario.SECTION_BYTES));
-        event.registerTest(AcademyCraft.academy("chunk_swap_cross_dimension_relights_empty_section"),
-                new SwapTest(data(environment), SwapScenario.CROSS_DIMENSION_LIGHT));
-        event.registerTest(AcademyCraft.academy("chunk_leap_end_player_preload"),
-                new SwapTest(new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
-                        12000, 0, true, Rotation.NONE, false, 1, 1, false, 16), SwapScenario.END_PLAYER_PRELOAD));
+        event.register(ChunkSwapGameTests.class);
     }
 
-    private static TestData<Holder<TestEnvironmentDefinition<?>>> data(
-            Holder<TestEnvironmentDefinition<?>> environment) {
-        return new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
-                400, 0, true, Rotation.NONE, false, 1, 1, false, 16);
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void chunk_swap_restores_world(GameTestHelper helper) {
+        SwapTest.run(helper, SwapScenario.ROUND_TRIP);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void chunk_swap_section_byte_round_trip(GameTestHelper helper) {
+        SwapTest.run(helper, SwapScenario.SECTION_BYTES);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void chunk_swap_cross_dimension_relights_empty_section(GameTestHelper helper) {
+        SwapTest.run(helper, SwapScenario.CROSS_DIMENSION_LIGHT);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 12000)
+    public static void chunk_leap_end_player_preload(GameTestHelper helper) {
+        SwapTest.run(helper, SwapScenario.END_PLAYER_PRELOAD);
     }
 
     private enum SwapScenario {
@@ -110,21 +105,11 @@ public final class ChunkSwapGameTests {
         END_PLAYER_PRELOAD
     }
 
-    private static final class SwapTest extends GameTestInstance {
-        private static final MapCodec<SwapTest> CODEC = TestData.CODEC.xmap(SwapTest::new, SwapTest::info);
-        private final SwapScenario scenario;
-
-        private SwapTest(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            this(info, SwapScenario.ROUND_TRIP);
+    private static final class SwapTest {
+        private SwapTest() {
         }
 
-        private SwapTest(TestData<Holder<TestEnvironmentDefinition<?>>> info, SwapScenario scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
+        private static void run(GameTestHelper helper, SwapScenario scenario) {
             var level = helper.getLevel();
             if (scenario == SwapScenario.END_PLAYER_PRELOAD) {
                 endPlayerPreload(helper, level);
@@ -166,7 +151,7 @@ public final class ChunkSwapGameTests {
             });
         }
 
-        private void endPlayerPreload(GameTestHelper helper, ServerLevel overworld) {
+        private static void endPlayerPreload(GameTestHelper helper, ServerLevel overworld) {
             var server = overworld.getServer();
             var end = server.getLevel(Level.END);
             if (end == null) {
@@ -221,7 +206,7 @@ public final class ChunkSwapGameTests {
                     }).thenSucceed();
         }
 
-        private void crossDimensionLight(GameTestHelper helper, ServerLevel overworld) {
+        private static void crossDimensionLight(GameTestHelper helper, ServerLevel overworld) {
             var nether = overworld.getServer().getLevel(Level.NETHER);
             if (nether == null) {
                 fail(helper, "the Nether must exist for a cross-dimension swap");
@@ -310,7 +295,7 @@ public final class ChunkSwapGameTests {
         }
 
         /** Plants a distinct block plus a filled chest in each chunk and verifies a true round trip. */
-        private void roundTrip(GameTestHelper helper, ServerLevel level, LevelChunk chunkA, LevelChunk chunkB,
+        private static void roundTrip(GameTestHelper helper, ServerLevel level, LevelChunk chunkA, LevelChunk chunkB,
                                BlockPos posA, BlockPos posB, int chunkAX, int chunkBX) {
             level.setBlock(posA, Blocks.DIAMOND_BLOCK.defaultBlockState(), 3);
             level.setBlock(posB, Blocks.GOLD_BLOCK.defaultBlockState(), 3);
@@ -369,7 +354,7 @@ public final class ChunkSwapGameTests {
          * <p>The same section is written and read in place, so the block must be identical afterwards;
          * if the palette or storage round-trip were lossy, the block would change or vanish.
          */
-        private void sectionByteRoundTrip(GameTestHelper helper, ServerLevel level, LevelChunk chunk,
+        private static void sectionByteRoundTrip(GameTestHelper helper, ServerLevel level, LevelChunk chunk,
                                           BlockPos pos) {
             level.setBlock(pos, Blocks.EMERALD_BLOCK.defaultBlockState(), 3);
             var before = level.getBlockState(pos);
@@ -399,16 +384,6 @@ public final class ChunkSwapGameTests {
 
         private static void fail(GameTestHelper helper, String message) {
             helper.assertTrue(false, message);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Chunk leap swap: " + scenario.name().toLowerCase(Locale.ROOT));
         }
     }
 }

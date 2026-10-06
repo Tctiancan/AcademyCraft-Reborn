@@ -237,7 +237,7 @@ public final class ServerProgramTargetResolver implements ProgramTargetResolver 
 
     private ProgramWorldPosition worldPosition(Vec3 position) {
         return new ProgramWorldPosition(
-                level().dimension().location(), position.x, position.y, position.z));
+                level().dimension().location(), position.x, position.y, position.z);
     }
 
     private double requireRange(double range) {

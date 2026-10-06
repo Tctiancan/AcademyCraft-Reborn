@@ -417,7 +417,7 @@ public final class LaminarCutter extends Skill {
             )) {
                 var hurt = tier == AeromanipChargeTier.FULL
                         ? SkillDamageUtil.applyDirect(level, target, source, damage)
-                        : target.hurtServer(level, source, damage);
+                        : target.hurt( source, damage);
                 if (hurt) {
                     if (tier != AeromanipChargeTier.FULL) {
                         Skills.LAMINAR_CUTTER.get().onHurt(player, target, damage);

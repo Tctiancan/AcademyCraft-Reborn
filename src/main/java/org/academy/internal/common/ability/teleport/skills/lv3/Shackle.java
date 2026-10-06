@@ -171,8 +171,7 @@ public class Shackle extends Skill {
                     EntityMotionGuard.imprison(target, sourceId, duration, 2.0, displaced -> {
                         if (displaced.isAlive() && player.isAlive()
                                 && displaced.level() == player.level()) {
-                            displaced.hurtServer(
-                                    player.level(),
+                            displaced.hurt(
                                     SkillDamageSource.of(player, Skills.SHACKLE.get()),
                                     1.2f
                             );
@@ -181,8 +180,7 @@ public class Shackle extends Skill {
                 } else {
                     EntityMotionGuard.imprison(target, sourceId, duration);
                 }
-                target.hurtServer(
-                        player.level(),
+                target.hurt(
                         SkillDamageSource.of(player, Skills.SHACKLE.get()),
                         3.0f
                 );

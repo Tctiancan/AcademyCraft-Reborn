@@ -1,4 +1,4 @@
-﻿package org.academy.internal.common.ability.program;
+package org.academy.internal.common.ability.program;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.Entity;

@@ -5,10 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -39,8 +36,6 @@ import java.util.Set;
 /** End-to-end validation for scheduled-tick pause and resume rebasing. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalScheduledTickGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE =
-            AcademyCraft.academy("temporal_scheduled_tick_function");
     private static final long ORIGINAL_DELAY = 40L;
     private static final long SUB_TICK_ORDER = -23L;
 
@@ -48,37 +43,13 @@ public final class TemporalScheduledTickGameTests {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> TemporalScheduledTickTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(TemporalScheduledTickGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("time/scheduled_tick_pause_resume"),
-                new TestEnvironmentDefinition.AllOf(List.of())
-        );
-        var data = new TestData<>(
-                environment,
-                ResourceLocation.withDefaultNamespace("empty"),
-                30,
-                0,
-                true,
-                Rotation.NONE,
-                false,
-                1,
-                1,
-                false,
-                16
-        );
-        event.registerTest(
-                AcademyCraft.academy("time_scheduled_tick_pause_resume"),
-                new TemporalScheduledTickTestInstance(data)
-        );
+    @GameTest(template = "empty", timeoutTicks = 30)
+    public static void time_scheduled_tick_pause_resume(GameTestHelper helper) {
+        runPauseResumeTest(helper);
     }
 
     private static void runPauseResumeTest(GameTestHelper helper) {
@@ -250,35 +221,5 @@ public final class TemporalScheduledTickGameTests {
                 SUB_TICK_ORDER,
                 "Scheduled tick sub-order changed"
         );
-    }
-
-    private static final class TemporalScheduledTickTestInstance
-            extends GameTestInstance {
-        private static final MapCodec<TemporalScheduledTickTestInstance> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        TestData.CODEC.forGetter(TemporalScheduledTickTestInstance::info)
-                ).apply(instance, TemporalScheduledTickTestInstance::new));
-
-        private TemporalScheduledTickTestInstance(
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runPauseResumeTest(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporal scheduled tick pause resume"
-                    .toLowerCase(Locale.ROOT));
-        }
     }
 }

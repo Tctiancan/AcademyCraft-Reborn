@@ -299,7 +299,7 @@ public final class ThreateningTeleport extends Skill {
                     PENDING_KILL_DROPS.put(lockedTarget.getUUID(), pendingDrop);
                 }
                 try {
-                    lockedTarget.hurtServer(player.level(), SkillDamageSource.of(player, skill), damage);
+                    lockedTarget.hurt( SkillDamageSource.of(player, skill), damage);
                 } finally {
                     if (pendingDrop != null
                             && PENDING_KILL_DROPS.remove(lockedTarget.getUUID(), pendingDrop)

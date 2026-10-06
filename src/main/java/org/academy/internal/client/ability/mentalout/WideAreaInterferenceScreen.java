@@ -1171,8 +1171,8 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     private void toggleViewed(MentaloutRosterClientState.Entry entry) {
         if (!viewedTargets.remove(entry.targetUuid())) {
             if (viewedTargets.size() >= WideAreaInterferenceClientState.MAX_TARGET_VIEWS) {
-                if (minecraft.player != null) minecraft.player.sendOverlayMessage(Component.translatable(
-                        "message.academy.wide_area_interference.view_limit"));
+                if (minecraft.player != null) minecraft.player.displayClientMessage(Component.translatable(
+                        "message.academy.wide_area_interference.view_limit"), true);
                 return;
             }
             viewedTargets.add(entry.targetUuid());

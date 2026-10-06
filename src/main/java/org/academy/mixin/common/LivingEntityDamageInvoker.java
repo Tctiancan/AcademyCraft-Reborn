@@ -1,6 +1,5 @@
 package org.academy.mixin.common;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
@@ -14,7 +13,7 @@ import java.util.Stack;
 @Mixin(LivingEntity.class)
 public interface LivingEntityDamageInvoker {
     @Invoker("actuallyHurt")
-    void academy$actuallyHurt(ServerLevel level, DamageSource source, float amount);
+    void academy$actuallyHurt(DamageSource source, float amount);
 
     @Invoker("checkTotemDeathProtection")
     boolean academy$checkTotemDeathProtection(DamageSource source);

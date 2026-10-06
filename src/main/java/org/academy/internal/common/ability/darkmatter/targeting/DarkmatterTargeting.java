@@ -85,7 +85,7 @@ public final class DarkmatterTargeting {
             DamageSource source,
             float amount
     ) {
-        if (!isDarkmatterDamage(source)) return target.hurtServer(level, source, amount);
+        if (!isDarkmatterDamage(source)) return target.hurt( source, amount);
         if (isNetworkMember(target)) return false;
         if (!(source instanceof SkillDamageSource skillSource)
                 || !(source.getEntity() instanceof ServerPlayer owner)
@@ -94,13 +94,13 @@ public final class DarkmatterTargeting {
             var previous = PVP_BYPASS.get();
             PVP_BYPASS.set(new PvpBypass(player.getUUID(), owner.getUUID()));
             try {
-                return target.hurtServer(level, skillSource, amount);
+                return target.hurt( skillSource, amount);
             } finally {
                 if (previous == null) PVP_BYPASS.remove();
                 else PVP_BYPASS.set(previous);
             }
         }
-        return target.hurtServer(level, source, amount);
+        return target.hurt( source, amount);
     }
 
     public static boolean shouldBypassPvpCheck(ServerPlayer victim, Player attacker) {

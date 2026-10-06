@@ -5,10 +5,7 @@ import com.mojang.serialization.MapCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -54,7 +51,6 @@ import java.util.UUID;
 /** Exercises loaded damage tags and both the player and mob damage pipelines. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DamagePenetrationGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("damage_penetration_function");
     private static final EquipmentSlot[] ARMOR = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
@@ -62,16 +58,13 @@ public final class DamagePenetrationGameTests {
     private DamagePenetrationGameTests() {}
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(DamagePenetrationGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("damage_penetration"), new Instance(new TestData<>(
-                environment, ResourceLocation.withDefaultNamespace("empty"), 100, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void damage_penetration(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static ServerPlayer player(GameTestHelper helper, String name) {
@@ -128,7 +121,7 @@ public final class DamagePenetrationGameTests {
             var label = target.getType() + " " + hit.type;
             reset(target, true, 50);
             var source = SkillDamageSource.of(attacker, hit.skill, hit.type);
-            helper.assertTrue(target.hurtServer(helper.getLevel(), source, 20), label + " must hit");
+            helper.assertTrue(target.hurt( source, 20), label + " must hit");
             closeTo(helper, target.getHealth(), melt ? 1000 : 980, label + " armor/enchantment bypass");
             closeTo(helper, target.getAbsorptionAmount(), melt ? 30 : 50, label + " absorption policy");
             if (melt) {
@@ -158,14 +151,14 @@ public final class DamagePenetrationGameTests {
 
         reset(target, true, 50);
         var electric = SkillDamageSource.of(attacker, Skills.ELECTRICAL_CONTACT.get());
-        target.hurtServer(helper.getLevel(), electric, 20);
+        target.hurt( electric, 20);
         closeTo(helper, target.getHealth(), 1000, "Electric control retains absorption");
         helper.assertTrue(target.getAbsorptionAmount() > 30 && target.getAbsorptionAmount() < 50,
                 "Electric control must still be reduced by Protection and consume absorption");
 
         reset(target, false, 0);
         var darkmatter = SkillDamageSource.of(attacker, Skills.DARKMATTER_CUT.get());
-        target.hurtServer(helper.getLevel(), darkmatter, 20);
+        target.hurt( darkmatter, 20);
         helper.assertTrue(target.getHealth() > 980 && target.getHealth() < 1000,
                 "Ordinary darkmatter control must retain armor reduction");
     }
@@ -190,7 +183,7 @@ public final class DamagePenetrationGameTests {
             }
 
             reset(target, true, 50);
-            target.hurtServer(helper.getLevel(), source, 20);
+            target.hurt( source, 20);
             closeTo(helper, target.getHealth(), 1000, label + " retains absorption");
             helper.assertTrue(target.getAbsorptionAmount() > 30 && target.getAbsorptionAmount() < 50,
                     label + " retains Protection enchantment");
@@ -200,7 +193,7 @@ public final class DamagePenetrationGameTests {
             if (target instanceof ServerPlayer defender) {
                 defender.getAttribute(PlayerAttributes.TRUE_RESISTANCE).setBaseValue(2);
             }
-            target.hurtServer(helper.getLevel(), source, 20);
+            target.hurt( source, 20);
             closeTo(helper, target.getHealth(), target instanceof ServerPlayer ? 987.2f : 984,
                     label + " retains potion and true resistance");
         }
@@ -214,7 +207,7 @@ public final class DamagePenetrationGameTests {
             var arc = SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get());
             for (var index = 0; index < 5; index++) {
                 target.invulnerableTime = 0;
-                target.hurtServer(helper.getLevel(), arc, 1);
+                target.hurt( arc, 1);
             }
             closeTo(helper, target.getHealth(), 985, "Five one-damage hits add one percent discharge damage");
             helper.assertTrue(CategoryDamageRuntime.electricalCharge(target) == 0,
@@ -235,7 +228,7 @@ public final class DamagePenetrationGameTests {
             var heavy = arc.withElectricalChargePoints(3);
             for (var index = 0; index < 2; index++) {
                 target.invulnerableTime = 0;
-                target.hurtServer(helper.getLevel(), heavy, 1);
+                target.hurt( heavy, 1);
             }
             closeTo(helper, target.getHealth(), 973, "Six more points trigger one percent discharge damage");
             helper.assertTrue(CategoryDamageRuntime.electricalCharge(target) == 1,
@@ -399,7 +392,7 @@ public final class DamagePenetrationGameTests {
 // forwarding and lingering displacement marks can both reach the same
             // corpse again before the death animation removes it from the level.
             for (var index = 0; index < 3; index++) {
-                helper.assertTrue(!target.hurtServer(level, source, 20),
+                helper.assertTrue(!target.hurt( source, 20),
                         "Forwarded damage to a dead parent must be rejected");
                 helper.assertTrue(!SkillDamageUtil.applyDirect(level, target, source, 20),
                         "A lingering direct-damage mark must not hit a corpse");
@@ -416,7 +409,7 @@ public final class DamagePenetrationGameTests {
             for (var amount : new float[]{0, -1, Float.NaN, Float.POSITIVE_INFINITY}) {
                 helper.assertTrue(!SkillDamageUtil.applyDirect(level, target, source, amount),
                         "Invalid direct damage must be rejected: " + amount);
-                helper.assertTrue(!target.hurtServer(level, source, amount),
+                helper.assertTrue(!target.hurt( source, amount),
                         "Invalid forwarded damage must be rejected: " + amount);
             }
             helper.assertTrue(target.damageCalls == 1 && target.getHealth() == 20,
@@ -437,9 +430,9 @@ public final class DamagePenetrationGameTests {
         }
 
         @Override
-        protected void actuallyHurt(ServerLevel level, DamageSource source, float amount) {
+        protected void actuallyHurt(DamageSource source, float amount) {
             damageCalls++;
-            super.actuallyHurt(level, source, amount);
+            super.actuallyHurt(source, amount);
         }
     }
 
@@ -465,28 +458,4 @@ public final class DamagePenetrationGameTests {
     }
 
     private record Hit(ResourceKey<DamageType> type, Skill skill) {}
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Category penetration and direct air damage");
-        }
-    }
 }
-

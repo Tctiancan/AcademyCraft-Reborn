@@ -46,7 +46,7 @@ public final class SkillDamageUtil {
         if (DamageTypes.usesDirectActuallyHurt(type)) {
             return applyDirectDamage(level, attacker, target, skill, source, amount);
         }
-        return target.hurtServer(level, source, amount);
+        return target.hurt( source, amount);
     }
 
     public static boolean apply(ServerPlayer attacker, LivingEntity target, Skill skill,
@@ -63,7 +63,7 @@ public final class SkillDamageUtil {
                         ? applyVerifiedTrueHealth(target, source, amount)
                         : DamageTypes.usesDirectActuallyHurt(source)
                         ? applyDirectDamage(level, attacker, target, skill, source, amount)
-                        : target.hurtServer(level, source, amount));
+                        : target.hurt( source, amount));
     }
 
     public static boolean applyDirect(ServerLevel level, LivingEntity target,

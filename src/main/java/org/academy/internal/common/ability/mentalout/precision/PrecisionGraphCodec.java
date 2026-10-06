@@ -1,4 +1,4 @@
-﻿package org.academy.internal.common.ability.mentalout.precision;
+package org.academy.internal.common.ability.mentalout.precision;
 
 import java.io.*;
 import java.util.ArrayList;

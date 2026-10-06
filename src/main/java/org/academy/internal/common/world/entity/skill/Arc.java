@@ -35,7 +35,7 @@ public class Arc extends Entity {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource damageSource, float amount) {
+    public boolean hurt(DamageSource damageSource, float amount) {
         return false;
     }
 

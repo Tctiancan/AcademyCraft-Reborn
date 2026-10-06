@@ -489,9 +489,9 @@ public final class LocationTeleport extends Skill {
                     for (var mark : packet.marks) {
                         ByteBufCodecs.STRING_UTF8.encode(buf, mark.name());
                         ByteBufCodecs.STRING_UTF8.encode(buf, mark.dimension());
-                        ByteBufCodecs.INT.encode(buf, mark.x);
+                        ByteBufCodecs.INT.encode(buf, mark.x());
                         ByteBufCodecs.INT.encode(buf, mark.y());
-                        ByteBufCodecs.INT.encode(buf, mark.z));
+                        ByteBufCodecs.INT.encode(buf, mark.z());
                     }
                     ByteBufCodecs.INT.encode(buf, packet.quickMarkIndex);
                     ByteBufCodecs.INT.encode(buf, packet.defensiveMarkIndex);

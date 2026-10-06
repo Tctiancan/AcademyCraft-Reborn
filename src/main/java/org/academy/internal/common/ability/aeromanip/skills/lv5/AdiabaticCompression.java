@@ -328,8 +328,7 @@ public final class AdiabaticCompression extends Skill {
                 var damage = damageForStacks(stacks, baseDamage, milestone)
                         * system.getPlayerAbilityPowerMultiplier(player.getUUID())
                         * system.getPlayerDamageMultiplier(player.getUUID());
-                target.hurtServer(
-                        level,
+                target.hurt(
                         SkillDamageSource.of(
                                 player, skill, DamageTypes.ADIABATIC_COMPRESSION),
                         damage);

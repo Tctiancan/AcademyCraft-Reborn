@@ -164,7 +164,7 @@ public final class VectorReflectionRuntime {
         } else if (anchor.lastSafePosition != null) {
             EntityMotionGuard.runInternalCorrection(
                     player,
-                    () -> player.snapTo(anchor.lastSafePosition)
+                    () -> player.moveTo(anchor.lastSafePosition)
             );
             anchor.observerRebuildRequested = true;
         }

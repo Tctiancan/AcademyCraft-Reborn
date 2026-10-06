@@ -108,8 +108,7 @@ public final class ServerElectromasterProgramRuntime implements ElectromasterPro
                         system.getPlayerAbilityPowerMultiplier(player.getUUID()),
                         system.getPlayerDamageMultiplier(player.getUUID()))
                         * arcDamageScale(power);
-                if (damage > 0.0f && !target.hurtServer(
-                        targets.level(),
+                if (damage > 0.0f && !target.hurt(
                         SkillDamageSource.of(player, Skills.ARC_GENERATE.get()),
                         damage)) {
                     throw new IllegalStateException("Arc discharge target rejected damage");
@@ -465,7 +464,7 @@ public final class ServerElectromasterProgramRuntime implements ElectromasterPro
                         && value.isAlive()
                         && !CtaFriendlyFireWhitelist.shouldProtect(player, value)
         )) {
-            living.hurtServer(targets.level(), source, damage);
+            living.hurt( source, damage);
         }
     }
 

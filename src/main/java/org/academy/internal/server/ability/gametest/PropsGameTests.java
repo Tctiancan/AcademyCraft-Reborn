@@ -335,13 +335,13 @@ public final class PropsGameTests {
         var target = helper.spawn(EntityType.COW, new BlockPos(2, 2, 2));
         target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100.0);
         target.setHealth(100.0f);
-        target.hurtServer(helper.getLevel(), player.damageSources().playerAttack(player), 18.0f);
+        target.hurt( player.damageSources().playerAttack(player), 18.0f);
         close(helper, data.total(), 3.6, "Damage above ten is not capped");
         var before = data.total();
         target.invulnerableTime = 0;
         var source = new DamageSource(helper.getLevel().registryAccess()
                 .lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.ELECTRO_DAMAGE), player);
-        target.hurtServer(helper.getLevel(), source, 4.0f);
+        target.hurt( source, 4.0f);
         close(helper, data.total() - before, PropsMath.awardedAmount(before, 0.8, false), "Ability damage rewards muscle");
     }
 

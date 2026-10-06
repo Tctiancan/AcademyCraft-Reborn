@@ -4,8 +4,8 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.Warden;
-import net.minecraft.world.entity.monster.WardenAi;
+import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.entity.monster.warden.WardenAi;
 import org.academy.api.common.entitycontrol.*;
 
 import java.util.UUID;

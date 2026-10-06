@@ -10,10 +10,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -62,7 +59,6 @@ import java.util.stream.Collectors;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MentaloutGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE = AcademyCraft.academy("mentalout_function");
     private static final ResourceLocation SOURCE = AcademyCraft.academy("gametest_mental_control");
     private static final ResourceLocation PERCEPTION_SOURCE = AcademyCraft.academy("gametest_mental_perception");
     private static final ResourceLocation IMPRESSION_GUARD_SOURCE = AcademyCraft.academy("impression_guard_target");
@@ -72,42 +68,228 @@ public final class MentaloutGameTests {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> MentaloutTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(MentaloutGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : Scenario.values()) {
-            // Each scenario owns its environment batch. The vanilla runner executes tests in the
-            // same environment concurrently, which makes server-player and entity-ticking tests
-            // interfere with one another even when their structures are spatially separated.
-            var environment = event.registerEnvironment(
-                    AcademyCraft.academy("mentalout/" + scenario.serializedName),
-                    new TestEnvironmentDefinition.AllOf(List.of())
-            );
-            var data = new TestData<>(
-                    environment,
-                    ResourceLocation.withDefaultNamespace("empty"),
-                    scenario.maxTicks,
-                    0,
-                    true,
-                    Rotation.NONE,
-                    false,
-                    1,
-                    1,
-                    false,
-                    32
-            );
-            event.registerTest(
-                    AcademyCraft.academy("mentalout_" + scenario.serializedName),
-                    new MentaloutTestInstance(scenario, data)
-            );
-        }
+    private static void run(GameTestHelper helper, Scenario scenario) {
+        prepareArena(helper);
+        scenario.run(helper);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 20)
+    public static void mentalout_direct_idle_view(GameTestHelper helper) {
+        run(helper, Scenario.DIRECT_IDLE_VIEW);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 20)
+    public static void mentalout_work_tick_clock(GameTestHelper helper) {
+        run(helper, Scenario.WORK_TICK_CLOCK);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_return_fairness(GameTestHelper helper) {
+        run(helper, Scenario.WORK_RETURN_FAIRNESS);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 160)
+    public static void mentalout_work_split_restore(GameTestHelper helper) {
+        run(helper, Scenario.WORK_SPLIT_RESTORE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    public static void mentalout_work_farm_pause(GameTestHelper helper) {
+        run(helper, Scenario.WORK_FARM_PAUSE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_disk_save(GameTestHelper helper) {
+        run(helper, Scenario.WORK_DISK_SAVE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void mentalout_work_navigation_budget(GameTestHelper helper) {
+        run(helper, Scenario.WORK_NAVIGATION_BUDGET);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_offline_cargo(GameTestHelper helper) {
+        run(helper, Scenario.WORK_OFFLINE_CARGO);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_logistics_budget(GameTestHelper helper) {
+        run(helper, Scenario.WORK_LOGISTICS_BUDGET);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 72500)
+    public static void mentalout_work_endurance(GameTestHelper helper) {
+        run(helper, Scenario.WORK_ENDURANCE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_planting(GameTestHelper helper) {
+        run(helper, Scenario.WORK_PLANTING);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_mining(GameTestHelper helper) {
+        run(helper, Scenario.WORK_MINING);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 1600)
+    public static void mentalout_work_excavation(GameTestHelper helper) {
+        run(helper, Scenario.WORK_EXCAVATION);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 1100)
+    public static void mentalout_work_mass_excavation(GameTestHelper helper) {
+        run(helper, Scenario.WORK_MASS_EXCAVATION);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 250)
+    public static void mentalout_work_reach_policy(GameTestHelper helper) {
+        run(helper, Scenario.WORK_REACH_POLICY);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 160)
+    public static void mentalout_work_blocked_target(GameTestHelper helper) {
+        run(helper, Scenario.WORK_BLOCKED_TARGET);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_default_equipment(GameTestHelper helper) {
+        run(helper, Scenario.WORK_DEFAULT_EQUIPMENT);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void mentalout_work_shearing(GameTestHelper helper) {
+        run(helper, Scenario.WORK_SHEARING);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 180)
+    public static void mentalout_persistent_work(GameTestHelper helper) {
+        run(helper, Scenario.PERSISTENT_WORK);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 70)
+    public static void mentalout_mob_force_target(GameTestHelper helper) {
+        run(helper, Scenario.MOB_FORCE_TARGET);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void mentalout_player_freeze_and_relation(GameTestHelper helper) {
+        run(helper, Scenario.PLAYER_FREEZE_AND_RELATION);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 45)
+    public static void mentalout_impression_riding_flight(GameTestHelper helper) {
+        run(helper, Scenario.IMPRESSION_RIDING_FLIGHT);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 45)
+    public static void mentalout_impression_riding_player(GameTestHelper helper) {
+        run(helper, Scenario.IMPRESSION_RIDING_PLAYER);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 55)
+    public static void mentalout_player_path_server_fallback(GameTestHelper helper) {
+        run(helper, Scenario.PLAYER_PATH_SERVER_FALLBACK);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 220)
+    public static void mentalout_mob_permanent_target_lifecycle(GameTestHelper helper) {
+        run(helper, Scenario.MOB_PERMANENT_TARGET_LIFECYCLE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 30)
+    public static void mentalout_sight_destination_entity_and_block(GameTestHelper helper) {
+        run(helper, Scenario.SIGHT_DESTINATION_ENTITY_AND_BLOCK);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 160)
+    public static void mentalout_path_position_completes_in_radius(GameTestHelper helper) {
+        run(helper, Scenario.PATH_POSITION_COMPLETES_IN_RADIUS);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 180)
+    public static void mentalout_path_control_rejects_vanilla_target_and_route(GameTestHelper helper) {
+        run(helper, Scenario.PATH_CONTROL_REJECTS_VANILLA_TARGET_AND_ROUTE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 180)
+    public static void mentalout_cube_mob_path_and_cube_damage(GameTestHelper helper) {
+        run(helper, Scenario.CUBE_MOB_PATH_AND_CUBE_DAMAGE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 80)
+    public static void mentalout_path_unreachable_reports_failure(GameTestHelper helper) {
+        run(helper, Scenario.PATH_UNREACHABLE_REPORTS_FAILURE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 80)
+    public static void mentalout_guard_reactive_target_and_return(GameTestHelper helper) {
+        run(helper, Scenario.GUARD_REACTIVE_TARGET_AND_RETURN);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 50)
+    public static void mentalout_mob_freeze_recovery(GameTestHelper helper) {
+        run(helper, Scenario.MOB_FREEZE_RECOVERY);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void mentalout_perception_multi_source_override(GameTestHelper helper) {
+        run(helper, Scenario.PERCEPTION_MULTI_SOURCE_OVERRIDE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void mentalout_relation_force_target_override(GameTestHelper helper) {
+        run(helper, Scenario.RELATION_FORCE_TARGET_OVERRIDE);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void mentalout_impression_guardian_hostility(GameTestHelper helper) {
+        run(helper, Scenario.IMPRESSION_GUARDIAN_HOSTILITY);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void mentalout_impression_strict_hostility_chain(GameTestHelper helper) {
+        run(helper, Scenario.IMPRESSION_STRICT_HOSTILITY_CHAIN);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 50)
+    public static void mentalout_impression_internal_anger_whitelist(GameTestHelper helper) {
+        run(helper, Scenario.IMPRESSION_INTERNAL_ANGER_WHITELIST);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 220)
+    public static void mentalout_direct_flying_mobs_path(GameTestHelper helper) {
+        run(helper, Scenario.DIRECT_FLYING_MOBS_PATH);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 180)
+    public static void mentalout_wither_flight_path(GameTestHelper helper) {
+        run(helper, Scenario.WITHER_FLIGHT_PATH);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 90)
+    public static void mentalout_warden_force_target(GameTestHelper helper) {
+        run(helper, Scenario.WARDEN_FORCE_TARGET);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 220)
+    public static void mentalout_warden_path_relation_and_dig_guard(GameTestHelper helper) {
+        run(helper, Scenario.WARDEN_PATH_RELATION_AND_DIG_GUARD);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 50)
+    public static void mentalout_wither_three_head_target(GameTestHelper helper) {
+        run(helper, Scenario.WITHER_THREE_HEAD_TARGET);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void mentalout_dragon_phase_control(GameTestHelper helper) {
+        run(helper, Scenario.DRAGON_PHASE_CONTROL);
     }
 
     private static ControlHandle forceTarget(
@@ -214,7 +396,7 @@ public final class MentaloutGameTests {
         var position = helper.absoluteVec(Vec3.atBottomCenterOf(
                 new BlockPos(1, 2, 1)
         ));
-        player.snapTo(position.x, position.y, position.z, 0.0F, 0.0F);
+        player.moveTo(position.x, position.y, position.z, 0.0F, 0.0F);
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
@@ -808,7 +990,7 @@ public final class MentaloutGameTests {
                 var subjectPosition = helper.absoluteVec(Vec3.atBottomCenterOf(
                         new BlockPos(4, 2, 1)
                 ));
-                subject.snapTo(subjectPosition.x, subjectPosition.y, subjectPosition.z, 0.0f, 0.0f);
+                subject.moveTo(subjectPosition.x, subjectPosition.y, subjectPosition.z, 0.0f, 0.0f);
                 var freeze = freeze(controller, subject, 8L);
                 var relation = impression(controller, subject);
 
@@ -885,7 +1067,7 @@ public final class MentaloutGameTests {
                 var subjectPosition = helper.absoluteVec(Vec3.atBottomCenterOf(
                         new BlockPos(4, 2, 1)
                 ));
-                subject.snapTo(
+                subject.moveTo(
                         subjectPosition.x,
                         subjectPosition.y,
                         subjectPosition.z,
@@ -942,7 +1124,7 @@ public final class MentaloutGameTests {
                 var subjectPosition = helper.absoluteVec(Vec3.atBottomCenterOf(
                         new BlockPos(3, 2, 1)
                 ));
-                subject.snapTo(subjectPosition.x, subjectPosition.y, subjectPosition.z, 0.0f, 0.0f);
+                subject.moveTo(subjectPosition.x, subjectPosition.y, subjectPosition.z, 0.0f, 0.0f);
                 var destination = helper.absoluteVec(Vec3.atBottomCenterOf(
                         new BlockPos(8, 2, 1)
                 ));
@@ -1004,7 +1186,7 @@ public final class MentaloutGameTests {
                 var controller = createController(helper);
                 var target = helper.spawn(EntityType.ZOMBIE, 1, 2, 3);
                 target.setPersistenceRequired();
-                controller.snapTo(controller.getX(), controller.getY(), controller.getZ(), 0.0f, 0.0f);
+                controller.moveTo(controller.getX(), controller.getY(), controller.getZ(), 0.0f, 0.0f);
 
                 helper.runAtTickTime(2L, () -> {
                     var entityHit = MentaloutTargeting.findSightDestination(
@@ -1018,7 +1200,7 @@ public final class MentaloutGameTests {
                     var moved = helper.absoluteVec(Vec3.atBottomCenterOf(
                             new BlockPos(12, 2, 3)
                     ));
-                    target.snapTo(moved.x, moved.y, moved.z, 0.0f, 0.0f);
+                    target.moveTo(moved.x, moved.y, moved.z, 0.0f, 0.0f);
                     helper.setBlock(1, 3, 4, Blocks.STONE);
                 });
                 helper.runAtTickTime(4L, () -> {
@@ -1183,7 +1365,7 @@ public final class MentaloutGameTests {
                                     + closestDistanceSqr[0]);
 
                     var targetHandle = forceTargetPermanently(controller, attacker, victim);
-                    victim.snapTo(
+                    victim.moveTo(
                             attacker.getX() + 0.25,
                             attacker.getY(),
                             attacker.getZ(),
@@ -1522,8 +1704,7 @@ public final class MentaloutGameTests {
                     );
 
                     helper.assertTrue(
-                            guardian.hurtServer(
-                                    level,
+                            guardian.hurt(
                                     level.damageSources().mobAttack(selfAggressor),
                                     2.0F
                             ),
@@ -1546,8 +1727,7 @@ public final class MentaloutGameTests {
                 }).thenExecute(() -> {
                     var previousHealth = controller.getHealth();
                     helper.assertTrue(
-                            controller.hurtServer(
-                                    level,
+                            controller.hurt(
                                     level.damageSources().mobAttack(controllerAggressor),
                                     2.0F
                             ),
@@ -1686,8 +1866,7 @@ public final class MentaloutGameTests {
                             "Impression retained an unauthorized Brain attack target"
                     );
                     helper.assertTrue(
-                            neutral.hurtServer(
-                                    level,
+                            neutral.hurt(
                                     level.damageSources().mobAttack(aggressor),
                                     2.0F
                             ),
@@ -1862,8 +2041,7 @@ public final class MentaloutGameTests {
                     var relation = impression(controller, warden);
                     warden.increaseAngerAt(cow, 150, false);
                     var oldHealth = cow.getHealth();
-                    var hurt = cow.hurtServer(
-                            helper.getLevel(),
+                    var hurt = cow.hurt(
                             helper.getLevel().damageSources().sonicBoom(warden),
                             10.0F
                     );
@@ -1971,16 +2149,6 @@ public final class MentaloutGameTests {
             }
         };
 
-        private static final Codec<Scenario> CODEC = Codec.STRING.comapFlatMap(
-                name -> {
-                    for (var scenario : values()) {
-                        if (scenario.serializedName.equals(name)) return DataResult.success(scenario);
-                    }
-                    return DataResult.error(() -> "Unknown Mentalout GameTest scenario: " + name);
-                },
-                scenario -> scenario.serializedName
-        );
-
         private final String serializedName;
         private final int maxTicks;
 
@@ -1990,40 +2158,5 @@ public final class MentaloutGameTests {
         }
 
         abstract void run(GameTestHelper helper);
-    }
-
-    private static final class MentaloutTestInstance extends GameTestInstance {
-        private static final MapCodec<MentaloutTestInstance> CODEC = RecordCodecBuilder.mapCodec(instance ->
-                instance.group(
-                        Scenario.CODEC.fieldOf("scenario").forGetter(test -> test.scenario),
-                        TestData.CODEC.forGetter(MentaloutTestInstance::info)
-                ).apply(instance, MentaloutTestInstance::new)
-        );
-
-        private final Scenario scenario;
-
-        private MentaloutTestInstance(
-                Scenario scenario,
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            prepareArena(helper);
-            scenario.run(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Mentalout " + scenario.name().toLowerCase(Locale.ROOT));
-        }
     }
 }

@@ -2,7 +2,7 @@
   "required": true,
   "minVersion": "0.8",
   "package": "org.academy.mixin",
-  "compatibilityLevel": "JAVA_25",
+  "compatibilityLevel": "JAVA_21",
   "plugin": "org.academy.mixin.plugin.MixinPlugin",
   "mixins": [
     "common.compat.MixinWorldWeaverWorldConfig",

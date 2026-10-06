@@ -57,7 +57,7 @@ public abstract class MixinServerPlayer extends Player implements ImagineBreaker
         if (EntityMotionGuard.shouldBlockTeleport((ServerPlayer) (Object) this)) ci.cancel();
     }
 
-    @Inject(method = "snapTo(DDD)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "moveTo(DDD)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardPlayerPositionSnap(double x, double y, double z, CallbackInfo ci) {
         if (EntityMotionGuard.shouldBlockPositionSnap((ServerPlayer) (Object) this)) ci.cancel();
     }
@@ -90,26 +90,26 @@ public abstract class MixinServerPlayer extends Player implements ImagineBreaker
 
     @SuppressWarnings("UnnecessarySuperQualifier")
     @Redirect(
-            method = "hurtServer",
+            method = "hurt",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/player/Player;hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+                    target = "Lnet/minecraft/world/entity/player/Player;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
             )
     )
-    public boolean redirectHurtServer(Player instance, ServerLevel level, DamageSource source, float damage) {
-        var pair = VectorReflection.Server.hurtServer(instance, level, source, damage);
+    public boolean redirectHurt(Player instance, DamageSource source, float damage) {
+        var pair = VectorReflection.Server.hurtServer(instance, instance.level(), source, damage);
         if (!pair.getLeft()) {
             if (VectorReflection.Server.usesFullInstanceProtection((ServerPlayer) (Object) this)) return false;
-            return super.hurtServer(level, source, pair.getRight());
+            return super.hurt(source, pair.getRight());
         }
         var remainingDamage = pair.getRight();
         if (!(remainingDamage > 0.0f) || !Float.isFinite(remainingDamage)) return false;
         return VectorReflection.Server.usesFullInstanceProtection((ServerPlayer) (Object) this)
-                ? false : super.hurtServer(level, source, remainingDamage);
+                ? false : super.hurt(source, remainingDamage);
     }
 
     @Redirect(
-            method = "hurtServer",
+            method = "hurt",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/server/level/ServerPlayer;canHarmPlayer(Lnet/minecraft/world/entity/player/Player;)Z"

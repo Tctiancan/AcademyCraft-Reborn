@@ -102,7 +102,7 @@ public final class HostileTargetGameTests {
         player.setGameMode(GameType.SURVIVAL);
         player.setData(AttachmentTypes.PVP_ENABLED.get(), true);
         var position = helper.absoluteVec(new Vec3(x, 3, 5));
-        player.snapTo(position.x, position.y, position.z, 0, 0);
+        player.moveTo(position.x, position.y, position.z, 0, 0);
         player.setNoGravity(true);
         return player;
     }
@@ -125,18 +125,18 @@ public final class HostileTargetGameTests {
         check(helper, !HostileTargets.isMarked(other, melee), "Marks belong only to the attacking player");
         var arrow = helper.spawn(EntityType.ARROW, 5, 4, 5);
         var ranged = pig(helper);
-        ranged.hurtServer(helper.getLevel(), attacker.damageSources().arrow(arrow, attacker), 0.5f);
+        ranged.hurt( attacker.damageSources().arrow(arrow, attacker), 0.5f);
         check(helper, HostileTargets.isMarked(attacker, ranged), "Owned projectiles must mark on hit");
         var skillTarget = pig(helper);
-        skillTarget.hurtServer(helper.getLevel(), SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get()), 0.5f);
+        skillTarget.hurt( SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get()), 0.5f);
         check(helper, HostileTargets.isMarked(attacker, skillTarget), "Direct category damage must mark on hit");
         var sweepTarget = pig(helper);
-        sweepTarget.hurtServer(helper.getLevel(), SkillDamageSource.of(attacker, Skills.IRON_SAND_ARSENAL.get()), 0.5f);
+        sweepTarget.hurt( SkillDamageSource.of(attacker, Skills.IRON_SAND_ARSENAL.get()), 0.5f);
         check(helper, HostileTargets.isMarked(attacker, sweepTarget), "Manual attacks of mixed-mode skills must mark");
         var zero = pig(helper);
-        zero.hurtServer(helper.getLevel(), SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get()), 0);
+        zero.hurt( SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get()), 0);
         check(helper, !HostileTargets.isMarked(attacker, zero), "Zero-damage skill calls must not mark");
-        other.hurtServer(helper.getLevel(), SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get()), 0.5f);
+        other.hurt( SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get()), 0.5f);
         check(helper, HostileTargets.isMarked(attacker, other), "Skill hits must mark another player");
         check(helper, !HostileTargets.isMarked(other, attacker), "A mark must not be shared in reverse");
     }
@@ -182,7 +182,7 @@ public final class HostileTargetGameTests {
         for (var skill : List.of(Skills.AUTO_CRUISE_BEAM_CANNON.get(), Skills.ELECTRICAL_CONTACT.get(),
                 Skills.LIGHT_SHIELD.get(), Skills.DARKMATTER_CREATION.get())) {
             var target = pig(helper);
-            target.hurtServer(helper.getLevel(), SkillDamageSource.of(attacker, skill), 0.1f);
+            target.hurt( SkillDamageSource.of(attacker, skill), 0.1f);
             check(helper, !HostileTargets.isMarked(attacker, target), "Automatic skill must not mark: " + skill.getKey());
         }
         var pet = helper.spawn(EntityType.WOLF, 5, 3, 5);
@@ -190,7 +190,7 @@ public final class HostileTargetGameTests {
         pet.setNoAi(true);
         pet.setNoGravity(true);
         var petTarget = pig(helper);
-        petTarget.hurtServer(helper.getLevel(), pet.damageSources().mobAttack(pet), 0.1f);
+        petTarget.hurt( pet.damageSources().mobAttack(pet), 0.1f);
         check(helper, !HostileTargets.isMarked(attacker, petTarget), "Pet attacks must not create their owner's marks");
         var suppressed = pig(helper);
         var source = SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get())
@@ -198,10 +198,10 @@ public final class HostileTargetGameTests {
         check(helper, !source.canMarkHostility(), "Charge copies must retain automatic-hit attribution");
         check(helper, !SkillDamageSource.from(source, source.getSkill()).canMarkHostility(),
                 "Converted secondary hits must preserve the automatic flag");
-        suppressed.hurtServer(helper.getLevel(), source, 0.1f);
+        suppressed.hurt( source, 0.1f);
         check(helper, !HostileTargets.isMarked(attacker, suppressed), "Explicit automatic hits must not mark");
         var reflected = pig(helper);
-        reflected.hurtServer(helper.getLevel(), ReflectedSkillDamageSource.from(
+        reflected.hurt( ReflectedSkillDamageSource.from(
                 SkillDamageSource.of(other, Skills.ARC_GENERATE.get()), attacker, Skills.ARC_GENERATE.get(), other), 0.1f);
         check(helper, !HostileTargets.isMarked(attacker, reflected), "Reflected damage must not mark");
         var magnetic = pig(helper);
@@ -224,7 +224,7 @@ public final class HostileTargetGameTests {
         HostileTargets.mark(attacker, automaticTarget);
         HostileTargets.mark(attacker, refreshedTarget);
         helper.runAfterDelay(100, () -> {
-            automaticTarget.hurtServer(helper.getLevel(),
+            automaticTarget.hurt(
                     SkillDamageSource.of(attacker, Skills.AUTO_CRUISE_BEAM_CANNON.get()), 0.1f);
             NeoForge.EVENT_BUS.post(new AttackEntityEvent(attacker, refreshedTarget));
         });

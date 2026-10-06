@@ -168,7 +168,7 @@ public final class DarkmatterModifierRuntime {
                 && level.getRandom().nextFloat() < 0.10f * lightning) {
             var bolt = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create(level);
             if (bolt != null) {
-                bolt.snapTo(target.position());
+                bolt.moveTo(target.position());
                 bolt.setCause(attacker);
                 level.addFreshEntity(bolt);
             }

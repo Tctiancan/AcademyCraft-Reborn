@@ -126,19 +126,19 @@ public final class PainSuppressionGameTests {
 
     private static void damage(GameTestHelper helper, ServerPlayer target) {
         var source = target.damageSources().generic();
-        hit(helper, target, () -> target.hurtServer(helper.getLevel(), source, 10), 2);
-        hit(helper, target, () -> target.hurtServer(helper.getLevel(), source, 15), 3);
-        hit(helper, target, () -> target.hurtServer(helper.getLevel(), source, 200), 40);
+        hit(helper, target, () -> target.hurt( source, 10), 2);
+        hit(helper, target, () -> target.hurt( source, 15), 3);
+        hit(helper, target, () -> target.hurt( source, 200), 40);
         target.getAttribute(Attributes.MAX_ABSORPTION).setBaseValue(20);
         target.setAbsorptionAmount(20);
-        hit(helper, target, () -> target.hurtServer(helper.getLevel(), source, 5), 0);
+        hit(helper, target, () -> target.hurt( source, 5), 0);
     }
 
     private static void direct(GameTestHelper helper, ServerPlayer target, ServerPlayer attacker) {
         var arc = SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get());
-        hit(helper, target, () -> target.hurtServer(helper.getLevel(), arc, 15), 3);
+        hit(helper, target, () -> target.hurt( arc, 15), 3);
         var melt = SkillDamageSource.of(attacker, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get());
-        hit(helper, target, () -> target.hurtServer(helper.getLevel(), melt, 10), 10);
+        hit(helper, target, () -> target.hurt( melt, 10), 10);
         var cta = SkillDamageSource.of(attacker, Skills.MIND_DESTRUCTION.get(), DamageTypes.CTA);
         hit(helper, target, () -> SkillDamageUtil.applyVerifiedTrueHealth(target, cta, 20), 7.2f);
     }
@@ -146,7 +146,7 @@ public final class PainSuppressionGameTests {
     private static void insufficientCp(GameTestHelper helper, ServerPlayer target) {
         var system = AbilitySystemServer.getSystem(target);
         system.getPlayerData(target.getUUID()).getCpData().setAvailableCP(1);
-        target.hurtServer(helper.getLevel(), target.damageSources().generic(), 15);
+        target.hurt( target.damageSources().generic(), 15);
         check(helper, !Skills.PAIN_SUPPRESSION.get().isEnabled(target), "Unaffordable damage charge must disable the skill");
         near(helper, 0, target.getAttributeValue(PlayerAttributes.TRUE_RESISTANCE), "Failed payment must remove resistance immediately");
         near(helper, 1 + 40 * intensity(target), cp(target), "Failed payment must release maintenance without creating negative CP");

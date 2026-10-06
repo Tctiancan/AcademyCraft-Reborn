@@ -480,7 +480,7 @@ public final class WideAreaInterference extends Skill {
                 default -> Component.translatable(
                         packet.code.translationKey, packet.applied, packet.skipped, packet.failed);
             };
-            player.sendOverlayMessage(message);
+            player.displayClientMessage(message, true);
         }
     }
 

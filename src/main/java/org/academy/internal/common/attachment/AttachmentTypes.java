@@ -31,7 +31,7 @@ public final class AttachmentTypes {
             "friendly_fire_enabled",
             () -> AttachmentType
                     .builder(DEFAULT_TRUE)
-                    .serialize(Codec.BOOL.fieldOf("enabled"))
+                    .serialize(Codec.BOOL)
                     .copyOnDeath()
                     .sync(ByteBufCodecs.BOOL)
                     .build()
@@ -40,7 +40,7 @@ public final class AttachmentTypes {
             "pvp_enabled",
             () -> AttachmentType
                     .builder(DEFAULT_TRUE)
-                    .serialize(Codec.BOOL.fieldOf("enabled"))
+                    .serialize(Codec.BOOL)
                     .copyOnDeath()
                     .sync(ByteBufCodecs.BOOL)
                     .build()
@@ -49,7 +49,7 @@ public final class AttachmentTypes {
             "destroy_blocks_enabled",
             () -> AttachmentType
                     .builder(DEFAULT_TRUE)
-                    .serialize(Codec.BOOL.fieldOf("enabled"))
+                    .serialize(Codec.BOOL)
                     .copyOnDeath()
                     .sync(ByteBufCodecs.BOOL)
                     .build()
@@ -58,7 +58,7 @@ public final class AttachmentTypes {
             "skill_destroy_blocks_enabled",
             () -> AttachmentType
                     .<Map<String, Boolean>>builder(() -> new HashMap<>())
-                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.BOOL).fieldOf("skills"))
+                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.BOOL))
                     .copyOnDeath()
                     .sync(ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.BOOL))
                     .build()
@@ -67,7 +67,7 @@ public final class AttachmentTypes {
             "skill_proficiency_options",
             () -> AttachmentType
                     .<Map<String, Boolean>>builder(() -> new HashMap<>())
-                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.BOOL).fieldOf("options"))
+                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.BOOL))
                     .copyOnDeath()
                     .sync(ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.BOOL))
                     .build()
@@ -76,7 +76,7 @@ public final class AttachmentTypes {
             "skill_proficiency_modes",
             () -> AttachmentType
                     .<Map<String, Integer>>builder(() -> new HashMap<>())
-                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.INT).fieldOf("modes"))
+                    .serialize(Codec.unboundedMap(Codec.STRING, Codec.INT))
                     .copyOnDeath()
                     .sync(ByteBufCodecs.map(HashMap::new, ByteBufCodecs.STRING_UTF8, ByteBufCodecs.VAR_INT))
                     .build()
@@ -119,7 +119,7 @@ public final class AttachmentTypes {
             "kinetic_shockwave_enabled",
             () -> AttachmentType
                     .builder(DEFAULT_FALSE)
-                    .serialize(Codec.BOOL.fieldOf("enabled"))
+                    .serialize(Codec.BOOL)
                     .sync(ByteBufCodecs.BOOL)
                     .build()
     );
@@ -127,7 +127,7 @@ public final class AttachmentTypes {
             "kinetic_block_drops_enabled",
             () -> AttachmentType
                     .builder(DEFAULT_TRUE)
-                    .serialize(Codec.BOOL.fieldOf("enabled"))
+                    .serialize(Codec.BOOL)
                     .copyOnDeath()
                     .sync(ByteBufCodecs.BOOL)
                     .build()
@@ -136,7 +136,7 @@ public final class AttachmentTypes {
             "kinetic_impact_level",
             () -> AttachmentType
                     .builder(() -> 1)
-                    .serialize(Codec.INT.fieldOf("level"))
+                    .serialize(Codec.INT)
                     .sync(ByteBufCodecs.VAR_INT)
                     .build()
     );

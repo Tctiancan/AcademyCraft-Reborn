@@ -387,7 +387,7 @@ public final class AirflowJet extends Skill {
                 var damage = instantDamage(skill.hasProficiencyMilestone(player, 1))
                         * AbilitySystemServer.getSystem(player).getPlayerDamageMultiplier(player.getUUID());
                 var source = SkillDamageSource.of(player, skill);
-                living.hurtServer(player.level(), source, damage);
+                living.hurt( source, damage);
             }
             if (target instanceof LivingEntity || target instanceof BlockStructure) {
                 var force = AeromanipTargeting.forceMultiplier(player, target);

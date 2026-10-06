@@ -45,21 +45,17 @@ import java.util.UUID;
 /** Runs in an isolated environment, restoring the registry tags and clock in finally. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MentalDefenseGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("mental_defense_function");
     private static final ResourceLocation SOURCE = AcademyCraft.academy("test_mental_defense");
     private static boolean feedbackRegistered;
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(MentalDefenseGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("mental_defense"), new Instance(new TestData<>(
-                environment, ResourceLocation.withDefaultNamespace("empty"), 40, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void mental_defense(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static ServerPlayer player(GameTestHelper helper, List<Component> feedback) {
@@ -209,28 +205,4 @@ public final class MentalDefenseGameTests {
             registry.prepareTagReload(new TagLoader.LoadResult<>(registry.key(), originalTags)).apply();
         }
     }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Mental defense regression");
-        }
-    }
 }
-

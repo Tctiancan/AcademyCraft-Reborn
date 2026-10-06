@@ -5,10 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -37,45 +34,19 @@ import java.util.Locale;
 /** End-to-end validation for spatial random-tick pause and resume. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalRandomTickGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE =
-            AcademyCraft.academy("temporal_random_tick_function");
     private static final int RANDOM_TICK_ATTEMPTS = 4096;
 
     private TemporalRandomTickGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> TemporalRandomTickTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(TemporalRandomTickGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("time/random_tick_sphere_pause"),
-                new TestEnvironmentDefinition.AllOf(List.of())
-        );
-        var data = new TestData<>(
-                environment,
-                ResourceLocation.withDefaultNamespace("empty"),
-                20,
-                0,
-                true,
-                Rotation.NONE,
-                false,
-                1,
-                1,
-                false,
-                16
-        );
-        event.registerTest(
-                AcademyCraft.academy("time_random_tick_sphere_pause"),
-                new TemporalRandomTickTestInstance(data)
-        );
+    @GameTest(template = "empty", timeoutTicks = 20)
+    public static void time_random_tick_sphere_pause(GameTestHelper helper) {
+        runRandomTickPauseTest(helper);
     }
 
     private static void runRandomTickPauseTest(GameTestHelper helper) {
@@ -361,34 +332,5 @@ public final class TemporalRandomTickGameTests {
             if (level.getBlockState(position).is(Blocks.OAK_LEAVES)) count++;
         }
         return count;
-    }
-
-    private static final class TemporalRandomTickTestInstance
-            extends GameTestInstance {
-        private static final MapCodec<TemporalRandomTickTestInstance> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        TestData.CODEC.forGetter(TemporalRandomTickTestInstance::info)
-                ).apply(instance, TemporalRandomTickTestInstance::new));
-
-        private TemporalRandomTickTestInstance(
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runRandomTickPauseTest(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporal random tick sphere pause");
-        }
     }
 }

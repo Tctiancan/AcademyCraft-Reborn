@@ -410,7 +410,7 @@ public final class PrecisionOperationClient {
 
     private static void showActionBar(String key, int slot) {
         var player = Minecraft.getInstance().player;
-        if (player != null) player.sendOverlayMessage(Component.translatable(key, slot + 1));
+        if (player != null) player.displayClientMessage(Component.translatable(key, slot + 1), true);
     }
 
     private static void showError(

@@ -6,10 +6,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -54,45 +51,17 @@ import java.util.UUID;
 /** End-to-end pause, slowdown, acceleration and rollback coverage for players. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalPlayerTickGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE = AcademyCraft.academy(
-            "temporal_player_tick_function"
-    );
-
     private TemporalPlayerTickGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> TemporalPlayerTickTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(TemporalPlayerTickGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("time/player_tick_scaling"),
-                new TestEnvironmentDefinition.AllOf(List.of())
-        );
-        var data = new TestData<>(
-                environment,
-                ResourceLocation.withDefaultNamespace("empty"),
-                620,
-                0,
-                true,
-                Rotation.NONE,
-                false,
-                1,
-                1,
-                false,
-                16
-        );
-        event.registerTest(
-                AcademyCraft.academy("time_player_tick_scaling"),
-                new TemporalPlayerTickTestInstance(data)
-        );
+    @GameTest(template = "empty", timeoutTicks = 620)
+    public static void time_player_tick_scaling(GameTestHelper helper) {
+        runPlayerTickTest(helper);
     }
 
     private static void runPlayerTickTest(GameTestHelper helper) {
@@ -128,7 +97,7 @@ public final class TemporalPlayerTickGameTests {
         player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         var position = helper.absoluteVec(new Vec3(2.5D, 2.0D, 2.5D));
-        player.snapTo(position.x, position.y, position.z, 0.0F, 0.0F);
+        player.moveTo(position.x, position.y, position.z, 0.0F, 0.0F);
         player.setNoGravity(true);
         return player;
     }
@@ -429,35 +398,4 @@ public final class TemporalPlayerTickGameTests {
             }
         }
     }
-
-    private static final class TemporalPlayerTickTestInstance
-            extends GameTestInstance {
-        private static final MapCodec<TemporalPlayerTickTestInstance> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        TestData.CODEC.forGetter(TemporalPlayerTickTestInstance::info)
-                ).apply(instance, TemporalPlayerTickTestInstance::new));
-
-        private TemporalPlayerTickTestInstance(
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runPlayerTickTest(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporal player tick scaling"
-                    .toLowerCase(Locale.ROOT));
-        }
-    }
 }
-

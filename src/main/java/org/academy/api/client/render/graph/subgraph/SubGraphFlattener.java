@@ -1,4 +1,4 @@
-﻿package org.academy.api.client.render.graph.subgraph;
+package org.academy.api.client.render.graph.subgraph;
 
 import org.academy.api.client.render.graph.model.Edge;
 import org.academy.api.client.render.graph.model.Graph;

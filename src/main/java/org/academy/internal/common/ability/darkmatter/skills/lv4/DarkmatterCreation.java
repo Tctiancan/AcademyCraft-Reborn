@@ -216,8 +216,8 @@ public final class DarkmatterCreation extends Skill {
             if (minecraft.gui.screen() instanceof DarkmatterCreationScreen) {
                 DarkmatterCreationScreen.acceptSummonResult(packet);
             } else if (minecraft.player != null) {
-                minecraft.player.sendOverlayMessage(Component.translatable(
-                        packet.result.translationKey()));
+                minecraft.player.displayClientMessage(Component.translatable(
+                        packet.result.translationKey()), true);
             }
         }
     }
@@ -372,7 +372,7 @@ public final class DarkmatterCreation extends Skill {
                             || block.getY() < level.getMinBuildHeight() || block.getY() >= level.getMaxBuildHeight()) {
                         continue;
                     }
-                    creature.snapTo(candidate.x, candidate.y, candidate.z, player.getYRot(), 0.0f);
+                    creature.moveTo(candidate.x, candidate.y, candidate.z, player.getYRot(), 0.0f);
                     if (level.noCollision(creature)) return true;
                 }
             }
@@ -389,7 +389,7 @@ public final class DarkmatterCreation extends Skill {
             creature.applyBlueprint(blueprint, slot, abilityLevel(player),
                     Skills.DARKMATTER_CREATION.get().getEffectiveProficiencyMilestone(player),
                     DarkmatterSixWings.Server.isActive(player));
-            creature.snapTo(position.x, position.y, position.z, player.getYRot(), 0);
+            creature.moveTo(position.x, position.y, position.z, player.getYRot(), 0);
             return creature;
         }
 

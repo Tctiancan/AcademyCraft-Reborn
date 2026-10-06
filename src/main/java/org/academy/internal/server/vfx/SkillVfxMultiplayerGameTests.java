@@ -49,35 +49,27 @@ import org.slf4j.Logger;
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class SkillVfxMultiplayerGameTests {
     private static final Logger LOGGER = AcademyCraft.getLogger();
-    private static final ResourceLocation TYPE = AcademyCraft.academy("skill_vfx_multiplayer_function");
-    private SkillVfxMultiplayerGameTests() {}
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    private SkillVfxMultiplayerGameTests() {
     }
 
     @SubscribeEvent
     private static void registerTests(RegisterGameTestsEvent event) {
-        for (int count : new int[]{2, 8, 16}) {
-            // Separate environments prevent nearby test batches from sharing observer traffic.
-            var environment = event.registerEnvironment(AcademyCraft.academy("skill_vfx_multiplayer_environment_" + count),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("skill_vfx_multiplayer_" + count), new Instance(new TestData<>(
-                    environment, ResourceLocation.withDefaultNamespace("empty"), 220, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), count));
-        }
+        event.register(SkillVfxMultiplayerGameTests.class);
     }
 
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.INT.fieldOf("observers").forGetter(test -> test.count)).apply(instance, Instance::new));
-        private final int count;
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, int count) { super(info); this.count = count; }
-        @Override public void run(GameTestHelper helper) { new Scenario(helper, count).start(); }
-        @Override public MapCodec<? extends GameTestInstance> codec() { return CODEC; }
-        @Override protected MutableComponent typeDescription() { return Component.literal("Multiplayer VFX dispatch"); }
+    @GameTest(template = "empty", timeoutTicks = 220)
+    public static void skill_vfx_multiplayer_2(GameTestHelper helper) {
+        new Scenario(helper, 2).start();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 220)
+    public static void skill_vfx_multiplayer_8(GameTestHelper helper) {
+        new Scenario(helper, 8).start();
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 220)
+    public static void skill_vfx_multiplayer_16(GameTestHelper helper) {
+        new Scenario(helper, 16).start();
     }
 
     private static final class Observer {
@@ -96,7 +88,7 @@ public final class SkillVfxMultiplayerGameTests {
             player.setNoGravity(true);
             move(position);
         }
-        void move(Vec3 position) { player.snapTo(position.x, position.y, position.z, 0, 0); }
+        void move(Vec3 position) { player.moveTo(position.x, position.y, position.z, 0, 0); }
         List<SkillVfxPacket> drain() {
             channel.runPendingTasks();
             var result = new ArrayList<SkillVfxPacket>();

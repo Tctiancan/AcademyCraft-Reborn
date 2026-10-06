@@ -172,7 +172,7 @@ public final class VectorReflectedDamageAccumulator {
         );
         return REENTRY_GUARD.run(
                 target.getUUID(),
-                () -> target.hurtServer(level, source, amount)
+                () -> target.hurt( source, amount)
         );
     }
 

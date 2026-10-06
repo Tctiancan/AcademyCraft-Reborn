@@ -21,7 +21,6 @@ import net.minecraft.world.ticks.LevelTicks;
 import net.minecraft.world.ticks.ScheduledTick;
 import net.minecraft.world.ticks.TickPriority;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.Skills;

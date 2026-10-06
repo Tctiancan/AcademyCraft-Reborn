@@ -6,10 +6,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -47,8 +44,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /** End-to-end validation for owner-local Academy scheduler time. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalAcademySchedulerGameTests {
-    private static final ResourceLocation TEST_INSTANCE_TYPE =
-            AcademyCraft.academy("temporal_academy_scheduler_function");
     private static final ResourceLocation CATEGORY =
             AcademyCraft.academy("temporal_scheduler_test");
     private static final ResourceLocation ENTRY_NODE =
@@ -60,37 +55,13 @@ public final class TemporalAcademySchedulerGameTests {
     }
 
     @SubscribeEvent
-    private static void registerTestInstanceType(RegisterEvent event) {
-        event.register(
-                Registries.TEST_INSTANCE_TYPE,
-                TEST_INSTANCE_TYPE,
-                () -> TemporalAcademySchedulerTestInstance.CODEC
-        );
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(TemporalAcademySchedulerGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("time/academy_scheduler_owner_pause"),
-                new TestEnvironmentDefinition.AllOf(List.of())
-        );
-        var data = new TestData<>(
-                environment,
-                ResourceLocation.withDefaultNamespace("empty"),
-                20,
-                0,
-                true,
-                Rotation.NONE,
-                false,
-                1,
-                1,
-                false,
-                16
-        );
-        event.registerTest(
-                AcademyCraft.academy("time_academy_scheduler_owner_pause"),
-                new TemporalAcademySchedulerTestInstance(data)
-        );
+    @GameTest(template = "empty", timeoutTicks = 20)
+    public static void time_academy_scheduler_owner_pause(GameTestHelper helper) {
+        runOwnerPauseTest(helper);
     }
 
     private static void runOwnerPauseTest(GameTestHelper helper) {
@@ -298,36 +269,4 @@ public final class TemporalAcademySchedulerGameTests {
     private enum Unit {
         INSTANCE
     }
-
-    private static final class TemporalAcademySchedulerTestInstance
-            extends GameTestInstance {
-        private static final MapCodec<TemporalAcademySchedulerTestInstance> CODEC =
-                RecordCodecBuilder.mapCodec(instance -> instance.group(
-                        TestData.CODEC.forGetter(
-                                TemporalAcademySchedulerTestInstance::info
-                        )
-                ).apply(instance, TemporalAcademySchedulerTestInstance::new));
-
-        private TemporalAcademySchedulerTestInstance(
-                TestData<Holder<TestEnvironmentDefinition<?>>> info
-        ) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runOwnerPauseTest(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporal Academy scheduler owner pause");
-        }
-    }
 }
-

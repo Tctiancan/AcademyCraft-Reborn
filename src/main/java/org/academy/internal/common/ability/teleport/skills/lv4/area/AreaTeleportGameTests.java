@@ -6,10 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -35,22 +32,17 @@ import java.util.UUID;
 /** Live-world regressions for Area Teleport's block transaction. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class AreaTeleportGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("area_teleport_function");
-
     private AreaTeleportGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(AreaTeleportGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("area_teleport_preserves_blocks_without_drops"),
-                new Instance(new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
-                        100, 0, true, Rotation.NONE, false, 1, 1, false, 16)));
+    @GameTest(template = "empty", timeoutTicks = 100)
+    public static void area_teleport_preserves_blocks_without_drops(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static void verify(GameTestHelper helper) {
@@ -103,28 +95,5 @@ public final class AreaTeleportGameTests {
         helper.assertTrue(level.getEntitiesOfClass(ItemEntity.class, affectedArea).isEmpty(),
                 "Area Teleport emitted duplicate block or container item drops");
         helper.succeed();
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> data) {
-            super(data);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Area Teleport transaction regression");
-        }
     }
 }

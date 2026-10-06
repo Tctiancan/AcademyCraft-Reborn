@@ -38,19 +38,14 @@ import java.util.UUID;
 
 @EventBusSubscriber(modid = ExampleAddon.MOD_ID)
 public final class ExampleGameTests {
-    private static final Identifier TYPE = ExampleAddon.id("api_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
-    }
-
     @SubscribeEvent
     private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(ExampleAddon.id("registration_execution"), new Instance(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 60, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+        event.register(ExampleGameTests.class);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 60)
+    public static void registration_execution(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static AbilityProgram program(int actions) {
@@ -186,13 +181,5 @@ public final class ExampleGameTests {
         } finally {
             if (!pendingExpiry[0]) server.getPlayerList().remove(player);
         }
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info) { super(info); }
-        @Override public void run(GameTestHelper helper) { verify(helper); }
-        @Override public MapCodec<? extends GameTestInstance> codec() { return CODEC; }
-        @Override protected MutableComponent typeDescription() { return Component.literal("Public addon API integration"); }
     }
 }

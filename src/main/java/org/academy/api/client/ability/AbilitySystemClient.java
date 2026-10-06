@@ -429,7 +429,7 @@ public final class AbilitySystemClient {
             case OVERLOAD -> Component.translatable("message.academy.skill_use.overload", skillName);
             default -> Component.translatable("message.academy.skill_use.unavailable", skillName);
         };
-        player.sendOverlayMessage(message.withStyle(ChatFormatting.RED));
+        player.displayClientMessage(message.withStyle(ChatFormatting.RED), true);
     }
 
     private static String formatCp(float value) {

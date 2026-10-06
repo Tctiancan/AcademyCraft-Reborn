@@ -727,14 +727,14 @@ public final class DarkmatterBeetle extends Monster {
     }
 
     @Override
-    public boolean hurtServer(ServerLevel level, DamageSource source, float amount) {
+    public boolean hurt(DamageSource source, float amount) {
         if (DarkmatterTargeting.isDarkmatterDamage(source)) return false;
         var reduction = gammaCatalyzed() ? Math.min(0.75f, 0.03f * averageGammaPower) : 0.0f;
         if (torso.equals(DarkmatterCreatureRegistries.TORSO_FLY.toString())) {
             reduction = Math.min(0.80f, reduction + Math.min(0.20f,
                     0.04f * alphaPower(torsoAlpha)));
         }
-        return super.hurtServer(level, source, amount * (1.0f - reduction));
+        return super.hurt(source, amount * (1.0f - reduction));
     }
 
     @Override

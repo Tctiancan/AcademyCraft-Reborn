@@ -1,4 +1,4 @@
-﻿package org.academy.internal.client.particle;
+package org.academy.internal.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;

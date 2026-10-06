@@ -275,8 +275,7 @@ public class Disarm extends Skill {
                         || player.distanceToSqr(target) > range * range) return;
                 disarmTarget(target, ctx.milestone() >= 3);
                 if (canTakeSecond) disarmTarget(target, ctx.milestone() >= 3);
-                target.hurtServer(
-                        player.level(),
+                target.hurt(
                         SkillDamageSource.of(player, Skills.DISARM.get()),
                         1.0f
                 );

@@ -214,7 +214,7 @@ public class LightningNova extends Skill {
                 var source = echo ? echoSource : outwardSource;
                 for (var target : targets) {
                     phaseHits.add(target.getUUID());
-                    target.hurtServer(castLevel, source, damage * (echo ? 0.5f : 1.0f));
+                    target.hurt( source, damage * (echo ? 0.5f : 1.0f));
                 }
             }
         }

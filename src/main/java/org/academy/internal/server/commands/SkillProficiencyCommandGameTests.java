@@ -2,14 +2,9 @@ package org.academy.internal.server.commands;
 
 import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
-import com.mojang.serialization.MapCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -17,13 +12,10 @@ import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.permissions.PermissionSet;
-import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.AbilityCategories;
@@ -38,19 +30,14 @@ import java.util.stream.Collectors;
 /** Exercises the registered command against real player skill data and proficiency callbacks. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class SkillProficiencyCommandGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("skill_proficiency_command_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
-    }
-
     @SubscribeEvent
     private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("set_exp_max"), new Instance(new TestData<>(
-                environment, ResourceLocation.withDefaultNamespace("empty"), 40, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+        event.register(SkillProficiencyCommandGameTests.class);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    public static void set_exp_max(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static void verify(GameTestHelper helper) {
@@ -68,7 +55,7 @@ public final class SkillProficiencyCommandGameTests {
             var data = system.getPlayerData(uuid);
             var dispatcher = server.getCommands().getDispatcher();
             var source = server.createCommandSourceStack().withEntity(player)
-                    .withPermission(PermissionSet.ALL_PERMISSIONS);
+                    .withPermission(4);
             helper.assertTrue(data.getSkillDataMap().isEmpty(), "New test player must have no learned skills");
             helper.assertTrue(dispatcher.execute("academy set_exp max", source) == 0,
                     "Empty learned skill list must report zero affected skills");
@@ -112,29 +99,6 @@ public final class SkillProficiencyCommandGameTests {
             throw new AssertionError("Skill proficiency command failed to parse or execute", exception);
         } finally {
             server.getPlayerList().remove(player);
-        }
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Skill proficiency command regression");
         }
     }
 }

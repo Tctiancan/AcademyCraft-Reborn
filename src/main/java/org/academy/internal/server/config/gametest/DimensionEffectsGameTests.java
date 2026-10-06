@@ -6,10 +6,7 @@ import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
+import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -46,24 +43,17 @@ import java.util.UUID;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DimensionEffectsGameTests {
-    private static final ResourceLocation TYPE = AcademyCraft.academy("dimension_effects_function");
-
     private DimensionEffectsGameTests() {
     }
 
     @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> PolicyTest.CODEC);
+    private static void registerTests(RegisterGameTestsEvent event) {
+        event.register(DimensionEffectsGameTests.class);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(
-                AcademyCraft.academy("dimension_effects"),
-                new TestEnvironmentDefinition.AllOf(List.of()));
-        var data = new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
-                40, 0, true, Rotation.NONE, false, 1, 1, false, 16);
-        event.registerTest(AcademyCraft.academy("dimension_effects_authority"), new PolicyTest(data));
+    @GameTest(template = "empty", timeoutTicks = 40)
+    public static void dimension_effects_authority(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static void verify(GameTestHelper helper) {
@@ -227,34 +217,11 @@ public final class DimensionEffectsGameTests {
         var player = new ServerPlayer(helper.getLevel().getServer(), helper.getLevel(),
                 profile, cookie.clientInformation());
         var position = helper.absoluteVec(new Vec3(1.5, 2, 1.5));
-        player.snapTo(position.x, position.y, position.z, 0, 0);
+        player.moveTo(position.x, position.y, position.z, 0, 0);
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
         return player;
-    }
-
-    private static final class PolicyTest extends GameTestInstance {
-        private static final MapCodec<PolicyTest> CODEC = TestData.CODEC.xmap(PolicyTest::new, PolicyTest::info);
-
-        private PolicyTest(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Server dimension effect authority");
-        }
     }
 }
