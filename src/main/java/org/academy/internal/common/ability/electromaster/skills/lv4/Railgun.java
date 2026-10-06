@@ -495,7 +495,7 @@ public final class Railgun extends Skill {
                 railgunRay.setYRot(player.getYRot());
                 railgunRay.setXRot(player.getXRot());
                 var originalSource = new DamageSource(
-                        railgunRay.level().damageSources().damageTypes.getOrThrow(DamageTypes.MOB_ATTACK),
+                        railgunRay.level().damageSources().damageTypes.getHolderOrThrow(DamageTypes.MOB_ATTACK),
                         railgunRay,
                         player
                 );
@@ -522,7 +522,7 @@ public final class Railgun extends Skill {
                         })
                         .build();
                 var resolved = LinearReflectionResolver.resolve(
-                        player.level(),
+                        player.serverLevel(),
                         new LinearSegment(startPos, endPos),
                         payload
                 );

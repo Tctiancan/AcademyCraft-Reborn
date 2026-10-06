@@ -199,7 +199,7 @@ public final class MineDetect extends Skill {
             if (minecraft.level == null || minecraft.player == null) return;
 
             var renderType = Render.RenderTypes.MINE_DETECT_LINES;
-            var cameraPos = minecraft.gameRenderer.getMainCamera().position();
+            var cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
             var matrixStack = event.getMatrixStack();
             var lineWidth = minecraft.getWindow().getAppropriateLineWidth();
 

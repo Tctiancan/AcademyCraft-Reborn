@@ -308,7 +308,7 @@ public class VectorReflection extends Skill {
                     || !canReflectSource(player, source)) {
                 return false;
             }
-            applyReflection(player, player.level(), source, damage);
+            applyReflection(player, player.serverLevel(), source, damage);
             player.invulnerableTime = 0;
             VectorDefenseFeedbackTickets.commitFull(player, source);
             return true;
@@ -665,7 +665,7 @@ public class VectorReflection extends Skill {
         public static void killAfterImagineBreakerDepletion(ServerPlayer player) {
             if (player == null) return;
             forceDeactivateForDeath(player);
-            player.kill(player.level());
+            player.kill();
         }
 
         private static void clearProtectionState(ServerPlayer player) {
@@ -770,7 +770,7 @@ public class VectorReflection extends Skill {
 
         public static void spawnGlowCircle(ServerPlayer player, Vec3 direction, Vec3 position) {
             SkillVfxService.distortionRing(
-                    player.level(), position, direction, player.getId());
+                    player.serverLevel(), position, direction, player.getId());
         }
 
         public static void playReflectionSound(ServerPlayer player) {

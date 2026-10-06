@@ -279,7 +279,7 @@ public final class LightShield extends Skill {
 
         private Context(ServerPlayer player) {
             super(player);
-            initialLevel = player.level();
+            initialLevel = player.serverLevel();
             player.setData(AttachmentTypes.LIGHT_SHIELD_ACTIVE.get(), true);
             player.syncData(AttachmentTypes.LIGHT_SHIELD_ACTIVE.get());
             PlayerAttributeRuntime.syncTrueResistanceModifier(

@@ -11,8 +11,10 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.academy.internal.common.network.PacketTypes;
@@ -36,10 +38,10 @@ public final class ImagPhaseDowsingRodItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
         if (level instanceof ServerLevel serverLevel && player instanceof ServerPlayer serverPlayer) {
-            if (player.getCooldowns().isOnCooldown(stack)) return InteractionResult.SUCCESS;
+            if (player.getCooldowns().isOnCooldown(stack.getItem())) return InteractionResultHolder.success(stack);
             var scan = scanImagPhase(serverLevel, serverPlayer);
             MisakaNetworkServer.send(serverPlayer, new SyncPacket(scan.sections()));
             if (scan.nearestFluid() == null) {
@@ -53,9 +55,9 @@ public final class ImagPhaseDowsingRodItem extends Item {
                         target.getX(), target.getY(), target.getZ()
                 ));
             }
-            player.getCooldowns().addCooldown(stack, USE_COOLDOWN_TICKS);
+            player.getCooldowns().addCooldown(stack.getItem(), USE_COOLDOWN_TICKS);
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.success(stack);
     }
 
     private static ScanResult scanImagPhase(ServerLevel level, ServerPlayer player) {

@@ -62,7 +62,6 @@ public final class MentalDefenseGameTests {
         var profile = new GameProfile(UUID.randomUUID(), "mental-test");
         var cookie = CommonListenerCookie.createInitial(profile, false);
         var player = new ServerPlayer(helper.getLevel().getServer(), helper.getLevel(), profile, cookie.clientInformation()) {
-            @Override
             public void sendOverlayMessage(Component message) {
                 feedback.add(message);
             }

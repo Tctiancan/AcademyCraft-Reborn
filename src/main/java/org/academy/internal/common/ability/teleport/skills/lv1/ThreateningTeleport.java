@@ -182,7 +182,7 @@ public final class ThreateningTeleport extends Skill {
                 }
 
                 var minecraft = Minecraft.getInstance();
-                var camera = minecraft.gameRenderer.getMainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().getPosition();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);
@@ -347,7 +347,7 @@ public final class ThreateningTeleport extends Skill {
                 ItemStack stack
         ) {
             if (stack.isEmpty()) return null;
-            var level = player.level();
+            var level = player.serverLevel();
             var spawnPosition = validDropPosition(level, destination)
                     ? destination
                     : player.position().add(0.0, 0.5, 0.0);

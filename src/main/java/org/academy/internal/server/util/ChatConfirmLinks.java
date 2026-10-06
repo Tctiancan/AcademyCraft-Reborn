@@ -34,8 +34,8 @@ public final class ChatConfirmLinks {
                 .append(label.copy().withStyle(style -> style
                         .withColor(color)
                         .withBold(true)
-                        .withClickEvent(new ClickEvent.RunCommand(command))
-                        .withHoverEvent(new HoverEvent.ShowText(label))))
+                        .withClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, command))
+                        .withHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, label))))
                 .append(Component.literal("]").withStyle(style -> style.withColor(color)));
     }
 }

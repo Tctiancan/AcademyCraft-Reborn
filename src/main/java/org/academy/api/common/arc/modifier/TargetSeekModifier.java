@@ -20,7 +20,7 @@ import java.util.List;
 
 public record TargetSeekModifier(Vector3fc target, AttributeCurve force) implements PathModifier {
     public static final StreamCodec<ByteBuf, TargetSeekModifier> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F, TargetSeekModifier::target,
+            ByteBufCodecs.VECTOR3F, p -> new Vector3f(p.target()),
             AttributeCurve.CODEC, TargetSeekModifier::force,
             TargetSeekModifier::new
     );

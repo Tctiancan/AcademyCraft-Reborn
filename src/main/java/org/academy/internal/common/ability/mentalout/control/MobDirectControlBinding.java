@@ -211,7 +211,7 @@ final class MobDirectControlBinding implements ControlBinding {
         if (mob instanceof RangedAttackMob rangedMob) {
             rangedMob.performRangedAttack(target, 1.0f);
         } else {
-            mob.doHurtTarget(level, target);
+            mob.doHurtTarget(target);
         }
         mob.swing(InteractionHand.MAIN_HAND, true);
     }

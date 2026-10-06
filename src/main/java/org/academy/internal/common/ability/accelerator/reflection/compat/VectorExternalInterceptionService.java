@@ -231,7 +231,6 @@ public final class VectorExternalInterceptionService {
         if (!(event.getEntity() instanceof ServerPlayer defender)
                 || !VectorReflection.Server.usesFullInstanceProtection(defender)) return;
         event.setNewDamage(0.0f);
-        event.getContainer().setShouldCauseSideEffects(false);
         VectorReflection.Server.maintainProtection(defender);
     }
 

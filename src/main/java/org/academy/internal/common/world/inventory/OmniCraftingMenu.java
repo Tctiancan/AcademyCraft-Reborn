@@ -99,8 +99,8 @@ public final class OmniCraftingMenu extends AbstractContainerMenu {
             var input = craftSlots.asCraftInput();
             var recipe = level.getServer().getRecipeManager()
                     .getRecipeFor(RecipeType.CRAFTING, input, level);
-            if (recipe.isPresent() && resultSlots.setRecipeUsed(player, recipe.get())) {
-                var assembled = recipe.get().value().assemble(input);
+            if (recipe.isPresent() && resultSlots.setRecipeUsed(level, player, recipe.get())) {
+                var assembled = recipe.get().value().assemble(input, level.registryAccess());
                 if (assembled.isItemEnabled(level.enabledFeatures())) result = assembled;
             }
         }
@@ -111,8 +111,8 @@ public final class OmniCraftingMenu extends AbstractContainerMenu {
     }
 
     private boolean matchesAbilityDeveloperRecipe() {
-        return is(0, net.minecraft.world.item.Items.STAINED_GLASS_PANE.blue())
-                && is(1, net.minecraft.world.item.Items.STAINED_GLASS_PANE.blue())
+        return is(0, net.minecraft.world.item.Items.BLUE_STAINED_GLASS_PANE)
+                && is(1, net.minecraft.world.item.Items.BLUE_STAINED_GLASS_PANE)
                 && is(2, Items.ABILITY_CONTROL_TABLET.get())
                 && is(3, Items.WIND_GEN_BASE_SCREEN.get())
                 && isBed(craftSlots.getItem(4))

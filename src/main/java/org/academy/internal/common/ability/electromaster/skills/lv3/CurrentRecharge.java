@@ -299,7 +299,7 @@ public final class CurrentRecharge extends Skill {
         private Context(ServerPlayer player) {
             super(player);
             dimension = player.level().dimension();
-            startedLevel = player.level();
+            startedLevel = player.serverLevel();
         }
 
         @SubscribeEvent
@@ -396,7 +396,7 @@ public final class CurrentRecharge extends Skill {
             if ((entity == null) == (block == null)) {
                 throw new IllegalArgumentException("Program charge needs exactly one target");
             }
-            startedLevel = player.level();
+            startedLevel = player.serverLevel();
             this.entity = entity;
             this.block = block == null ? null : block.immutable();
         }

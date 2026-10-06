@@ -161,7 +161,7 @@ public final class SharedAccountService {
         boolean ok = true;
         switch (packet.action()) {
             case UPLOAD, CLEAR -> {
-                if (!net.minecraft.commands.Commands.LEVEL_GAMEMASTERS.check(player.permissions())) {
+                if (!player.hasPermissions(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS)) {
                     sendStatus(player, provider, "message.academy.music_account.no_permission", false);
                     return;
                 }

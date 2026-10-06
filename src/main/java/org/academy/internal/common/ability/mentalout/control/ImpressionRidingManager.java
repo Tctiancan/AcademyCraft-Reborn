@@ -218,7 +218,7 @@ public final class ImpressionRidingManager {
     private static boolean startRiding(RideSession session) {
         MOUNT_ATTEMPT.set(new MountAttempt(session.rider, session.mount));
         try {
-            return session.rider.startRiding(session.mount, true, true);
+            return session.rider.startRiding(session.mount, true);
         } finally {
             MOUNT_ATTEMPT.remove();
         }

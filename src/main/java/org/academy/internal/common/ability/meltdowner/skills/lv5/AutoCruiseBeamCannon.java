@@ -316,7 +316,7 @@ public final class AutoCruiseBeamCannon extends Skill {
 
             private void tick(ServerPlayer player, AutoCruiseBeamCannon skill) {
                 skill.reportActivity(player, false);
-                var level = player.level();
+                var level = player.serverLevel();
                 var now = level.getGameTime();
                 var milestone = skill.getEffectiveProficiencyMilestone(player);
                 var scanRadius = skill.scaledRange(player, milestone >= 2 ? 20.0 : SCAN_RADIUS);

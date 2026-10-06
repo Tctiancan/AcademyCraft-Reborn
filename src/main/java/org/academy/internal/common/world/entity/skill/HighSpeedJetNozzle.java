@@ -115,7 +115,7 @@ public final class HighSpeedJetNozzle extends Entity {
         entityData.set(OWNER_UUID, ownerUuid == null ? "" : ownerUuid.toString());
         entityData.set(SUPPORT_ENTITY_ID, support.asEntity().getId());
         entityData.set(FACE, face.get3DDataValue());
-        setDirection(Vec3.atLowerCornerOf(face.getUnitVec3i()));
+        setDirection(Vec3.atLowerCornerOf(face.getNormal()));
         snapToSurface();
     }
 
@@ -311,7 +311,7 @@ public final class HighSpeedJetNozzle extends Entity {
                 && structureSupportOffset != null
                 && structureSupportFace != null) {
             var direction = rotateHorizontal(
-                    Vec3.atLowerCornerOf(structureSupportFace.getUnitVec3i()),
+                    Vec3.atLowerCornerOf(structureSupportFace.getNormal()),
                     structure.yawDegrees()
             ).normalize();
             setDirection(direction);

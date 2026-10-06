@@ -181,7 +181,7 @@ public final class WideAreaInterference extends Skill {
             if (!available(controller)) return;
             var candidates = new ArrayList<LivingEntity>();
             for (var id : packet.targets) {
-                var entity = controller.level().getEntity(id);
+                var entity = controller.serverLevel().getEntity(id);
                 if (!(entity instanceof LivingEntity living) || living == controller
                         || !living.isAlive() || living.isRemoved()
                         || controller.distanceToSqr(living) > MAX_COMMAND_RANGE * MAX_COMMAND_RANGE
@@ -286,7 +286,7 @@ public final class WideAreaInterference extends Skill {
             }
             if (packet.action == Action.MISIDENTIFICATION) {
                 var forced = packet.entityTarget == null
-                        ? null : controller.level().getEntity(packet.entityTarget);
+                        ? null : controller.serverLevel().getEntity(packet.entityTarget);
                 var targetSkill = Skills.TARGET_MISIDENTIFICATION.get();
                 var targetRange = targetSkill.hasProficiencyMilestone(controller, 2)
                         ? MentaloutTargeting.PROFICIENCY_MAX_SIGHT_RANGE

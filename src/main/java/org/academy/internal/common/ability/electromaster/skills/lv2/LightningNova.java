@@ -148,7 +148,7 @@ public class LightningNova extends Skill {
         private Context(ServerPlayer player, int milestone) {
             super(player);
             this.milestone = milestone;
-            castLevel = player.level();
+            castLevel = player.serverLevel();
             visualSeed = castLevel.getRandom().nextLong();
             outwardSource = SkillDamageSource.of(player, Skills.LIGHTNING_NOVA.get(),
                     DamageTypes.ELECTRO_DAMAGE).withElectricalChargePoints(2);

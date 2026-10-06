@@ -76,7 +76,7 @@ public final class MagneticTargets {
         if (blockPath.equals("obsidian") || blockPath.equals("crying_obsidian")) return false;
         var sound = state.getSoundType();
         if (state.is(MAGNETIC_BLOCKS)
-                || sound == SoundType.IRON
+                || sound == SoundType.METAL
                 || sound == SoundType.ANVIL
                 || sound == SoundType.CHAIN) {
             return true;

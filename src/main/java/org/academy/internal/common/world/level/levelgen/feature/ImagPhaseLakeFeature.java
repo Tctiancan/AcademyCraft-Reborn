@@ -6,7 +6,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.util.valueproviders.IntProvider;
-import net.minecraft.util.valueproviders.IntProviders;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.MultifaceBlock;
 import net.minecraft.world.level.block.state.BlockState;
@@ -425,8 +424,8 @@ public final class ImagPhaseLakeFeature extends Feature<ImagPhaseLakeFeature.Con
 
     public record Configuration(IntProvider radius, IntProvider depth) implements FeatureConfiguration {
         public static final Codec<Configuration> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                IntProviders.POSITIVE_CODEC.fieldOf("radius").forGetter(Configuration::radius),
-                IntProviders.POSITIVE_CODEC.fieldOf("depth").forGetter(Configuration::depth)
+                IntProvider.POSITIVE_CODEC.fieldOf("radius").forGetter(Configuration::radius),
+                IntProvider.POSITIVE_CODEC.fieldOf("depth").forGetter(Configuration::depth)
         ).apply(instance, Configuration::new));
     }
 }

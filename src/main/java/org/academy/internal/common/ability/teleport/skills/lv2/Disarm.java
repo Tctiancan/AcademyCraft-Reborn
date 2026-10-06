@@ -147,7 +147,7 @@ public class Disarm extends Skill {
                             point.x + 0.5, point.y + 0.5, point.z + 0.5);
                 }
 
-                var camera = minecraft.gameRenderer.getMainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().getPosition();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

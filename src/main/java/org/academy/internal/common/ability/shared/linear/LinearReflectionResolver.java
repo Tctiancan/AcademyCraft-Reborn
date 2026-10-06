@@ -197,7 +197,7 @@ public final class LinearReflectionResolver {
         var random = player.getRandom();
         var yaw = random.nextDouble() * Mth.TWO_PI;
         var y = random.nextDouble() * 0.7 - 0.2;
-        return new Vec3(Mth.cos(yaw), y, Mth.sin(yaw)).normalize();
+        return new Vec3(Mth.cos((float) yaw), y, Mth.sin((float) yaw)).normalize();
     }
 
     private static Vec3 randomSideDirection(ServerPlayer player) {

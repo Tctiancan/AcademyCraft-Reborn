@@ -15,6 +15,7 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.ResolvableProfile;
@@ -170,7 +171,7 @@ public final class CategoryDamageRuntime {
                     cause == null ? null : cause.getEntity());
         }
         var before = CTAEntityActuallyHurt.readTrueHealth(target);
-        if (target.isInvulnerableTo(level, source)
+        if (target.isInvulnerableTo(source)
                 || org.academy.api.server.entity.SurvivalDefense.applyHealthReadGuard(target, 0.0f) >= before
                 || org.academy.internal.common.entitycontrol.EntityControlApi.clampHealthWrite(target, 0.0f) >= before) {
             return false;
@@ -222,7 +223,7 @@ public final class CategoryDamageRuntime {
                 if (stack.isEmpty()) continue;
                 var cooldowns = player.getCooldowns();
                 var access = (ItemCooldownsAccess) cooldowns;
-                var group = cooldowns.getCooldownGroup(stack);
+                var group = stack.getItem();
                 var current = access.academy$cooldowns().get(group);
                 var end = current == null ? access.academy$tickCount()
                         : ((CooldownInstanceAccess) current).academy$endTime();
@@ -256,7 +257,7 @@ public final class CategoryDamageRuntime {
 
     public static void applyRadiation(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel) || !target.isAlive()) return;
-        for (var effect : List.of(MobEffects.NAUSEA, MobEffects.MOVEMENT_SLOWDOWN,
+        for (var effect : List.of(MobEffects.CONFUSION, MobEffects.MOVEMENT_SLOWDOWN,
                 MobEffects.DIG_SLOWDOWN, MobEffects.WEAKNESS)) {
             target.addEffect(new MobEffectInstance(effect, RADIATION_TICKS, 0));
         }
@@ -341,7 +342,7 @@ public final class CategoryDamageRuntime {
     public static ItemStack headFor(LivingEntity target) {
         if (target instanceof Player player) {
             var head = new ItemStack(Items.PLAYER_HEAD);
-            head.set(DataComponents.PROFILE, ResolvableProfile.createResolved(player.getGameProfile()));
+            head.set(DataComponents.PROFILE, new ResolvableProfile(player.getGameProfile()));
             return head;
         }
         var type = target.getType();
@@ -412,7 +413,7 @@ public final class CategoryDamageRuntime {
 
     private static final class ChargeState {
         final WeakReference<LivingEntity> target;
-        final Map<ResourceLocation, Integer> cooldownEnds = new HashMap<>();
+        final Map<Item, Integer> cooldownEnds = new HashMap<>();
         int points;
         long chargeExpires;
         long paralyzedUntil;

@@ -274,7 +274,7 @@ public final class CommandPositioning extends Skill {
                             : MentaloutTargeting.MAX_SIGHT_RANGE
             );
             if (destination instanceof ControlDestination.Entity(var uuid)
-                    && player.level().getEntity(uuid) instanceof LivingEntity living
+                    && player.serverLevel().getEntity(uuid) instanceof LivingEntity living
                     && PvpSetting.shouldPrevent(player, living)) return;
             if (destination == null) {
                 feedback(player, "message.academy.mentalout.command_positioning.no_destination");

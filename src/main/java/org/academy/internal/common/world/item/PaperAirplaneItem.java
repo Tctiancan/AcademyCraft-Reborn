@@ -31,6 +31,6 @@ public final class PaperAirplaneItem extends Item {
             if (!player.hasInfiniteMaterials()) stack.shrink(1);
             player.getCooldowns().addCooldown(stack.getItem(), 5);
         }
-        return InteractionResultHolder.sided(InteractionResult.SUCCESS, stack);
+        return InteractionResultHolder.success(stack);
     }
 }

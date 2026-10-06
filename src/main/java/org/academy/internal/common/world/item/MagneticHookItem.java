@@ -44,7 +44,7 @@ public final class MagneticHookItem extends Item {
         if (player instanceof ServerPlayer serverPlayer) {
             performAction(serverPlayer, itemStack, player.isShiftKeyDown());
         }
-        return InteractionResultHolder.sided(InteractionResult.SUCCESS, itemStack);
+        return InteractionResultHolder.success(itemStack);
     }
 
     @Override
@@ -93,7 +93,7 @@ public final class MagneticHookItem extends Item {
             hooks.removeFirst().discard();
         }
 
-        var level = player.level();
+        var level = player.serverLevel();
         var hook = new MagneticHook(level, player, level.getGameTime());
         hook.shootFromRotation(player, player.getXRot(), player.getYRot(), 0.0f, LAUNCH_SPEED, 0.0f);
         level.addFreshEntity(hook);

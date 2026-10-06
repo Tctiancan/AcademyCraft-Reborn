@@ -32,7 +32,7 @@ public abstract class AeromanipChargeContext extends ServerContext {
         super(player);
         this.skill = skill;
         gesture = AeromanipChargeSync.takeGesture(player, skill);
-        initialLevel = player.level();
+        initialLevel = player.serverLevel();
         this.startGameTime = Math.min(startGameTime, initialLevel.getGameTime());
         usageLease = AbilitySystemServer.getSystem(player)
                 .getAeromanipResourceManager()

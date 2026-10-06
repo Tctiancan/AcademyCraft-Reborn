@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.darkmatter.network;
 
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.network.codec.ByteBufCodecs;
+import net.minecraft.network.VarInt;
 import net.minecraft.network.codec.StreamCodec;
 import org.academy.internal.common.network.PacketTypes;
 import org.misaka.api.common.network.ThreadType;
@@ -12,16 +12,25 @@ import org.misaka.api.common.network.packet.PacketType;
 
 @PacketTarget(ThreadType.CLIENT)
 public final class SyncDarkmatterStatePacket extends Packet<ClientPacketListener, SyncDarkmatterStatePacket> {
-    public static final StreamCodec<ByteBuf, SyncDarkmatterStatePacket> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VAR_INT, SyncDarkmatterStatePacket::abilityLevel,
-            ByteBufCodecs.VAR_INT, SyncDarkmatterStatePacket::totalPoints,
-            ByteBufCodecs.VAR_INT, SyncDarkmatterStatePacket::alphaPoints,
-            ByteBufCodecs.BOOL, SyncDarkmatterStatePacket::gammaActive,
-            ByteBufCodecs.FLOAT, SyncDarkmatterStatePacket::naturalMatter,
-            ByteBufCodecs.FLOAT, SyncDarkmatterStatePacket::createdMatter,
-            ByteBufCodecs.FLOAT, SyncDarkmatterStatePacket::reservedMatter,
-            SyncDarkmatterStatePacket::new
-    );
+    public static final StreamCodec<ByteBuf, SyncDarkmatterStatePacket> CODEC = new StreamCodec<>() {
+        @Override
+        public SyncDarkmatterStatePacket decode(ByteBuf buf) {
+            return new SyncDarkmatterStatePacket(
+                    VarInt.read(buf), VarInt.read(buf), VarInt.read(buf), buf.readBoolean(),
+                    buf.readFloat(), buf.readFloat(), buf.readFloat());
+        }
+
+        @Override
+        public void encode(ByteBuf buf, SyncDarkmatterStatePacket packet) {
+            VarInt.write(buf, packet.abilityLevel);
+            VarInt.write(buf, packet.totalPoints);
+            VarInt.write(buf, packet.alphaPoints);
+            buf.writeBoolean(packet.gammaActive);
+            buf.writeFloat(packet.naturalMatter);
+            buf.writeFloat(packet.createdMatter);
+            buf.writeFloat(packet.reservedMatter);
+        }
+    };
 
     private final int abilityLevel;
     private final int totalPoints;

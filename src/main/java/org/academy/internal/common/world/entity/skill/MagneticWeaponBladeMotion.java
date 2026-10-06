@@ -28,7 +28,7 @@ public final class MagneticWeaponBladeMotion {
     public static Vec3 idlePosition(Vec3 ownerPosition, float ownerYaw, long age) {
         var forward = Vec3.directionFromRotation(0.0f, ownerYaw).normalize();
         var right = new Vec3(-forward.z, 0.0, forward.x);
-        var bob = Mth.sin(age * 0.16) * 0.06;
+        var bob = Mth.sin((float) (age * 0.16)) * 0.06;
         return ownerPosition
                 .subtract(forward.scale(0.72))
                 .add(right.scale(0.42))
@@ -87,12 +87,12 @@ public final class MagneticWeaponBladeMotion {
             case STRIKE -> {
                 var raw = (attackTick - PREP_END_TICK)
                         / (double) (IMPACT_TICK - PREP_END_TICK);
-                yield (float) (sideSign * 18.0 * Mth.sin(Mth.PI * raw));
+                yield (float) (sideSign * 18.0 * Mth.sin((float) (Mth.PI * raw)));
             }
             case RETURN -> {
                 var raw = (attackTick - IMPACT_TICK)
                         / (double) (ATTACK_END_TICK - IMPACT_TICK);
-                yield (float) (-sideSign * 12.0 * Mth.sin(Mth.PI * raw));
+                yield (float) (-sideSign * 12.0 * Mth.sin((float) (Mth.PI * raw)));
             }
         };
     }

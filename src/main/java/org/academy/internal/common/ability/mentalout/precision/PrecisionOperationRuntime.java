@@ -1495,7 +1495,7 @@ public final class PrecisionOperationRuntime {
         if (value instanceof ProgramBlockPosition position) {
             var center = position.center();
             return new ResolvedPosition(
-                    center.dimension(), new Vec3(center.x, center.y(), center.z));
+                    center.dimension(), new Vec3(center.x(), center.y(), center.z()));
         }
         if (value instanceof ControlDestination.Entity(var uuid)) {
             Entity target = null;

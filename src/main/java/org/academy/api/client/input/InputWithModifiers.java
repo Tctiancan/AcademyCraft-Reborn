@@ -1,7 +1,5 @@
 package org.academy.api.client.input;
 
-import com.mojang.blaze3d.platform.InputConstants;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -26,11 +24,11 @@ public interface InputWithModifiers {
     int MOD_NUM_LOCK = 2 << 16;
     int EDIT_SHORTCUT_KEY_MODIFIER = Util.getPlatform() == Util.OS.OSX ? MOD_SUPER : MOD_CONTROL;
 
-    @InputConstants.Value
-    int input();
-
     @InputWithModifiers.Modifiers
     int modifiers();
+
+    @InputWithModifiers.Modifiers
+    int input();
 
     default boolean isSelection() {
         return input() == 257 || input() == 32 || input() == 335;

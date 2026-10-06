@@ -73,9 +73,9 @@ public class Plasma extends RenderOnlyEntity {
             var horizontal = Mth.sqrt((float) (Math.max(0.0, 1.0 - y * y)));
             var angle = index * goldenAngle;
             var direction = new Vec3(
-                    Mth.cos(angle) * horizontal,
+                    Mth.cos((float) angle) * horizontal,
                     y,
-                    Mth.sin(angle) * horizontal
+                    Mth.sin((float) angle) * horizontal
             );
             LevelUtil.destroyBlocksAlongPathSilently(
                     level,

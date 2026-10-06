@@ -70,8 +70,7 @@ public final class VectorMotionRedirects {
             direct.setPos(redirectedPosition);
         });
         direct.hurtMarked = true;
-        direct.needsSync = true;
-        direct.syncPosition = true;
+        direct.hasImpulse = true;
         var originalAttacker = plan.attack().attribution().originalAttacker();
         mark(
                 direct,

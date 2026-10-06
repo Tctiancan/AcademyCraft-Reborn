@@ -297,7 +297,7 @@ public final class KineticThrow extends Skill {
         }
 
         private static void captureAndLift(ServerPlayer player, BlockPos seed, int tier) {
-            var level = player.level();
+            var level = player.serverLevel();
             var policy = capturePolicy(player);
             var selection = BlockStructureApi.selectLowerEllipsoidWithUpperCylinder(
                     level,

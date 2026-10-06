@@ -8,8 +8,8 @@ import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.minecraft.world.phys.shapes.VoxelShapes;
 import org.academy.internal.common.world.level.block.entity.WindGenPillarBlockEntity;
 
 public final class WindGenPillarBlock extends BaseEntityBlock {
@@ -21,7 +21,7 @@ public final class WindGenPillarBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return VoxelShapes.box(3.5653782432, 0.0, 3.5653782432, 12.4346217568, 16.0, 12.4346217568);
+        return Shapes.box(3.5653782432, 0.0, 3.5653782432, 12.4346217568, 16.0, 12.4346217568);
     }
 
     @Override

@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -275,7 +274,7 @@ public final class TemporalRandomTickGameTests {
                     level.getServer().createCommandSourceStack()
                             .withLevel(level)
                             .withPosition(position)
-                            .withPermission(PermissionSet.ALL_PERMISSIONS)
+                            .withPermission(4)
             );
         } catch (Exception exception) {
             throw new AssertionError(

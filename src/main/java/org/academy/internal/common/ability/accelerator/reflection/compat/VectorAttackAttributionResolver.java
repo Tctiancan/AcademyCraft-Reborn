@@ -52,7 +52,7 @@ public final class VectorAttackAttributionResolver {
 
     public static @Nullable UUID originalProjectileOwnerId(Projectile projectile) {
         if (projectile == null) return null;
-        var value = projectile.getPersistentData().getString(ORIGINAL_OWNER_TAG).orElse("");
+        var value = projectile.getPersistentData().getString(ORIGINAL_OWNER_TAG);
         if (!value.isBlank()) {
             try {
                 return UUID.fromString(value);

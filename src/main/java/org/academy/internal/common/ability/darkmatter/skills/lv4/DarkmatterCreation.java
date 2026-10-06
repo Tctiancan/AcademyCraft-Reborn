@@ -530,7 +530,7 @@ public final class DarkmatterCreation extends Skill {
                                 creature.getX(), creature.getY(), creature.getZ(),
                                 creature.getHealth(), creature.getMaxHealth(), true));
                     } else updateData(player, mutable -> mutable.updateSummon(uuid,
-                            record.dimension(), record.x, record.y(), record.z,
+                            record.dimension(), record.x(), record.y(), record.z(),
                             record.health(), record.maxHealth(), false));
                 });
             if (MinecraftServerTick.shouldSyncRoster(player.tickCount)) {
@@ -562,7 +562,7 @@ public final class DarkmatterCreation extends Skill {
                 record.uuid().ifPresent(uuid -> {
                     var sameDimension = record.dimension().equals(player.level().dimension().location().toString());
                     var distance = sameDimension ? (float) Math.sqrt(player.distanceToSqr(
-                            record.x, record.y(), record.z)) : -1.0f;
+                            record.x(), record.y(), record.z())) : -1.0f;
                     entries.add(new RosterEntry(uuid, record.name(), record.health(), record.maxHealth(),
                             record.dimension(), distance, record.investment(), record.slot(), record.loaded()));
                 });

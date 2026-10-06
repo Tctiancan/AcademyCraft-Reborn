@@ -51,8 +51,7 @@ public final class PlayerDataManager implements AbilitySubsystem {
         return Optional.ofNullable(getData(uuid))
                 .map(Player::getAbilityCategory)
                 .map(ResourceLocation::tryParse)
-                .flatMap(Registries.ABILITY_CATEGORIES::get)
-                .map(Holder::value)
+                .map(id -> Registries.ABILITY_CATEGORIES.get(id))
                 .orElse(AbilityCategories.LEVEL0.get());
     }
 

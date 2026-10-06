@@ -19,8 +19,8 @@ import java.util.List;
 
 public record LinePath(Vector3fc start, Vector3fc end) implements BasePath {
     public static final StreamCodec<ByteBuf, LinePath> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F, LinePath::start,
-            ByteBufCodecs.VECTOR3F, LinePath::end,
+            ByteBufCodecs.VECTOR3F, p -> new Vector3f(p.start()),
+            ByteBufCodecs.VECTOR3F, p -> new Vector3f(p.end()),
             LinePath::new
     );
 

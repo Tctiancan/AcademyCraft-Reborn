@@ -360,7 +360,7 @@ public final class ChunkSwapService {
      */
     private static void resyncSurroundings(ServerPlayer player, boolean resetCacheCenter) {
         if (player.isRemoved() || player.hasDisconnected()) return;
-        var level = player.level();
+        var level = player.serverLevel();
         var center = player.chunkPosition();
         if (resetCacheCenter) {
             // Required after a dimension respawn (and after any old god-view stream): otherwise the client
@@ -745,7 +745,7 @@ public final class ChunkSwapService {
      * in a slot simply fails the position check and is never drawn.
      */
     private static void restoreDisplacedChunks(ServerPlayer player, StreamedView streamed) {
-        var level = player.level();
+        var level = player.serverLevel();
         if (!level.dimension().equals(streamed.dimension)) return;
         var v = streamed.cacheRadius * 2 + 1;
         var center = player.chunkPosition();

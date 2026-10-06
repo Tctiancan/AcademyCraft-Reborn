@@ -187,10 +187,10 @@ public final class AeromanipDisplacementTracker {
         var damage = baseDamage
                 * org.academy.api.server.ability.AbilitySystemServer.getSystem(owner).getPlayerDamageMultiplier(owner.getUUID());
         if (!Float.isFinite(damage) || damage <= 0.0f
-                || !SkillDamageUtil.applyDirect(owner.level(), target, SkillDamageSource.of(owner, skill), damage)) return false;
+                || !SkillDamageUtil.applyDirect(owner.serverLevel(), target, SkillDamageSource.of(owner, skill), damage)) return false;
         var center = target.position().add(0.0, target.getBbHeight() * 0.5, 0.0);
-        AeromanipVfx.burst(owner.level(), center, collision ? 1.2 : 0.65);
-        if (collision) AeromanipVfx.ring(owner.level(), center, 1.4);
+        AeromanipVfx.burst(owner.serverLevel(), center, collision ? 1.2 : 0.65);
+        if (collision) AeromanipVfx.ring(owner.serverLevel(), center, 1.4);
         owner.level().playSound(null, target.blockPosition(), SoundEvents.BUBBLE_COLUMN_BUBBLE_POP,
                 SoundSource.PLAYERS, collision ? 0.9f : 0.65f, collision ? 0.65f : 1.15f);
         return true;

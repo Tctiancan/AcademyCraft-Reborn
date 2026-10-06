@@ -3,12 +3,12 @@ package org.academy.internal.common.ability.electromaster.skills.lv3.magneticwea
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.ItemTags;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.component.KineticWeapon;
 import org.academy.internal.common.ability.Skills;
 
 import java.util.ArrayDeque;
@@ -123,21 +123,17 @@ public final class MagneticWeaponAttackContext implements AutoCloseable {
 
     private record SpearEffect(float additionalDamage, boolean knockback, boolean dismount) {
         private static final SpearEffect NONE = new SpearEffect(0.0f, false, false);
+        private static final float DAMAGE_PER_MOVEMENT = 0.5f;
+        private static final double KNOCKBACK_THRESHOLD = 0.4;
 
         private static SpearEffect from(ServerPlayer player) {
             var stack = player.getItemBySlot(EquipmentSlot.MAINHAND);
-            var kineticWeapon = stack.get(DataComponents.KINETIC_WEAPON);
-            if (kineticWeapon == null) return NONE;
-            var speed = KineticWeapon.getMotion(player).length();
+            if (!stack.is(ItemTags.MACE_ENCHANTABLE)) return NONE;
+            var speed = (double) Math.max(player.fallDistance, player.getDeltaMovement().length());
             if (!Double.isFinite(speed)) return NONE;
-            var damage = kineticWeapon.damageConditions()
-                    .filter(condition -> condition.test(0, speed, speed, 1.0))
-                    .map(unused461 -> (float) Math.floor(speed * kineticWeapon.damageMultiplier()))
-                    .orElse(0.0f);
-            var knockback = kineticWeapon.knockbackConditions()
-                    .map(condition -> condition.test(0, speed, speed, 1.0)).orElse(false);
-            var dismount = kineticWeapon.dismountConditions()
-                    .map(condition -> condition.test(0, speed, speed, 1.0)).orElse(false);
+            var damage = (float) Math.floor(speed * DAMAGE_PER_MOVEMENT);
+            var knockback = speed >= KNOCKBACK_THRESHOLD;
+            var dismount = speed >= KNOCKBACK_THRESHOLD;
             return new SpearEffect(damage, knockback, dismount);
         }
 

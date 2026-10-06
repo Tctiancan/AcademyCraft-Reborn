@@ -306,7 +306,7 @@ public class BloodflowReverse extends Skill {
                             context.system().getPlayerMaxCP(player.getUUID()) * 0.2f
                     ),
                     (ctx, actualCost) -> {
-                        var serverLevel = player.level();
+                        var serverLevel = player.serverLevel();
                         if (!(serverLevel instanceof ServerLevel)) return;
                         if (!target.isAlive() || target.isRemoved() || target.level() != serverLevel) return;
 

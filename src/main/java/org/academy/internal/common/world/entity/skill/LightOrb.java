@@ -15,7 +15,7 @@ public class LightOrb extends RenderOnlyEntity {
     public static final EntityDataAccessor<Float> SCALE = SynchedEntityData.defineId(
             LightOrb.class, EntityDataSerializers.FLOAT
     );
-    public static final EntityDataAccessor<Vector3fc> COLOR = SynchedEntityData.defineId(
+    public static final EntityDataAccessor<Vector3f> COLOR = SynchedEntityData.defineId(
             LightOrb.class, EntityDataSerializers.VECTOR3
     );
     private int lifeTime = -1;

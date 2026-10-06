@@ -239,7 +239,7 @@ final class StandardMobControlBindings {
                 if (MentalControlApi.hasAiTakeover(mob) && mob.getMainHandItem().isEmpty()
                         && mob.getAttribute(Attributes.ATTACK_DAMAGE) == null) {
                     ControlledEquipment.attackWithoutAttribute(mob, level, target);
-                } else mob.doHurtTarget(level, target);
+                } else mob.doHurtTarget(target);
                 attacked = true;
             }
             lastObservedAttackTimestamp = mob.getLastHurtMobTimestamp();

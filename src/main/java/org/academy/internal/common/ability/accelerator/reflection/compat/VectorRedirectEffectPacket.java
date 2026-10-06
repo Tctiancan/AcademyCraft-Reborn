@@ -4,6 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.client.render.vfx.VfxManager;
 import org.academy.internal.client.render.vfx.VectorRedirectVfx;
@@ -94,7 +95,7 @@ public final class VectorRedirectEffectPacket
         var level = plan.redirector().level();
         for (var observer : level.players()) {
             if (observer.distanceToSqr(plan.mirrorPoint()) <= 128.0 * 128.0) {
-                MisakaNetworkServer.send(observer, packet);
+                MisakaNetworkServer.send((ServerPlayer) observer, packet);
             }
         }
     }

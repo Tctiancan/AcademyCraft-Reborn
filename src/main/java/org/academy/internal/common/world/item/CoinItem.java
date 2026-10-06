@@ -50,7 +50,7 @@ public class CoinItem extends Item {
         if (level.isClientSide()) {
             MisakaNetworkClient.send(ThrowCoinPacket.INSTANCE);
             player.getCooldowns().addCooldown(itemStack.getItem(), 5);
-            return InteractionResultHolder.sided(InteractionResult.SUCCESS, itemStack);
+            return InteractionResultHolder.success(itemStack);
         }
 
         return InteractionResultHolder.pass(itemStack);

@@ -174,7 +174,7 @@ public final class EnderDragonMentalControlAdapter implements MentalControlAdapt
             );
             if (hit != null && hit.getEntity() instanceof LivingEntity target
                     && MentalControlRuntime.attackDecision(dragon, target) != AttackDecision.DENY) {
-                dragon.doHurtTarget(level, target);
+                dragon.doHurtTarget(target);
             }
         }
 

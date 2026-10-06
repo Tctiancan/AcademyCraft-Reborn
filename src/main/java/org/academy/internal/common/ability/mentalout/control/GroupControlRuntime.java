@@ -39,6 +39,7 @@ import net.neoforged.neoforge.common.NeoForge;
 
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.entitycontrol.*;
 import org.academy.internal.common.world.damagesource.DestroyBlocksSetting;
@@ -298,7 +299,7 @@ public final class GroupControlRuntime {
         var cursor = RETURNS.computeIfAbsent(entry.key(), ignored -> new ReturnCursor());
         var remainder = cargo.getFirst();
         var inventory = controller.getInventory();
-        int count = inventory.getNonEquipmentItems().size();
+        int count = inventory.items.size();
         try {
             var result = WorkInventoryTransfer.insert(inventory, remainder, cursor.slot, 16, budget, count);
             cursor.slot = result.nextSlot();
@@ -1007,7 +1008,7 @@ public final class GroupControlRuntime {
                 return dimension.equals(subject.level().dimension().location()) ? value : null;
             }
             if (destination instanceof ControlDestination.Entity(var uuid)) {
-                var entity = controller.level().getEntity(uuid);
+                var entity = controller.serverLevel().getEntity(uuid);
                 return entity == null ? null : entity.position();
             }
             return null;
@@ -1134,7 +1135,7 @@ public final class GroupControlRuntime {
             var remainder = stack;
             var inventory = controller.getInventory();
             for (int pass = 0; pass < 2 && !remainder.isEmpty(); pass++) {
-                for (int slot = 0; slot < inventory.getNonEquipmentItems().size() && !remainder.isEmpty(); slot++) {
+                for (int slot = 0; slot < inventory.items.size() && !remainder.isEmpty(); slot++) {
                     var existing = inventory.getItem(slot);
                     if (pass == 0 && (existing.isEmpty() || !ItemStack.isSameItemSameComponents(existing, remainder))) continue;
                     if (pass == 1 && !existing.isEmpty()) continue;

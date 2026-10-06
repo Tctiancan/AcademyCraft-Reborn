@@ -3,7 +3,6 @@ package org.academy.internal.common.ability.accelerator.reflection.compat;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.projectile.Projectile;
 import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
 
@@ -124,7 +123,6 @@ public final class VectorProjectileTargeting {
 
     private static boolean supported(Class<?> type) {
         return Entity.class.isAssignableFrom(type)
-                || EntityReference.class.isAssignableFrom(type)
                 || type == UUID.class
                 || type == int.class || type == Integer.class
                 || type == long.class || type == Long.class;
@@ -133,9 +131,6 @@ public final class VectorProjectileTargeting {
     private static Object converted(Class<?> type, Entity replacement) {
         if (Entity.class.isAssignableFrom(type)) {
             return replacement == null || type.isInstance(replacement) ? replacement : null;
-        }
-        if (EntityReference.class.isAssignableFrom(type)) {
-            return replacement == null ? null : EntityReference.of(replacement);
         }
         if (type == UUID.class) return replacement == null ? null : replacement.getUUID();
         if (type == int.class || type == Integer.class) {

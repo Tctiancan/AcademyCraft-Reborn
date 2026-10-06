@@ -19,8 +19,9 @@ import java.util.List;
 
 public record PolylinePath(List<Vector3fc> vertices) implements BasePath {
     public static final StreamCodec<ByteBuf, PolylinePath> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F.apply(ByteBufCodecs.list()), PolylinePath::vertices,
-            PolylinePath::new
+            ByteBufCodecs.VECTOR3F.apply(ByteBufCodecs.list()),
+            p -> p.vertices().stream().map(Vector3f::new).toList(),
+            list -> new PolylinePath(new ArrayList<>(list))
     );
 
     @Override

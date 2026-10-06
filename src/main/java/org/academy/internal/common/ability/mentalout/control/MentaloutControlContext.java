@@ -904,7 +904,7 @@ public final class MentaloutControlContext extends ServerContext {
 
     private boolean isMisidentificationTargetRetained() {
         if (misidentificationTargetUuid == null) return false;
-        var target = player.level().getEntity(misidentificationTargetUuid);
+        var target = player.serverLevel().getEntity(misidentificationTargetUuid);
         return target instanceof LivingEntity living && living.isAlive() && !living.isRemoved()
                 && !PvpSetting.shouldPrevent(player, living);
     }

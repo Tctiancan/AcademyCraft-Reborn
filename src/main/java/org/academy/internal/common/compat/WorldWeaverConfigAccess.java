@@ -2,6 +2,8 @@ package org.academy.internal.common.compat;
 
 import com.mojang.serialization.Codec;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
 
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -17,7 +19,7 @@ public final class WorldWeaverConfigAccess {
     }
 
     public static int getIntOr(CompoundTag tag, String key, int fallback) {
-        return locked(() -> tag.getIntOr(key, fallback));
+        return locked(() -> tag.contains(key, Tag.TAG_INT) ? tag.getInt(key) : fallback);
     }
 
     public static void putInt(CompoundTag tag, String key, int value) {
@@ -28,12 +30,15 @@ public final class WorldWeaverConfigAccess {
     }
 
     public static <T> Optional<T> read(CompoundTag tag, String key, Codec<T> codec) {
-        return locked(() -> tag.read(key, codec));
+        return locked(() -> NbtOps.INSTANCE.getTag(tag, key)
+                .flatMap(element -> codec.parse(NbtOps.INSTANCE, element).result()));
     }
 
     public static <T> void store(CompoundTag tag, String key, Codec<T> codec, T value) {
         locked(() -> {
-            tag.store(key, codec, value);
+            codec.encodeStart(NbtOps.INSTANCE, value)
+                    .result()
+                    .ifPresent(element -> tag.put(key, element));
             return null;
         });
     }

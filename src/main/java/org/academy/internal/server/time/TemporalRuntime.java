@@ -291,7 +291,7 @@ public final class TemporalRuntime implements TemporalService {
                 level.dimension().location(),
                 position,
                 level.getGameTime(),
-                level.getDefaultClockTime(),
+                level.getDayTime(),
                 heartbeat,
                 stopped,
                 vanillaState,

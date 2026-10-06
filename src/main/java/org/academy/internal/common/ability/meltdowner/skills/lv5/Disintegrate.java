@@ -140,7 +140,7 @@ public class Disintegrate extends Skill {
                             context.system().getPlayerMaxCP(player.getUUID()) * 0.2f
                     ),
                     (context, unused506) -> {
-                        var level = player.level();
+                        var level = player.serverLevel();
                         cleanup(level.getGameTime());
                         var start = ContinuousBeam.mainHandOrigin(player, 0.2f);
                         var range = Skills.DISINTEGRATE.get().scaledRange(player,
@@ -158,7 +158,7 @@ public class Disintegrate extends Skill {
         }
 
         private static void onKilled(ServerPlayer player, LivingEntity killed) {
-            var level = player.level();
+            var level = player.serverLevel();
             var pending = PENDING_STAGES.remove(killed.getUUID());
             if (pending == null || !pending.owner().equals(player.getUUID())
                     || pending.expiresAt() < level.getGameTime() || pending.stage() >= 2) return;

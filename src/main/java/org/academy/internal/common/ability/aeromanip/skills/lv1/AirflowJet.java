@@ -319,7 +319,7 @@ public final class AirflowJet extends Skill {
                 var pitch = tier == AeromanipChargeTier.FULL ? 1.45f : 1.2f;
                 player.level().playSound(null, player.blockPosition(), SoundEvents.AIRFLOW_JET.get(),
                         SoundSource.PLAYERS, 0.45f, pitch);
-                AeromanipVfx.ring(player.level(),
+                AeromanipVfx.ring(player.serverLevel(),
                         player.position().add(0.0, 0.15, 0.0),
                         tier == AeromanipChargeTier.FULL ? 1.2 : 0.7);
             }
@@ -378,7 +378,7 @@ public final class AirflowJet extends Skill {
             if (target instanceof PaperAirplane airplane && airplane.boost(player, player.getLookAngle())) {
                 player.level().playSound(null, airplane.blockPosition(), SoundEvents.AIRFLOW_JET.get(),
                         SoundSource.PLAYERS, 0.75f, 1.55f);
-                AeromanipVfx.stream(player.level(), airplane.position(),
+                AeromanipVfx.stream(player.serverLevel(), airplane.position(),
                         player.getLookAngle(), 2.0);
                 return;
             }
@@ -401,7 +401,7 @@ public final class AirflowJet extends Skill {
             }
             var eye = player.getEyePosition();
             var look = player.getLookAngle().normalize();
-            AeromanipVfx.stream(player.level(), eye.add(look.scale(0.35)), look,
+            AeromanipVfx.stream(player.serverLevel(), eye.add(look.scale(0.35)), look,
                     INSTANT_RANGE * AeromanipConfig.rangeMultiplier(player, SkillNames.AIRFLOW_JET));
             player.level().playSound(null, player.blockPosition(), SoundEvents.AIRFLOW_JET.get(),
                     SoundSource.PLAYERS, 0.65f, 1.25f);
@@ -438,7 +438,7 @@ public final class AirflowJet extends Skill {
                     halfLaunchSpeed(skill.hasProficiencyMilestone(player, 2)));
             recordMaceMomentum(player);
             player.resetFallDistance();
-            AeromanipVfx.stream(player.level(),
+            AeromanipVfx.stream(player.serverLevel(),
                     player.position().add(0.0, player.getBbHeight() * 0.45, 0.0),
                     direction, 4.5);
             player.level().playSound(null, player.blockPosition(), SoundEvents.AIRFLOW_JET.get(),
@@ -447,7 +447,7 @@ public final class AirflowJet extends Skill {
 
         private static void castFull(ServerPlayer player, AirflowJet skill) {
             AirMobility.prioritizePropulsion(player, 20);
-            var level = player.level();
+            var level = player.serverLevel();
             var center = player.position().add(0.0, player.getBbHeight() * 0.5, 0.0);
             var range = FULL_RADIUS * AeromanipConfig.rangeMultiplier(player, SkillNames.AIRFLOW_JET);
             var bounds = new AABB(center, center).inflate(range);
@@ -491,7 +491,7 @@ public final class AirflowJet extends Skill {
             private PropulsionContext(ServerPlayer player, AirflowJet skill) {
                 super(player);
                 this.skill = skill;
-                initialLevel = player.level();
+                initialLevel = player.serverLevel();
                 usageLease = AbilitySystemServer.getSystem(player)
                         .getAeromanipResourceManager().beginUse(player);
                 durationTicks = fullPropulsionDuration(skill.hasProficiencyMilestone(player, 2));

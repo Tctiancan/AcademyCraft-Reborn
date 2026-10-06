@@ -14,7 +14,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.network.protocol.game.ServerboundMovePlayerPacket;
 import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
@@ -868,8 +868,7 @@ public final class PlayerControlSessionManager {
                     && PvpSetting.shouldPrevent(session.controller, living)) return;
             subject.interactOn(
                     entity,
-                    hand,
-                    entity.getBoundingBox().getCenter().subtract(entity.position())
+                    hand
             );
             closeUnauthorizedContainer(subject);
             return;
@@ -1006,7 +1005,7 @@ public final class PlayerControlSessionManager {
         for (var slot = 0; slot < 9; slot++) hotbar.add(inventory.getItem(slot).copy());
         var state = new TargetViewState(
                 hotbar,
-                inventory.getSelectedSlot(),
+                inventory.selected,
                 subject.getOffhandItem().copy(),
                 subject.getHealth(),
                 subject.getMaxHealth(),

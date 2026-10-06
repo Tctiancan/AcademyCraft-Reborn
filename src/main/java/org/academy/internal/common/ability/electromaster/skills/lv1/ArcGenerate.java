@@ -142,7 +142,7 @@ public final class ArcGenerate extends Skill {
         }
 
         public static boolean tryAutomatedAttack(ServerPlayer player) {
-            var level = player.level();
+            var level = player.serverLevel();
             return Skills.ARC_GENERATE.get().executeActive(player, (context, unused447) -> {
                 var yawRad = (float) Math.toRadians(-player.getVisualRotationYInDegrees());
                 var eyePos = player.getEyePosition();

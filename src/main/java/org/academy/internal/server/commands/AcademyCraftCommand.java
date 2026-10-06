@@ -247,7 +247,7 @@ public final class AcademyCraftCommand {
         var abilitySystemServer = serverContext.getAcademyCraftServer().getAbilitySystemServer();
 
         var playerCategory = abilitySystemServer.getPlayerAbilityCategory(playerUuid);
-        if (!LearningHelper.isSkillAvailableForCategory(playerCategory, skillToLearn.get().value())) {
+        if (!LearningHelper.isSkillAvailableForCategory(playerCategory, skillToLearn)) {
             var playerCategoryKey = Registries.ABILITY_CATEGORIES.getKey(playerCategory);
             var playerCategoryName = playerCategoryKey != null ? playerCategoryKey.toString() : "None";
             context.getSource().sendFailure(Component.literal("Skill '" + skillIdentifier + "' does not belong to your current ability category (" + playerCategoryName + ")."));
@@ -352,7 +352,7 @@ public final class AcademyCraftCommand {
             return 0;
         }
 
-        var skill = Registries.SKILLS.get(skillIdentifier).map(reference -> reference.value()).orElse(null);
+        var skill = Registries.SKILLS.get(skillIdentifier);
         if (skill == null || !abilitySystemServer.setPlayerSkillProficiency(playerUuid, skill, amount)) {
             context.getSource().sendFailure(Component.literal("Unable to set proficiency for '" + skillIdentifier + "'."));
             return 0;

@@ -21,8 +21,8 @@ import java.util.List;
 
 public record CirclePath(Vector3fc center, Vector3fc normal, float radius) implements BasePath {
     public static final StreamCodec<ByteBuf, CirclePath> CODEC = StreamCodec.composite(
-            ByteBufCodecs.VECTOR3F, CirclePath::center,
-            ByteBufCodecs.VECTOR3F, CirclePath::normal,
+            ByteBufCodecs.VECTOR3F, p -> new Vector3f(p.center()),
+            ByteBufCodecs.VECTOR3F, p -> new Vector3f(p.normal()),
             ByteBufCodecs.FLOAT, CirclePath::radius,
             CirclePath::new
     );

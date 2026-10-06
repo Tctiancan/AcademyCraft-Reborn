@@ -175,7 +175,7 @@ public final class FleshRipping extends Skill {
                 }
 
                 var renderType = Render.RenderTypes.MINE_DETECT_LINES;
-                var camera = minecraft.gameRenderer.getMainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().getPosition();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);
@@ -243,7 +243,7 @@ public final class FleshRipping extends Skill {
                         SoundSource.PLAYERS, 1.0f, 1.0f);
                 var wasAlive = target.isAlive();
                 DamageComposition.hurt(
-                        target, player.level(), SkillDamageSource.of(player, skill),
+                        target, player.serverLevel(), SkillDamageSource.of(player, skill),
                         damage, target.getMaxHealth() * 0.05f * SpaceFoldingTheorem.damageMultiplier(player)
                 );
                 if (wasAlive && !target.isAlive()) {

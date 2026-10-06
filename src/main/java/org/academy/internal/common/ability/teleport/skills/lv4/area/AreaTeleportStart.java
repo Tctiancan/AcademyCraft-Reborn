@@ -21,6 +21,7 @@ import net.minecraft.world.ticks.LevelTicks;
 import net.minecraft.world.ticks.ScheduledTick;
 import net.minecraft.world.ticks.TickPriority;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.Skills;
@@ -48,7 +49,8 @@ public final class AreaTeleportStart {
      * contents and detach supported blocks while their neighbours are only partially written.
      */
     private static final int BLOCK_FLAGS = Block.UPDATE_CLIENTS
-            | Block.UPDATE_SKIP_ALL_SIDEEFFECTS;
+            | Block.UPDATE_KNOWN_SHAPE
+            | Block.UPDATE_SUPPRESS_DROPS;
 
     private AreaTeleportStart() {
     }
@@ -274,7 +276,7 @@ public final class AreaTeleportStart {
             entities.forEach(frozen -> included.add(frozen.entity));
             for (var frozen : entities) {
                 if (frozen.vehicle != null && included.contains(frozen.vehicle)) {
-                    frozen.entity.startRiding(frozen.vehicle, true, true);
+                    frozen.entity.startRiding(frozen.vehicle, true);
                 }
             }
         }

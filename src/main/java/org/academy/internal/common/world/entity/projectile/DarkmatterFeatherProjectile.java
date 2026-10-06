@@ -103,7 +103,7 @@ public final class DarkmatterFeatherProjectile extends AbstractArrow implements 
             return;
         }
         if (!level().isClientSide() && !hasPassedTarget() && targetId != null) {
-            if (!(level().getEntity(targetId) instanceof LivingEntity target)
+            if (!(((ServerLevel) level()).getEntity(targetId) instanceof LivingEntity target)
                     || !target.isAlive() || target.isRemoved()) {
                 // A targeted feather belongs to that attack. Letting it continue after its
                 // target disappears makes it damage an unrelated entity that happens to enter

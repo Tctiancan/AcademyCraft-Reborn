@@ -62,7 +62,7 @@ public class DirStrike extends Skill {
     private static final int EFFECT_MAX_Y_OFFSET = 5;
     private static final float BASE_DAMAGE = 12.0f;
     private static final double DIVE_SPEED = 2.5;
-    private static final double GROUND_SECTOR_COS = Mth.cos((45.0) * Mth.DEG_TO_RAD);
+    private static final double GROUND_SECTOR_COS = Mth.cos(45.0f * Mth.DEG_TO_RAD);
 
     public DirStrike() {
         super(Builder
@@ -219,7 +219,7 @@ public class DirStrike extends Skill {
         private static void executeStrike(ServerPlayer player, boolean airborne) {
             var skill = Skills.DIR_STRIKE.get();
             skill.executeActive(player, (ctx, actualCost) -> {
-                var level = player.level();
+                var level = player.serverLevel();
                 var playerPos = player.blockPosition();
                 var baseRadius = skill.hasProficiencyMilestone(player, 2) ? 14 : ATTACK_RADIUS;
                 var radius = airborne ? baseRadius + AIRBORNE_RADIUS_BONUS : baseRadius;

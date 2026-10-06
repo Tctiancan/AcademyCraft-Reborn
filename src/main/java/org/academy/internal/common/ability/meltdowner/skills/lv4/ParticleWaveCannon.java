@@ -179,7 +179,7 @@ public final class ParticleWaveCannon extends Skill {
 
         private Context(ServerPlayer player) {
             super(player);
-            initialLevel = player.level();
+            initialLevel = player.serverLevel();
             proficiencyMilestone = Skills.PARTICLE_WAVE_CANNON.get().getEffectiveProficiencyMilestone(player);
             var cannon = Skills.PARTICLE_WAVE_CANNON.get();
             maximumLength = cannon.scaledRange(player, proficiencyMilestone >= 2 ? 96.0f : MAX_LENGTH);

@@ -207,7 +207,7 @@ public final class MiningBeam extends Skill {
 
         private Context(ServerPlayer player) {
             super(player);
-            initialLevel = player.level();
+            initialLevel = player.serverLevel();
             proficiencyMilestone = Skills.MINING_BEAM.get().getEffectiveProficiencyMilestone(player);
             maximumLength = Skills.MINING_BEAM.get().scaledRange(player,
                     proficiencyMilestone >= 2 ? 56.0f : MAX_LENGTH);
@@ -431,14 +431,14 @@ public final class MiningBeam extends Skill {
                 Block.popResource(level, pos, drop);
                 continue;
             }
-            var output = recipe.value().assemble(input);
+            var output = recipe.value().assemble(input, level.registryAccess());
             if (output.isEmpty()) {
                 Block.popResource(level, pos, drop);
                 continue;
             }
             output.setCount(output.getCount() * drop.getCount());
             Block.popResource(level, pos, output);
-            var experience = Math.round(recipe.value().experience() * drop.getCount());
+            var experience = Math.round(recipe.value().getExperience() * drop.getCount());
             if (experience > 0) ExperienceOrb.award(level,
                     Vec3.atCenterOf(pos), experience);
         }

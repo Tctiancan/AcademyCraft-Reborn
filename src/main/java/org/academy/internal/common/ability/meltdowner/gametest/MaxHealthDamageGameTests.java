@@ -59,7 +59,7 @@ public final class MaxHealthDamageGameTests {
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
         var beam = new HighSpeedElectronBeam(
-                org.academy.internal.common.world.entity.EntityType.HIGH_SPEED_ELECTRON_BEAM.get(), level);
+                org.academy.internal.common.world.entity.EntityTypes.HIGH_SPEED_ELECTRON_BEAM.get(), level);
         try {
             var system = AbilitySystemServer.getSystem(player);
             system.setPlayerAbilityCategory(player.getUUID(),

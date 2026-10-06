@@ -59,13 +59,13 @@ public class ThrownCoin extends AbstractArrow implements ItemSupplier {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putBoolean(HEADS_TAG, heads);
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         heads = tag.contains(HEADS_TAG, CompoundTag.TAG_BYTE) ? tag.getBoolean(HEADS_TAG) : false;
     }
@@ -82,7 +82,7 @@ public class ThrownCoin extends AbstractArrow implements ItemSupplier {
     @Override
     protected void onHitBlock(BlockHitResult blockHitResult) {
         if (level() instanceof ServerLevel serverLevel) {
-            var droppedCoin = spawnAtLocation(serverLevel, getPickupItem(), 0.1F);
+            var droppedCoin = spawnAtLocation(getPickupItem(), 0.1F);
             var owner = getOwner();
             if (droppedCoin != null) {
                 droppedCoin.getPersistentData().putBoolean(CoinItem.HEADS_TAG, heads);

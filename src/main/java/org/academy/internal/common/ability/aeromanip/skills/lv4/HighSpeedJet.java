@@ -246,7 +246,7 @@ public final class HighSpeedJet extends Skill {
                 }
                 var target = updateTarget(event.getPartialTick());
                 if (!(target instanceof BlockPlacement block)) return;
-                var camera = Minecraft.getInstance().gameRenderer.getMainCamera().position();
+                var camera = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

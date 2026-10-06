@@ -133,6 +133,6 @@ public final class WardenMentalControlAdapter implements MentalControlAdapter {
             warden.setDeltaMovement(0.0, verticalVelocity, 0.0);
         }
         if (wasTransitioning) warden.setPose(Pose.STANDING);
-        if (resetCurrentIntent || wasTransitioning) WardenAi.updateActivity(brain);
+        if (resetCurrentIntent || wasTransitioning) WardenAi.updateActivity(warden);
     }
 }

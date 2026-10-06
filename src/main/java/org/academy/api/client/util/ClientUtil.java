@@ -51,7 +51,7 @@ public final class ClientUtil {
     }
 
     public static boolean isControlKey(
-            @InputConstants.Value int key, int scancode, @InputWithModifiers.Modifiers int modifiers
+            int key, int scancode, @InputWithModifiers.Modifiers int modifiers
     ) {
         var options = Minecraft.getInstance().options;
         var event = new KeyEvent(key, scancode, modifiers);

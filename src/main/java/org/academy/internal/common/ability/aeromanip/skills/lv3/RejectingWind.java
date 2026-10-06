@@ -230,7 +230,7 @@ public final class RejectingWind extends Skill {
                 player.level().playSound(null, player.blockPosition(),
                         SoundEvents.AIRFLOW_IMPACT.get(), SoundSource.PLAYERS,
                         0.7f, tier == AeromanipChargeTier.FULL ? 0.65f : 0.85f);
-                AeromanipVfx.burst(player.level(),
+                AeromanipVfx.burst(player.serverLevel(),
                         player.position().add(0.0, player.getBbHeight() * 0.45, 0.0),
                         tier == AeromanipChargeTier.FULL ? 1.35 : 0.82);
             }

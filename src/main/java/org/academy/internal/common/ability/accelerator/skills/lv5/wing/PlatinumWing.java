@@ -324,7 +324,7 @@ public final class PlatinumWing extends Skill {
                     target.getBbHeight(),
                     PlatinumExecutionVfxClient.DURATION_TICKS
             );
-            for (var other : player.level().players()) {
+            for (var other : player.serverLevel().players()) {
                 if (other.distanceToSqr(player) <= 256.0 * 256.0) {
                     MisakaNetworkServer.send(other, packet);
                 }

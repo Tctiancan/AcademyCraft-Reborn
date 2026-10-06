@@ -210,7 +210,7 @@ public final class EntityMotionGuard {
         runInternalCorrection(entity, () -> {
             entity.setDeltaMovement(Vec3.ZERO);
             if (entity.position().distanceToSqr(state.anchor) > POSITION_EPSILON_SQUARED) {
-                entity.absSnapTo(state.anchor.x, state.anchor.y, state.anchor.z,
+                entity.absMoveTo(state.anchor.x, state.anchor.y, state.anchor.z,
                         entity.getYRot(), entity.getXRot());
             }
         });
@@ -232,7 +232,7 @@ public final class EntityMotionGuard {
                         safeYRot, safeXRot
                 );
             } else {
-                player.absSnapTo(
+                player.absMoveTo(
                         state.anchor.x, state.anchor.y, state.anchor.z,
                         safeYRot, safeXRot
                 );

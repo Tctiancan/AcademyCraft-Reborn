@@ -89,7 +89,7 @@ public final class DarkmatterConfigurableBlock extends FallingBlock implements E
         if (hardness <= 0.0f) return 1.0f;
         var divisor = EventHooks.doPlayerHarvestCheck(
                 player, state, level, pos) ? 30.0f : 100.0f;
-        return player.getDestroySpeed(state, pos) / hardness / divisor;
+        return player.getDestroySpeed(state) / hardness / divisor;
     }
 
     @Override

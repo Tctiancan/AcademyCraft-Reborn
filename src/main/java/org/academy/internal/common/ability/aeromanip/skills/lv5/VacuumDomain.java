@@ -236,7 +236,7 @@ public final class VacuumDomain extends Skill {
             final SkillDamageSource damageSource;
             int milestone;
             Domain(ServerPlayer owner) {
-                this.owner = owner; level = owner.level();
+                this.owner = owner; level = owner.serverLevel();
                 lease = AbilitySystemServer.getSystem(owner).getAeromanipResourceManager().beginUse(owner);
                 damageSource = SkillDamageSource.of(owner, Skills.VACUUM_DOMAIN.get(), DamageTypes.VACUUM_SUFFOCATION);
                 visual = new VacuumVisuals.Lease(owner);

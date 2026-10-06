@@ -49,8 +49,8 @@ public class Smoke extends RenderOnlyEntity {
         rotation += rotSpeed;
 
         if (tickCount - initTick >= lifetimeTicks) {
-            if (level() instanceof ServerLevel serverLevel) {
-                kill(serverLevel);
+            if (level() instanceof ServerLevel) {
+                kill();
             }
         }
     }

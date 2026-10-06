@@ -211,7 +211,7 @@ public final class DamagePolicyGameTests {
         receiver.hurt( electric.damageSources().mobAttack(electric), 10);
         helper.assertTrue(receiver.getHealth() == receiver.getMaxHealth(),
                 "Extra electrical interruption must cancel mob outgoing hurt");
-        helper.assertTrue(!electric.doHurtTarget(level, receiver), "Mob attack must be canceled before execution");
+        helper.assertTrue(!electric.doHurtTarget(receiver), "Mob attack must be canceled before execution");
         var interruption = AbilityHitEffects.electricalInterruptionTicks(electric);
         helper.assertTrue(interruption >= 10 && interruption <= 20, "Extra lock must roll 10 through 20 ticks");
         var arrow = new Arrow(level, electric,

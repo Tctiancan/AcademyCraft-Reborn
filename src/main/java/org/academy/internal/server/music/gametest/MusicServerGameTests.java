@@ -7,6 +7,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;

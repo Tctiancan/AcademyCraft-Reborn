@@ -852,7 +852,6 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
                 ? blockItemHardnessDamage(blockItem.getBlock().defaultBlockState()
                 .getDestroySpeed(targets.level(), target))
                 : (float) Math.max(0.0, transmitted.getAttributeModifiers().compute(
-                Attributes.ATTACK_DAMAGE,
                 player.getAttributeBaseValue(Attributes.ATTACK_DAMAGE),
                 EquipmentSlot.MAINHAND
         ));
@@ -950,9 +949,9 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
     }
 
     private static Direction nearestDirection(ProgramDirection direction) {
-        var x = direction.x;
+        var x = direction.x();
         var y = direction.y();
-        var z = direction.z;
+        var z = direction.z();
         if (Math.abs(y) >= Math.abs(x) && Math.abs(y) >= Math.abs(z)) {
             return y >= 0.0 ? Direction.UP : Direction.DOWN;
         }

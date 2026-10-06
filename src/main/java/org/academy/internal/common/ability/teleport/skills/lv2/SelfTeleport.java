@@ -111,7 +111,7 @@ public final class SelfTeleport extends Skill {
             Vec3 destination;
             if (returning) {
                 destination = TeleportSafety.findSafe(
-                        serverPlayer, serverPlayer.level(), anchor.position);
+                        serverPlayer, serverPlayer.serverLevel(), anchor.position);
             } else {
                 var distance = packet.getDistance();
                 if (!Double.isFinite(distance) || distance < 0.0 || distance > MAX_DISTANCE) return;
@@ -125,7 +125,7 @@ public final class SelfTeleport extends Skill {
             var origin = serverPlayer.position();
 
             skill.executeActive(serverPlayer, ctx -> returning ? 5.0f : 10.0f, (ctx, actualCost) -> {
-                SpatialSynergy.Server.teleportNearbyTeam(serverPlayer, serverPlayer.level(), destination);
+                SpatialSynergy.Server.teleportNearbyTeam(serverPlayer, serverPlayer.serverLevel(), destination);
                 TeleportSync.teleportInstantly(serverPlayer, destination);
                 serverPlayer.resetFallDistance();
                 serverPlayer.setDeltaMovement(0, 0.25, 0);

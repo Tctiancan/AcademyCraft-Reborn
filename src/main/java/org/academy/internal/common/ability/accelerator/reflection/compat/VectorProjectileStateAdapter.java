@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.accelerator.reflection.compat;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.entity.projectile.AbstractArrow;
@@ -27,8 +26,7 @@ public final class VectorProjectileStateAdapter {
             var target = previousOwner != null && previousOwner.isAlive()
                     && previousOwner != projectile.getOwner() ? previousOwner : null;
             var accessor = (ShulkerBulletVectorAccessor) bullet;
-            accessor.academy$setFinalTarget(
-                    target == null ? null : EntityReference.of(target));
+            accessor.academy$setFinalTarget(target);
             var direction = accessor.academy$getCurrentMoveDirection();
             accessor.academy$selectNextMoveDirection(
                     direction == null ? null : direction.getAxis(), target);
@@ -41,8 +39,7 @@ public final class VectorProjectileStateAdapter {
         if (projectile == null || !isFiniteMotion(velocity)) return false;
         projectile.setDeltaMovement(velocity);
         projectile.setOnGround(false);
-        projectile.needsSync = true;
-        projectile.syncPosition = true;
+        projectile.hasImpulse = true;
         projectile.hurtMarked = true;
 
         if (projectile instanceof AbstractArrow arrow) {

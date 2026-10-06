@@ -183,7 +183,7 @@ public class KineticEnergyApplied extends Skill {
                 ctx -> Client.toggleBlockBreak());
         InputSystem.addKeyBinding(Client.KEY_NAME_IMPACT_LEVEL,
                 Client.CONFIG.getKeyBinding(Client.KEY_NAME_IMPACT_LEVEL,
-                        InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_5,
+                        InputSystem.combo(InputSystem.InputType.MOUSE, 5,
                                 InputConstants.PRESS, 0)),
                 ctx -> Client.cycleImpactLevel());
 
@@ -491,7 +491,7 @@ public class KineticEnergyApplied extends Skill {
                 int impactLevel
         ) {
             if (!validProgramImpact(player, center, direction)) return false;
-            var level = player.level();
+            var level = player.serverLevel();
             var clampedLevel = clampImpactLevel(impactLevel);
             applyImpactEffects(
                     level,
@@ -522,7 +522,7 @@ public class KineticEnergyApplied extends Skill {
                     || radius > MAX_PROGRAM_RADIUS) {
                 return false;
             }
-            var level = player.level();
+            var level = player.serverLevel();
             var system = AbilitySystemServer.getSystem(player);
             var damage = getProgramImpactDamage(
                     power,
@@ -565,7 +565,7 @@ public class KineticEnergyApplied extends Skill {
                 return false;
             }
             return executeImpact(
-                    player.level(),
+                    player.serverLevel(),
                     player,
                     center,
                     normalizeOrDefault(direction),
@@ -1017,7 +1017,7 @@ public class KineticEnergyApplied extends Skill {
 
             var center = target.getBoundingBox().getCenter();
             var impactLevel = clampImpactLevel(player.getData(AttachmentTypes.KINETIC_IMPACT_LEVEL.get()));
-            Server.executeImpact(player.level(), player, center,
+            Server.executeImpact(player.serverLevel(), player, center,
                     center.subtract(player.getEyePosition()), impactLevel, null);
         }
 
@@ -1030,7 +1030,7 @@ public class KineticEnergyApplied extends Skill {
 
             var center = Vec3.atCenterOf(event.getPos());
             var impactLevel = clampImpactLevel(player.getData(AttachmentTypes.KINETIC_IMPACT_LEVEL.get()));
-            Server.executeImpact(player.level(), player, center,
+            Server.executeImpact(player.serverLevel(), player, center,
                     center.subtract(player.getEyePosition()), impactLevel, event.getPos());
         }
 

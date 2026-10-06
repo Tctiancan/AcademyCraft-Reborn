@@ -104,10 +104,10 @@ public class PlasmaGeneration extends Skill {
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(key);
 
         InputSystem.addKeyBinding(Client.KEY_NAME_CHARGE, Client.CONFIG.getKeyBinding(Client.KEY_NAME_CHARGE,
-                        InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_4, InputConstants.PRESS, 0)),
+                        InputSystem.combo(InputSystem.InputType.MOUSE, 4, InputConstants.PRESS, 0)),
                 unused283 -> Client.onChargeStart());
         InputSystem.addKeyBinding(Client.KEY_NAME_RELEASE, Client.CONFIG.getKeyBinding(Client.KEY_NAME_RELEASE,
-                        InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_4, InputConstants.RELEASE, 0)),
+                        InputSystem.combo(InputSystem.InputType.MOUSE, 4, InputConstants.RELEASE, 0)),
                 unused284 -> Client.onFire());
     }
 

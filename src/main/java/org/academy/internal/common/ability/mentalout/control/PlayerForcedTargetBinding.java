@@ -128,7 +128,7 @@ final class PlayerForcedTargetBinding implements ControlBinding {
         var inventory = subject.getInventory();
         var bestSlot = -1;
         var bestScore = Integer.MIN_VALUE;
-        for (var slot = 0; slot < inventory.getNonEquipmentItems().size(); slot++) {
+        for (var slot = 0; slot < inventory.items.size(); slot++) {
             var stack = inventory.getItem(slot);
             var score = weaponScore(stack, ranged);
             if (score <= bestScore) continue;

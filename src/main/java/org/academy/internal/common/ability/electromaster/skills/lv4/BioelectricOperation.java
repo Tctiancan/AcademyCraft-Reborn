@@ -239,7 +239,7 @@ public final class BioelectricOperation extends Skill {
 
         private static void spawnArc(ServerPlayer player, Vec3 start, Vec3 end) {
             var paths = List.of(ElectromasterArcEffects.arc(start, end, MathUtil.RANDOM.nextLong()));
-            ElectromasterArcEffects.spawnArc(player.level(), paths, 8, start);
+            ElectromasterArcEffects.spawnArc(player.serverLevel(), paths, 8, start);
         }
 
         private static void migrateLegacySkill(ServerPlayer player) {

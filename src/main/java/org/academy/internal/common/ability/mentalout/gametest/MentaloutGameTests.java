@@ -388,7 +388,6 @@ public final class MentaloutGameTests {
                 profile,
                 cookie.clientInformation()
         ) {
-            @Override
             public GameType gameMode() {
                 return GameType.CREATIVE;
             }
@@ -463,7 +462,7 @@ public final class MentaloutGameTests {
                 var controller = createController(helper);
                 var server = helper.getLevel().getServer();
                 var data = WorkOrderData.get(server);
-                for (int slot = 0; slot < controller.getInventory().getNonEquipmentItems().size(); slot++) {
+                for (int slot = 0; slot < controller.getInventory().items.size(); slot++) {
                     controller.getInventory().setItem(slot, new ItemStack(Items.COBBLESTONE, 64));
                 }
                 var keys = new ArrayList<String>();
@@ -550,13 +549,13 @@ public final class MentaloutGameTests {
                             WorkSettings.defaults(), 100, true, List.of(new ItemStack(Items.DIAMOND, 9))).asReturning();
                     data.put(entry);
                     try {
-                        var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder,
+                        var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder.toFile(),
                                 net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess());
                         storage.set(AcademyCraft.academy("mental_work_orders").toString(), data);
                         storage.save();
                     } catch (Exception failure) { throw new IllegalStateException(failure); }
                     try {
-                        var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder,
+                        var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder.toFile(),
                                 net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess());
                         var restored = storage.computeIfAbsent(WorkOrderData.getType(),
                                 AcademyCraft.academy("mental_work_orders").toString()).selected(owner, List.of(worker));
@@ -1167,7 +1166,7 @@ public final class MentaloutGameTests {
                             "Permanent forced target was not maintained"
                     );
                     cow.setInvulnerable(false);
-                    cow.kill(helper.getLevel());
+                    cow.kill();
                 });
                 helper.runAtTickTime(175L, () -> {
                     helper.assertTrue(handle.isClosed(), "Target death did not release permanent target lease");
@@ -1472,7 +1471,7 @@ public final class MentaloutGameTests {
                             "Guard protection decision"
                     );
                     threat.setInvulnerable(false);
-                    threat.kill(helper.getLevel());
+                    threat.kill();
                     threatHandle.close();
                 });
                 helper.runAtTickTime(60L, () -> {
@@ -1842,8 +1841,8 @@ public final class MentaloutGameTests {
 
                 var neutralRelation = impression(controller, neutral);
                 var brainRelation = impression(controller, brainMob);
-                neutral.setPersistentAngerTarget(EntityReference.of(outsider));
-                neutral.setTimeToRemainAngry(200L);
+                neutral.setPersistentAngerTarget(outsider.getUUID());
+                neutral.setRemainingPersistentAngerTime(200);
                 brainMob.getBrain().setMemory(MemoryModuleType.ANGRY_AT, outsider.getUUID());
                 brainMob.getBrain().setMemory(MemoryModuleType.UNIVERSAL_ANGER, true);
                 brainMob.getBrain().setMemory(MemoryModuleType.ATTACK_TARGET, outsider);

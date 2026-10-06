@@ -161,7 +161,7 @@ public class ThunderLance extends Skill {
         }
 
         private static void fireQuick(ServerPlayer player, int milestone) {
-            var level = player.level();
+            var level = player.serverLevel();
             var look = player.getLookAngle();
             var handPos = calculateHandPosition(player.position(), look);
             var targetPos = player.getEyePosition().add(look.scale(Skills.THUNDER_LANCE.get()

@@ -2,7 +2,7 @@ package org.academy.internal.common.world.item;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -20,11 +20,11 @@ public final class AbilityControlTabletItem extends Item implements AcademyEnerg
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (player instanceof ServerPlayer serverPlayer) {
             AbilityDeveloperBlock.openScreen(serverPlayer, DevelopmentSource.tablet(hand));
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 
     public static int storedEnergy(ItemStack stack) {

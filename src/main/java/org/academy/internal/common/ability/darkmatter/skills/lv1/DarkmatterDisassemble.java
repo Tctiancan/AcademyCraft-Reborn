@@ -30,6 +30,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.level.BlockEvent;
 
 import org.academy.AcademyCraft;
 import org.academy.api.server.ability.DarkmatterGraphEffects;
@@ -250,7 +251,7 @@ public final class DarkmatterDisassemble extends Skill {
                     || !canProgramDestroyBlock(player, position, maximumRange)) {
                 return false;
             }
-            var level = player.level();
+            var level = player.serverLevel();
             var destroyed = new boolean[1];
             var skill = Skills.DARKMATTER_DISASSEMBLE.get();
             var executed = skill.executeActive(player, unused416 -> baseCost, (context, unused417) -> {

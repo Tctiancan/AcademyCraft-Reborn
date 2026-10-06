@@ -304,9 +304,7 @@ public class HighSpeedElectronBeam extends RenderOnlyEntity {
         } else {
             if (shouldStopRay) {
                 if (currentRayLifeTicks <= 0) {
-                    if (level() instanceof ServerLevel serverLevel) {
-                        kill(serverLevel);
-                    }
+                    kill();
                 } else {
                     currentRayLifeTicks--;
                 }
@@ -320,7 +318,7 @@ public class HighSpeedElectronBeam extends RenderOnlyEntity {
                 var owner = resolveOwner(serverLevel);
                 if (owner == null) {
                     fired = true;
-                    kill(serverLevel);
+                    kill();
                     return;
                 }
                 if (outputAdjustmentBypassed) {

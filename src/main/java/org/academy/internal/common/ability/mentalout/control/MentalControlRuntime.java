@@ -808,12 +808,12 @@ public final class MentalControlRuntime {
         if (!(mob.level() instanceof ServerLevel level)) return;
 
         if (mob instanceof NeutralMob neutral) {
-            var angerReference = neutral.getPersistentAngerTarget();
-            var angerTarget = EntityReference.getLivingEntity(angerReference, level);
-            if (angerReference == null || angerTarget == null
-                    || attackDecision(mob, angerTarget) == AttackDecision.DENY) {
+            var angerUuid = neutral.getPersistentAngerTarget();
+            var angerTarget = angerUuid == null ? null : level.getEntity(angerUuid);
+            if (angerUuid == null || !(angerTarget instanceof LivingEntity livingAnger)
+                    || attackDecision(mob, livingAnger) == AttackDecision.DENY) {
                 neutral.setPersistentAngerTarget(null);
-                neutral.setPersistentAngerEndTime(NeutralMob.NO_ANGER_END_TIME);
+                neutral.setRemainingPersistentAngerTime(0);
             }
         }
 

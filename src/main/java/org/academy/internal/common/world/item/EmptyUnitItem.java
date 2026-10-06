@@ -52,6 +52,6 @@ public final class EmptyUnitItem extends Item {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.FILLED_BUCKET.trigger(serverPlayer, filled);
         }
-        return InteractionResultHolder.sided(InteractionResult.SUCCESS, result);
+        return InteractionResultHolder.success(result);
     }
 }

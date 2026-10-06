@@ -56,6 +56,6 @@ public final class ImagPhaseUnitItem extends Item {
         var result = player.hasInfiniteMaterials()
                 ? stack
                 : ItemUtils.createFilledResult(stack, player, new ItemStack(Items.EMPTY_UNIT.get()));
-        return InteractionResultHolder.sided(InteractionResult.SUCCESS, result);
+        return InteractionResultHolder.success(result);
     }
 }

@@ -52,7 +52,7 @@ public final class DarkmatterGraphEffects {
     public static void disassembleBlock(ServerLevel level, BlockPos position) {
         int faces = 0;
         for (var face : net.minecraft.core.Direction.values()) {
-            if (!level.getBlockState(position.relative(face)).isSolidRender()) faces |= 1 << face.ordinal();
+            if (!level.getBlockState(position.relative(face)).isSolid()) faces |= 1 << face.ordinal();
         }
         if (faces == 0) return;
         new DarkmatterVisualPacket(level.dimension().location(), Kind.DISASSEMBLE, -1, true,

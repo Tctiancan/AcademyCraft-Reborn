@@ -5,7 +5,7 @@ import net.minecraft.core.component.DataComponents;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.CrossbowItem;
@@ -49,7 +49,7 @@ public final class DarkmatterCrossbowItem extends CrossbowItem implements Darkma
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var weapon = player.getItemInHand(hand);
         var charged = weapon.getOrDefault(
                 DataComponents.CHARGED_PROJECTILES, ChargedProjectiles.EMPTY);
@@ -57,7 +57,7 @@ public final class DarkmatterCrossbowItem extends CrossbowItem implements Darkma
         startSoundPlayed = false;
         midLoadSoundPlayed = false;
         player.startUsingItem(hand);
-        return InteractionResult.CONSUME;
+        return InteractionResultHolder.consume(weapon);
     }
 
     @Override
@@ -89,7 +89,7 @@ public final class DarkmatterCrossbowItem extends CrossbowItem implements Darkma
         var drawn = draw(weapon, projectile, entity);
         if (drawn.isEmpty()) return;
         weapon.set(DataComponents.CHARGED_PROJECTILES,
-                ChargedProjectiles.ofNonEmpty(drawn));
+                ChargedProjectiles.of(drawn));
         level.playSound(null, entity.getX(), entity.getY(), entity.getZ(),
                 SoundEvents.CROSSBOW_LOADING_END, entity.getSoundSource(), 1.0f,
                 1.0f / (level.getRandom().nextFloat() * 0.5f + 1.0f) + 0.2f);

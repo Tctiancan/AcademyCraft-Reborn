@@ -193,9 +193,8 @@ public final class MentalPerceptionRuntime {
         var visible = brain.getMemoryInternal(MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES);
         if (visible != null && visible.isPresent() && visible.get().contains(hidden)
                 && mob.level() instanceof ServerLevel level) {
-            var filtered = visible.get().nearbyEntities().stream()
-                    .filter(entity -> entity != hidden)
-                    .toList();
+            var filtered = java.util.stream.StreamSupport.stream(
+                    visible.get().findAll(entity -> entity != hidden).spliterator(), false).toList();
             brain.setMemory(
                     MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES,
                     filtered.isEmpty()

@@ -184,7 +184,7 @@ public final class BlackWing extends Skill {
             long sequence;
             final WingControlIntent.Mailbox controls = new WingControlIntent.Mailbox();
             BlackWingAttackPacket lastAttack;
-            AttackSession(ServerPlayer player) { level = player.level(); }
+            AttackSession(ServerPlayer player) { level = player.serverLevel(); }
         }
 
         private static void sendObservers(ServerPlayer player, Consumer<ServerPlayer> send) {
@@ -309,7 +309,7 @@ public final class BlackWing extends Skill {
         private static Vec3 groundTarget(ServerPlayer player, Vec3 corner) {
             var top = corner.add(0, 16, 0);
             var ground = player.level().clip(new ClipContext(top,
-                    new Vec3(corner.x, player.level().getMinY(), corner.z),
+                    new Vec3(corner.x, player.level().getMinBuildHeight(), corner.z),
                     ClipContext.Block.COLLIDER, ClipContext.Fluid.NONE, player));
             return ground.getType() == HitResult.Type.MISS ? corner : ground.getLocation().add(0, 0.05, 0);
         }

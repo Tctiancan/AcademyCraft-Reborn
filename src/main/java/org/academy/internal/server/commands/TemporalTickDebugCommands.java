@@ -87,7 +87,7 @@ final class TemporalTickDebugCommands {
                         .then(RequiredArgumentBuilder
                                 .<CommandSourceStack, ResourceLocation>argument(
                                         "dimension",
-                                        IdentifierArgument.id()
+                                        ResourceLocationArgument.id()
                                 )
                                 .then(RequiredArgumentBuilder
                                         .<CommandSourceStack, Coordinates>argument(
@@ -175,7 +175,7 @@ final class TemporalTickDebugCommands {
                 .then(RequiredArgumentBuilder
                         .<CommandSourceStack, ResourceLocation>argument(
                                 "dimension",
-                                IdentifierArgument.id()
+                                ResourceLocationArgument.id()
                         )
                         .then(scaleAndChannels(
                                 TemporalTickDebugCommands::dimensionScope
@@ -187,7 +187,7 @@ final class TemporalTickDebugCommands {
                 .then(RequiredArgumentBuilder
                         .<CommandSourceStack, ResourceLocation>argument(
                                 "dimension",
-                                IdentifierArgument.id()
+                                ResourceLocationArgument.id()
                         )
                         .then(RequiredArgumentBuilder
                                 .<CommandSourceStack, Coordinates>argument(

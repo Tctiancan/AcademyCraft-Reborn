@@ -43,7 +43,6 @@ public final class SkillVfxGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         server.getPlayerList().placeNewPlayer(connection, observer, cookie);
-        observer.connection.markClientLoaded();
         var center = helper.absoluteVec(new Vec3(4, 4, 4));
         observer.moveTo(center.x, center.y, center.z, 0, 0);
         observer.setNoGravity(true);
@@ -97,6 +96,6 @@ public final class SkillVfxGameTests {
     }
 
     private static void check(GameTestHelper helper, boolean value, String message) {
-        helper.assertTrue(value, Component.literal(message));
+        helper.assertTrue(value, message);
     }
 }

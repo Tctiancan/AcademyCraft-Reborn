@@ -2,6 +2,7 @@ package org.academy.internal.common.ability.accelerator.reflection;
 
 import net.minecraft.world.effect.MobEffects;
 
+import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
@@ -171,7 +172,7 @@ public final class VectorReflectionRuntime {
     }
 
     private static void recoverLevelRegistration(ServerPlayer player, Anchor anchor) {
-        var level = player.level();
+        var level = player.serverLevel();
         var registered = level.getEntity(player.getUUID());
         if (registered == null) {
             try {
@@ -186,18 +187,18 @@ public final class VectorReflectionRuntime {
             logRecoveryFailure(player, "duplicate UUID registration", null, anchor);
         }
 
-        if (!level.getChunkSource().hasEntityWithId(player.getId())) {
+        if (level.getEntity(player.getId()) == null) {
             anchor.observerRebuildRequested = true;
         }
     }
 
     private static void rebuildObserversIfRequested(ServerPlayer player, Anchor anchor) {
         if (!anchor.observerRebuildRequested) return;
-        var level = player.level();
+        var level = player.serverLevel();
         var registered = level.getEntity(player.getUUID());
         var registeredAsPlayer = registered == player;
         var conflictingRegistration = registered != null && !registeredAsPlayer;
-        var chunkTracked = level.getChunkSource().hasEntityWithId(player.getId());
+        var chunkTracked = level.getEntity(player.getId()) != null;
         if (!shouldRebuildObservers(
                 player.isRemoved(), registeredAsPlayer, conflictingRegistration, chunkTracked)) {
             // A canceled kill/remove attempt must never churn an otherwise healthy tracker. This
@@ -210,8 +211,8 @@ public final class VectorReflectionRuntime {
         if (now - anchor.lastObserverRebuildTick < OBSERVER_REBUILD_COOLDOWN) return;
 
         try {
-            var chunkSource = player.level().getChunkSource();
-            if (chunkSource.hasEntityWithId(player.getId())) chunkSource.removeEntity(player);
+            var chunkSource = (ServerChunkCache) player.level().getChunkSource();
+            if (level.getEntity(player.getId()) != null) chunkSource.removeEntity(player);
             chunkSource.addEntity(player);
             chunkSource.move(player);
             anchor.observerRebuildRequested = false;

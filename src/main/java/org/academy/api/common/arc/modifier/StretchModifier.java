@@ -22,7 +22,7 @@ import java.util.List;
 public record StretchModifier(AttributeCurve strength, Vector3fc direction, float frequency) implements PathModifier {
     public static final StreamCodec<ByteBuf, StretchModifier> CODEC = StreamCodec.composite(
             AttributeCurve.CODEC, StretchModifier::strength,
-            ByteBufCodecs.VECTOR3F, StretchModifier::direction,
+            ByteBufCodecs.VECTOR3F, p -> new Vector3f(p.direction()),
             ByteBufCodecs.FLOAT, StretchModifier::frequency,
             StretchModifier::new
     );

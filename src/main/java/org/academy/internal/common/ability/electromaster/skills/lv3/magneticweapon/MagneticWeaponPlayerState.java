@@ -45,7 +45,7 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
 
         this.player = player;
         attackState = (LivingEntityAttackStateAccessor) player;
-        originalSelectedSlot = player.getInventory().getSelectedSlot();
+        originalSelectedSlot = player.getInventory().selected;
         originalAttackStrengthTicker = attackState.academy$getAttackStrengthTicker();
         originalItemSwapTicker = attackState.academy$getItemSwapTicker();
         originalSprinting = player.isSprinting();
@@ -57,7 +57,7 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
         var originalMainHand = player.getMainHandItem();
         var weapon = player.getInventory().getItem(weaponSlot);
         var originalItemModifiers = collectModifiers(originalMainHand, true);
-        weaponModifiers = collectModifiers(weapon, !weapon.isBroken());
+        weaponModifiers = collectModifiers(weapon, weapon.getDamageValue() < weapon.getMaxDamage());
         affectedModifiers = new LinkedHashSet<>(originalItemModifiers.keySet());
         affectedModifiers.addAll(weaponModifiers.keySet());
         originalModifiers = snapshotModifiers(player, affectedModifiers);
@@ -78,7 +78,7 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
     private void activate(int weaponSlot) {
         if (originalSprinting) player.setSprinting(false);
         if (syntheticFallDistance >= 0.0f) player.fallDistance = syntheticFallDistance;
-        player.getInventory().setSelectedSlot(weaponSlot);
+        player.getInventory().selected = weaponSlot;
         applyWeaponModifiers();
 
         var fullChargeTicks = Math.max(1, Mth.ceil(player.getCurrentItemAttackStrengthDelay()) + 1);
@@ -115,14 +115,14 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
                 else instance.addTransientModifier(snapshot.modifier());
             });
         } finally {
-            player.getInventory().setSelectedSlot(originalSelectedSlot);
+            player.getInventory().selected = originalSelectedSlot;
             attackState.academy$setAttackStrengthTicker(originalAttackStrengthTicker);
             attackState.academy$setItemSwapTicker(originalItemSwapTicker);
-            player.fallDistance = originalFallDistance;
+            player.fallDistance = (float) originalFallDistance;
             if (syntheticFallDistance >= 0.0f) {
                 player.setDeltaMovement(originalMovement);
                 if (originalImpulseImpactPosition == null) player.resetCurrentImpulseContext();
-                else player.setIgnoreFallDamageFromCurrentImpulse(true, originalImpulseImpactPosition);
+                else player.setIgnoreFallDamageFromCurrentImpulse(true);
                 player.setSpawnExtraParticlesOnFall(false);
                 player.connection.send(new ClientboundSetEntityMotionPacket(player));
             }
@@ -149,7 +149,7 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
             var modifier = instance.getModifier(key.id());
             snapshots.put(key, new ModifierSnapshot(
                     modifier,
-                    modifier != null && instance.getPermanentModifiers().contains(modifier)
+                    modifier != null && instance.getModifiers().contains(modifier)
             ));
         }
         return snapshots;

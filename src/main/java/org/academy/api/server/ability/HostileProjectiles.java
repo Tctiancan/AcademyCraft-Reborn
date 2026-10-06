@@ -32,7 +32,7 @@ public final class HostileProjectiles {
 
     public static boolean isThreatTo(LivingEntity actor, Projectile projectile) {
         if (!projectile.isAlive() || projectile.isRemoved() || projectile.level() != actor.level()) return false;
-        if (projectile instanceof net.minecraft.world.entity.projectile.arrow.AbstractArrow arrow && ((org.academy.mixin.common.AbstractArrowVectorAccessor) arrow).academy$isInGround()) return false;
+        if (projectile instanceof net.minecraft.world.entity.projectile.AbstractArrow arrow && ((org.academy.mixin.common.AbstractArrowVectorAccessor) arrow).academy$isInGround()) return false;
         var owner = projectile.getOwner();
         if (owner == actor || owner != null && TeamRelations.areAllied(actor, owner)) return false;
         if (owner instanceof LivingEntity living) return HostileTargets.isHostile(actor, living);

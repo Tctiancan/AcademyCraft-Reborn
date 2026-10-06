@@ -17,6 +17,6 @@ public final class TutorialItem extends Item {
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) TutorialScreen.open();
-        return InteractionResultHolder.sided(InteractionResult.SUCCESS, player.getItemInHand(hand));
+        return InteractionResultHolder.success(player.getItemInHand(hand));
     }
 }

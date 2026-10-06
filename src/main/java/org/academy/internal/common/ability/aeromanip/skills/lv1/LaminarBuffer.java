@@ -245,7 +245,7 @@ public final class LaminarBuffer extends Skill {
                     }
                     case FULL -> {
                         var platformPos = platformPosition(player);
-                        if (!canPlacePlatform(player.level(), platformPos)) {
+                        if (!canPlacePlatform(player.serverLevel(), platformPos)) {
                             player.sendSystemMessage(Component.translatable("message.academy.aeromanip.platform_blocked"));
                             return;
                         }
@@ -263,7 +263,7 @@ public final class LaminarBuffer extends Skill {
                 player.level().playSound(null, player.blockPosition(), SoundEvents.AIRFLOW_JET.get(),
                         SoundSource.PLAYERS, 0.35f,
                         tier == AeromanipChargeTier.FULL ? 1.65f : 1.4f);
-                AeromanipVfx.field(player.level(),
+                AeromanipVfx.field(player.serverLevel(),
                         new Vec3(player.getX(), player.getBoundingBox().minY + 0.05, player.getZ()),
                         tier == AeromanipChargeTier.FULL ? 1.25 : 0.72);
             }
@@ -288,7 +288,7 @@ public final class LaminarBuffer extends Skill {
             if (system.ensurePermanentOccupation(
                     player.getUUID(), cpCost(player, TOGGLE_CP_OCCUPATION), skill)) {
                 skill.reportTrigger(player);
-                AeromanipVfx.burst(player.level(),
+                AeromanipVfx.burst(player.serverLevel(),
                         player.position().add(0.0, player.getBbHeight() * 0.45, 0.0), 0.75);
             }
         }
@@ -316,7 +316,7 @@ public final class LaminarBuffer extends Skill {
         }
 
         private static void placePlatform(ServerPlayer player, LaminarBuffer skill, BlockPos pos) {
-            var level = player.level();
+            var level = player.serverLevel();
             if (!canPlacePlatform(level, pos)) return;
             level.setBlockAndUpdate(pos, Blocks.COMPRESSED_AIR_PLATFORM.get().defaultBlockState());
             var baseDuration = platformDuration(skill.hasProficiencyMilestone(player, 3));
@@ -342,7 +342,7 @@ public final class LaminarBuffer extends Skill {
                 super(player);
                 this.skill = skill;
                 this.durationTicks = durationTicks;
-                initialLevel = player.level();
+                initialLevel = player.serverLevel();
                 targetY = player.getY();
                 usageLease = AbilitySystemServer.getSystem(player)
                         .getAeromanipResourceManager().beginUse(player);

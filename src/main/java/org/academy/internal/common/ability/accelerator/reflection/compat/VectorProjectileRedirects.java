@@ -57,9 +57,7 @@ public final class VectorProjectileRedirects {
         if (projectile == null || picker == null) return false;
         var data = get(projectile);
         var redirected = data.isRedirected()
-                || projectile.getPersistentData()
-                .getBoolean(ORIGINAL_OWNER_PICKUP_TAG)
-                .orElse(false);
+                || projectile.getPersistentData().getBoolean(ORIGINAL_OWNER_PICKUP_TAG);
         var originalOwnerId = data.originalOwnerId() != null
                 ? data.originalOwnerId()
                 : VectorAttackAttributionResolver.originalProjectileOwnerId(projectile);

@@ -2,7 +2,6 @@ package org.academy.mixin.common;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityReference;
 import net.minecraft.world.entity.projectile.ShulkerBullet;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;

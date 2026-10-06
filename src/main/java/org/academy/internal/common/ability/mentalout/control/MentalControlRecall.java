@@ -91,7 +91,7 @@ public final class MentalControlRecall {
         var suppressed = SUPPRESSED_UNTIL_EXIT.get(player.getUUID());
         if (suppressed == null) return;
         suppressed.removeIf(subjectId -> {
-            var entity = player.level().getEntity(subjectId);
+            var entity = player.serverLevel().getEntity(subjectId);
             return !(entity instanceof Mob mob)
                     || !mob.isAlive()
                     || mob.isRemoved()

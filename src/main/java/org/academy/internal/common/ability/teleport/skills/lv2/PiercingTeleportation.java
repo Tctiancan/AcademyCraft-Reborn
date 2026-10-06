@@ -233,7 +233,7 @@ public final class PiercingTeleportation extends Skill {
                 var previousMovement = player.getDeltaMovement();
                 var direction = player.getLookAngle().normalize();
                 var destination = new Vec3(center.x, center.y - dimensions.height() / 2.0, center.z);
-                SpatialSynergy.Server.teleportNearbyTeam(player, player.level(), destination);
+                SpatialSynergy.Server.teleportNearbyTeam(player, player.serverLevel(), destination);
                 TeleportSync.teleportInstantly(player, destination);
                 player.resetFallDistance();
                 if (ctx.milestone() >= 3) {

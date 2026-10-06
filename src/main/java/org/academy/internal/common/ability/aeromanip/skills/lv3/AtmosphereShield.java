@@ -218,7 +218,7 @@ public final class AtmosphereShield extends Skill {
             if (enabled && Server.isActive(player)) {
                 stopNearbyProjectiles(player);
                 if (player.level().getGameTime() % 12 == 0) {
-                    AeromanipVfx.ring(player.level(),
+                    AeromanipVfx.ring(player.serverLevel(),
                             player.position().add(0.0, player.getBbHeight() * 0.45, 0.0), 1.05);
                 }
             }

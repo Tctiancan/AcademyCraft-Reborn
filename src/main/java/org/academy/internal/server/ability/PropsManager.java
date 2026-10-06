@@ -248,7 +248,7 @@ public final class PropsManager implements AbilitySubsystem {
         if (currentChunk == null) return;
         var structures = currentChunk.getAllReferences();
         if (structures.isEmpty()) return;
-        var registry = level.registryAccess().lookupOrThrow(Registries.STRUCTURE);
+        var registry = level.registryAccess().registryOrThrow(Registries.STRUCTURE);
         var data = storedPlayer.getPropsData();
         var changed = false;
 

@@ -55,7 +55,7 @@ public final class FlowSenseRuntime {
         double range = 24;
         long lastActivity;
         Observation(ServerPlayer owner) {
-            this.owner = owner; dimension = owner.level();
+            this.owner = owner; dimension = owner.serverLevel();
             query = AreaQueryService.open(dimension, owner, AreaQueryService.Point.ORIGIN, this);
         }
         @Override public boolean matches(LivingEntity target) {

@@ -196,7 +196,6 @@ public final class DarkmatterResourceGameTests {
                 helper.getLevel().getServer(), helper.getLevel(), profile,
                 cookie.clientInformation()
         ) {
-            @Override
             public GameType gameMode() {
                 return GameType.SURVIVAL;
             }
@@ -874,7 +873,7 @@ public final class DarkmatterResourceGameTests {
             void run(GameTestHelper helper) {
                 var owner = createPlayer(helper, 4);
                 var beetle = new DarkmatterBeetle(
-                        org.academy.internal.common.world.entity.EntityType.DARKMATTER_BEETLE.get(),
+                        org.academy.internal.common.world.entity.EntityTypes.DARKMATTER_BEETLE.get(),
                         helper.getLevel());
                 beetle.setOwnerUUID(owner.getUUID());
                 helper.assertTrue(MentalControlRuntime.isProtectedTarget(beetle),

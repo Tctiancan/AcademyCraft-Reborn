@@ -62,7 +62,7 @@ public record WarpModifier(
                 falloffFactor = 0.0f;
             } else {
                 var normalizedDistance = distanceToPeak / halfWidth;
-                falloffFactor = Mth.cos(normalizedDistance * Mth.PI * 0.5);
+                falloffFactor = (float) Mth.cos((float) (normalizedDistance * Mth.PI * 0.5));
             }
 
             if (falloffFactor <= 1.0E-6f) {

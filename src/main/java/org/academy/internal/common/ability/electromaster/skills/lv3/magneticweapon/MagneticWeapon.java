@@ -97,7 +97,6 @@ public class MagneticWeapon extends Skill {
     public static boolean isSupportedWeapon(ItemStack stack) {
         return !stack.isEmpty() && (stack.is(ItemTags.SWORDS)
                 || stack.is(ItemTags.AXES)
-                || stack.is(ItemTags.SPEARS)
                 || stack.is(ItemTags.TRIDENT_ENCHANTABLE)
                 || stack.is(ItemTags.MACE_ENCHANTABLE));
     }

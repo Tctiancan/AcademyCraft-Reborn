@@ -201,7 +201,7 @@ public final class TrueDamageCompatibility {
         if (CommonHooks.onLivingDeath(target, source)) return false;
         try {
             var credit = target.getKillCredit();
-            if (credit != null) credit.awardKillScore(target, source);
+            if (credit != null) credit.awardKillScore(target, 0, source);
             if (target.isSleeping()) target.stopSleeping();
             target.stopUsingItem();
 
@@ -210,7 +210,7 @@ public final class TrueDamageCompatibility {
             target.getCombatTracker().recheckStatus();
 
             var killer = source.getEntity();
-            if (killer == null || !killer.killedEntity(level, target, source)) {
+            if (killer == null || !killer.killedEntity(level, target)) {
                 target.gameEvent(GameEvent.ENTITY_DIE);
                 invoker.academy$dropAllDeathLoot(level, source);
             }

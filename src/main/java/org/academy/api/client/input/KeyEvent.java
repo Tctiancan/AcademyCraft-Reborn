@@ -1,7 +1,5 @@
 package org.academy.api.client.input;
 
-import com.mojang.blaze3d.platform.InputConstants;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,7 +12,7 @@ import java.lang.annotation.Target;
  * 属 C-stun: 1.21.1 的键盘回调走 `KeyboardHandler.keyPress` 的原始 int 参数, 该对象仅为移植兼容而保留.
  */
 public record KeyEvent(
-        @InputConstants.Value int key,
+        int key,
         int scancode,
         @InputWithModifiers.Modifiers int modifiers
 ) implements InputWithModifiers {

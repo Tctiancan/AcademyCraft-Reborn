@@ -858,7 +858,7 @@ public final class InputSystem {
         private static String keyName(InputType type, int key) {
             return switch (type) {
                 case MOUSE -> InputConstants.Type.MOUSE.getOrCreate(key).getDisplayName().getString();
-                case KEYBOARD -> InputConstants.getKey(new KeyEvent(key, -1, 0))
+                case KEYBOARD -> InputConstants.Type.KEYSYM.getOrCreate(key)
                         .getDisplayName().getString();
             };
         }

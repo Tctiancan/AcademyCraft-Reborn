@@ -1,10 +1,19 @@
 package org.academy.internal.common.world.item;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.entity.EquipmentSlotGroup;
+import net.minecraft.world.entity.ai.attributes.AttributeModifier;
+import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.*;
+import net.minecraft.world.item.component.ItemAttributeModifiers;
+import net.minecraft.world.item.component.Tool;
+import net.minecraft.world.level.block.Block;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.academy.internal.common.world.level.block.Blocks;
+
+import java.util.List;
 
 import static org.academy.AcademyCraft.MOD_ID;
 
@@ -22,31 +31,14 @@ public final class Items {
                     Blocks.DARKMATTER_BLOCK.get(), properties));
     public static final DeferredHolder<Item, DarkmatterToolItem> DARKMATTER_TOOL =
             ITEMS.registerItem("darkmatter_tool", properties -> new DarkmatterToolItem(
-                    properties.tool(
-                            Tiers.NETHERITE,
-                            DarkmatterToolItem.EFFECTIVE_BLOCKS,
-                            8.0f,
-                            -2.4f,
-                            0.0f
-                    )
+                    darkmatterTool(properties, Tiers.NETHERITE, DarkmatterToolItem.EFFECTIVE_BLOCKS)
             ));
     public static final DeferredHolder<Item, DarkmatterSwordItem> DARKMATTER_SWORD =
             ITEMS.registerItem("darkmatter_sword", properties -> new DarkmatterSwordItem(
-                    properties.sword(Tiers.NETHERITE, 5.0f, -2.4f)));
+                    darkmatterSword(properties, Tiers.NETHERITE)));
     public static final DeferredHolder<Item, DarkmatterSpearItem> DARKMATTER_SPEAR =
             ITEMS.registerItem("darkmatter_spear", properties -> new DarkmatterSpearItem(
-                    properties.spear(
-                            Tiers.NETHERITE,
-                            0.65f,
-                            0.7f,
-                            0.75f,
-                            5.0f,
-                            14.0f,
-                            10.0f,
-                            5.1f,
-                            15.0f,
-                            4.6f
-                    )));
+                    darkmatterSpear(properties, Tiers.NETHERITE)));
     public static final DeferredHolder<Item, DarkmatterTridentItem> DARKMATTER_TRIDENT =
             ITEMS.registerItem("darkmatter_trident", properties -> new DarkmatterTridentItem(
                     properties.attributes(TridentItem.createAttributes())
@@ -163,5 +155,37 @@ public final class Items {
             ITEMS.registerItem("spatial_storage_unit", SpatialStorageUnitItem::new);
 
     private Items() {
+    }
+
+    private static Item.Properties darkmatterTool(
+            Item.Properties properties, Tier tier, TagKey<Block> blocks) {
+        return baseWeaponProperties(properties, tier, 8.0f, -2.4f)
+                .component(DataComponents.TOOL,
+                        new Tool(List.of(Tool.Rule.minesAndDrops(blocks, 8.0f)), 8.0f, 2));
+    }
+
+    private static Item.Properties darkmatterSword(Item.Properties properties, Tier tier) {
+        return baseWeaponProperties(properties, tier, 5.0f, -2.4f);
+    }
+
+    private static Item.Properties darkmatterSpear(Item.Properties properties, Tier tier) {
+        return baseWeaponProperties(properties, tier, 5.0f, -2.6f)
+                .component(DataComponents.TOOL, net.minecraft.world.item.TridentItem.createToolProperties());
+    }
+
+    private static Item.Properties baseWeaponProperties(
+            Item.Properties properties, Tier tier, float damageBonus, float speedBonus) {
+        return properties.durability(tier.getUses())
+                .attributes(ItemAttributeModifiers.builder()
+                        .add(Attributes.ATTACK_DAMAGE,
+                                new AttributeModifier(Item.BASE_ATTACK_DAMAGE_ID,
+                                        tier.getAttackDamageBonus() + damageBonus,
+                                        AttributeModifier.Operation.ADD_VALUE),
+                                EquipmentSlotGroup.MAINHAND)
+                        .add(Attributes.ATTACK_SPEED,
+                                new AttributeModifier(Item.BASE_ATTACK_SPEED_ID,
+                                        speedBonus, AttributeModifier.Operation.ADD_VALUE),
+                                EquipmentSlotGroup.MAINHAND)
+                        .build());
     }
 }

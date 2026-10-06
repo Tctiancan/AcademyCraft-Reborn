@@ -404,8 +404,8 @@ public class PlayerCPManager implements AbilitySubsystem {
             if ("academy:darkmatter_generation".equals(occupation.getSkillId())
                     && cpData.getCurrMP() > CP_EPSILON) continue;
             var id = ResourceLocation.tryParse(occupation.getSkillId());
-            var enabled = id != null && Registries.SKILLS.get(id)
-                    .map(reference -> reference.value().isEnabled(player))
+            var enabled = id != null && Registries.SKILLS.getOptional(id)
+                    .map(reference -> reference.isEnabled(player))
                     .orElse(false);
             if (enabled) continue;
             released += occupation.getAmount();

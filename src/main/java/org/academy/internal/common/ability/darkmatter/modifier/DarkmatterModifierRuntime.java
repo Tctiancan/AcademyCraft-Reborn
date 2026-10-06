@@ -289,7 +289,7 @@ public final class DarkmatterModifierRuntime {
             if (DarkmatterItemUtil.modifierLevel(held, DarkmatterModifiers.SHEAR) <= 0
                     || !DarkmatterItemUtil.isOperational(held)
                     || !shearable.readyForShearing()) return;
-            shearable.shear(player.level(), SoundSource.PLAYERS, held);
+            shearable.shear(SoundSource.PLAYERS);
             damageForUse(player, held, event.getHand(), 1);
             event.setCanceled(true);
             event.setCancellationResult(InteractionResult.SUCCESS);
@@ -383,7 +383,7 @@ public final class DarkmatterModifierRuntime {
                 shape, DarkmatterItemUtil.effectBetaPower(source));
         var armor = target.getAttribute(Attributes.ARMOR);
         if (armor == null || penetration <= 0.0f) {
-            DarkmatterTargeting.hurt(owner.level(), target,
+            DarkmatterTargeting.hurt(owner.serverLevel(), target,
                     SkillDamageSource.of(owner, Skills.DARKMATTER_SHAPING.get()), damage);
             return;
         }
@@ -394,7 +394,7 @@ public final class DarkmatterModifierRuntime {
                 -Math.clamp(penetration, 0.0f, 0.50f),
                 AttributeModifier.Operation.ADD_MULTIPLIED_BASE));
         try {
-            DarkmatterTargeting.hurt(owner.level(), target,
+            DarkmatterTargeting.hurt(owner.serverLevel(), target,
                     SkillDamageSource.of(owner, Skills.DARKMATTER_SHAPING.get()), damage);
         } finally {
             armor.removeModifier(PROJECTILE_PENETRATION_ID);
@@ -407,7 +407,7 @@ public final class DarkmatterModifierRuntime {
                                    int level, BlockHitResult originalHit) {
         var changed = false;
         var radius = level;
-        var world = player.level();
+        var world = player.serverLevel();
         for (var x = -radius; x <= radius; x++)
             for (var z = -radius; z <= radius; z++) {
                 var pos = center.offset(x, 0, z);

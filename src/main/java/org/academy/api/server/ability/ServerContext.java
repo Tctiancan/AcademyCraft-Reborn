@@ -19,7 +19,7 @@ public abstract class ServerContext implements Context {
     }
 
     public final ServerLevel level() {
-        return player.level();
+        return player.serverLevel();
     }
 
     @Override

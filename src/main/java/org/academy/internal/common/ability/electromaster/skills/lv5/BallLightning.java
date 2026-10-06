@@ -358,7 +358,7 @@ public class BallLightning extends Skill {
                         }
                         case STAY -> {
                             var t = existedTicks * 0.15 + timeSeed;
-                            var noise = new Vec3(Mth.sin(t), Mth.cos(t * 0.8), Mth.sin(t * 1.2)).scale(0.04);
+                            var noise = new Vec3(Mth.sin((float) t), Mth.cos((float) (t * 0.8)), Mth.sin((float) (t * 1.2))).scale(0.04);
                             force = noise.add(toTarget.normalize().scale(0.015));
                             drag = 0.85f;
                             maxSpeed = 0.1;
@@ -523,7 +523,7 @@ public class BallLightning extends Skill {
                         var r = 2.0 + Math.abs(MathUtil.RANDOM.nextGaussian() * 4.0);
                         if (r <= 6f) {
                             var ang = Math.random() * 6.28;
-                            var target = position.add(r * Mth.cos(ang), MathUtil.RANDOM.nextDouble(-2, 2), r * Mth.sin(ang));
+                            var target = position.add(r * Mth.cos((float) ang), MathUtil.RANDOM.nextDouble(-2, 2), r * Mth.sin((float) ang));
                             paths.add(new ArcPath(
                                     new LinePath(position.toVector3f(), target.toVector3f()),
                                     List.of(

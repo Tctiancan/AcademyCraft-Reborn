@@ -268,7 +268,7 @@ public final class JetStrike extends Skill {
 
         private TrailContext(ServerPlayer player, int proficiencyMilestone, float damage) {
             super(player);
-            initialLevel = player.level();
+            initialLevel = player.serverLevel();
             this.proficiencyMilestone = proficiencyMilestone;
             this.damage = damage;
         }

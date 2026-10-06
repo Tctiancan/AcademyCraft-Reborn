@@ -219,7 +219,7 @@ public final class VortexPull extends Skill {
                 player.level().playSound(null, player.blockPosition(),
                         SoundEvents.AIRFLOW_FIELD.get(), SoundSource.PLAYERS,
                         0.65f, tier == AeromanipChargeTier.FULL ? 0.6f : 0.8f);
-                AeromanipVfx.vortex(player.level(),
+                AeromanipVfx.vortex(player.serverLevel(),
                         player.position().add(0.0, 0.3, 0.0),
                         tier == AeromanipChargeTier.FULL ? 1.4 : 0.82);
             }

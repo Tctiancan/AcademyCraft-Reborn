@@ -72,8 +72,8 @@ public final class DarkmatterCreatureProjectile extends AbstractArrow implements
 
     @Override
     public void tick() {
-        if (!level().isClientSide() && homing && targetId != null) {
-            if (!(level().getEntity(targetId) instanceof LivingEntity target)
+        if (homing && targetId != null && level() instanceof ServerLevel serverLevel) {
+            if (!(serverLevel.getEntity(targetId) instanceof LivingEntity target)
                     || !target.isAlive() || target.isRemoved()) {
                 discard();
                 return;

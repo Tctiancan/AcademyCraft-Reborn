@@ -224,7 +224,7 @@ public final class ScatterBomb extends Skill {
         private static void start(ServerPlayer player) {
             if (!Skills.SCATTER_BOMB.get().isEnabled(player) || CHARGING.containsKey(player.getUUID())) return;
             var milestone = Skills.SCATTER_BOMB.get().getEffectiveProficiencyMilestone(player);
-            CHARGING.put(player.getUUID(), new ChargeState(player.level(), player.level().getGameTime(), milestone));
+            CHARGING.put(player.getUUID(), new ChargeState(player.serverLevel(), player.level().getGameTime(), milestone));
         }
 
         private static void release(ServerPlayer player) {

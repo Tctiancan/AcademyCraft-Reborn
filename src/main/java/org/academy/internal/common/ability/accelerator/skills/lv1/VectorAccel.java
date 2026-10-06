@@ -341,7 +341,7 @@ public final class VectorAccel extends Skill {
 
                 if (lastHitResult instanceof BlockHitResult blockHitResult) {
                     var hitPos = blockHitResult.getLocation().add(renderOffset);
-                    var normal = Vec3.atLowerCornerOf(blockHitResult.getDirection().getUnitVec3i());
+                    var normal = Vec3.atLowerCornerOf(blockHitResult.getDirection().getNormal());
 
                     var lerpFactor = ClientUtil.animationFactor(1.5f);
                     final var ringRadius = 0.4f;

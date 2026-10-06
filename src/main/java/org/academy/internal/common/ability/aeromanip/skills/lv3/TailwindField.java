@@ -230,7 +230,7 @@ public final class TailwindField extends Skill {
                 player.level().playSound(null, player.blockPosition(), SoundEvents.AIRFLOW_FIELD.get(),
                         SoundSource.PLAYERS, 0.55f,
                         tier == AeromanipChargeTier.FULL ? 1.45f : 1.2f);
-                AeromanipVfx.ring(player.level(),
+                AeromanipVfx.ring(player.serverLevel(),
                         player.position().add(0.0, 0.2, 0.0),
                         tier == AeromanipChargeTier.FULL ? 1.4 : 0.8);
             }
@@ -311,10 +311,10 @@ public final class TailwindField extends Skill {
                 ServerPlayer owner, Mode mode, Vec3 center, Vec3 facing, double radius
         ) {
             if (mode == Mode.FOLLOW_RADIAL) {
-                AeromanipVfx.ring(owner.level(), center.add(0.0, 0.25, 0.0), radius * 0.82);
+                AeromanipVfx.ring(owner.serverLevel(), center.add(0.0, 0.25, 0.0), radius * 0.82);
             } else {
                 var direction = facing.lengthSqr() > 1.0e-8 ? facing.normalize() : new Vec3(0, 0, 1);
-                AeromanipVfx.stream(owner.level(),
+                AeromanipVfx.stream(owner.serverLevel(),
                         center.subtract(direction.scale(radius * 0.72)).add(0.0, 0.25, 0.0),
                         direction, radius * 1.44);
             }
