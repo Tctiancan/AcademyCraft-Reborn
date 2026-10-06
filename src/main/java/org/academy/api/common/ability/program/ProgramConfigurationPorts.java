@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.lang.reflect.RecordComponent;
 import java.math.BigInteger;
@@ -153,7 +153,7 @@ public final class ProgramConfigurationPorts {
             return new JsonPrimitive(value.toString());
         }
         if (targetType.equals(ProgramValueTypes.IDENTIFIER)) {
-            return new JsonPrimitive(((Identifier) value).toString());
+            return new JsonPrimitive(((ResourceLocation) value).toString());
         }
         if (targetType.equals(ProgramValueTypes.TAG)) {
             return new JsonPrimitive(((ProgramTag) value).id().toString());

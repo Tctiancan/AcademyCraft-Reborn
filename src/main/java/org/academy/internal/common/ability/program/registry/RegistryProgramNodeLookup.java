@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program.registry;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramNodeType;
 import org.academy.api.common.registries.Registries;
 
@@ -14,7 +14,7 @@ public final class RegistryProgramNodeLookup implements ProgramNodeLookup {
     }
 
     @Override
-    public ProgramNodeType<?> find(Identifier id) {
+    public ProgramNodeType<?> find(ResourceLocation id) {
         return Registries.PROGRAM_NODE_TYPES.get(id)
                 .map(reference -> reference.value())
                 .orElse(null);

@@ -1,14 +1,12 @@
 package org.academy.internal.client.model;
 
-import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.academy.internal.client.definitions.AbilityDeveloperAnimation;
 import org.academy.internal.client.renderer.blockentity.state.AbilityDeveloperRenderState;
 
@@ -16,19 +14,20 @@ import org.academy.internal.client.renderer.blockentity.state.AbilityDeveloperRe
  * @author MapleBadd
  */
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class AbilityDeveloperModel extends Model<AbilityDeveloperRenderState> {
+public class AbilityDeveloperModel {
     public static final AbilityDeveloperModel MODEL = new AbilityDeveloperModel(createBodyLayer().bakeRoot());
-    private final KeyframeAnimation opening;
-    private final KeyframeAnimation closing;
-    private final KeyframeAnimation standing;
-    private final KeyframeAnimation lyingDown;
+    private final ModelPart root;
+    private final AnimationDefinition opening;
+    private final AnimationDefinition closing;
+    private final AnimationDefinition standing;
+    private final AnimationDefinition lyingDown;
 
     public AbilityDeveloperModel(ModelPart root) {
-        super(root, RenderTypes::entityTranslucent);
-        opening = AbilityDeveloperAnimation.OPENING.bake(root);
-        closing = AbilityDeveloperAnimation.CLOSING.bake(root);
-        standing = AbilityDeveloperAnimation.STANDING.bake(root);
-        lyingDown = AbilityDeveloperAnimation.LYING_DOWN.bake(root);
+        this.root = root;
+        opening = AbilityDeveloperAnimation.OPENING;
+        closing = AbilityDeveloperAnimation.CLOSING;
+        standing = AbilityDeveloperAnimation.STANDING;
+        lyingDown = AbilityDeveloperAnimation.LYING_DOWN;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -115,12 +114,10 @@ public class AbilityDeveloperModel extends Model<AbilityDeveloperRenderState> {
         return LayerDefinition.create(meshdefinition, 256, 256);
     }
 
-    @Override
     public void setupAnim(AbilityDeveloperRenderState renderState) {
-        super.setupAnim(renderState);
-        opening.apply(renderState.openingState, renderState.ageInTicks);
-        closing.apply(renderState.closingState, renderState.ageInTicks);
-        standing.apply(renderState.standingState, renderState.ageInTicks);
-        lyingDown.apply(renderState.lyingDownState, renderState.ageInTicks);
+        KeyframeAnimationApplier.animateState(opening, renderState.openingState, renderState.ageInTicks, root);
+        KeyframeAnimationApplier.animateState(closing, renderState.closingState, renderState.ageInTicks, root);
+        KeyframeAnimationApplier.animateState(standing, renderState.standingState, renderState.ageInTicks, root);
+        KeyframeAnimationApplier.animateState(lyingDown, renderState.lyingDownState, renderState.ageInTicks, root);
     }
 }

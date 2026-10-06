@@ -1,7 +1,7 @@
 package org.academy.api.common.structure;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 import org.academy.AcademyCraft;
@@ -11,7 +11,7 @@ public final class BlockStructureTags {
     /** Geological and terrain blocks that may use falling-block physics during settlement. */
     public static final TagKey<Block> NATURAL_SETTLEMENT = TagKey.create(
             Registries.BLOCK,
-            Identifier.fromNamespaceAndPath(
+            ResourceLocation.fromNamespaceAndPath(
                     AcademyCraft.MOD_ID,
                     "natural_structure_settlement"
             )

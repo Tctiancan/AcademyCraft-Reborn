@@ -1,8 +1,8 @@
 package org.academy.internal.client.animation;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.world.entity.player.Player;
 import org.academy.api.client.input.InputSystem;
 import org.academy.internal.common.ability.accelerator.flight.WingFlightPose;
 import org.academy.internal.common.attachment.AttachmentTypes;
@@ -25,8 +25,8 @@ public final class WingFlightAnimationClient {
     }
 
     public static void prepareRenderState(
-            Avatar avatar,
-            AvatarRenderState state,
+            Player avatar,
+            PlayerRenderState state,
             float partialTick
     ) {
         sample(avatar, partialTick);
@@ -35,7 +35,7 @@ public final class WingFlightAnimationClient {
         }
     }
 
-    static void suppressVanillaCompactPoseAnimation(AvatarRenderState state) {
+    static void suppressVanillaCompactPoseAnimation(PlayerRenderState state) {
         // FALL_FLYING supplies the one-block collision box. Without vanilla's fall-flying
         // flag, LivingEntity treats that pose as visual swimming and AvatarRenderer adds
         // another -90-degree body rotation on top of the authored Gecko animation.
@@ -44,12 +44,12 @@ public final class WingFlightAnimationClient {
     }
 
     public static WingFlightAnimationTimeline.Playback sample(
-            Avatar avatar,
+            Player avatar,
             float partialTick
     ) {
         var requested = requestedPose(avatar);
         var id = avatar.getUUID();
-        var timeline = TIMELINES.computeIfAbsent(id, _ -> new WingFlightAnimationTimeline());
+        var timeline = TIMELINES.computeIfAbsent(id, unused181 -> new WingFlightAnimationTimeline());
         var playback = timeline.update(requested, avatar.tickCount + partialTick);
         if (requested == WingFlightPose.Pose.IDLE
                 && playback.phase() == WingFlightAnimationTimeline.Phase.IDLE) {
@@ -65,7 +65,7 @@ public final class WingFlightAnimationClient {
         return PLAYBACKS.get(entityId);
     }
 
-    private static WingFlightPose.Pose requestedPose(Avatar avatar) {
+    private static WingFlightPose.Pose requestedPose(Player avatar) {
         var minecraft = Minecraft.getInstance();
         if (avatar == minecraft.player && WingFlightPose.hasActiveWing(avatar)) {
             if (minecraft.gui.screen() != null) return WingFlightPose.Pose.IDLE;

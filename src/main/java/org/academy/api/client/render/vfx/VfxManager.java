@@ -1,20 +1,9 @@
 package org.academy.api.client.render.vfx;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.systems.GpuDevice;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.GpuTextureView;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import org.academy.api.client.render.Render;
-import org.academy.api.client.render.post.PostEffect;
-import org.academy.api.client.render.vfx.lightning.ArcExecutor;
 import org.academy.api.common.profiler.AcademyProfiler;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
-import org.jspecify.annotations.Nullable;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -36,9 +25,7 @@ public final class VfxManager {
 
     public void init() {
         if (initialized) return;
-        var device = RenderSystem.getDevice();
-        VfxRegistry.forEachRenderer(renderer -> renderer.init(device));
-        ArcExecutor.get();
+        VfxRegistry.forEachRenderer(VfxRenderer::init);
         initialized = true;
     }
 
@@ -47,7 +34,6 @@ public final class VfxManager {
         VfxRegistry.forEachRenderer(VfxRenderer::close);
         activeEffects.clear();
         frameData.clear();
-        ArcExecutor.shutdownAndReset();
         initialized = false;
     }
 
@@ -90,11 +76,6 @@ public final class VfxManager {
         });
     }
 
-    public void submitWorldGeometry(PoseStack poseStack, SubmitNodeCollector output) {
-        if (!initialized || frameData.isEmpty()) return;
-        VfxRegistry.submitWorldGeometry(frameData, renderContext, poseStack, output);
-    }
-
     public void renderAfterSkyFrame() {
         if (!initialized || frameData.isEmpty()) return;
         AcademyProfiler.runZone("academy.vfx.after_sky", () ->
@@ -103,18 +84,6 @@ public final class VfxManager {
 
     public boolean hasGlowData() {
         return hasPhaseData(VfxPhase.WORLD_GLOW);
-    }
-
-    public void renderGlowFrame(GpuTextureView color, @Nullable GpuTextureView depth) {
-        if (!initialized) return;
-        renderContext.setBloomInput(color, depth);
-        try {
-            AcademyProfiler.runZone("academy.vfx.glow", () ->
-                    VfxRegistry.renderPhase(VfxPhase.WORLD_GLOW, frameData, renderContext));
-        } finally {
-            renderContext.setBloomInput(null, null);
-            frameData.clear();
-        }
     }
 
     private boolean hasPhaseData(VfxPhase phase) {
@@ -129,30 +98,15 @@ public final class VfxManager {
     private static final class MainRenderContext implements VfxRenderContext {
         private final Vector3f cameraPos = new Vector3f();
         private final Quaternionf cameraOrientation = new Quaternionf();
-        private final Matrix4f projectionMatrix = new Matrix4f();
         private final Matrix4f viewRotationMatrix = new Matrix4f();
-        private @Nullable GpuBufferSlice projectionUniform;
-        private @Nullable GpuTextureView bloomInputColor;
-        private @Nullable GpuTextureView bloomInputDepth;
         private float gameTime;
 
         void update(VfxFrameContext frame) {
             gameTime = frame.gameTime();
-            cameraPos.set(frame.camera().pos());
-            cameraOrientation.set(frame.camera().orientation());
-            projectionMatrix.set(frame.camera().projectionMatrix());
-            viewRotationMatrix.set(frame.camera().viewRotationMatrix());
-            projectionUniform = frame.camera().projectionUniform();
-        }
-
-        void setBloomInput(@Nullable GpuTextureView color, @Nullable GpuTextureView depth) {
-            bloomInputColor = color;
-            bloomInputDepth = depth;
-        }
-
-        @Override
-        public GpuDevice device() {
-            return RenderSystem.getDevice();
+            var camera = frame.camera();
+            cameraPos.set(camera.pos());
+            cameraOrientation.set(camera.orientation());
+            viewRotationMatrix.set(camera.viewRotationMatrix());
         }
 
         @Override
@@ -173,38 +127,6 @@ public final class VfxManager {
         @Override
         public Matrix4f viewRotationMatrix() {
             return viewRotationMatrix;
-        }
-
-        @Override
-        public GpuBufferSlice projectionUniform() {
-            var captured = projectionUniform;
-            if (captured != null) return captured;
-            return Render.Buffers.getInstance().getProjectionUB(projectionMatrix).slice();
-        }
-
-        @Override
-        public @Nullable GpuTextureView mainColor() {
-            return Minecraft.getInstance().gameRenderer.mainRenderTarget().getColorTextureView();
-        }
-
-        @Override
-        public @Nullable GpuTextureView mainDepth() {
-            return Minecraft.getInstance().gameRenderer.mainRenderTarget().getDepthTextureView();
-        }
-
-        @Override
-        public @Nullable GpuTextureView bloomInputColor() {
-            return bloomInputColor;
-        }
-
-        @Override
-        public @Nullable GpuTextureView bloomInputDepth() {
-            return bloomInputDepth;
-        }
-
-        @Override
-        public @Nullable GpuTextureView sceneColor() {
-            return PostEffect.MAIN_SCENE.getColorTextureView();
         }
     }
 }

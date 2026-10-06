@@ -5,7 +5,7 @@ import org.academy.internal.common.ability.program.registry.CommonProgramNodeCat
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramConfigurationPorts;
 import org.academy.api.common.ability.program.ProgramInputView;
 import org.academy.api.common.ability.program.ProgramNodeRole;
@@ -43,7 +43,7 @@ class ProgramConfigurationPortsTest {
         var inputs = new ProgramInputView(Map.of(
                 "text", List.of(new ProgramValue<>(
                         ProgramValueTypes.TAG,
-                        new ProgramTag(Identifier.parse("minecraft:mineable/pickaxe"))
+                        new ProgramTag(ResourceLocation.parse("minecraft:mineable/pickaxe"))
                 )),
                 "count", List.of(new ProgramValue<>(ProgramValueTypes.INTEGER, 7)),
                 "amount", List.of(new ProgramValue<>(ProgramValueTypes.INTEGER, 3))

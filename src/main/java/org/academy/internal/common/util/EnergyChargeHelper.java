@@ -9,10 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.neoforge.capabilities.Capabilities;
-import net.neoforged.neoforge.transfer.access.ItemAccess;
-import net.neoforged.neoforge.transfer.energy.EnergyHandler;
-import net.neoforged.neoforge.transfer.item.VanillaContainerWrapper;
-import net.neoforged.neoforge.transfer.transaction.Transaction;
+import net.neoforged.neoforge.energy.IEnergyStorage;
 import org.academy.api.common.energy.AcademyEnergyItem;
 import org.academy.api.common.wireless.WirelessUser;
 
@@ -32,13 +29,9 @@ public final class EnergyChargeHelper {
     private EnergyChargeHelper() {
     }
 
-    public static int charge(EnergyHandler handler) {
+    public static int charge(IEnergyStorage handler) {
         if (handler == null) return 0;
-        try (var transaction = Transaction.openRoot()) {
-            var inserted = handler.insert(Integer.MAX_VALUE, transaction);
-            if (inserted > 0) transaction.commit();
-            return inserted;
-        }
+        return handler.receiveEnergy(Integer.MAX_VALUE, false);
     }
 
     public static boolean chargeItem(ItemStack stack) {
@@ -46,8 +39,7 @@ public final class EnergyChargeHelper {
         if (stack.getItem() instanceof AcademyEnergyItem energyItem) {
             return energyItem.receiveEnergy(stack, Integer.MAX_VALUE, false) > 0;
         }
-        var access = ItemAccess.forStack(stack);
-        return charge(access.getCapability(Capabilities.Energy.ITEM)) > 0;
+        return charge(stack.getCapability(Capabilities.EnergyStorage.ITEM)) > 0;
     }
 
     /**
@@ -60,7 +52,7 @@ public final class EnergyChargeHelper {
         }
         return transferToEnergyHandler(
                 source,
-                ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM),
+                stack.getCapability(Capabilities.EnergyStorage.ITEM),
                 maxTransfer
         );
     }
@@ -84,10 +76,9 @@ public final class EnergyChargeHelper {
             if (transferred > 0) container.setChanged();
             return transferred;
         }
-        var access = ItemAccess.forHandlerIndex(VanillaContainerWrapper.of(container), slot);
         return transferToEnergyHandler(
                 source,
-                access.getCapability(Capabilities.Energy.ITEM),
+                stack.getCapability(Capabilities.EnergyStorage.ITEM),
                 maxTransfer
         );
     }
@@ -109,25 +100,22 @@ public final class EnergyChargeHelper {
 
     private static int transferToEnergyHandler(
             WirelessUser source,
-            EnergyHandler handler,
+            IEnergyStorage handler,
             int maxTransfer
     ) {
         if (handler == null) return 0;
         var available = source.extractEnergy(maxTransfer, true);
         if (available <= 0) return 0;
-        try (var transaction = Transaction.openRoot()) {
-            var inserted = handler.insert(available, transaction);
-            if (inserted <= 0 || source.extractEnergy(inserted, true) != inserted) return 0;
-            var extracted = source.extractEnergy(inserted, false);
-            if (extracted != inserted) return 0;
-            transaction.commit();
-            return inserted;
-        }
+        var inserted = handler.receiveEnergy(available, true);
+        if (inserted <= 0 || source.extractEnergy(inserted, true) != inserted) return 0;
+        var extracted = source.extractEnergy(inserted, false);
+        if (extracted != inserted) return 0;
+        return handler.receiveEnergy(inserted, false);
     }
 
     public static boolean hasEnergyStorage(ItemStack stack) {
         return !stack.isEmpty() && (stack.getItem() instanceof AcademyEnergyItem
-                || ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM) != null);
+                || stack.getCapability(Capabilities.EnergyStorage.ITEM) != null);
     }
 
     public static boolean isEnergyItemFull(ItemStack stack) {
@@ -135,11 +123,9 @@ public final class EnergyChargeHelper {
         if (stack.getItem() instanceof AcademyEnergyItem energyItem) {
             return energyItem.receiveEnergy(stack, 1, true) <= 0;
         }
-        var handler = ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM);
+        var handler = stack.getCapability(Capabilities.EnergyStorage.ITEM);
         if (handler == null) return true;
-        try (var transaction = Transaction.openRoot()) {
-            return handler.insert(1, transaction) <= 0;
-        }
+        return handler.receiveEnergy(1, true) <= 0;
     }
 
     public static boolean chargeEquipment(LivingEntity entity) {
@@ -175,7 +161,7 @@ public final class EnergyChargeHelper {
     }
 
     public static boolean chargeBlock(Level level, BlockPos pos, Direction side) {
-        var charged = charge(level.getCapability(Capabilities.Energy.BLOCK, pos, side)) > 0;
+        var charged = charge(level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, side)) > 0;
         if (charged) return true;
 
         if (level.getBlockEntity(pos) instanceof WirelessUser user) {
@@ -185,14 +171,14 @@ public final class EnergyChargeHelper {
     }
 
     public static boolean chargeEntity(LivingEntity entity) {
-        var charged = charge(entity.getCapability(Capabilities.Energy.ENTITY, null)) > 0;
+        var charged = charge(entity.getCapability(Capabilities.EnergyStorage.ENTITY, null)) > 0;
         return chargeEquipment(entity) || charged;
     }
 
     public static boolean hasBlockEnergyStorage(Level level, BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof WirelessUser) return true;
         for (var side : Direction.values()) {
-            if (level.getCapability(Capabilities.Energy.BLOCK, pos, side) != null) return true;
+            if (level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, side) != null) return true;
         }
         return false;
     }
@@ -201,12 +187,12 @@ public final class EnergyChargeHelper {
         var stored = 0L;
         var capacity = 0L;
         var seen = Collections.newSetFromMap(
-                new IdentityHashMap<EnergyHandler, Boolean>());
+                new IdentityHashMap<IEnergyStorage, Boolean>());
         for (var side : Direction.values()) {
-            var handler = level.getCapability(Capabilities.Energy.BLOCK, pos, side);
+            var handler = level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, side);
             if (handler == null || !seen.add(handler)) continue;
-            stored += Math.max(0, handler.getAmountAsInt());
-            capacity += Math.max(0, handler.getCapacityAsInt());
+            stored += Math.max(0, handler.getEnergyStored());
+            capacity += Math.max(0, handler.getMaxEnergyStored());
         }
         if (capacity <= 0L && level.getBlockEntity(pos) instanceof WirelessUser user) {
             stored = Math.max(0, user.getEnergyStored());
@@ -220,8 +206,8 @@ public final class EnergyChargeHelper {
     public static OptionalDouble entityEnergyFraction(LivingEntity entity) {
         var stored = 0L;
         var capacity = 0L;
-        var handlers = new ArrayList<EnergyHandler>();
-        var entityHandler = entity.getCapability(Capabilities.Energy.ENTITY, null);
+        var handlers = new ArrayList<IEnergyStorage>();
+        var entityHandler = entity.getCapability(Capabilities.EnergyStorage.ENTITY, null);
         if (entityHandler != null) handlers.add(entityHandler);
         var stacks = new ArrayList<ItemStack>();
         stacks.add(entity.getMainHandItem());
@@ -234,12 +220,12 @@ public final class EnergyChargeHelper {
                 capacity += Math.max(0, energyItem.getMaxEnergyStored(stack));
                 continue;
             }
-            var handler = ItemAccess.forStack(stack).getCapability(Capabilities.Energy.ITEM);
+            var handler = stack.getCapability(Capabilities.EnergyStorage.ITEM);
             if (handler != null) handlers.add(handler);
         }
         for (var handler : handlers) {
-            stored += Math.max(0, handler.getAmountAsInt());
-            capacity += Math.max(0, handler.getCapacityAsInt());
+            stored += Math.max(0, handler.getEnergyStored());
+            capacity += Math.max(0, handler.getMaxEnergyStored());
         }
         return capacity <= 0L
                 ? OptionalDouble.empty()

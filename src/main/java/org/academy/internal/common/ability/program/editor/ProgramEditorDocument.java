@@ -5,7 +5,7 @@ import org.academy.internal.common.ability.program.registry.AbilityProgramDefini
 
 
 import com.google.gson.JsonElement;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.jspecify.annotations.Nullable;
 
@@ -24,7 +24,7 @@ public final class ProgramEditorDocument {
     public ProgramEditorDocument(
             AbilityProgram program,
             ProgramEditorNodeCatalog catalog,
-            Set<Identifier> capabilities
+            Set<ResourceLocation> capabilities
     ) {
         this(program, catalog, capabilities, ProgramLimits.DEFAULT);
     }
@@ -32,7 +32,7 @@ public final class ProgramEditorDocument {
     public ProgramEditorDocument(
             AbilityProgram program,
             AbilityProgramDefinition definition,
-            Set<Identifier> capabilities
+            Set<ResourceLocation> capabilities
     ) {
         this(program, definition.editorCatalog(), capabilities, definition.limits());
         if (!program.category().equals(definition.category())) {
@@ -43,7 +43,7 @@ public final class ProgramEditorDocument {
     private ProgramEditorDocument(
             AbilityProgram program,
             ProgramEditorNodeCatalog catalog,
-            Set<Identifier> capabilities,
+            Set<ResourceLocation> capabilities,
             ProgramLimits limits
     ) {
         if (program == null || catalog == null) {
@@ -116,11 +116,11 @@ public final class ProgramEditorDocument {
         return ProgramGraphValidator.validate(program.graph(), context, catalog);
     }
 
-    public EditResult addNode(Identifier typeId, double x, double y) {
+    public EditResult addNode(ResourceLocation typeId, double x, double y) {
         return addNode(typeId, x, y, null);
     }
 
-    public EditResult addNode(Identifier typeId, double x, double y, @Nullable JsonElement configuration) {
+    public EditResult addNode(ResourceLocation typeId, double x, double y, @Nullable JsonElement configuration) {
         if (!Double.isFinite(x) || !Double.isFinite(y)) {
             return failure(ProgramDiagnosticCode.INVALID_NODE, -1, null);
         }
@@ -338,7 +338,7 @@ public final class ProgramEditorDocument {
             var fromSchema = schema(graph, edge.from().nodeId());
             var output = fromSchema == null ? null : fromSchema.output(edge.from().port()).orElse(null);
             if (output == null || output.type().equals(ProgramValueTypes.FLOW)) continue;
-            outgoing.computeIfAbsent(edge.from().nodeId(), _ -> new ArrayList<>())
+            outgoing.computeIfAbsent(edge.from().nodeId(), unused722 -> new ArrayList<>())
                     .add(edge.to().nodeId());
         }
         var visiting = new HashSet<Integer>();

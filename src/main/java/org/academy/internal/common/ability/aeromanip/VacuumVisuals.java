@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.aeromanip;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -58,19 +58,19 @@ public final class VacuumVisuals {
     }
     @PacketTarget(ThreadType.CLIENT)
     public static final class Update extends Packet<ClientPacketListener, Update> {
-        public final Identifier dimension;
+        public final ResourceLocation dimension;
         public final int ownerId;
         public final UUID owner;
         public final Vec3 position;
         public final float radius;
         public final boolean active;
         public static final StreamCodec<ByteBuf, Update> CODEC = StreamCodec.of((b, p) -> {
-            Identifier.STREAM_CODEC.encode(b, p.dimension); b.writeInt(p.ownerId);
+            ResourceLocation.STREAM_CODEC.encode(b, p.dimension); b.writeInt(p.ownerId);
             b.writeLong(p.owner.getMostSignificantBits()).writeLong(p.owner.getLeastSignificantBits());
             Vec3.STREAM_CODEC.encode(b, p.position); b.writeFloat(p.radius).writeBoolean(p.active);
-        }, b -> new Update(Identifier.STREAM_CODEC.decode(b), b.readInt(), new UUID(b.readLong(), b.readLong()),
+        }, b -> new Update(ResourceLocation.STREAM_CODEC.decode(b), b.readInt(), new UUID(b.readLong(), b.readLong()),
                 Vec3.STREAM_CODEC.decode(b), b.readFloat(), b.readBoolean()));
-        public Update(Identifier dimension, int ownerId, UUID owner, Vec3 position, float radius, boolean active) {
+        public Update(ResourceLocation dimension, int ownerId, UUID owner, Vec3 position, float radius, boolean active) {
             if (!Float.isFinite(radius) || radius < 1 || radius > 12) throw new IllegalArgumentException("Visual radius");
             this.dimension = dimension; this.ownerId = ownerId; this.owner = owner;
             this.position = position; this.radius = radius; this.active = active;

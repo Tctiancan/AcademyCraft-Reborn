@@ -1,28 +1,23 @@
 package org.academy.internal.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.irisshaders.iris.shaderpack.materialmap.WorldRenderingSettings;
-import net.irisshaders.iris.uniforms.CapturedRenderingState;
 import net.minecraft.client.animation.*;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.blockentity.TheEndPortalRenderer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.world.level.block.Blocks;
-import org.academy.api.client.compatibility.IrisIntegration;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import org.academy.api.client.resources.R;
 import org.academy.internal.client.renderer.blockentity.state.WirelessNodeRenderState;
 
 /**
  * @author MapleBadd
  */
-public class WirelessNodeModel extends Model<WirelessNodeRenderState> {
+public class WirelessNodeModel {
+    private final ModelPart root;
     public static final AnimationDefinition EMPTY = AnimationDefinition.Builder.withLength(0.0F).looping()
             .build();
     public static final AnimationDefinition QUARTER = AnimationDefinition.Builder.withLength(4.0F).looping()
@@ -80,21 +75,21 @@ public class WirelessNodeModel extends Model<WirelessNodeRenderState> {
     private final ModelPart core_li;
     private final ModelPart base2;
     private final ModelPart innner_ef;
-    private final KeyframeAnimation quarter;
-    private final KeyframeAnimation half;
-    private final KeyframeAnimation quarters;
-    private final KeyframeAnimation full;
+    private final AnimationDefinition quarter;
+    private final AnimationDefinition half;
+    private final AnimationDefinition quarters;
+    private final AnimationDefinition full;
 
     public WirelessNodeModel(ModelPart root) {
-        super(root.getChild("all"), RenderTypes::entityTranslucent);
+        this.root = root;
         all = root.getChild("all");
         core_li = all.getChild("core_li");
         base2 = all.getChild("base2");
         innner_ef = all.getChild("innner_ef");
-        quarter = QUARTER.bake(root);
-        half = HALF.bake(root);
-        quarters = QUARTERS.bake(root);
-        full = FULL.bake(root);
+        quarter = QUARTER;
+        half = HALF;
+        quarters = QUARTERS;
+        full = FULL;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -182,9 +177,7 @@ public class WirelessNodeModel extends Model<WirelessNodeRenderState> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-    @Override
     public void setupAnim(WirelessNodeRenderState renderState) {
-        super.setupAnim(renderState);
         if (renderState.connectedUsersCount == 0) {
             resetPose();
         } else {
@@ -193,51 +186,33 @@ public class WirelessNodeModel extends Model<WirelessNodeRenderState> {
             var progress = Math.min(level, 4);
             switch (progress) {
                 case 1: {
-                    quarter.apply(renderState.coreState, renderState.ageInTicks);
+                    KeyframeAnimationApplier.animateState(quarter, renderState.coreState, renderState.ageInTicks, root);
                     break;
                 }
                 case 2: {
-                    half.apply(renderState.coreState, renderState.ageInTicks);
+                    KeyframeAnimationApplier.animateState(half, renderState.coreState, renderState.ageInTicks, root);
                     break;
                 }
                 case 3: {
-                    quarters.apply(renderState.coreState, renderState.ageInTicks);
+                    KeyframeAnimationApplier.animateState(quarters, renderState.coreState, renderState.ageInTicks, root);
                     break;
                 }
                 case 4: {
-                    full.apply(renderState.coreState, renderState.ageInTicks);
+                    KeyframeAnimationApplier.animateState(full, renderState.coreState, renderState.ageInTicks, root);
                     break;
                 }
             }
         }
     }
 
-    public void render(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int lightCoords, int overlayCoords) {
-        submitNodeCollector.submitModelPart(
-                base2, poseStack, renderType(R.textures.model.wireless_node), lightCoords, overlayCoords, null
-        );
-        submitNodeCollector.submitModelPart(
-                core_li, poseStack, renderType(R.textures.model.wireless_node), lightCoords, overlayCoords, null
-        );
+    private void resetPose() {
+        root.getAllParts().forEach(ModelPart::resetPose);
+    }
 
-        if (IrisIntegration.isShaderPackInUse()) {
-            var blockStateIds = WorldRenderingSettings.INSTANCE.getBlockStateIds();
-
-            if (blockStateIds != null) {
-                var intId = blockStateIds.applyAsInt(Blocks.END_PORTAL.defaultBlockState());
-                CapturedRenderingState.INSTANCE.setCurrentBlockEntity(intId);
-            }
-
-            submitNodeCollector.submitCustomGeometry(
-                    poseStack, RenderTypes.entitySolid(TheEndPortalRenderer.END_PORTAL_LOCATION),
-                    (pose, buffer) -> {
-                        var ps = new PoseStack();
-                        ps.last().set(pose);
-                        innner_ef.render(ps, buffer, lightCoords, overlayCoords);
-                    }
-            );
-        } else submitNodeCollector.submitModelPart(
-                innner_ef, poseStack, RenderTypes.endGateway(), lightCoords, overlayCoords, null
-        );
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords) {
+        RenderType base = RenderType.entityTranslucent(R.textures.model.wireless_node);
+        base2.render(poseStack, bufferSource.getBuffer(base), lightCoords, overlayCoords);
+        core_li.render(poseStack, bufferSource.getBuffer(base), lightCoords, overlayCoords);
+        innner_ef.render(poseStack, bufferSource.getBuffer(RenderType.endGateway()), lightCoords, overlayCoords);
     }
 }

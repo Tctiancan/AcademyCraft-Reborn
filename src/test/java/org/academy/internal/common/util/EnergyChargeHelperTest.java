@@ -2,7 +2,7 @@ package org.academy.internal.common.util;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-import net.neoforged.neoforge.transfer.energy.SimpleEnergyHandler;
+import net.neoforged.neoforge.energy.EnergyStorage;
 import org.academy.api.common.energy.AcademyEnergyItem;
 import org.academy.api.common.wireless.WirelessUser;
 import org.academy.internal.common.world.item.AbilityControlTabletItem;
@@ -14,17 +14,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class EnergyChargeHelperTest {
     @Test
     void commitsTheMaximumAcceptedByOneTransfer() {
-        var handler = new SimpleEnergyHandler(100, 30);
+        var handler = new EnergyStorage(100, 30);
 
         assertEquals(30, EnergyChargeHelper.charge(handler));
-        assertEquals(30, handler.getAmountAsInt());
+        assertEquals(30, handler.getEnergyStored());
         assertEquals(30, EnergyChargeHelper.charge(handler));
-        assertEquals(60, handler.getAmountAsInt());
+        assertEquals(60, handler.getEnergyStored());
     }
 
     @Test
     void returnsZeroForAFullOrMissingHandler() {
-        var full = new SimpleEnergyHandler(100, 100, 100, 100);
+        var full = new EnergyStorage(100, 100, 100, 100);
 
         assertEquals(0, EnergyChargeHelper.charge(full));
         assertEquals(0, EnergyChargeHelper.charge(null));

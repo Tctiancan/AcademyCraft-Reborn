@@ -4,9 +4,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.util.context.ContextKey;
 import org.academy.api.client.renderer.EffectRenderer;
@@ -25,13 +24,11 @@ public final class LightShieldEffectRenderer implements EffectRenderer {
     private LightShieldEffectRenderer() {
     }
 
-    private static void submitShield(PoseStack poseStack, SubmitNodeCollector collector,
+    private static void submitShield(PoseStack poseStack, MultiBufferSource bufferSource,
                                      int packedLight, float halfSize) {
-        collector.submitCustomGeometry(
-                poseStack,
-                RenderTypes.entityTranslucent(R.textures.light_shield_effect),
-                (pose, consumer) -> addDoubleSidedQuad(consumer, pose.pose(), packedLight, halfSize)
-        );
+        var consumer = bufferSource.getBuffer(
+                RenderType.entityTranslucent(R.textures.light_shield_effect));
+        addDoubleSidedQuad(consumer, poseStack.pose(), packedLight, halfSize);
     }
 
     private static void addDoubleSidedQuad(VertexConsumer consumer, Matrix4f matrix,
@@ -66,25 +63,24 @@ public final class LightShieldEffectRenderer implements EffectRenderer {
     }
 
     @Override
-    public void render(PoseStack poseStack, SubmitNodeCollector collector, int packedLight,
-                       AvatarRenderState state, float yRot, float xRot) {
-        if (!state.getRenderDataOrDefault(CONTEXT_KEY, false)) return;
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+                       float yRot, float xRot) {
         poseStack.pushPose();
         poseStack.translate(0, -0.25, -1.4);
         poseStack.mulPose(Axis.XP.rotationDegrees(-xRot));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(state.ageInTicks * 12.0f));
-        submitShield(poseStack, collector, packedLight, THIRD_PERSON_HALF_SIZE);
+        poseStack.mulPose(Axis.ZP.rotationDegrees(0));
+        submitShield(poseStack, bufferSource, packedLight, THIRD_PERSON_HALF_SIZE);
         poseStack.popPose();
     }
 
     @Override
-    public void renderFirstPerson(PoseStack poseStack, SubmitNodeCollector collector,
+    public void renderFirstPerson(PoseStack poseStack, MultiBufferSource bufferSource,
                                   LocalPlayer player, int packedLight, float partialTick) {
         if (!player.getData(AttachmentTypes.LIGHT_SHIELD_ACTIVE.get())) return;
         poseStack.pushPose();
         poseStack.translate(0, 0, -1.5);
         poseStack.mulPose(Axis.ZP.rotationDegrees((player.tickCount + partialTick) * 12.0f));
-        submitShield(poseStack, collector, packedLight, FIRST_PERSON_HALF_SIZE);
+        submitShield(poseStack, bufferSource, packedLight, FIRST_PERSON_HALF_SIZE);
         poseStack.popPose();
     }
 }

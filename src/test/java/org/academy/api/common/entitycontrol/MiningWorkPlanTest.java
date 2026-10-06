@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 import java.util.UUID;
@@ -25,7 +25,7 @@ class MiningWorkPlanTest {
         assertFalse(plan.completionVerified());
     }
     @Test void scanSlicesAreBoundedAndCannotAnnounceCompletionEarly() {
-        var plan = new MiningWorkPlan(new BlockWorkRegion(Identifier.parse("minecraft:overworld"),
+        var plan = new MiningWorkPlan(new BlockWorkRegion(ResourceLocation.parse("minecraft:overworld"),
                 BlockPos.ZERO, new BlockPos(15, 15, 15)));
         var visits = new java.util.concurrent.atomic.AtomicInteger();
         for (int tick = 0; tick < 64; tick++) {
@@ -37,7 +37,7 @@ class MiningWorkPlanTest {
         assertEquals(4096, visits.get());
     }
     @Test void massExternalRemovalUsesOnlyTheAllowedClassifications() {
-        var plan = new MiningWorkPlan(new BlockWorkRegion(Identifier.parse("minecraft:overworld"),
+        var plan = new MiningWorkPlan(new BlockWorkRegion(ResourceLocation.parse("minecraft:overworld"),
                 BlockPos.ZERO, new BlockPos(15, 15, 15)));
         plan.refresh(0, true, pos -> MiningWorkPlan.Eligibility.ELIGIBLE);
         for (int tick = 1; tick <= 64; tick++) {
@@ -49,7 +49,7 @@ class MiningWorkPlanTest {
         assertTrue(plan.completionVerified());
     }
     @Test void manyBlockedUpperTargetsDoNotHideAReadyLowerLayer() {
-        var plan = new MiningWorkPlan(new BlockWorkRegion(Identifier.parse("minecraft:overworld"),
+        var plan = new MiningWorkPlan(new BlockWorkRegion(ResourceLocation.parse("minecraft:overworld"),
                 BlockPos.ZERO, new BlockPos(7, 1, 7)));
         plan.refresh(0, true, pos -> MiningWorkPlan.Eligibility.ELIGIBLE);
         for (int x = 0; x < 8; x++) for (int z = 0; z < 8; z++) plan.block(new BlockPos(x, 1, z), "tool", 100);
@@ -71,7 +71,7 @@ class MiningWorkPlanTest {
         assertEquals(1, plan.progress().active());
     }
     private MiningWorkPlan plan() {
-        return new MiningWorkPlan(new BlockWorkRegion(Identifier.parse("minecraft:overworld"),
+        return new MiningWorkPlan(new BlockWorkRegion(ResourceLocation.parse("minecraft:overworld"),
                 BlockPos.ZERO, new BlockPos(1, 2, 0)));
     }
     @Test void claimsUpperLayersAndKeepsOtherWorkersTargetsOutstanding() {

@@ -50,7 +50,7 @@ public final class MentalIntrusion extends Skill {
                         InputConstants.PRESS,
                         0
                 )
-        ), _ -> Client.use());
+        ), unused532 -> Client.use());
     }
 
     @Override

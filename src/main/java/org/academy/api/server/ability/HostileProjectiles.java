@@ -38,12 +38,12 @@ public final class HostileProjectiles {
         if (owner instanceof LivingEntity living) return HostileTargets.isHostile(actor, living);
         // Unowned utility projectiles (pearls, fishing hooks, eggs...) are not attacks.
         var type = projectile.getType();
-        return projectile instanceof net.minecraft.world.entity.projectile.arrow.AbstractArrow
-                || type == net.minecraft.world.entity.EntityTypes.FIREBALL
-                || type == net.minecraft.world.entity.EntityTypes.SMALL_FIREBALL
-                || type == net.minecraft.world.entity.EntityTypes.DRAGON_FIREBALL
-                || type == net.minecraft.world.entity.EntityTypes.WITHER_SKULL
-                || type == net.minecraft.world.entity.EntityTypes.BREEZE_WIND_CHARGE;
+        return projectile instanceof net.minecraft.world.entity.projectile.AbstractArrow
+                || type == net.minecraft.world.entity.EntityType.FIREBALL
+                || type == net.minecraft.world.entity.EntityType.SMALL_FIREBALL
+                || type == net.minecraft.world.entity.EntityType.DRAGON_FIREBALL
+                || type == net.minecraft.world.entity.EntityType.WITHER_SKULL
+                || type == net.minecraft.world.entity.EntityType.BREEZE_WIND_CHARGE;
     }
 
     public static boolean tryDestroy(LivingEntity actor, Projectile projectile, AbilityResourceAccount resource,

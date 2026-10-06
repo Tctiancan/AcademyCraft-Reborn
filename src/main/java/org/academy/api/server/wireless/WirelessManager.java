@@ -291,7 +291,8 @@ public class WirelessManager {
             var receiveWeight = cfg.receiveWeight();
             var sendWeight = cfg.sendWeight();
 
-            // A consumer role wins if a device declares both capabilities. This keeps
+            // A consumer role wins
+// if a device declares both capabilities. This keeps
             // internal machine extraction separate from network output and prevents
             // energy from bouncing back every tick.
             var acceptsEnergy = user.acceptsWirelessEnergy();

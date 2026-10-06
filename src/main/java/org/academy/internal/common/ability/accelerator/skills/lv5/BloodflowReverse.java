@@ -107,7 +107,7 @@ public class BloodflowReverse extends Skill {
             Vec3 viewDirection,
             double additionalRange
     ) {
-        return findTarget(observer, eyePosition, viewDirection, additionalRange, _ -> true);
+        return findTarget(observer, eyePosition, viewDirection, additionalRange, unused277 -> true);
     }
 
     public static LivingEntity findTarget(
@@ -163,8 +163,8 @@ public class BloodflowReverse extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 Client.KEY_NAME,
                 binding,
-                _ -> Client.start(),
-                _ -> Client.end()
+                unused278 -> Client.start(),
+                unused279 -> Client.end()
         );
     }
 
@@ -245,7 +245,7 @@ public class BloodflowReverse extends Skill {
 
             private boolean hasTarget() {
                 return updateTarget(
-                        Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false)
+                        Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false)
                 ) != null;
             }
 
@@ -393,7 +393,7 @@ public class BloodflowReverse extends Skill {
                     player.getEyePosition(),
                     player.getLookAngle(),
                     range,
-                    _ -> true
+                    unused280 -> true
             );
         }
 

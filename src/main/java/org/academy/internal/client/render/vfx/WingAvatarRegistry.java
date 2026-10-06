@@ -1,8 +1,8 @@
 package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.world.entity.HumanoidArm;
 import org.joml.Matrix4f;
 
@@ -30,7 +30,7 @@ public final class WingAvatarRegistry {
         return Map.copyOf(ROOTS);
     }
 
-    public static void captureHands(AvatarRenderState state, PlayerModel model) {
+    public static void captureHands(PlayerRenderState state, PlayerModel model) {
         var hands = new Matrix4f[2];
         for (var arm : HumanoidArm.values()) {
             var pose = new PoseStack();

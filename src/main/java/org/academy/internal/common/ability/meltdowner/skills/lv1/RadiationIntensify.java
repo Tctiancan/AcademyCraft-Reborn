@@ -44,7 +44,7 @@ public final class RadiationIntensify extends Skill {
     }
 
     public static boolean isMarked(LivingEntity target, long gameTime) {
-        return target.getPersistentData().getLong(TARGET_MARK_UNTIL_KEY).orElse(0L) > gameTime;
+        return target.getPersistentData().getLong(TARGET_MARK_UNTIL_KEY) > gameTime;
     }
 
     public static void mark(LivingEntity target, long gameTime) {

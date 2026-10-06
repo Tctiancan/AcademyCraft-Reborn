@@ -15,7 +15,8 @@ public final class SkillTreeVisibility {
             boolean dependenciesSatisfied,
             boolean conditionsSatisfied
     ) {
-        // Common skills form a separate course tree. Hiding its locked root also makes every
+        // Common skills
+// form a separate course tree. Hiding its locked root also makes every
         // dependent node disappear, leaving the entire page blank. Keep the full common tree
         // visible and let its locked state and server-side development checks enforce conditions.
         return scope == SkillScope.COMMON

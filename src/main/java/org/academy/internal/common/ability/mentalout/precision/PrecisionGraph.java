@@ -109,7 +109,7 @@ public record PrecisionGraph(List<Node> nodes, List<Edge> edges) {
             if (!isPortCompatible(output.type, input.type)) {
                 return Validation.error(Diagnostic.TYPE_MISMATCH, to.id, edge.toPort);
             }
-            var ports = incoming.computeIfAbsent(edge.toNode, _ -> new HashMap<>());
+            var ports = incoming.computeIfAbsent(edge.toNode, unused519 -> new HashMap<>());
             if (ports.putIfAbsent(edge.toPort, edge) != null) {
                 return Validation.error(Diagnostic.MULTIPLE_INPUTS, to.id, edge.toPort);
             }
@@ -127,12 +127,12 @@ public record PrecisionGraph(List<Node> nodes, List<Edge> edges) {
                 if (flowIncoming.merge(to.id, 1, Integer::sum) > 1) {
                     return Validation.error(Diagnostic.BRANCHED_FLOW, to.id, edge.toPort);
                 }
-                flowTargets.computeIfAbsent(from.id, _ -> new ArrayList<>()).add(to.id);
+                flowTargets.computeIfAbsent(from.id, unused520 -> new ArrayList<>()).add(to.id);
             } else {
                 dataEdges++;
             }
-            outgoing.computeIfAbsent(edge.fromNode, _ -> new ArrayList<>()).add(edge.toNode);
-            indegree.compute(edge.toNode, (_, value) -> value == null ? 1 : value + 1);
+            outgoing.computeIfAbsent(edge.fromNode, unused521 -> new ArrayList<>()).add(edge.toNode);
+            indegree.compute(edge.toNode, (unused522, value) -> value == null ? 1 : value + 1);
         }
         if (dataEdges > MAX_DATA_EDGES || flowEdges > MAX_FLOW_EDGES) {
             return Validation.error(Diagnostic.TOO_MANY_EDGES);
@@ -169,7 +169,7 @@ public record PrecisionGraph(List<Node> nodes, List<Edge> edges) {
             var id = ready.remove();
             order.add(id);
             for (var target : outgoing.getOrDefault(id, List.of())) {
-                var next = indegree.computeIfPresent(target, (_, degree) -> degree - 1);
+                var next = indegree.computeIfPresent(target, (unused523, degree) -> degree - 1);
                 if (next != null && next == 0) ready.add(target);
             }
         }

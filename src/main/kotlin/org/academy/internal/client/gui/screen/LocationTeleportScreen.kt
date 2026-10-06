@@ -1,8 +1,7 @@
 package org.academy.internal.client.gui.screen
 
-import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.EditBox
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.screen.UiScreen
@@ -43,7 +42,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         box.setTextColor(TEXT)
     }
 
-    private fun renderInputFrame(graphics: GuiGraphicsExtractor, frame: Rect, box: EditBox) {
+    private fun renderInputFrame(graphics: GuiGraphics, frame: Rect, box: EditBox) {
         graphics.fill(
             frame.x, frame.y, frame.x + frame.width, frame.y + frame.height,
             if (box.isFocused) INPUT_FOCUSED else INPUT
@@ -148,48 +147,48 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         return box
     }
 
-    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        super.extractRenderState(graphics, mouseX, mouseY, a)
+    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick)
         syncLayout()
         val panel = rect(layout.panel)
         val marks = rect(layout.marks)
-        fillSection(graphics, marks)
+        fillSection(guiGraphics, marks)
         val coordinates = coordinateFrames(rect(layout.coordinates))
-        renderInputFrame(graphics, rect(layout.nameInput), nameBox)
-        renderInputFrame(graphics, coordinates[0], xBox)
-        renderInputFrame(graphics, coordinates[1], yBox)
-        renderInputFrame(graphics, coordinates[2], zBox)
-        nameBox.extractRenderState(graphics, mouseX, mouseY, a)
-        xBox.extractRenderState(graphics, mouseX, mouseY, a)
-        yBox.extractRenderState(graphics, mouseX, mouseY, a)
-        zBox.extractRenderState(graphics, mouseX, mouseY, a)
-        graphics.centeredText(font, title, panel.x + panel.width / 2, panel.y + 8, TEXT)
+        renderInputFrame(guiGraphics, rect(layout.nameInput), nameBox)
+        renderInputFrame(guiGraphics, coordinates[0], xBox)
+        renderInputFrame(guiGraphics, coordinates[1], yBox)
+        renderInputFrame(guiGraphics, coordinates[2], zBox)
+        nameBox.render(guiGraphics, mouseX, mouseY, partialTick)
+        xBox.render(guiGraphics, mouseX, mouseY, partialTick)
+        yBox.render(guiGraphics, mouseX, mouseY, partialTick)
+        zBox.render(guiGraphics, mouseX, mouseY, partialTick)
+        guiGraphics.drawCenteredString(font, title, panel.x + panel.width / 2, panel.y + 8, TEXT)
         button(
-            graphics,
+            guiGraphics,
             rect(layout.markCurrent),
             Component.translatable("academy.location_teleport.mark_current"),
             mouseX,
             mouseY
         )
         button(
-            graphics,
+            guiGraphics,
             rect(layout.addMark),
             Component.translatable("academy.location_teleport.add_mark"),
             mouseX,
             mouseY
         )
         button(
-            graphics,
+            guiGraphics,
             rect(layout.refresh),
             Component.translatable("academy.location_teleport.refresh"),
             mouseX,
             mouseY
         )
-        button(graphics, rect(layout.done), Component.translatable("gui.done"), mouseX, mouseY)
-        renderMarks(graphics, mouseX, mouseY)
+        button(guiGraphics, rect(layout.done), Component.translatable("gui.done"), mouseX, mouseY)
+        renderMarks(guiGraphics, mouseX, mouseY)
     }
 
-    private fun renderMarks(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderMarks(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val content = marksContent()
         val left = content.x
         val right = content.x + content.width
@@ -221,10 +220,10 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
             val availableTextWidth = kotlin.math.max(2, textRight - textLeft - 6)
             val nameWidth = kotlin.math.max(1, availableTextWidth * 3 / 5)
             val coordinateWidth = kotlin.math.max(1, availableTextWidth - nameWidth)
-            graphics.text(font, font.plainSubstrByWidth(name, nameWidth), textLeft, y + 5, TEXT, false)
+            graphics.drawString(font, font.plainSubstrByWidth(name, nameWidth), textLeft, y + 5, TEXT, false)
             val coords = mark.x().toString() + ", " + mark.y() + ", " + mark.z()
             val clippedCoords = font.plainSubstrByWidth(coords, coordinateWidth)
-            graphics.text(font, clippedCoords, textRight - font.width(clippedCoords), y + 5, DIM, false)
+            graphics.drawString(font, clippedCoords, textRight - font.width(clippedCoords), y + 5, DIM, false)
             rowAction(
                 graphics, quickLeft, y, QUICK_ACTION_WIDTH,
                 Component.translatable("academy.location_teleport.quick_point"),
@@ -242,7 +241,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         graphics.disableScissor()
         renderScrollIndicator(graphics, rect(layout.marks), visible)
         if (marks.isEmpty()) {
-            graphics.centeredText(
+            graphics.drawCenteredString(
                 font, Component.translatable("academy.location_teleport.empty"),
                 panelX + panelWidth / 2, listTop + 6, DIM
             )
@@ -250,7 +249,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
     }
 
     private fun rowAction(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         x: Int,
         y: Int,
         width: Int,
@@ -262,9 +261,9 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
     ) {
         val hovered = inside(mouseX.toDouble(), mouseY.toDouble(), x, y, width, ROW_H - 1)
         buttonSurface(graphics, x, y, width, ROW_H - 1, selected, hovered, selectionForm)
-        graphics.centeredText(
+        graphics.drawCenteredString(
             font,
-            font.plainSubstrByWidth(label.string, width - 4),
+            Component.literal(font.plainSubstrByWidth(label.string, width - 4)),
             x + width / 2,
             y + 5,
             if (selected || hovered) TEXT else DIM
@@ -272,7 +271,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
     }
 
     private fun iconButton(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         x: Int,
         y: Int,
         width: Int,
@@ -283,32 +282,30 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
     ) {
         val hovered = inside(mouseX.toDouble(), mouseY.toDouble(), x, y, width, ROW_H - 1)
         buttonSurface(graphics, x, y, width, ROW_H - 1, false, hovered, SelectionForm.NONE)
-        graphics.centeredText(font, glyph, x + width / 2, y + 5, if (hovered) TEXT else semanticColor)
+        graphics.drawCenteredString(font, Component.literal(glyph), x + width / 2, y + 5, if (hovered) TEXT else semanticColor)
     }
 
-    private fun button(graphics: GuiGraphicsExtractor, bounds: Rect, text: Component, mouseX: Int, mouseY: Int) {
+    private fun button(graphics: GuiGraphics, bounds: Rect, text: Component, mouseX: Int, mouseY: Int) {
         val x = bounds.x
         val y = bounds.y
         val width = bounds.width
         val height = bounds.height
         val hover = inside(mouseX.toDouble(), mouseY.toDouble(), x, y, width, height)
         buttonSurface(graphics, x, y, width, height, false, hover, SelectionForm.NONE)
-        graphics.centeredText(
-            font, font.plainSubstrByWidth(text.string, width - 8),
+        graphics.drawCenteredString(
+            font, Component.literal(font.plainSubstrByWidth(text.string, width - 8)),
             x + width / 2, y + (height - 8) / 2, if (hover) TEXT else DIM
         )
     }
 
-    override fun mouseClicked(e: MouseButtonEvent, isDoubleClick: Boolean): Boolean {
-        val mouseX = e.x()
-        val mouseY = e.y()
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         syncLayout()
-        if (e.button() == 0) {
+        if (button == 0) {
             val coordinates = coordinateFrames(rect(layout.coordinates))
-            if (focusInputAt(e, isDoubleClick, nameBox, rect(layout.nameInput))
-                || focusInputAt(e, isDoubleClick, xBox, coordinates[0])
-                || focusInputAt(e, isDoubleClick, yBox, coordinates[1])
-                || focusInputAt(e, isDoubleClick, zBox, coordinates[2])
+            if (focusInputAt(mouseX, mouseY, button, nameBox, rect(layout.nameInput))
+                || focusInputAt(mouseX, mouseY, button, xBox, coordinates[0])
+                || focusInputAt(mouseX, mouseY, button, yBox, coordinates[1])
+                || focusInputAt(mouseX, mouseY, button, zBox, coordinates[2])
             ) {
                 return true
             }
@@ -368,18 +365,18 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
                 }
             }
         }
-        return super.mouseClicked(e, isDoubleClick)
+        return super.mouseClicked(mouseX, mouseY, button)
     }
 
-    private fun focusInputAt(e: MouseButtonEvent, isDoubleClick: Boolean, box: EditBox, frame: Rect): Boolean {
-        if (!inside(e.x(), e.y(), frame)) return false
+    private fun focusInputAt(mouseX: Double, mouseY: Double, button: Int, box: EditBox, frame: Rect): Boolean {
+        if (!inside(mouseX, mouseY, frame)) return false
         focused = box
         nameBox.isFocused = box === nameBox
         xBox.isFocused = box === xBox
         yBox.isFocused = box === yBox
         zBox.isFocused = box === zBox
-        if (inside(e.x(), e.y(), box.x, box.y, box.width, 16)) {
-            box.mouseClicked(e, isDoubleClick)
+        if (inside(mouseX, mouseY, box.x, box.y, box.width, 16)) {
+            box.mouseClicked(mouseX, mouseY, button)
         }
         return true
     }
@@ -394,7 +391,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         )
     }
 
-    private fun renderScrollIndicator(graphics: GuiGraphicsExtractor, bounds: Rect, visibleRows: Int) {
+    private fun renderScrollIndicator(graphics: GuiGraphics, bounds: Rect, visibleRows: Int) {
         if (marks.size <= visibleRows) return
         val trackX = bounds.x + bounds.width - 2 - SCROLLBAR_WIDTH
         val trackHeight = kotlin.math.max(1, listBottom - listTop)
@@ -466,7 +463,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         private const val SCROLLBAR_WIDTH = 5
         private const val SCROLLBAR_GAP = 2
 
-        private fun renderFocusBrackets(graphics: GuiGraphicsExtractor, frame: Rect) {
+        private fun renderFocusBrackets(graphics: GuiGraphics, frame: Rect) {
             val left = frame.x + 1
             val right = frame.x + frame.width - 1
             val top = frame.y + 2
@@ -480,7 +477,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         }
 
         private fun renderSelectionMarker(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             quickSelected: Boolean,
@@ -497,7 +494,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
             }
         }
 
-        private fun fillSection(graphics: GuiGraphicsExtractor, bounds: Rect) {
+        private fun fillSection(graphics: GuiGraphics, bounds: Rect) {
             graphics.fill(
                 bounds.x,
                 bounds.y,
@@ -509,7 +506,7 @@ class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.lo
         }
 
         private fun buttonSurface(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             width: Int,

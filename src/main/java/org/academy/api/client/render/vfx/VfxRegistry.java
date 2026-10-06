@@ -1,7 +1,5 @@
 package org.academy.api.client.render.vfx;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.SubmitNodeCollector;
 import org.academy.api.common.profiler.AcademyProfiler;
 import org.jspecify.annotations.Nullable;
 
@@ -52,17 +50,6 @@ public final class VfxRegistry {
         }
     }
 
-    public static void submitWorldGeometry(VfxFrameData frameData, VfxRenderContext ctx,
-                                           PoseStack poseStack, SubmitNodeCollector output) {
-        Objects.requireNonNull(frameData, "frameData");
-        Objects.requireNonNull(ctx, "ctx");
-        Objects.requireNonNull(poseStack, "poseStack");
-        Objects.requireNonNull(output, "output");
-        for (var registration : REGISTRATIONS.values()) {
-            registration.submitWorldGeometry(ctx, poseStack, output, frameData);
-        }
-    }
-
     @FunctionalInterface
     public interface VfxRendererConsumer {
         void accept(VfxRenderer<?> renderer);
@@ -77,13 +64,6 @@ public final class VfxRegistry {
             var bucket = frameData.get(dataType);
             if (bucket == null || bucket.isEmpty()) return;
             renderer.render(ctx, bucket);
-        }
-
-        public void submitWorldGeometry(VfxRenderContext ctx, PoseStack poseStack,
-                                        SubmitNodeCollector output, VfxFrameData frameData) {
-            var bucket = frameData.get(dataType);
-            if (bucket == null || bucket.isEmpty()) return;
-            renderer.submitWorldGeometry(ctx, poseStack, output, bucket);
         }
     }
 }

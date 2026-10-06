@@ -1,6 +1,6 @@
-package org.academy.internal.client.app.tutorial
+﻿package org.academy.internal.client.app.tutorial
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.app.App
 import org.academy.api.client.gui.widget.Widget
 import org.academy.api.client.gui.widget.WidgetContext
@@ -17,5 +17,5 @@ object TutorialApp : App {
 
     override fun name(): String = L10n["app.academy.tutorial.name"]
 
-    override fun icon(): Identifier = R.textures.gui.app.tutorial.icon
+    override fun icon(): ResourceLocation = R.textures.gui.app.tutorial.icon
 }

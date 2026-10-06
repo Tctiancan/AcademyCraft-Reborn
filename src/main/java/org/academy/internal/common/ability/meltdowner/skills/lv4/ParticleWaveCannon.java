@@ -202,7 +202,7 @@ public final class ParticleWaveCannon extends Skill {
             skill.reportActivity(player, false);
 
             if (!beaming && ticks >= CHARGE_TICKS) {
-                if (!skill.executeActive(player, (_, _) -> beginBeam())) {
+                if (!skill.executeActive(player, (unused499, unused500) -> beginBeam())) {
                     end();
                     return;
                 }
@@ -216,7 +216,7 @@ public final class ParticleWaveCannon extends Skill {
             }
 
             if (ticks - lastPaidTick >= CP_INTERVAL_TICKS) {
-                if (!skill.executeContinuous(player, (_, _) -> {
+                if (!skill.executeContinuous(player, (unused501, unused502) -> {
                 }, false)) {
                     end();
                     return;

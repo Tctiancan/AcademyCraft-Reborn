@@ -1,7 +1,7 @@
 package org.academy.internal.common.skilldata;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.AcademyCraft;
 
@@ -225,5 +225,5 @@ public abstract class SkillData {
         this.level = level;
     }
 
-    public abstract Identifier getType();
+    public abstract ResourceLocation getType();
 }

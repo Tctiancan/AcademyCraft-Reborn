@@ -1,6 +1,6 @@
 package org.academy.internal.client.gui;
 
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 
 /**
  * Shared visual tokens for screens that belong to the data-terminal interface family.
@@ -40,7 +40,7 @@ public final class DataTerminalTheme {
     }
 
     public static void panel(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -51,7 +51,7 @@ public final class DataTerminalTheme {
     }
 
     public static void panel(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -67,17 +67,17 @@ public final class DataTerminalTheme {
         }
     }
 
-    public static void section(GuiGraphicsExtractor graphics, int x, int y, int width, int height) {
+    public static void section(GuiGraphics graphics, int x, int y, int width, int height) {
         graphics.fill(x, y, x + width, y + height, SECTION_BACKGROUND);
         border(graphics, x, y, width, height, BORDER_MUTED);
     }
 
-    public static void input(GuiGraphicsExtractor graphics, int x, int y, int width, int height, boolean focused) {
+    public static void input(GuiGraphics graphics, int x, int y, int width, int height, boolean focused) {
         input(graphics, x, y, width, height, focused, ACCENT);
     }
 
     public static void input(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -91,7 +91,7 @@ public final class DataTerminalTheme {
     }
 
     public static void button(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -104,7 +104,7 @@ public final class DataTerminalTheme {
     }
 
     public static void button(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -124,7 +124,7 @@ public final class DataTerminalTheme {
     }
 
     public static void scrollBar(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -136,7 +136,7 @@ public final class DataTerminalTheme {
     }
 
     public static void scrollBar(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,
@@ -156,7 +156,7 @@ public final class DataTerminalTheme {
     }
 
     public static void border(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int x,
             int y,
             int width,

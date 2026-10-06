@@ -1,11 +1,11 @@
-package org.academy.api.client.gui.environment
+﻿package org.academy.api.client.gui.environment
 
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.texture.IdentifierTextureSource
 import org.academy.api.client.gui.texture.TextureSource
 import java.io.ByteArrayInputStream
@@ -28,16 +28,16 @@ class MinecraftUiEnvironment : UiEnvironment {
     override fun isOnMainThread(): Boolean = mc.isSameThread
     override fun isOnRenderThread(): Boolean = RenderSystem.isOnRenderThread()
 
-    override fun frameDeltaTicks(): Float = mc.deltaTracker.gameTimeDeltaTicks
+    override fun frameDeltaTicks(): Float = mc.timer.gameTimeDeltaTicks
     override fun openResource(namespace: String, path: String): InputStream? =
-        mc.resourceManager.getResource(Identifier.fromNamespaceAndPath(namespace, path)).map { it.open() }.orElse(null)
+        mc.resourceManager.getResource(ResourceLocation.fromNamespaceAndPath(namespace, path)).map { it.open() }.orElse(null)
 
-    override fun loadTexture(identifier: Identifier): GpuTextureView =
-        mc.textureManager.getTexture(identifier).getTextureView()
+    override fun loadTexture(identifier: ResourceLocation): GpuTextureView =
+        GpuTextureView.of(identifier)
 
-    override fun createDynamicTextureSource(identifier: Identifier, bytes: ByteArray): TextureSource {
+    override fun createDynamicTextureSource(identifier: ResourceLocation, bytes: ByteArray): TextureSource {
         val image = NativeImage.read(ByteArrayInputStream(bytes))
-        val texture = DynamicTexture({ "academy_${identifier.namespace}_${identifier.path}" }, image)
+        val texture = DynamicTexture(image)
         mc.textureManager.register(identifier, texture)
         return IdentifierTextureSource(identifier, this)
     }
@@ -48,6 +48,7 @@ class MinecraftUiEnvironment : UiEnvironment {
     }
 
     override fun textInputFocusChanged(focused: Boolean) {
-        mc.textInputManager().onTextInputFocusChange(focused)
+        // 1.21.1 无 TextInputManager (26.2 新增的IME输入焦点抽象)。
+        // 字符输入由各 EditBox 组件及窗口内部处理，此处保持方法存在但不做额外处理。
     }
 }

@@ -1,6 +1,6 @@
 package org.academy.api.client.gui.widget
 
-import net.minecraft.client.input.PreeditEvent
+import org.academy.api.client.input.PreeditEvent
 
 /**
  * 进程级唯一的文本输入焦点 / IME 目标协调者。

@@ -97,7 +97,7 @@ public class ThunderLance extends Skill {
                         InputConstants.RELEASE,
                         InputConstants.MOD_ALT
                 )
-        ), _ -> Client.onQuickUse());
+        ), unused449 -> Client.onQuickUse());
     }
 
     @Override
@@ -149,14 +149,14 @@ public class ThunderLance extends Skill {
         @SubscribePacket
         public static void handle(StartPacket packet) {
             var player = packet.getPacketListener().getPlayer();
-            Skills.THUNDER_LANCE.get().executeActive(player, (context, _) -> fireQuick(player, context.milestone()));
+            Skills.THUNDER_LANCE.get().executeActive(player, (context, unused450) -> fireQuick(player, context.milestone()));
         }
 
         @SubscribePacket
         public static void handle(QuickPacket packet) {
             var player = packet.getPacketListener().getPlayer();
-            Skills.THUNDER_LANCE.get().executeActive(player, _ -> QUICK_CP_COST,
-                    (context, _) -> fireQuick(player, context.milestone()));
+            Skills.THUNDER_LANCE.get().executeActive(player, unused451 -> QUICK_CP_COST,
+                    (context, unused452) -> fireQuick(player, context.milestone()));
         }
 
         private static void fireQuick(ServerPlayer player, int milestone) {
@@ -178,7 +178,7 @@ public class ThunderLance extends Skill {
                             source,
                             milestone >= 2 ? QUICK_RADIUS * 1.2f : QUICK_RADIUS
                     )
-                    .damage(_ -> damage)
+                    .damage(unused453 -> damage)
                     .targetFilter(ElectromasterArcTargeting::canDamageAlongArc)
                     .build();
             var resolved = LinearReflectionResolver.resolve(

@@ -17,11 +17,6 @@ public final class DarkmatterMaceItem extends MaceItem implements DarkmatterShap
     }
 
     @Override
-    public boolean isCombineRepairable(ItemStack stack) {
-        return false;
-    }
-
-    @Override
     public float getXpRepairRatio(ItemStack stack) {
         return 0.0f;
     }

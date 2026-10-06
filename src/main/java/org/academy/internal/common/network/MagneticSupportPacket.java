@@ -5,7 +5,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.Direction;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
@@ -24,7 +24,7 @@ import org.misaka.api.common.network.packet.PacketType;
 @PacketTarget(ThreadType.CLIENT)
 public final class MagneticSupportPacket extends Packet<ClientPacketListener, MagneticSupportPacket> {
     public static final StreamCodec<ByteBuf, MagneticSupportPacket> CODEC = StreamCodec.of((b, p) -> {
-        Identifier.STREAM_CODEC.encode(b, p.dimension);
+        ResourceLocation.STREAM_CODEC.encode(b, p.dimension);
         ByteBufCodecs.VAR_INT.encode(b, p.entityId);
         b.writeBoolean(p.active);
         if (p.active) {
@@ -32,7 +32,7 @@ public final class MagneticSupportPacket extends Packet<ClientPacketListener, Ma
             b.writeByte(p.face.ordinal());
         }
     }, b -> {
-        var dimension = Identifier.STREAM_CODEC.decode(b);
+        var dimension = ResourceLocation.STREAM_CODEC.decode(b);
         int entity = ByteBufCodecs.VAR_INT.decode(b);
         boolean active = b.readBoolean();
         var point = active ? Vec3.STREAM_CODEC.decode(b) : Vec3.ZERO;
@@ -43,13 +43,13 @@ public final class MagneticSupportPacket extends Packet<ClientPacketListener, Ma
         return new MagneticSupportPacket(dimension, entity, active, point, Direction.values()[face]);
     });
 
-    public final Identifier dimension;
+    public final ResourceLocation dimension;
     public final int entityId;
     public final boolean active;
     public final Vec3 point;
     public final Direction face;
 
-    public MagneticSupportPacket(Identifier dimension, int entityId, boolean active, Vec3 point, Direction face) {
+    public MagneticSupportPacket(ResourceLocation dimension, int entityId, boolean active, Vec3 point, Direction face) {
         this.dimension = dimension;
         this.entityId = entityId;
         this.active = active;

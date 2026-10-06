@@ -9,7 +9,7 @@ import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ClientboundSetChunkCacheCenterPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -400,7 +400,7 @@ public final class ChunkSwapService {
         var server = player.level().getServer();
         if (server == null) return;
 
-        var id = Identifier.tryParse(packet.dimensionId());
+        var id = ResourceLocation.tryParse(packet.dimensionId());
         var level = id == null ? null : server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
         if (level == null) {
             MisakaNetworkServer.send(player, new ChunkLeapPackets.TeleportResultPacket(
@@ -467,7 +467,7 @@ public final class ChunkSwapService {
         var skill = Skills.CHUNK_LEAP.get();
         var server = player.level().getServer();
         if (server == null) return;
-        var id = Identifier.tryParse(packet.dimensionId());
+        var id = ResourceLocation.tryParse(packet.dimensionId());
         var level = id == null ? null : server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
         if (level == null) {
             MisakaNetworkServer.send(player, new ChunkLeapPackets.TeleportResultPacket(
@@ -525,7 +525,7 @@ public final class ChunkSwapService {
         if (player == null || packet == null) return;
         var server = player.level().getServer();
         if (server == null) return;
-        var id = Identifier.tryParse(packet.dimensionId());
+        var id = ResourceLocation.tryParse(packet.dimensionId());
         var level = id == null ? null : server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
         if (level == null) return;
 
@@ -656,7 +656,7 @@ public final class ChunkSwapService {
         }
         var server = player.level().getServer();
         if (server == null) return;
-        var id = Identifier.tryParse(packet.dimensionId());
+        var id = ResourceLocation.tryParse(packet.dimensionId());
         var level = id == null ? null : server.getLevel(ResourceKey.create(Registries.DIMENSION, id));
         if (level == null) return;
 

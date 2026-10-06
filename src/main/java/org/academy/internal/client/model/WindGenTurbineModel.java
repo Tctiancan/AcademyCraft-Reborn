@@ -1,33 +1,32 @@
 package org.academy.internal.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.util.Unit;
 import org.academy.api.client.resources.R;
 
 
 /**
  * @author MapleBadd
  */
-public class WindGenTurbineModel extends Model<Unit> {
+public class WindGenTurbineModel {
     public static final WindGenTurbineModel INSTANCE = new WindGenTurbineModel(createBodyLayer().bakeRoot());
 
+    public final ModelPart root;
     public final ModelPart all;
     public final ModelPart main;
     public final ModelPart tip_li;
 
     private WindGenTurbineModel(ModelPart root) {
-        super(root.getChild("all"), RenderTypes::entityCutoutCull);
+        this.root = root;
         all = root.getChild("all");
         main = all.getChild("main");
         tip_li = all.getChild("tip_li");
@@ -62,11 +61,12 @@ public class WindGenTurbineModel extends Model<Unit> {
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
 
-    public void render(PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, int packedOverlay) {
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         poseStack.pushPose();
         all.translateAndRotate(poseStack);
-        nodeCollector.submitModelPart(main, poseStack, renderType(R.textures.model.wind_gen), packedLight, packedOverlay, null);
-        nodeCollector.submitModelPart(tip_li, poseStack, renderType(R.textures.model.wind_gen), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
+        RenderType base = RenderType.entityCutoutCull(R.textures.model.wind_gen);
+        main.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
+        tip_li.render(poseStack, bufferSource.getBuffer(base), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();
     }
 }

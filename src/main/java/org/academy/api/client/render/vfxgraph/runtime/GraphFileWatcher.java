@@ -1,7 +1,7 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.slf4j.Logger;
 
@@ -99,7 +99,7 @@ public final class GraphFileWatcher implements AutoCloseable {
             return;
         }
         var assetName = fileName.substring(0, fileName.length() - ".json".length());
-        var assetId = Identifier.fromNamespaceAndPath("academy", "vfxgraph/" + assetName);
+        var assetId = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/" + assetName);
         // 后台线程读文件，排队到主线程执行 reload（管理器集合非线程安全，Bug 修复）
         try {
             var content = Files.readString(file);

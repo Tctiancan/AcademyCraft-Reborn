@@ -1,7 +1,7 @@
 package org.academy.internal.common.skilldata;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.darkmatter.creature.DarkmatterCreatureBlueprint;
 
@@ -14,7 +14,7 @@ import java.util.UUID;
  * Persistent four-slot blueprint library and server-authoritative summon index.
  */
 public final class DarkmatterCreationData extends SkillData {
-    public static final Identifier ID = AcademyCraft.academy("darkmatter_creation_data");
+    public static final ResourceLocation ID = AcademyCraft.academy("darkmatter_creation_data");
     public static final int BLUEPRINT_SLOTS = 4;
 
     /**
@@ -34,7 +34,7 @@ public final class DarkmatterCreationData extends SkillData {
     private List<SummonRecord> summons = new ArrayList<>();
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 

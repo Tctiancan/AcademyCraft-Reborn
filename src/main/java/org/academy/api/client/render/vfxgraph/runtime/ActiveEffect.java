@@ -1,6 +1,6 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
-import com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.api.client.render.texture.GpuTextureView;
 import net.minecraft.world.entity.Entity;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.type.Value;
@@ -322,12 +322,12 @@ public final class ActiveEffect {
 
     public void render(GpuTextureView target, @Nullable GpuTextureView depth,
                        GraphCamera camera, VfxGraphRenderer renderer, boolean clear) {
-        render(target, depth, camera, renderer, clear, false);
+        // C-stun: 世界 VFX GPU 渲染暂不移植。
     }
 
     public void render(GpuTextureView target, @Nullable GpuTextureView depth,
                        GraphCamera camera, VfxGraphRenderer renderer, boolean clear, boolean bloomPass) {
-        effect.render(target, depth, camera, renderer, clear, worldTransform(), bloomPass);
+        // C-stun: 世界 VFX GPU 渲染暂不移植。
     }
 
     /**

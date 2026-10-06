@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.teleport.program;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.AbilityCategoryNames;
@@ -16,13 +16,13 @@ import java.util.function.Function;
  * Strongly typed Teleport target and action schemas.
  */
 public final class TeleportProgramNodeCatalog implements ProgramNodeLookup {
-    public static final Identifier TELEPORT = AcademyCraft.academy(AbilityCategoryNames.TELEPORT);
+    public static final ResourceLocation TELEPORT = AcademyCraft.academy(AbilityCategoryNames.TELEPORT);
     public static final TeleportProgramNodeCatalog INSTANCE = new TeleportProgramNodeCatalog();
 
-    private final Map<Identifier, ProgramNodeType<?>> types;
+    private final Map<ResourceLocation, ProgramNodeType<?>> types;
 
     private TeleportProgramNodeCatalog() {
-        var result = new HashMap<Identifier, ProgramNodeType<?>>();
+        var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         put(result, TeleportProgramNodeIds.CASTER, unitType(
                 querySchema(), ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY,
                 categoryScope()));
@@ -52,11 +52,11 @@ public final class TeleportProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     @Override
-    public ProgramNodeType<?> find(Identifier id) {
+    public ProgramNodeType<?> find(ResourceLocation id) {
         return types.get(id);
     }
 
-    public Map<Identifier, ProgramNodeType<?>> types() {
+    public Map<ResourceLocation, ProgramNodeType<?>> types() {
         return types;
     }
 
@@ -138,7 +138,7 @@ public final class TeleportProgramNodeCatalog implements ProgramNodeLookup {
 
     private static ProgramNodeType<PowerConfiguration> powerType(
             ProgramNodeSchema schema,
-            Identifier capability
+            ResourceLocation capability
     ) {
         return new FixedNodeType<>(
                 PowerConfiguration.CODEC,
@@ -168,13 +168,13 @@ public final class TeleportProgramNodeCatalog implements ProgramNodeLookup {
         return ProgramNodeScope.category(TELEPORT);
     }
 
-    private static ProgramNodeScope capabilityScope(Identifier capability) {
+    private static ProgramNodeScope capabilityScope(ResourceLocation capability) {
         return new ProgramNodeScope(Set.of(TELEPORT), Set.of(capability));
     }
 
     private static void put(
-            Map<Identifier, ProgramNodeType<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeType<?>> result,
+            ResourceLocation id,
             ProgramNodeType<?> type
     ) {
         if (result.putIfAbsent(id, type) != null) {

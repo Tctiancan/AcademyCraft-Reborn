@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.program.compile;
 
 import com.google.gson.JsonParser;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.jspecify.annotations.Nullable;
 
@@ -226,8 +226,8 @@ public final class ProgramBookCodec {
         return new String(data.readNBytes(length), StandardCharsets.UTF_8);
     }
 
-    private static Identifier parseIdentifier(String value) {
-        var identifier = Identifier.tryParse(value);
+    private static ResourceLocation parseIdentifier(String value) {
+        var identifier = ResourceLocation.tryParse(value);
         if (identifier == null) throw new IllegalArgumentException("Invalid program identifier");
         return identifier;
     }

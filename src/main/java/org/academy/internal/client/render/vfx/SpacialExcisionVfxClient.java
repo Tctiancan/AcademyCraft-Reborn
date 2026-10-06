@@ -10,10 +10,10 @@ import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.api.client.render.texture.FilterMode;
+import org.academy.api.client.render.texture.GpuTextureView;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.client.render.Render;
 import org.academy.api.client.render.TextureBinding;
@@ -81,10 +81,10 @@ public final class SpacialExcisionVfxClient {
     private static final int SOURCE_VALIDATION_IDLE_FRAME_LIMIT = 120;
     private static final int FLOW_UNIFORM_SIZE = new Std140SizeCalculator().putVec4().get();
     private static final int POST_UNIFORM_SIZE = postUniformSize();
-    private static final Identifier END_SKY_TEXTURE =
-            Identifier.withDefaultNamespace("textures/environment/end_sky.png");
-    private static final Identifier END_PORTAL_TEXTURE =
-            Identifier.withDefaultNamespace("textures/entity/end_portal/end_portal.png");
+    private static final ResourceLocation END_SKY_TEXTURE =
+            ResourceLocation.withDefaultNamespace("textures/environment/end_sky.png");
+    private static final ResourceLocation END_PORTAL_TEXTURE =
+            ResourceLocation.withDefaultNamespace("textures/entity/end_portal/end_portal.png");
     private static final boolean DEBUG_POST_CLASSIFICATION =
             Boolean.getBoolean("academy.spatialCut.debugClassification");
     private static final Map<UUID, Session> SESSIONS = new LinkedHashMap<>();
@@ -292,7 +292,7 @@ public final class SpacialExcisionVfxClient {
             long sessionStartTick,
             long createdTick,
             long endTick,
-            Identifier dimension,
+            ResourceLocation dimension,
             Vec3 start,
             Vec3 end,
             float preTeleportYaw,
@@ -317,7 +317,7 @@ public final class SpacialExcisionVfxClient {
         var center = start.add(end).scale(0.5);
         var requestedFalloffWidth = CutVfx.displacementFalloffWidth(basis);
         var clientNow = (double) level.getGameTime()
-                + Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+                + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         synchronized (SESSIONS) {
             pruneEndedSessions(clientNow);
             if (ENDED_SESSIONS.containsKey(sessionId)) return;
@@ -732,7 +732,7 @@ public final class SpacialExcisionVfxClient {
 
     private record Segment(
             double localCreatedTick,
-            Identifier dimension,
+            ResourceLocation dimension,
             Vec3 start,
             Vec3 end,
             Vec3 delta,
@@ -1804,7 +1804,7 @@ public final class SpacialExcisionVfxClient {
                         RenderSystem.getDynamicUniforms().writeTransform(
                                 camera.viewRotationMatrix()));
                 pass.bindTexture("Sampler0", mainDepth,
-                        RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST));
+                        org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST));
                 pass.setVertexBuffer(0, vertexBuffer.slice(0, totalBytes));
                 var sequential = RenderSystem.getSequentialBuffer(PrimitiveTopology.TRIANGLES);
                 pass.setIndexBuffer(sequential.getBuffer(vertexCount), sequential.type());

@@ -8,7 +8,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -453,7 +453,7 @@ public final class SpacialExcision extends Skill {
                 Vec3 start,
                 Vec3 end,
                 float preTeleportYaw,
-                Identifier dimension,
+                ResourceLocation dimension,
                 long seed,
                 long createdTick,
                 Set<UUID> spawnStrikeClaims,
@@ -735,13 +735,13 @@ public final class SpacialExcision extends Skill {
         private final long startTick;
         private final long createdTick;
         private final long endTick;
-        private final Identifier dimension;
+        private final ResourceLocation dimension;
         private final Vec3 start;
         private final Vec3 end;
         private final float preTeleportYaw;
         private final long seed;
 
-        public SegmentPacket(UUID sessionId, long startTick, long createdTick, long endTick, Identifier dimension,
+        public SegmentPacket(UUID sessionId, long startTick, long createdTick, long endTick, ResourceLocation dimension,
                              Vec3 start, Vec3 end, float preTeleportYaw, long seed) {
             this.sessionId = sessionId;
             this.startTick = startTick;
@@ -770,7 +770,7 @@ public final class SpacialExcision extends Skill {
             return endTick;
         }
 
-        public Identifier dimension() {
+        public ResourceLocation dimension() {
             return dimension;
         }
 
@@ -828,7 +828,7 @@ public final class SpacialExcision extends Skill {
         return new UUID(buffer.readLong(), buffer.readLong());
     }
 
-    private static Identifier parseIdentifier(String value) {
-        return Identifier.tryParse(value);
+    private static ResourceLocation parseIdentifier(String value) {
+        return ResourceLocation.tryParse(value);
     }
 }

@@ -1,7 +1,7 @@
 package org.academy.api.common.ability;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
 import org.junit.jupiter.api.Test;
 
@@ -44,7 +44,7 @@ class StartLevelDevPacketTest {
 
     @Test
     void responseStatusesAndRecommendationRoundTrip() {
-        var categoryId = Identifier.parse("academy:accelerator");
+        var categoryId = ResourceLocation.parse("academy:accelerator");
         var responses = new StartLevelDevPacket.Response[]{
                 new StartLevelDevPacket.Response(true, "Started"),
                 new StartLevelDevPacket.Response(

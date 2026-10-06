@@ -50,7 +50,7 @@ public final class NeteaseAudioCache {
                     deleteCorruptFile(resolveFile(songId));
                     throw new RuntimeException(exception);
                 }
-            }, AcademyCraft.executorService).whenComplete((_, _) -> {
+            }, AcademyCraft.executorService).whenComplete((unused182, unused183) -> {
                 synchronized (LOCK) {
                     IN_FLIGHT.remove(songId);
                 }

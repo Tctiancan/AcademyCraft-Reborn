@@ -1,40 +1,29 @@
 package org.academy;
 
-import com.google.common.reflect.TypeToken;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.brigadier.arguments.FloatArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.entity.ClientAvatarEntity;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.block.FluidModel;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.resources.model.EquipmentClientInfo;
-import net.minecraft.client.resources.model.sprite.Material;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.entity.Avatar;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.*;
-import net.neoforged.neoforge.client.event.lifecycle.ClientStartedEvent;
-import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
 import net.neoforged.neoforge.client.extensions.common.RegisterClientExtensionsEvent;
-import net.neoforged.neoforge.client.fluid.FluidTintSources;
-import net.neoforged.neoforge.client.renderstate.AvatarRenderStateModifier;
-import net.neoforged.neoforge.client.renderstate.RegisterRenderStateModifiersEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.gui.environment.UiEnvironment;
 import org.academy.api.client.gui.imgui.ImGuiUIDebugger;
@@ -63,7 +52,6 @@ import org.academy.api.common.util.UncheckedUtil;
 import org.academy.internal.client.ability.ProficiencySkillSettingsClient;
 import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
 import org.academy.internal.client.ability.program.AbilityProgramEditorClient;
-import org.academy.internal.client.animation.AbilityDeveloperSleepClient;
 import org.academy.internal.client.app.music.backend.MusicPlayerBackend;
 import org.academy.internal.client.app.music.ui.MusicApp;
 import org.academy.internal.client.app.props.PropsApp;
@@ -82,7 +70,6 @@ import org.academy.internal.client.profiler.ProfilerClientHooks;
 import org.academy.internal.client.render.fluid.ImagPhaseFluidRenderer;
 import org.academy.internal.client.render.vfx.*;
 import org.academy.internal.client.renderer.blockentity.WindGenPillarRenderer;
-import org.academy.internal.client.renderer.effect.LightShieldEffectRenderer;
 import org.academy.internal.client.renderer.entity.layers.CloudroomLayer;
 import org.academy.internal.client.renderer.entity.layers.SkillEffectsLayer;
 import org.academy.internal.client.renderer.entity.layers.quantum.QuantumInterferenceLayer;
@@ -110,7 +97,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.function.BiConsumer;
 
 import static org.academy.AcademyCraft.academy;
 import static org.academy.AcademyCraft.vanilla;
@@ -198,7 +184,7 @@ public final class AcademyCraftClient {
     }
 
     @SubscribeEvent
-    public static void onClientStarted(ClientStartedEvent event) {
+    public static void onClientStarted(FMLClientSetupEvent event) {
         ImGuiUtilApi.INSTANCE.init();
         initMain();
         initRender();
@@ -244,21 +230,21 @@ public final class AcademyCraftClient {
                         )
                         .then(Commands.literal("debug")
                                 .then(Commands.literal("skillgui")
-                                        .executes(_ -> setSkillGuiDebug(AbilityDeveloperLayoutEditor.toggleDebugMode()))
+                                        .executes(unused1 -> setSkillGuiDebug(AbilityDeveloperLayoutEditor.toggleDebugMode()))
                                         .then(Commands.literal("on")
-                                                .executes(_ -> setSkillGuiDebug(true)))
+                                                .executes(unused2 -> setSkillGuiDebug(true)))
                                         .then(Commands.literal("off")
-                                                .executes(_ -> setSkillGuiDebug(false)))
+                                                .executes(unused3 -> setSkillGuiDebug(false)))
                                         .then(Commands.literal("toggle")
-                                                .executes(_ -> setSkillGuiDebug(AbilityDeveloperLayoutEditor.toggleDebugMode())))
+                                                .executes(unused4 -> setSkillGuiDebug(AbilityDeveloperLayoutEditor.toggleDebugMode())))
 .then(Commands.literal("reset")
-                                                .executes(_ -> {
+                                                .executes(unused5 -> {
                                                     AbilityDeveloperLayoutEditor.resetSession();
                                                     notifyClient("Skill GUI layout reset to built-in defaults.");
                                                     return 1;
                                                 }))
                                         .then(Commands.literal("export")
-                                                .executes(_ -> {
+                                                .executes(unused6 -> {
                                                     try {
                                                         var path = AbilityDeveloperLayoutEditor.exportAll();
                                                         notifyClient("Skill GUI layout exported to " + path.toAbsolutePath());
@@ -277,25 +263,25 @@ public final class AcademyCraftClient {
                                                                         ctx.getArgument("text", String.class)
                                                                 )))))
                                         .then(Commands.literal("atlasdump")
-                                                .executes(_ -> atlasDump("all"))
+                                                .executes(unused7 -> atlasDump("all"))
                                                 .then(Commands.literal("all")
-                                                        .executes(_ -> atlasDump("all")))
+                                                        .executes(unused8 -> atlasDump("all")))
                                                 .then(Commands.literal("bitmap")
-                                                        .executes(_ -> atlasDump("bitmap")))
+                                                        .executes(unused9 -> atlasDump("bitmap")))
                                                 .then(Commands.literal("msdf")
-                                                        .executes(_ -> atlasDump("msdf"))))
+                                                        .executes(unused10 -> atlasDump("msdf"))))
                                         .then(Commands.literal("font")
-                                                .executes(_ -> fontDump(""))
+                                                .executes(unused11 -> fontDump(""))
                                                 .then(Commands.argument("text", StringArgumentType.greedyString())
                                                         .executes(ctx -> fontDump(ctx.getArgument("text", String.class)))))
                                         .then(Commands.literal("imgui")
-                                                .executes(_ -> setImGuiDebug(ImGuiUIDebugger.INSTANCE.toggle()))
+                                                .executes(unused12 -> setImGuiDebug(ImGuiUIDebugger.INSTANCE.toggle()))
                                                 .then(Commands.literal("on")
-                                                        .executes(_ -> setImGuiDebug(true)))
+                                                        .executes(unused13 -> setImGuiDebug(true)))
                                                 .then(Commands.literal("off")
-                                                        .executes(_ -> setImGuiDebug(false)))
+                                                        .executes(unused14 -> setImGuiDebug(false)))
                                                 .then(Commands.literal("toggle")
-                                                        .executes(_ -> setImGuiDebug(ImGuiUIDebugger.INSTANCE.toggle())))))
+                                                        .executes(unused15 -> setImGuiDebug(ImGuiUIDebugger.INSTANCE.toggle())))))
         );
         ClientProfileCommand.register(event.getDispatcher());
         ClientMusicCommand.register(event.getDispatcher());
@@ -323,12 +309,12 @@ public final class AcademyCraftClient {
             notifyClient("No world loaded.");
             return 0;
         }
-        var assetId = Identifier.fromNamespaceAndPath("academy", "vfxgraph/" + graph);
+        var assetId = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/" + graph);
         Vector3f target;
         if (position != null) {
             target = position;
         } else if (mc.getCameraEntity() != null) {
-            var eye = mc.getCameraEntity().getEyePosition(mc.getDeltaTracker().getGameTimeDeltaPartialTick(false));
+            var eye = mc.getCameraEntity().getEyePosition(mc.getTimer().getGameTimeDeltaPartialTick(false));
             target = new Vector3f((float) eye.x, (float) eye.y, (float) eye.z);
         } else {
             target = new Vector3f(0f, 64f, 0f);
@@ -459,7 +445,7 @@ public final class AcademyCraftClient {
     }
 
     @SubscribeEvent
-    public static void onClientStopped(ClientStoppedEvent event) {
+    public static void onGameShuttingDown(GameShuttingDownEvent event) {
         TemporalClientRuntime.reset();
         MentaloutRosterClientState.clearLocal();
         ImGuiUtilApi.INSTANCE.close();
@@ -481,51 +467,6 @@ public final class AcademyCraftClient {
     }
 
     @SubscribeEvent
-    public static void onExtractBlockOutlineRenderState(ExtractBlockOutlineRenderStateEvent event) {
-        var state = event.getBlockState();
-        var pillar = state.getBlock() == Blocks.WIND_GEN_PILLAR.get();
-        var base = state.getBlock() == Blocks.WIND_GEN_BASE.get();
-        var top = state.getBlock() == Blocks.WIND_GEN_TOP.get();
-        if (pillar || base || top) {
-            event.addCustomRenderer((
-                    blockOutlineRenderState,
-                    bufferSource,
-                    poseStack,
-                    levelRenderState
-            ) -> {
-                poseStack.pushPose();
-                var pos = blockOutlineRenderState.pos();
-                var cam = levelRenderState.cameraRenderState.pos;
-                var camX = cam.x;
-                var camY = cam.y;
-                var camZ = cam.z;
-                poseStack.translate(pos.getX() - camX + 0.5f, pos.getY() - camY, pos.getZ() - camZ + 0.5f);
-                if (top) poseStack.scale(1, 1f / 16f, 1);
-                if (base && state.getValue(MultiBlock.TYPE) == MultiBlock.MultiBlockType.MAIN) {
-                    poseStack.scale(1, 15 / 16f, 1);
-                    poseStack.translate(0, 1 / 16f, 0);
-                }
-                poseStack.mulPose(Axis.YN.rotationDegrees(22.5f));
-                bufferSource.submitCustomGeometry(poseStack, RenderTypes.lines(), (pose, buffer) -> {
-                    var ps = new PoseStack();
-                    ps.last().set(pose);
-                    CylinderRenderer.renderCylinderWireframe(
-                            ps,
-                            buffer,
-                            WindGenPillarRenderer.PILLAR_OUTLINE_VERTEX_BUFFER,
-                            0, 0, 0, 0.4f
-                    );
-                });
-
-                poseStack.popPose();
-                return pillar || (
-                        base && (state.getValue(MultiBlock.TYPE) == MultiBlock.MultiBlockType.SUBJECT)
-                );
-            });
-        }
-    }
-
-    @SubscribeEvent
     public static void onEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
         for (var skinType : event.getSkins()) {
             var renderer = event.getPlayerRenderer(skinType);
@@ -537,66 +478,25 @@ public final class AcademyCraftClient {
 
         for (var type : event.getEntityTypes()) {
             var renderer = event.getRenderer(type);
-            if (renderer instanceof LivingEntityRenderer<?, ?, ?>) {
+            if (renderer instanceof LivingEntityRenderer<?, ?>) {
                 addAbilityLayers(UncheckedUtil.uncheckedCast(renderer));
             }
         }
     }
 
-    private static <T extends LivingEntity, S extends LivingEntityRenderState, M extends EntityModel<? super S>>
+    private static <T extends LivingEntity, M extends EntityModel<T>>
     void addAbilityLayers(
-            LivingEntityRenderer<T, S, M> renderer
+            LivingEntityRenderer<T, M> renderer
     ) {
         renderer.addLayer(new QuantumInterferenceLayer<>(renderer));
         renderer.addLayer(new CloudroomLayer<>(renderer));
     }
 
     @SubscribeEvent
-    public static void onRegisterRenderStateModifiers(RegisterRenderStateModifiersEvent event) {
-        event.registerAvatarEntityModifier(new AvatarRenderStateModifier() {
-            @Override
-            public <T extends Avatar & ClientAvatarEntity> void accept(T avatar, AvatarRenderState renderState) {
-                AbilityDeveloperSleepClient.extract(avatar, renderState);
-                renderState.setRenderData(CloudroomLayer.VISIBLE,
-                        CloudroomLayer.shouldReveal(avatar));
-                renderState.setRenderData(ElectromasterWeaponVfx.ENTITY_ID_CONTEXT, avatar.getId());
-                renderState.setRenderData(
-                        ElectromasterWeaponVfx.MAGNETIC_CONTEXT,
-                        avatar.getData(AttachmentTypes.MAGNETIC_WEAPON_DATA)
-                );
-                renderState.setRenderData(
-                        ElectromasterWeaponVfx.IRON_SAND_CONTEXT,
-                        avatar.getData(AttachmentTypes.IRON_SAND_DATA)
-                );
-                renderState.setRenderData(
-                        LightShieldEffectRenderer.CONTEXT_KEY,
-                        avatar.getData(AttachmentTypes.LIGHT_SHIELD_ACTIVE)
-                );
-            }
-        });
-        event.registerEntityModifier(
-                new TypeToken<LivingEntityRenderer<LivingEntity, LivingEntityRenderState, ?>>() {
-                },
-                living()
-        );
-    }
-
-    private static BiConsumer<LivingEntity, LivingEntityRenderState> living() {
-        return (livingEntity, livingEntityRenderState) -> {
-            livingEntityRenderState.setRenderData(
-                    QuantumInterferenceLayer.CONTEXT_KEY,
-                    livingEntity.getExistingDataOrNull(AttachmentTypes.QUANTUM_DATA.get())
-            );
-            livingEntityRenderState.setRenderData(CloudroomLayer.VISIBLE,
-                    CloudroomLayer.shouldReveal(livingEntity));
-        };
-    }
-
-    @SubscribeEvent
     public static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ParticleTypes.IMAG_PHASE_LEAVES.get(), ImagPhaseLeavesParticle.Provider::new);
         event.registerSpriteSet(ParticleTypes.IMAG_PHASE_FLUID.get(), sprites ->
-                (_, level, x, y, z, xSpeed, ySpeed, zSpeed, random) -> {
+                (unused19, level, x, y, z, xSpeed, ySpeed, zSpeed, random) -> {
                     var particle = new ImagPhaseFluidParticle(
                             level, sprites, x, y, z, xSpeed, ySpeed, zSpeed, random
                     );
@@ -620,50 +520,6 @@ public final class AcademyCraftClient {
     }
 
     @SubscribeEvent
-    public static void onRegisterSpecialModelRenderer(RegisterSpecialModelRendererEvent event) {
-        event.register(
-                academy("wireless_node"),
-                WirelessNodeSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("wind_gen_base"),
-                WindGenBaseSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("wind_gen_pillar"),
-                WindGenPillarSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("wind_gen_top"),
-                WindGenTopSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("ability_developer"),
-                AbilityDeveloperSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("ability_control_tablet"),
-                AbilityControlTabletSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("omni_crafting_table"),
-                OmniCraftingTableSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("solar_gen"),
-                SolarGenSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("imag_phase_dowsing_rod"),
-                ImagPhaseDowsingRodSpecialRenderer.Unbaked.MAP_CODEC
-        );
-        event.register(
-                academy("darkmatter_trident"),
-                DarkmatterTridentSpecialRenderer.Unbaked.MAP_CODEC
-        );
-    }
-
-    @SubscribeEvent
     public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
         event.registerItem(new IClientItemExtensions() {
             @Override
@@ -675,35 +531,6 @@ public final class AcademyCraftClient {
                 return HumanoidModel.ArmPose.CROSSBOW_HOLD;
             }
         }, Items.IMAG_PHASE_DOWSING_ROD.get());
-        event.registerItem(new IClientItemExtensions() {
-                               @Override
-                               public int getArmorLayerTintColor(
-                                       ItemStack stack, EquipmentClientInfo.Layer layer,
-                                       int layerIdx, int fallbackColor
-                               ) {
-                                   return 0;
-                               }
-                           }, Items.DARK_MATTER_HELMET.get(), Items.DARK_MATTER_CHESTPLATE.get(),
-                Items.DARK_MATTER_LEGGINGS.get(), Items.DARK_MATTER_BOOTS.get());
-    }
-
-    @SubscribeEvent
-    public static void onRegisterFluidModels(RegisterFluidModelsEvent event) {
-        var still = new Material(vanilla("block/water_still"));
-        var flowing = new Material(vanilla("block/water_flow"));
-        var overlay = new Material(vanilla("block/water_overlay"));
-        var model = new FluidModel.Unbaked(
-                still,
-                flowing,
-                overlay,
-                FluidTintSources.constant(0x9908050D),
-                ImagPhaseFluidRenderer.INSTANCE
-        );
-        event.register(
-                model,
-                Fluids.IMAG_PHASE,
-                Fluids.FLOWING_IMAG_PHASE
-        );
     }
 
     public static final class Config {

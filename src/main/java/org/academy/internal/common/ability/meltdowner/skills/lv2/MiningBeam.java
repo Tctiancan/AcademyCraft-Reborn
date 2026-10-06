@@ -236,7 +236,7 @@ public final class MiningBeam extends Skill {
             var start = player.getEyePosition();
             visual.setPos(start);
             if (ticks % CP_INTERVAL_TICKS == 0
-                    && !skill.executeContinuous(player, (_, _) -> {
+                    && !skill.executeContinuous(player, (unused491, unused492) -> {
             }, false)) {
                 end();
                 return;
@@ -279,7 +279,7 @@ public final class MiningBeam extends Skill {
                                     proficiencyMilestone >= 2 ? DAMAGE_RADIUS * 1.2f : DAMAGE_RADIUS)
                     )
                     .targetFilter(MiningBeam::canDamageEntity)
-                    .damage(_ -> damage)
+                    .damage(unused493 -> damage)
                     .build();
             var attack = ContinuousBeamReflection.resolve(
                     initialLevel,
@@ -362,7 +362,7 @@ public final class MiningBeam extends Skill {
     ) {
         return MeltdownerBeamActions.executeBlocksAlongSegment(
                 level, segment, radius, MINING_TIER, true, true, true, simulate, breaker,
-                (world, pos, state, blockEntity, _) ->
+                (world, pos, state, blockEntity, unused494) ->
                         dropConfiguredResources(world, pos, state, blockEntity, harvester)
         );
     }

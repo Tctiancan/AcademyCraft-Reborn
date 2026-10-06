@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.mentalout.precision;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
 import org.academy.internal.common.ability.program.compile.PrecisionProgramCompilation;
@@ -14,7 +14,7 @@ import java.util.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PrecisionProgramExecutionBridgeTest {
-    private static final Identifier OVERWORLD = Identifier.parse("minecraft:overworld");
+    private static final ResourceLocation OVERWORLD = ResourceLocation.parse("minecraft:overworld");
 
     @Test
     void replaysDataDependenciesAndSelectedFlowThroughSharedVm() {
@@ -368,7 +368,7 @@ class PrecisionProgramExecutionBridgeTest {
         );
     }
 
-    private static ProgramGraph.Node genericNode(int id, Identifier type) {
+    private static ProgramGraph.Node genericNode(int id, ResourceLocation type) {
         return new ProgramGraph.Node(id, type, 1, new JsonObject());
     }
 

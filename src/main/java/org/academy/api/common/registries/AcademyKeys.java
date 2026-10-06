@@ -1,6 +1,6 @@
 package org.academy.api.common.registries;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.Skill;
@@ -20,10 +20,10 @@ public final class AcademyKeys {
     }
 
     public static ResourceKey<AbilityCategory> category(String path) {
-        return ResourceKey.create(Registries.Keys.ABILITY_CATEGORIES, Identifier.fromNamespaceAndPath("academy", path));
+        return ResourceKey.create(Registries.Keys.ABILITY_CATEGORIES, ResourceLocation.fromNamespaceAndPath("academy", path));
     }
 
     public static ResourceKey<Skill> skill(String path) {
-        return ResourceKey.create(Registries.Keys.SKILLS, Identifier.fromNamespaceAndPath("academy", path));
+        return ResourceKey.create(Registries.Keys.SKILLS, ResourceLocation.fromNamespaceAndPath("academy", path));
     }
 }

@@ -3,7 +3,7 @@ package org.academy.internal.server.world.level.storage;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.data.SkillStateType;
 import org.academy.internal.common.skilldata.*;
 import org.junit.jupiter.api.Test;
@@ -15,11 +15,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AddonSkillStateTest {
-    private static Identifier uniqueId() {
-        return Identifier.fromNamespaceAndPath("state_test", UUID.randomUUID().toString());
+    private static ResourceLocation uniqueId() {
+        return ResourceLocation.fromNamespaceAndPath("state_test", UUID.randomUUID().toString());
     }
 
-    private static JsonObject raw(Identifier id, int version) {
+    private static JsonObject raw(ResourceLocation id, int version) {
         var json = new JsonObject();
         json.addProperty("type", id.toString());
         json.addProperty("stateVersion", version);

@@ -14,8 +14,8 @@ import net.minecraft.world.level.LightLayer;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.wireless.WirelessUser;
@@ -130,23 +130,25 @@ public final class SolarGenBlockEntity extends BlockEntity implements WirelessUs
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        ContainerHelper.saveAllItems(output, items);
-        output.putInt("energy_stored", energyStored);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ContainerHelper.saveAllItems(tag, items, registries);
+        tag.putInt("energy_stored", energyStored);
         if (connectedNodePos != null) {
-            output.putLong("connected_node_pos", connectedNodePos.asLong());
+            tag.putLong("connected_node_pos", connectedNodePos.asLong());
         }
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
-        energyStored = input.getIntOr("energy_stored", 0);
+        ContainerHelper.loadAllItems(tag, items, registries);
+        energyStored = tag.contains("energy_stored", CompoundTag.TAG_INT) ? tag.getInt("energy_stored") : 0;
         connectedNodePos = null;
-        input.getLong("connected_node_pos").ifPresent(nodePos -> connectedNodePos = BlockPos.of(nodePos));
+        if (tag.contains("connected_node_pos", CompoundTag.TAG_LONG)) {
+            connectedNodePos = BlockPos.of(tag.getLong("connected_node_pos"));
+        }
     }
 
     public AABB getRenderBoundingBox() {

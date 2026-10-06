@@ -2,53 +2,32 @@ package org.academy.internal.client.renderer.entity.layers.quantum;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.EntityModel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.ARGB;
-import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.util.Mth;
 import net.minecraft.util.context.ContextKey;
-import org.academy.api.client.render.Render;
-import org.academy.api.client.render.post.GlowEffect;
+import net.minecraft.world.entity.LivingEntity;
 
 import static org.academy.AcademyCraft.academy;
 
-public class QuantumInterferenceLayer<S extends LivingEntityRenderState, M extends EntityModel<? super S>>
-        extends RenderLayer<S, M> {
+/**
+ * 1.21.1 简化版 (C-stun)。
+ *
+ * 26.2 通过节点化提交渲染量子干涉特效,并依赖 GlowEffect (26.2 后处理管线) 与 FastColor/LightCoordsUtil 等
+ * 新版 API。1.21.1 无对应节点化提交与后处理管线。按首版简化策略保留公共 API (CONTEXT_KEY),清空 render 实现。
+ */
+public class QuantumInterferenceLayer<T extends LivingEntity, M extends EntityModel<T>>
+        extends RenderLayer<T, M> {
     public static final ContextKey<QuantumData> CONTEXT_KEY = new ContextKey<>(academy("quantum"));
 
-    public QuantumInterferenceLayer(RenderLayerParent<S, M> renderer) {
+    public QuantumInterferenceLayer(RenderLayerParent<T, M> renderer) {
         super(renderer);
     }
 
     @Override
-    public void submit(PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, S renderState, float yRot, float partialTicks) {
-        var quantum = renderState.getRenderData(CONTEXT_KEY);
-        if (quantum == null || !quantum.active()) return;
-
-        var intensity = quantum.intensity();
-
-        var color = quantum.color();
-        var r = ((color >> 16) & 0xFF) / 255.0f;
-        var g = ((color >> 8) & 0xFF) / 255.0f;
-        var b = (color & 0xFF) / 255.0f;
-
-        var renderType = Render.RenderTypes.POS_COLOR_QUADS_GLOW_POST;
-        var vertexConsumer = GlowEffect.getAfter().getBuffer(renderType);
-
-        var model = getParentModel();
-        model.renderToBuffer(
-                poseStack,
-                vertexConsumer,
-                LightCoordsUtil.FULL_BRIGHT,
-                OverlayTexture.NO_OVERLAY,
-                ARGB.colorFromFloat(
-                        intensity * Math.abs(Mth.sin(renderState.ageInTicks * 0.1)),
-                        r, g, b
-                )
-        );
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+                       T entity, float limbSwing, float limbSwingAmount, float partialTick,
+                       float ageInTicks, float netHeadYaw, float headPitch) {
+        // C-stun: 1.21.1 量子干涉特效留空。
     }
 }

@@ -206,7 +206,8 @@ public final class VortexAttackGeometry {
         if (mode == 1) {
             for (int i = 1; i <= WHIP_SEGMENTS; i++) {
                 float u = i / (float) WHIP_SEGMENTS;
-                // Separate the paired overhead lashes while their tips converge on the same target.
+                // Separate the paired overhead lashes
+// while their tips converge on the same target.
                 whipX[i] += 0.65f * (float) Math.sin(Math.PI * u)
                         + 2.3f * (1f - extension) * (float) Math.sin(Math.PI * u * 0.5f);
             }

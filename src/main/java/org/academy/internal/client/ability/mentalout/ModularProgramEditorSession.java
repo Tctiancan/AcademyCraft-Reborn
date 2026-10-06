@@ -1,7 +1,7 @@
 package org.academy.internal.client.ability.mentalout;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 import org.academy.internal.common.ability.program.ProgramRunTrace;
@@ -28,7 +28,7 @@ public interface ModularProgramEditorSession {
 
     @Nullable AbilityProgram restoredProgram(int slot);
 
-    Set<Identifier> capabilities();
+    Set<ResourceLocation> capabilities();
 
     void updateLocalProgram(int slot, AbilityProgram program);
 

@@ -14,10 +14,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
@@ -46,7 +46,7 @@ import java.util.UUID;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DimensionEffectsGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("dimension_effects_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("dimension_effects_function");
 
     private DimensionEffectsGameTests() {
     }
@@ -61,7 +61,7 @@ public final class DimensionEffectsGameTests {
         var environment = event.registerEnvironment(
                 AcademyCraft.academy("dimension_effects"),
                 new TestEnvironmentDefinition.AllOf(List.of()));
-        var data = new TestData<>(environment, Identifier.withDefaultNamespace("empty"),
+        var data = new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
                 40, 0, true, Rotation.NONE, false, 1, 1, false, 16);
         event.registerTest(AcademyCraft.academy("dimension_effects_authority"), new PolicyTest(data));
     }
@@ -152,7 +152,8 @@ public final class DimensionEffectsGameTests {
                     "Block destruction denial must not override a PVP whitelist");
 
             config.pvp.blacklist = Set.of(dimension);
-            // Simulate a client enabling every personal switch: the server denial still wins.
+            // Simulate a client enabling every personal
+// switch: the server denial still wins.
             attacker.setData(AttachmentTypes.PVP_ENABLED.get(), true);
             target.setData(AttachmentTypes.PVP_ENABLED.get(), true);
             attacker.setData(AttachmentTypes.DESTROY_BLOCKS_ENABLED.get(), true);
@@ -169,7 +170,7 @@ public final class DimensionEffectsGameTests {
             helper.assertTrue(!SkillDamageUtil.apply(attacker, target, skill, DamageTypes.CTA, 5.0f),
                     "Forbidden true-health skill damage was accepted");
             helper.assertTrue(target.getHealth() == beforeHealth, "Forbidden damage changed target health");
-            var cow = helper.spawn(EntityTypes.COW, 5, 2, 1);
+            var cow = helper.spawn(EntityType.COW, 5, 2, 1);
             helper.assertTrue(PvpSetting.protectionReason(attacker, cow) == PvpSetting.ProtectionReason.NONE,
                     "PVP dimension restrictions must not reject PVE");
             helper.assertTrue(PvpSetting.protectionReason(attacker, attacker) == PvpSetting.ProtectionReason.NONE,
@@ -192,7 +193,8 @@ public final class DimensionEffectsGameTests {
                     "Whitelisted ability block destruction must still execute");
             helper.assertTrue(level.getBlockState(absolute).isAir(), "Allowed block was not destroyed");
 
-            // Keep nonempty lists for another dimension; neither may take over this dimension.
+            // Keep nonempty lists
+// for another dimension; neither may take over this dimension.
             config.pvp.whitelist = config.blockDestruction.whitelist = Set.of("example:arena");
             config.pvp.blacklist = config.blockDestruction.blacklist = Set.of("example:protected");
             helper.assertTrue(PvpSetting.protectionReason(attacker, target) == PvpSetting.ProtectionReason.NONE,
@@ -256,3 +258,4 @@ public final class DimensionEffectsGameTests {
         }
     }
 }
+

@@ -3,10 +3,9 @@ package org.academy.internal.client.particle;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
-import net.minecraft.util.LightCoordsUtil;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -15,7 +14,7 @@ import org.academy.api.client.render.post.GlowEffect;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-public final class ImagPhaseFluidParticle extends SingleQuadParticle {
+public final class ImagPhaseFluidParticle extends TextureSheetParticle {
     private static final float HALF_PI = (float) (Math.PI * 0.5);
     private final float baseRotationX;
     private final float baseRotationY;
@@ -34,7 +33,8 @@ public final class ImagPhaseFluidParticle extends SingleQuadParticle {
             double zSpeed,
             RandomSource random
     ) {
-        super(level, x, y, z, sprites.get(random));
+        super(level, x, y, z);
+        setSprite(sprites.get(random));
         setSize(0.02F, 0.02F);
         quadSize = 0.1F * (random.nextFloat() * 0.5F + 0.5F) * 2.0F;
         quadSize *= random.nextFloat() * 0.6F + 0.2F;
@@ -69,7 +69,7 @@ public final class ImagPhaseFluidParticle extends SingleQuadParticle {
     }
 
     @Override
-    public void extract(QuadParticleRenderState renderState, Camera camera, float partialTick) {
+    public void render(VertexConsumer ignored, Camera camera, float partialTick) {
         Vec3 cameraPos = camera.position();
         float renderX = (float) (Mth.lerp(partialTick, xo, x) - cameraPos.x());
         float renderY = (float) (Mth.lerp(partialTick, yo, y) - cameraPos.y());
@@ -136,12 +136,12 @@ public final class ImagPhaseFluidParticle extends SingleQuadParticle {
     }
 
     @Override
-    public SingleQuadParticle.Layer getLayer() {
-        return Layer.TRANSLUCENT_ITEMS;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @Override
-    protected int getLightCoords(float partialTick) {
-        return LightCoordsUtil.FULL_BRIGHT;
+    protected int getLightColor(float partialTick) {
+        return 0x00F000F0;
     }
 }

@@ -1,5 +1,6 @@
 package org.academy.internal.common.world.entity.projectile;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
@@ -9,11 +10,9 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -189,35 +188,33 @@ public final class DarkmatterFeatherProjectile extends AbstractArrow implements 
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        input.getString("academy_target").ifPresent(value -> {
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("academy_target", CompoundTag.TAG_STRING)) {
             try {
-                targetId = UUID.fromString(value);
+                targetId = UUID.fromString(tag.getString("academy_target"));
             } catch (IllegalArgumentException ignored) {
                 targetId = null;
             }
-        });
-        damage = input.getIntOr("academy_damage_milli", 1_000) / 1_000.0f;
-        exposureBurstDamage = input.getIntOr(
-                "academy_exposure_burst_milli", 0) / 1_000.0f;
-        maximumLifetime = Math.max(5, input.getIntOr("academy_maximum_lifetime", 40));
-        outputAdjustmentBypassed = input.getIntOr(
-                "academy_output_adjustment_bypassed", 0) != 0;
-        exitTicks = Math.clamp(input.getIntOr("academy_exit_ticks", 0), 0, 16);
+        }
+        damage = (tag.contains("academy_damage_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_damage_milli") : 1_000) / 1_000.0f;
+        exposureBurstDamage = (tag.contains("academy_exposure_burst_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_exposure_burst_milli") : 0) / 1_000.0f;
+        maximumLifetime = Math.max(5, tag.contains("academy_maximum_lifetime", CompoundTag.TAG_INT) ? tag.getInt("academy_maximum_lifetime") : 40);
+        outputAdjustmentBypassed = (tag.contains("academy_output_adjustment_bypassed", CompoundTag.TAG_INT) ? tag.getInt("academy_output_adjustment_bypassed") : 0) != 0;
+        exitTicks = Math.clamp(tag.contains("academy_exit_ticks", CompoundTag.TAG_INT) ? tag.getInt("academy_exit_ticks") : 0, 0, 16);
         entityData.set(PASSED_TARGET, exitTicks > 0);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        if (targetId != null) output.putString("academy_target", targetId.toString());
-        output.putInt("academy_damage_milli", Math.round(damage * 1_000.0f));
-        output.putInt("academy_exposure_burst_milli",
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (targetId != null) tag.putString("academy_target", targetId.toString());
+        tag.putInt("academy_damage_milli", Math.round(damage * 1_000.0f));
+        tag.putInt("academy_exposure_burst_milli",
                 Math.round(exposureBurstDamage * 1_000.0f));
-        output.putInt("academy_maximum_lifetime", maximumLifetime);
-        output.putInt("academy_output_adjustment_bypassed",
+        tag.putInt("academy_maximum_lifetime", maximumLifetime);
+        tag.putInt("academy_output_adjustment_bypassed",
                 outputAdjustmentBypassed ? 1 : 0);
-        output.putInt("academy_exit_ticks", exitTicks);
+        tag.putInt("academy_exit_ticks", exitTicks);
     }
 }

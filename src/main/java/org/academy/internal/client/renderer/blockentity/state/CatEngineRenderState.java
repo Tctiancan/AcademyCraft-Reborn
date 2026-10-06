@@ -1,8 +1,6 @@
 package org.academy.internal.client.renderer.blockentity.state;
 
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
-
-public final class CatEngineRenderState extends BlockEntityRenderState {
+public final class CatEngineRenderState {
     public float rot;
     public float oRot;
     public float partialTick;

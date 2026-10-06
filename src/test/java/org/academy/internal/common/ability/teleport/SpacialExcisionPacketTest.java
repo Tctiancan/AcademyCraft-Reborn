@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.teleport;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.internal.common.ability.teleport.skills.lv5.SpacialExcision;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class SpacialExcisionPacketTest {
                 120L,
                 180L,
                 720L,
-                Identifier.parse("minecraft:overworld"),
+                ResourceLocation.parse("minecraft:overworld"),
                 new Vec3(1.25, 64.5, -3.75),
                 new Vec3(15.0, 67.0, 4.5),
                 -90.0f,

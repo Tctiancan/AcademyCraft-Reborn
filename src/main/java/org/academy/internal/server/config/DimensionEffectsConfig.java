@@ -4,7 +4,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -34,7 +34,7 @@ public final class DimensionEffectsConfig {
                 throw new IllegalArgumentException(name + " must be a dimensions array");
             }
             for (var dimension : dimensions) {
-                if (dimension == null || !dimension.contains(":") || Identifier.tryParse(dimension) == null) {
+                if (dimension == null || !dimension.contains(":") || ResourceLocation.tryParse(dimension) == null) {
                     throw new IllegalArgumentException(name + " contains an invalid dimension ID: " + dimension);
                 }
             }

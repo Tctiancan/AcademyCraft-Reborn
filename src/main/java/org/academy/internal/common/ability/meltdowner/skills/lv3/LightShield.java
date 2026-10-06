@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -67,7 +67,7 @@ public final class LightShield extends Skill {
     static final int ATTACK_INTERVAL_TICKS = 4;
     static final double ATTACK_RADIUS = 3.5;
     static final float BASE_DAMAGE = 3.0f;
-    private static final Identifier TRUE_RESISTANCE_MODIFIER_ID =
+    private static final ResourceLocation TRUE_RESISTANCE_MODIFIER_ID =
             AcademyCraft.academy("light_shield_true_resistance");
     private static final String LEGACY_ELECTRON_BARRIER = "academy:electron_barrier";
     private static final List<String> REMOVED_SKILLS = List.of(
@@ -116,11 +116,11 @@ public final class LightShield extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_START, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_START,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_H, InputConstants.PRESS, 0)
-        ), _ -> Client.start());
+        ), unused496 -> Client.start());
         InputSystem.addKeyBinding(Client.KEY_NAME_END, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_END,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_H, InputConstants.RELEASE, 0)
-        ), _ -> Client.stop());
+        ), unused497 -> Client.stop());
     }
 
     @Override

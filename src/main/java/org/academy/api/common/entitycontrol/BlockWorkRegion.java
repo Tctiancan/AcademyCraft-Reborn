@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 
@@ -9,7 +9,7 @@ import java.util.Objects;
  * Immutable, dimension-bound work area used by autonomous entity-control tasks.
  */
 public record BlockWorkRegion(
-        Identifier dimension,
+        ResourceLocation dimension,
         BlockPos minimum,
         BlockPos maximum
 ) {
@@ -42,7 +42,7 @@ public record BlockWorkRegion(
     }
 
     public static BlockWorkRegion centered(
-            Identifier dimension,
+            ResourceLocation dimension,
             BlockPos center,
             int sizeX,
             int sizeY,

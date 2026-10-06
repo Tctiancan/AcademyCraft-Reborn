@@ -63,7 +63,7 @@ public final class BlockStructureKineticRuntime {
         var handle = startSession(
                 structure,
                 controller,
-                (_, _) -> Vec3.ZERO,
+                (unused779, unused780) -> Vec3.ZERO,
                 options,
                 impactHandler,
                 worldImpactHandler,

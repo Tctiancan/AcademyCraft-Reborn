@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.mentalout;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.academy.api.common.attribute.PlayerAttributes;
@@ -10,7 +10,7 @@ public final class MentaloutDefenseEffects {
     private MentaloutDefenseEffects() {}
 
     /** Owns only the supplied transient modifier; entities without the attribute are left unchanged. */
-    public static void setTrueResistance(LivingEntity subject, Identifier source, double points, boolean enabled) {
+    public static void setTrueResistance(LivingEntity subject, ResourceLocation source, double points, boolean enabled) {
         org.academy.api.common.ability.AbilityDefenseEffects.setTrueResistance(subject, source, points, enabled);
     }
 

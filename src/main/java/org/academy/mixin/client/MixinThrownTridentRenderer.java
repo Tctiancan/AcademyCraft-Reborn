@@ -4,9 +4,9 @@ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.entity.ThrownTridentRenderer;
 import net.minecraft.client.renderer.entity.state.ThrownTridentRenderState;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.context.ContextKey;
-import net.minecraft.world.entity.projectile.arrow.ThrownTrident;
+import net.minecraft.world.entity.projectile.ThrownTrident;
 import org.academy.internal.client.renderer.special.DarkmatterTridentSpecialRenderer;
 import org.academy.internal.common.world.item.Items;
 import org.spongepowered.asm.mixin.Mixin;
@@ -41,11 +41,11 @@ public abstract class MixinThrownTridentRenderer {
             method = "submit",
             at = @At(
                     value = "FIELD",
-                    target = "Lnet/minecraft/client/renderer/entity/ThrownTridentRenderer;TRIDENT_LOCATION:Lnet/minecraft/resources/Identifier;"
+                    target = "Lnet/minecraft/client/renderer/entity/ThrownTridentRenderer;TRIDENT_LOCATION:Lnet/minecraft/resources/ResourceLocation;"
             )
     )
-    private Identifier academy$useDarkmatterTexture(
-            Identifier vanillaTexture,
+    private ResourceLocation academy$useDarkmatterTexture(
+            ResourceLocation vanillaTexture,
             @Local(argsOnly = true) ThrownTridentRenderState state
     ) {
         return Boolean.TRUE.equals(state.getRenderData(DARKMATTER_TRIDENT))

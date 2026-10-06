@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program.registry;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.ProgramSpatialLimits;
 import org.academy.internal.common.ability.AbilityCategoryNames;
@@ -12,7 +12,7 @@ import java.util.Objects;
  * Central range policy for built-in precision-operation categories.
  */
 public final class AbilityProgramSpatialRanges {
-    private static final Map<Identifier, ProgramSpatialLimits> BUILT_IN = Map.of(
+    private static final Map<ResourceLocation, ProgramSpatialLimits> BUILT_IN = Map.of(
             AcademyCraft.academy(AbilityCategoryNames.TELEPORT), ProgramSpatialLimits.uniform(64.0),
             AcademyCraft.academy(AbilityCategoryNames.MENTALOUT), ProgramSpatialLimits.uniform(64.0),
             AcademyCraft.academy(AbilityCategoryNames.DARKMATTER), ProgramSpatialLimits.uniform(48.0),
@@ -28,7 +28,7 @@ public final class AbilityProgramSpatialRanges {
     /**
      * Returns the built-in differential or the shared 32-block default for extension categories.
      */
-    public static ProgramSpatialLimits forCategory(Identifier category) {
+    public static ProgramSpatialLimits forCategory(ResourceLocation category) {
         Objects.requireNonNull(category, "category");
         return BUILT_IN.getOrDefault(category, ProgramSpatialLimits.DEFAULT);
     }

@@ -1,7 +1,7 @@
 package org.academy.internal.client.gui.screen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.gui.drawable.ColorDrawable;
@@ -115,7 +115,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
             var button = textButton(unlocked ? name : Component.translatable(
                     "screen.academy.darkmatter_shaping.locked.entry", name,
                     shape.requiredAbilityLevel()).getString(), 77, 18);
-            button.setOnClickListener(_ -> selectShape(shape));
+            button.setOnClickListener(unused204 -> selectShape(shape));
             button.setEnabled(unlocked);
             button.setAlpha(unlocked ? 1.0f : 0.34f);
             button.setTooltipText((unlocked
@@ -293,7 +293,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
         gravityToggle.updateTrackColors(0x50FFFFFF, ACCENT);
         gravityToggle.setLayoutParams(new FrameLayoutWidget.LayoutParams()
                 .size(28, 10).gravity(Gravity.TOP_LEFT).margin(208, 130, 0, 0));
-        gravityToggle.updateOnCheckedChangeListener((_, checked) -> {
+        gravityToggle.updateOnCheckedChangeListener((unused205, checked) -> {
             blockGravity = checked;
             refreshSummary();
         });
@@ -336,7 +336,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
         panel.addChild("status", statusLabel);
         createButton = textButton(Component.translatable(
                 "screen.academy.darkmatter_shaping.create").getString(), 128, 18);
-        createButton.setOnClickListener(_ -> submit());
+        createButton.setOnClickListener(unused206 -> submit());
         createButton.setLayoutParams(new FrameLayoutWidget.LayoutParams()
                 .size(128, 18).gravity(Gravity.BOTTOM_LEFT).margin(108, 0, 0, 8));
         panel.addChild("create", createButton);
@@ -392,7 +392,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
         var minus = textButton("−", 16, 16);
         minus.setLayoutParams(new FrameLayoutWidget.LayoutParams()
                 .size(16, 16).gravity(Gravity.CENTER_LEFT).marginLeft(1));
-        minus.setOnClickListener(_ -> changeModifier(type, -1));
+        minus.setOnClickListener(unused207 -> changeModifier(type, -1));
         row.addChild("minus", minus);
         var level = modifiers.getOrDefault(type.id(), 0);
         var name = Component.translatable(type.nameKey()).getString();
@@ -409,7 +409,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
         var plus = textButton("+", 16, 16);
         plus.setLayoutParams(new FrameLayoutWidget.LayoutParams()
                 .size(16, 16).gravity(Gravity.CENTER_RIGHT).marginRight(1));
-        plus.setOnClickListener(_ -> changeModifier(type, 1));
+        plus.setOnClickListener(unused208 -> changeModifier(type, 1));
         minus.setEnabled(unlocked);
         plus.setEnabled(unlocked);
         minus.setAlpha(unlocked ? 1.0f : 0.34f);
@@ -421,8 +421,17 @@ public final class DarkmatterShapingScreen extends UiScreen {
     }
 
     @Override
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        // The mod's modifier hover tooltip is drawn in extractRenderState; UiScreen.render does not
+        // dispatch that hook itself, so it is invoked here (mirroring ChunkLeapScreen) to keep the
+        // tooltip visible above the widget tree (ScreenDispatcher draws widgets on ScreenEvent.Render.Post).
+        extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
     public void extractRenderState(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int mouseX,
             int mouseY,
             float partialTick
@@ -432,7 +441,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
     }
 
     private void extractModifierTooltip(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int mouseX,
             int mouseY
     ) {
@@ -458,7 +467,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
                             type.requiredAbilityLevel()).getString(),
                     maxWidth, 0xFF966C);
         }
-        graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
+        graphics.renderComponentTooltip(font, lines, mouseX, mouseY);
     }
 
     static int modifierTooltipTextWidth(int screenWidth) {
@@ -538,7 +547,7 @@ public final class DarkmatterShapingScreen extends UiScreen {
     private void updateModifierHover(double mouseX, double mouseY) {
         var selected = modifierAt(mouseX, mouseY);
         var selectedRow = rowFor(selected);
-        modifierRows.forEach((row, _) -> modifierRowFills.get(row).setColor(
+        modifierRows.forEach((row, unused209) -> modifierRowFills.get(row).setColor(
                 row == selectedRow ? 0x507680DE : 0x28000000));
     }
 

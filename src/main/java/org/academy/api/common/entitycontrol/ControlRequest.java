@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -11,7 +11,7 @@ import java.util.UUID;
 public record ControlRequest(
         ServerPlayer controller,
         LivingEntity subject,
-        Identifier source,
+        ResourceLocation source,
         UUID scopeId,
         int priority,
         long expiresAt,
@@ -40,7 +40,7 @@ public record ControlRequest(
     public ControlRequest(
             ServerPlayer controller,
             LivingEntity subject,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             long expiresAt,
             List<ControlDirective> directives
@@ -51,7 +51,7 @@ public record ControlRequest(
     public static ControlRequest permanent(
             ServerPlayer controller,
             LivingEntity subject,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             List<ControlDirective> directives
     ) {
@@ -62,7 +62,7 @@ public record ControlRequest(
     public static ControlRequest scopedPermanent(
             ServerPlayer controller,
             LivingEntity subject,
-            Identifier source,
+            ResourceLocation source,
             UUID scopeId,
             int priority,
             List<ControlDirective> directives
@@ -74,7 +74,7 @@ public record ControlRequest(
     public static ControlRequest permanent(
             ServerPlayer controller,
             LivingEntity subject,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             ControlDirective... directives
     ) {

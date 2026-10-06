@@ -69,7 +69,7 @@ public final class MentalIntervention extends Skill {
                         InputConstants.PRESS,
                         InputConstants.MOD_ALT
                 )
-        ), _ -> Client.use());
+        ), unused531 -> Client.use());
         MentaloutRosterPackets.initClient();
     }
 

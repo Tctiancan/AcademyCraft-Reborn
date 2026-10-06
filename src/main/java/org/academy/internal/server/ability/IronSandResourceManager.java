@@ -1,7 +1,7 @@
 package org.academy.internal.server.ability;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.biome.Biome;
@@ -30,7 +30,7 @@ import java.util.UUID;
 
 /** Iron sand shares the active category's persisted MP pool without CP debt or recovery suppression. */
 public final class IronSandResourceManager implements AbilitySubsystem, IronSandResourceService {
-    public static final Identifier DEFENSE_SOURCE = AcademyCraft.academy("iron_sand_defense");
+    public static final ResourceLocation DEFENSE_SOURCE = AcademyCraft.academy("iron_sand_defense");
     public static final TagKey<Biome> RICH_BIOMES = TagKey.create(Registries.BIOME, AcademyCraft.academy("iron_sand_rich"));
     private final PlayerDataManager dataManager;
     private final PlayerCPManager cpManager;

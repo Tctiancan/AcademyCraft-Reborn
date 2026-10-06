@@ -1,11 +1,11 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
-import net.minecraft.util.ARGB
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.FastColor
 import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.render.Canvas
@@ -46,7 +46,7 @@ open class ImageWidget : AbstractWidget {
         this.textureSource = GpuTextureViewSource(textureView)
     }
 
-    constructor(textureIdentifier: Identifier?) {
+    constructor(textureIdentifier: ResourceLocation?) {
         this.textureSource = textureIdentifier?.let { IdentifierTextureSource(it) }
     }
 
@@ -55,7 +55,7 @@ open class ImageWidget : AbstractWidget {
     private fun effectiveSampler(): GpuSampler {
         sampler?.let { return it }
         textureSource?.getPreferredSampler()?.let { return it }
-        return RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
+        return org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST)
     }
 
     override fun renderInternal(context: Canvas) {
@@ -102,7 +102,7 @@ open class ImageWidget : AbstractWidget {
     }
 
     fun setSampler(mode: FilterMode, useMipmap: Boolean): ImageWidget {
-        return setSampler(RenderSystem.getSamplerCache().getClampToEdge(mode, useMipmap))
+        return setSampler(org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(mode, useMipmap))
     }
 
     fun setSampler(sampler: GpuSampler?): ImageWidget {
@@ -114,14 +114,14 @@ open class ImageWidget : AbstractWidget {
     }
 
     /** 当前源为 Identifier 源时返回其标识, 否则 null. */
-    fun getTextureLocation(): Identifier? = (textureSource as? IdentifierTextureSource)?.getIdentifier()
+    fun getTextureLocation(): ResourceLocation? = (textureSource as? IdentifierTextureSource)?.getIdentifier()
 
     fun setTextureSource(source: TextureSource?): ImageWidget {
         textureSource = source
         return this
     }
 
-    fun setTexture(textureLocation: Identifier?): ImageWidget {
+    fun setTexture(textureLocation: ResourceLocation?): ImageWidget {
         textureSource = textureLocation?.let { IdentifierTextureSource(it) }
         return this
     }
@@ -162,9 +162,9 @@ open class ImageWidget : AbstractWidget {
 
     fun setColor(color: Int): ImageWidget {
         return setColor(
-            ARGB.red(color) / 255.0f,
-            ARGB.green(color) / 255.0f,
-            ARGB.blue(color) / 255.0f
+            FastColor.ARGB32.red(color) / 255.0f,
+            FastColor.ARGB32.green(color) / 255.0f,
+            FastColor.ARGB32.blue(color) / 255.0f
         )
     }
 

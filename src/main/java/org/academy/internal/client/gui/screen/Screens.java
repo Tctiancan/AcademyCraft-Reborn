@@ -21,7 +21,7 @@ public final class Screens {
 
     static {
         SCREEN_HANDLERS.put(WindGenBaseBlock.WIND_GEN_SCREEN,
-                (_, buf) -> {
+                (unused210, buf) -> {
                     var containerId = buf.readVarInt();
                     var title = buf.readUtf();
                     var pos = buf.readBlockPos();
@@ -37,12 +37,12 @@ public final class Screens {
                     }
                 });
         SCREEN_HANDLERS.put(AbilityDeveloperBlock.ABILITY_DEVELOPER_SCREEN,
-                (_, buf) -> {
+                (unused211, buf) -> {
                     var source = DevelopmentSource.CODEC.decode(buf);
                     Minecraft.getInstance().gui.setScreen(new AbilityDeveloperScreen(source));
                 });
         SCREEN_HANDLERS.put(WirelessNodeBlock.WIRELESS_NODE_SCREEN,
-                (_, buf) -> {
+                (unused212, buf) -> {
                     var containerId = buf.readVarInt();
                     var title = buf.readUtf();
                     var pos = buf.readBlockPos();
@@ -58,7 +58,7 @@ public final class Screens {
                     }
                 });
         SCREEN_HANDLERS.put(OmniCraftingTableBlock.OMNI_CRAFTING_TABLE_SCREEN,
-                (_, buf) -> {
+                (unused213, buf) -> {
                     var containerId = buf.readVarInt();
                     var title = buf.readUtf();
                     var pos = buf.readBlockPos();
@@ -70,7 +70,7 @@ public final class Screens {
                     }
                 });
         SCREEN_HANDLERS.put(SolarGenBlock.SOLAR_GEN_SCREEN,
-                (_, buf) -> {
+                (unused214, buf) -> {
                     var containerId = buf.readVarInt();
                     var title = buf.readUtf();
                     var pos = buf.readBlockPos();

@@ -10,11 +10,11 @@ import org.jspecify.annotations.Nullable;
 @FunctionalInterface
 public interface BlockStructureSettlementPolicy {
     /** Keeps every cell fixed to the nearest grid when the structure stops. */
-    BlockStructureSettlementPolicy FIXED = (_, _, _, _) ->
+    BlockStructureSettlementPolicy FIXED = (unused167, unused168, unused169, unused170) ->
             BlockStructureSettlementMode.FIXED;
 
     /** Applies falling-block physics only to tagged natural terrain without block entities. */
-    BlockStructureSettlementPolicy NATURAL_BLOCKS = (_, _, state, blockEntity) ->
+    BlockStructureSettlementPolicy NATURAL_BLOCKS = (unused171, unused172, state, blockEntity) ->
             naturalMode(state, blockEntity != null);
 
     BlockStructureSettlementMode settlementMode(

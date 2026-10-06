@@ -1,6 +1,6 @@
 package org.academy.mixin.client;
 
-import com.mojang.blaze3d.textures.GpuSampler;
+import org.academy.api.client.render.texture.GpuSampler;
 import net.minecraft.client.renderer.chunk.ChunkSectionLayerGroup;
 import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
 import org.academy.api.client.render.post.WorldSurfaceMasks;

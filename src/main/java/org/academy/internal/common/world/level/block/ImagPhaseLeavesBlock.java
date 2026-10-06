@@ -3,7 +3,7 @@ package org.academy.internal.common.world.level.block;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.LeavesBlock;
 import net.minecraft.world.level.block.SoundType;
@@ -20,7 +20,7 @@ public final class ImagPhaseLeavesBlock extends LeavesBlock {
                 .noOcclusion()
                 .sound(SoundType.CHAIN)
                 .isValidSpawn((state, level, pos, entityType)
-                        -> entityType == EntityTypes.OCELOT || entityType == EntityTypes.PARROT)
+                        -> entityType == EntityType.OCELOT || entityType == EntityType.PARROT)
                 .isSuffocating((state, level, pos) -> false)
                 .isViewBlocking((state, level, pos) -> false)
                 .ignitedByLava()
@@ -46,3 +46,4 @@ public final class ImagPhaseLeavesBlock extends LeavesBlock {
         );
     }
 }
+

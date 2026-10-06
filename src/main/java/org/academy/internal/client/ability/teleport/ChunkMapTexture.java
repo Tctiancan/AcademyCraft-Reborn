@@ -3,7 +3,7 @@ package org.academy.internal.client.ability.teleport;
 import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
 
@@ -32,7 +32,7 @@ public final class ChunkMapTexture {
     /** Minimum gap between GPU uploads while tiles stream in. */
     private static final long UPLOAD_INTERVAL_MS = 200L;
 
-    private static final Identifier TEXTURE_ID = AcademyCraft.academy("chunk_leap/map");
+    private static final ResourceLocation TEXTURE_ID = AcademyCraft.academy("chunk_leap/map");
 
     private final NativeImage image;
     private DynamicTexture texture;
@@ -131,7 +131,7 @@ public final class ChunkMapTexture {
         texture.upload();
     }
 
-    public Identifier textureId() {
+    public ResourceLocation textureId() {
         return TEXTURE_ID;
     }
 

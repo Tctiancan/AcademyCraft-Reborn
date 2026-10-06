@@ -1,16 +1,10 @@
-package org.academy.api.client.gui.screen
+﻿package org.academy.api.client.gui.screen
 
-import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.platform.InputConstants
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen
-import net.minecraft.client.input.CharacterEvent
-import net.minecraft.client.input.KeyEvent
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.player.Inventory
 import net.minecraft.world.inventory.AbstractContainerMenu
 import net.minecraft.world.inventory.Slot
@@ -28,7 +22,6 @@ import org.academy.api.client.gui.imgui.ImGuiUtilApi
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
 import org.academy.api.client.gui.widget.*
-import org.academy.api.client.render.Render
 import org.academy.api.client.resources.R
 
 abstract class ContainerUiScreen<T : AbstractContainerMenu> protected constructor(
@@ -152,7 +145,7 @@ abstract class ContainerUiScreen<T : AbstractContainerMenu> protected constructo
         invPage: FrameLayoutWidget
     )
 
-    protected fun createButton(textureLocation: Identifier): RadioButtonWidget {
+    protected fun createButton(textureLocation: ResourceLocation): RadioButtonWidget {
         val widget = RadioButtonWidget()
         val defaultDrawable = TextureDrawable(textureLocation)
         defaultDrawable.tintColor = 0xFFE6E6E6.toInt()
@@ -171,33 +164,15 @@ abstract class ContainerUiScreen<T : AbstractContainerMenu> protected constructo
         return widget
     }
 
-    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        val renderTarget: RenderTarget = ScreenDispatcher.getRenderTarget()
-        val colorTextureView = renderTarget.getColorTextureView() ?: return
+    override fun renderBg(guiGraphics: GuiGraphics, partialTick: Float, mouseX: Int, mouseY: Int) {
+        // 1.21.1: 首版以 C-stun 略去原生容器背景绘制; Academy UI 背景由自身绘制系统直接提交到主 framebuffer.
+    }
 
-        graphics.innerBlit(
-            Render.RenderPipelines.IMAGE_PREMULTIPLIED_ALPHA,
-            colorTextureView,
-            RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST),
-            0, 0, graphics.guiWidth(), graphics.guiHeight(),
-            0f, 1f, 1f, 0f, -1
-        )
-
-        if (this.isRenderInventory) {
-            val originHeight = 187f
-            val currentHeight = invHeightSupplier()
-            val scaleY = currentHeight / originHeight
-            graphics.pose().pushMatrix()
-            graphics.pose().translate(0f, topPos.toFloat())
-            graphics.pose().scale(1f, scaleY)
-            graphics.pose().translate(0f, -topPos + invTranslationYSupplier())
-
-            extractContents(graphics, mouseX, mouseY, a)
-            extractCarriedItem(graphics, mouseX, mouseY)
-
-            graphics.pose().popMatrix()
-        }
-        extractTooltip(graphics, mouseX, mouseY)
+    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        // 1.21.1: 由原生 AbstractContainerScreen.render 负责 背景/槽位/标签/手持物品/悬浮提示.
+        // 原 25.5 的离屏 Academy 渲染目标背景 blit 已移除 (Academy UI 改在主 framebuffer 直接绘制);
+        // 物品栏动画缩放 (invHeightSupplier/invTranslationYSupplier) 首版以 C-stun 略去.
+        super.render(guiGraphics, mouseX, mouseY, partialTick)
     }
 
     override fun removed() {
@@ -208,34 +183,28 @@ abstract class ContainerUiScreen<T : AbstractContainerMenu> protected constructo
     }
 
     override fun renderSlotContents(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         itemstack: ItemStack,
         slot: Slot,
         itemCount: String?
     ) {
         val pose = graphics.pose()
-        pose.pushMatrix()
+        pose.pushPose()
 
-        pose.translate(slot.x.toFloat(), slot.y.toFloat())
-        pose.translate(8.0f, 8.0f)
+        pose.translate(slot.x.toFloat(), slot.y.toFloat(), 0f)
+        pose.translate(8.0f, 8.0f, 0f)
 
-        pose.scale(2 / 3f)
+        pose.scale(2 / 3f, 2 / 3f, 1.0f)
 
-        pose.translate(-8.0f, -8.0f)
-        pose.translate(-slot.x.toFloat(), -slot.y.toFloat())
+        pose.translate(-8.0f, -8.0f, 0f)
+        pose.translate(-slot.x.toFloat(), -slot.y.toFloat(), 0f)
 
         super.renderSlotContents(graphics, itemstack, slot, itemCount)
 
-        pose.popMatrix()
+        pose.popPose()
     }
 
-    override fun extractBackground(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        extractBlurredBackground(graphics)
-        extractTransparentBackground(graphics)
-        minecraft.gui.hud.extractDeferredSubtitles()
-    }
-
-    override fun extractLabels(graphics: GuiGraphicsExtractor, xm: Int, ym: Int) {
+    override fun renderLabels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
     }
 
     override fun mouseMoved(mouseX: Double, mouseY: Double) {
@@ -259,73 +228,73 @@ abstract class ContainerUiScreen<T : AbstractContainerMenu> protected constructo
         return rootResult || superResult
     }
 
-    override fun mouseReleased(e: MouseButtonEvent): Boolean {
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
         if (ImGuiUtilApi.wantCaptureMouse()) return true
 
-        val event: MouseEvent = MouseEvent.createReleaseEvent(e.x(), e.y(), e.button())
+        val event: MouseEvent = MouseEvent.createReleaseEvent(mouseX, mouseY, button)
         root.dispatchEvent(event)
         val rootResult = event.isConsumed
 
         var superResult = false
-        if (this.isHandleContainer) superResult = super.mouseReleased(e)
+        if (this.isHandleContainer) superResult = super.mouseReleased(mouseX, mouseY, button)
 
         return rootResult || superResult
     }
 
-    override fun mouseDragged(e: MouseButtonEvent, mouseX: Double, mouseY: Double): Boolean {
+    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, dragX: Double, dragY: Double): Boolean {
         if (ImGuiUtilApi.wantCaptureMouse()) return true
 
-        val event: MouseEvent = MouseEvent.createDragEvent(e.x(), e.y(), e.button(), mouseX, mouseY)
+        val event: MouseEvent = MouseEvent.createDragEvent(mouseX, mouseY, button, dragX, dragY)
         root.dispatchEvent(event)
         val rootResult = event.isConsumed
 
         var superResult = false
-        if (this.isHandleContainer) superResult = super.mouseDragged(e, mouseX, mouseY)
+        if (this.isHandleContainer) superResult = super.mouseDragged(mouseX, mouseY, button, dragX, dragY)
 
         return rootResult || superResult
     }
 
-    override fun mouseClicked(e: MouseButtonEvent, isDoubleClick: Boolean): Boolean {
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         if (ImGuiUtilApi.wantCaptureMouse()) return true
 
-        val event: MouseEvent = MouseEvent.createPressEvent(e.x(), e.y(), e.button())
+        val event: MouseEvent = MouseEvent.createPressEvent(mouseX, mouseY, button)
         root.dispatchEvent(event)
         val rootResult = event.isConsumed
 
         var superResult = false
-        if (this.isHandleContainer) superResult = super.mouseClicked(e, isDoubleClick)
+        if (this.isHandleContainer) superResult = super.mouseClicked(mouseX, mouseY, button)
 
         return rootResult || superResult
     }
 
-    override fun keyPressed(e: KeyEvent): Boolean {
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         if (ImGuiUtilApi.wantCaptureKeyboard()) return true
 
-        if (e.key() == InputConstants.KEY_F12) {
+        if (keyCode == InputConstants.KEY_F12) {
             AcademyCraft.DEBUG_UI = !AcademyCraft.DEBUG_UI
             return true
         }
 
         val event =
-            org.academy.api.client.gui.event.KeyEvent(EventType.KEY_PRESSED, e.key(), e.scancode(), e.modifiers())
+            org.academy.api.client.gui.event.KeyEvent(EventType.KEY_PRESSED, keyCode, scanCode, modifiers)
         root.dispatchEvent(event)
         if (event.isConsumed) return true
-        if (e.key() == InputConstants.KEY_ESCAPE && shouldCloseOnEsc()) {
+        if (keyCode == InputConstants.KEY_ESCAPE && shouldCloseOnEsc()) {
             onClose()
             return true
         }
-        return this.handleContainer && super.keyPressed(e)
+        return this.handleContainer && super.keyPressed(keyCode, scanCode, modifiers)
     }
 
-    override fun charTyped(e: CharacterEvent): Boolean {
+    override fun charTyped(codePoint: Char, modifiers: Int): Boolean {
         if (ImGuiUtilApi.wantCaptureKeyboard()) return true
 
-        val event = CharTypedEvent(e.codepoint())
+        val event = CharTypedEvent(codePoint.toInt())
         root.dispatchEvent(event)
-        return event.isConsumed || this.handleContainer && super.charTyped(e)
+        return event.isConsumed || this.handleContainer && super.charTyped(codePoint, modifiers)
     }
 
-    override fun hasClickedOutside(mouseX: Double, mouseY: Double, guiLeft: Int, guiTop: Int): Boolean {
+    override fun hasClickedOutside(mouseX: Double, mouseY: Double, guiLeft: Int, guiTop: Int, mouseButton: Int): Boolean {
         return mouseX < guiLeft || mouseY < guiTop - 22 || mouseX >= guiLeft + imageWidth || mouseY >= guiTop + 187
     }
 }

@@ -18,7 +18,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.util.Mth;
@@ -61,10 +61,10 @@ import java.util.stream.Collectors;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MentaloutGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE = AcademyCraft.academy("mentalout_function");
-    private static final Identifier SOURCE = AcademyCraft.academy("gametest_mental_control");
-    private static final Identifier PERCEPTION_SOURCE = AcademyCraft.academy("gametest_mental_perception");
-    private static final Identifier IMPRESSION_GUARD_SOURCE = AcademyCraft.academy("impression_guard_target");
+    private static final ResourceLocation TEST_INSTANCE_TYPE = AcademyCraft.academy("mentalout_function");
+    private static final ResourceLocation SOURCE = AcademyCraft.academy("gametest_mental_control");
+    private static final ResourceLocation PERCEPTION_SOURCE = AcademyCraft.academy("gametest_mental_perception");
+    private static final ResourceLocation IMPRESSION_GUARD_SOURCE = AcademyCraft.academy("impression_guard_target");
     private static final AtomicInteger NEXT_CONTROLLER_ID = new AtomicInteger();
 
     private MentaloutGameTests() {
@@ -91,7 +91,7 @@ public final class MentaloutGameTests {
             );
             var data = new TestData<>(
                     environment,
-                    Identifier.withDefaultNamespace("empty"),
+                    ResourceLocation.withDefaultNamespace("empty"),
                     scenario.maxTicks,
                     0,
                     true,
@@ -243,7 +243,7 @@ public final class MentaloutGameTests {
         DIRECT_IDLE_VIEW("direct_idle_view", 20) {
             @Override void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var cow = helper.spawn(EntityTypes.COW, 3, 2, 1);
+                var cow = helper.spawn(EntityType.COW, 3, 2, 1);
                 cow.setYRot(123); cow.setYHeadRot(123); cow.setYBodyRot(123); cow.setXRot(-12);
                 var handle = MentalControlApi.apply(ControlRequest.permanent(
                         controller, cow, SOURCE, 300, new ControlDirective.DirectControl()));
@@ -304,8 +304,8 @@ public final class MentaloutGameTests {
         WORK_SPLIT_RESTORE("work_split_restore", 160) {
             @Override void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var first = helper.spawn(EntityTypes.VILLAGER, 2, 2, 1);
-                var second = helper.spawn(EntityTypes.VILLAGER, 3, 2, 1);
+                var first = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
+                var second = helper.spawn(EntityType.VILLAGER, 3, 2, 1);
                 MentalControlMemory.remember(controller, first);
                 var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
                         helper.absolutePos(new BlockPos(2, 2, 1)), helper.absolutePos(new BlockPos(5, 2, 1)));
@@ -330,8 +330,8 @@ public final class MentaloutGameTests {
         WORK_FARM_PAUSE("work_farm_pause", 200) {
             @Override void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var first = helper.spawn(EntityTypes.VILLAGER, 1, 2, 1);
-                var second = helper.spawn(EntityTypes.VILLAGER, 2, 2, 1);
+                var first = helper.spawn(EntityType.VILLAGER, 1, 2, 1);
+                var second = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
                 var pos = helper.absolutePos(new BlockPos(10, 2, 1));
                 helper.getLevel().setBlock(pos.below(), Blocks.FARMLAND.defaultBlockState(), 3);
                 helper.getLevel().setBlock(pos, ((net.minecraft.world.level.block.CropBlock) Blocks.WHEAT).getStateForAge(7), 3);
@@ -391,7 +391,7 @@ public final class MentaloutGameTests {
                 var workers = new ArrayList<Mob>();
                 var controls = new ArrayList<ControlHandle>();
                 for (int i = 0; i < 16; i++) {
-                    var worker = helper.spawn(EntityTypes.VILLAGER, 1 + i % 4, 2, 1 + i / 4);
+                    var worker = helper.spawn(EntityType.VILLAGER, 1 + i % 4, 2, 1 + i / 4);
                     // GameTest can evaluate before the first physics tick; these feet are on the test floor.
                     worker.setOnGround(true);
                     controls.add(MentalControlApi.apply(ControlRequest.permanent(controller, worker, SOURCE, 1000,
@@ -480,7 +480,7 @@ public final class MentaloutGameTests {
                 var workers = new ArrayList<LivingEntity>();
                 for (int x = 0; x < 10; x++) for (int z = 0; z < 10; z++) helper.setBlock(x, 1, z, Blocks.STONE);
                 for (int i = 0; i < 64; i++) {
-                    var worker = helper.spawn(EntityTypes.VILLAGER, i % 8 + 1, 2, i / 8 + 1);
+                    var worker = helper.spawn(EntityType.VILLAGER, i % 8 + 1, 2, i / 8 + 1);
                     workers.add(worker);
                 }
                 var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
@@ -502,7 +502,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 2, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
                 var cropPos = helper.absolutePos(new BlockPos(3, 2, 1));
                 var supplyPos = helper.absolutePos(new BlockPos(1, 2, 2));
                 helper.setBlock(3, 1, 1, Blocks.DIRT);
@@ -531,7 +531,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 2, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
                 var block = helper.absolutePos(new BlockPos(3, 2, 1));
                 helper.setBlock(3, 2, 1, Blocks.STONE);
                 var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), block, block);
@@ -554,7 +554,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 1, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 1, 2, 1);
                 var min = helper.absolutePos(new BlockPos(4, 2, 1));
                 var max = helper.absolutePos(new BlockPos(7, 8, 4));
                 for (var block : BlockPos.betweenClosed(min, max)) helper.getLevel().setBlock(block, Blocks.DIRT.defaultBlockState(), 3);
@@ -580,8 +580,8 @@ public final class MentaloutGameTests {
                 for (int x = 0; x <= 28; x++) for (int z = 0; z <= 18; z++) helper.setBlock(x, 1, z, Blocks.STONE);
                 var workers = new ArrayList<LivingEntity>();
                 for (int i = 0; i < 64; i++) {
-                    LivingEntity worker = i < 4 ? helper.spawn(EntityTypes.RAVAGER, i % 8 + 1, 2, i / 8 + 1)
-                            : helper.spawn(EntityTypes.CREEPER, i % 8 + 1, 2, i / 8 + 1);
+                    LivingEntity worker = i < 4 ? helper.spawn(EntityType.RAVAGER, i % 8 + 1, 2, i / 8 + 1)
+                            : helper.spawn(EntityType.CREEPER, i % 8 + 1, 2, i / 8 + 1);
                     workers.add(worker);
                 }
                 var min = helper.absolutePos(new BlockPos(11, 2, 1));
@@ -613,7 +613,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 1, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 1, 2, 1);
                 var block = helper.absolutePos(new BlockPos(3, 12, 1));
                 helper.getLevel().setBlock(block, Blocks.STONE.defaultBlockState(), 3);
                 var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), block, block);
@@ -641,7 +641,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 1, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 1, 2, 1);
                 var low = helper.absolutePos(new BlockPos(3, 2, 1));
                 var high = low.above();
                 helper.getLevel().setBlock(low, Blocks.DIRT.defaultBlockState(), 3);
@@ -665,7 +665,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.ZOMBIE, 2, 2, 1);
+                var worker = helper.spawn(EntityType.ZOMBIE, 2, 2, 1);
                 for (var slot : EquipmentSlot.values()) worker.setItemSlot(slot, ItemStack.EMPTY);
                 var armor = worker.getAttribute(Attributes.ARMOR);
                 var attack = worker.getAttribute(Attributes.ATTACK_DAMAGE);
@@ -684,9 +684,9 @@ public final class MentaloutGameTests {
                     worker.setItemSlot(EquipmentSlot.MAINHAND, new ItemStack(Items.DIAMOND_PICKAXE));
                 });
                 helper.runAtTickTime(25, () -> {
-                    helper.assertValueEqual(armor.getModifier(Identifier.fromNamespaceAndPath("academy", "control_default_armor")).amount(),
+                    helper.assertValueEqual(armor.getModifier(ResourceLocation.fromNamespaceAndPath("academy", "control_default_armor")).amount(),
                             9.0, "An occupied armor slot must not receive virtual armor");
-                    helper.assertTrue(attack.getModifier(Identifier.fromNamespaceAndPath("academy", "control_default_weapon")) == null,
+                    helper.assertTrue(attack.getModifier(ResourceLocation.fromNamespaceAndPath("academy", "control_default_weapon")) == null,
                             "Real equipment must replace the virtual weapon bonus");
                     var real = worker.getMainHandItem();
                     helper.assertTrue(ControlledEquipment.miningTool(worker, Blocks.STONE.defaultBlockState()) == real,
@@ -694,7 +694,7 @@ public final class MentaloutGameTests {
                     ControlledEquipment.damageRealTool(worker, real, 1);
                     helper.assertValueEqual(real.getDamageValue(), 1, "Real tools still consume durability");
                     GroupControlApi.cancelWork(helper.getLevel().getServer(), controller.getUUID(), Set.of(worker.getUUID()));
-                    helper.assertTrue(armor.getModifier(Identifier.fromNamespaceAndPath("academy", "control_default_armor")) == null,
+                    helper.assertTrue(armor.getModifier(ResourceLocation.fromNamespaceAndPath("academy", "control_default_armor")) == null,
                             "Cancelling control must remove default armor");
                     helper.assertTrue(worker.getItemBySlot(EquipmentSlot.HEAD).isEmpty(), "Virtual armor must not create items");
                     helper.assertTrue(helper.getLevel().getBlockState(cell).isAir(), "No supplied seed must mean no planting");
@@ -707,8 +707,8 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 2, 2, 1);
-                var sheep = helper.spawn(EntityTypes.SHEEP, 3, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
+                var sheep = helper.spawn(EntityType.SHEEP, 3, 2, 1);
                 sheep.setNoAi(true);
                 var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
                         helper.absolutePos(new BlockPos(1, 2, 0)), helper.absolutePos(new BlockPos(4, 3, 2)));
@@ -729,7 +729,7 @@ public final class MentaloutGameTests {
             @Override void run(GameTestHelper helper) {
                 prepareArena(helper);
                 var controller = createController(helper);
-                var worker = helper.spawn(EntityTypes.VILLAGER, 3, 2, 1);
+                var worker = helper.spawn(EntityType.VILLAGER, 3, 2, 1);
                 MentalControlMemory.remember(controller, worker);
                 var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
                         helper.absolutePos(new BlockPos(2, 2, 1)), helper.absolutePos(new BlockPos(4, 2, 1)));
@@ -771,8 +771,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var cow = helper.spawn(EntityTypes.COW, 3, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var cow = helper.spawn(EntityType.COW, 3, 2, 1);
                 zombie.setPersistenceRequired();
                 zombie.setNoAi(true);
                 cow.setPersistenceRequired();
@@ -831,7 +831,7 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var allay = helper.spawn(EntityTypes.ALLAY, 3, 2, 1);
+                var allay = helper.spawn(EntityType.ALLAY, 3, 2, 1);
                 allay.setPersistenceRequired();
                 var relation = impression(controller, allay);
                 var initialPosition = allay.position();
@@ -967,8 +967,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var cow = helper.spawn(EntityTypes.COW, 3, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var cow = helper.spawn(EntityType.COW, 3, 2, 1);
                 zombie.setPersistenceRequired();
                 cow.setPersistenceRequired();
                 cow.setInvulnerable(true);
@@ -998,7 +998,7 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var target = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 3);
+                var target = helper.spawn(EntityType.ZOMBIE, 1, 2, 3);
                 target.setPersistenceRequired();
                 controller.snapTo(controller.getX(), controller.getY(), controller.getZ(), 0.0f, 0.0f);
 
@@ -1038,7 +1038,7 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 2, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 2, 2, 1);
                 zombie.setPersistenceRequired();
                 var destination = helper.absoluteVec(Vec3.atBottomCenterOf(
                         new BlockPos(4, 2, 1)
@@ -1079,8 +1079,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 4, 2, 1);
-                var villager = helper.spawn(EntityTypes.VILLAGER, 1, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 4, 2, 1);
+                var villager = helper.spawn(EntityType.VILLAGER, 1, 2, 1);
                 zombie.setPersistenceRequired();
                 villager.setPersistenceRequired();
                 villager.setNoAi(true);
@@ -1136,8 +1136,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var attacker = helper.spawn(EntityTypes.SLIME, 2, 2, 1);
-                var victim = helper.spawn(EntityTypes.SLIME, 3, 2, 3);
+                var attacker = helper.spawn(EntityType.SLIME, 2, 2, 1);
+                var victim = helper.spawn(EntityType.SLIME, 3, 2, 3);
                 attacker.setSize(2, true);
                 victim.setSize(2, true);
                 attacker.setPersistenceRequired();
@@ -1201,7 +1201,7 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 6, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 6, 2, 1);
                 zombie.setPersistenceRequired();
                 for (var x = 9; x <= 11; x++) {
                     for (var z = 0; z <= 2; z++) {
@@ -1250,8 +1250,8 @@ public final class MentaloutGameTests {
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
                 controller.setInvulnerable(true);
-                var guardian = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 1);
-                var threat = helper.spawn(EntityTypes.SKELETON, 6, 2, 1);
+                var guardian = helper.spawn(EntityType.ZOMBIE, 3, 2, 1);
+                var threat = helper.spawn(EntityType.SKELETON, 6, 2, 1);
                 guardian.setPersistenceRequired();
                 threat.setPersistenceRequired();
                 threat.setInvulnerable(true);
@@ -1307,8 +1307,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var villager = helper.spawn(EntityTypes.VILLAGER, 8, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var villager = helper.spawn(EntityType.VILLAGER, 8, 2, 1);
                 zombie.setPersistenceRequired();
                 villager.setPersistenceRequired();
                 var handle = freeze(controller, zombie, 8L);
@@ -1344,8 +1344,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var cow = helper.spawn(EntityTypes.COW, 3, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var cow = helper.spawn(EntityType.COW, 3, 2, 1);
                 zombie.setPersistenceRequired();
                 cow.setPersistenceRequired();
                 zombie.setTarget(cow);
@@ -1411,8 +1411,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var zombie = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var skeleton = helper.spawn(EntityTypes.SKELETON, 3, 2, 1);
+                var zombie = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var skeleton = helper.spawn(EntityType.SKELETON, 3, 2, 1);
                 zombie.setPersistenceRequired();
                 skeleton.setPersistenceRequired();
                 var zombieRelation = impression(controller, zombie);
@@ -1447,8 +1447,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var guardian = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var aggressor = helper.spawn(EntityTypes.SKELETON, 3, 2, 1);
+                var guardian = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var aggressor = helper.spawn(EntityType.SKELETON, 3, 2, 1);
                 guardian.setPersistenceRequired();
                 aggressor.setPersistenceRequired();
                 var relation = impression(controller, guardian);
@@ -1482,11 +1482,11 @@ public final class MentaloutGameTests {
                 var controller = createController(helper);
                 GameType.SURVIVAL.updatePlayerAbilities(controller.getAbilities());
                 controller.connection.markClientLoaded();
-                var guardian = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-                var villager = helper.spawn(EntityTypes.VILLAGER, 4, 2, 1);
-                var selfAggressor = helper.spawn(EntityTypes.SKELETON, 7, 2, 1);
-                var controllerAggressor = helper.spawn(EntityTypes.PILLAGER, 10, 2, 1);
-                var targetingAggressor = helper.spawn(EntityTypes.DROWNED, 13, 2, 1);
+                var guardian = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+                var villager = helper.spawn(EntityType.VILLAGER, 4, 2, 1);
+                var selfAggressor = helper.spawn(EntityType.SKELETON, 7, 2, 1);
+                var controllerAggressor = helper.spawn(EntityType.PILLAGER, 10, 2, 1);
+                var targetingAggressor = helper.spawn(EntityType.DROWNED, 13, 2, 1);
                 guardian.setPersistenceRequired();
                 villager.setPersistenceRequired();
                 selfAggressor.setPersistenceRequired();
@@ -1643,10 +1643,10 @@ public final class MentaloutGameTests {
             void run(GameTestHelper helper) {
                 var level = helper.getLevel();
                 var controller = createController(helper);
-                var neutral = helper.spawn(EntityTypes.ZOMBIFIED_PIGLIN, 1, 2, 1);
-                var brainMob = helper.spawn(EntityTypes.PIGLIN, 4, 2, 1);
-                var outsider = helper.spawn(EntityTypes.VILLAGER, 7, 2, 1);
-                var aggressor = helper.spawn(EntityTypes.SKELETON, 10, 2, 1);
+                var neutral = helper.spawn(EntityType.ZOMBIFIED_PIGLIN, 1, 2, 1);
+                var brainMob = helper.spawn(EntityType.PIGLIN, 4, 2, 1);
+                var outsider = helper.spawn(EntityType.VILLAGER, 7, 2, 1);
+                var aggressor = helper.spawn(EntityType.SKELETON, 10, 2, 1);
                 neutral.setPersistenceRequired();
                 brainMob.setPersistenceRequired();
                 outsider.setPersistenceRequired();
@@ -1713,10 +1713,10 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var ghast = helper.spawn(EntityTypes.GHAST, 2, 10, 0);
-                var phantom = helper.spawn(EntityTypes.PHANTOM, 2, 16, 1);
-                var blaze = helper.spawn(EntityTypes.BLAZE, 2, 5, 3);
-                var vex = helper.spawn(EntityTypes.VEX, 2, 21, 4);
+                var ghast = helper.spawn(EntityType.GHAST, 2, 10, 0);
+                var phantom = helper.spawn(EntityType.PHANTOM, 2, 16, 1);
+                var blaze = helper.spawn(EntityType.BLAZE, 2, 5, 3);
+                var vex = helper.spawn(EntityType.VEX, 2, 21, 4);
                 var subjects = new Mob[]{ghast, phantom, blaze, vex};
                 for (var subject : subjects) subject.setPersistenceRequired();
 
@@ -1765,7 +1765,7 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var wither = helper.spawn(EntityTypes.WITHER, 2, 8, 1);
+                var wither = helper.spawn(EntityType.WITHER, 2, 8, 1);
                 wither.setPersistenceRequired();
                 wither.setInvulnerableTicks(0);
                 var destination = helper.absoluteVec(new Vec3(8.5, 10.0, 1.5));
@@ -1791,8 +1791,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var warden = helper.spawn(EntityTypes.WARDEN, 1, 2, 1);
-                var target = helper.spawn(EntityTypes.WARDEN, 3, 2, 1);
+                var warden = helper.spawn(EntityType.WARDEN, 1, 2, 1);
+                var target = helper.spawn(EntityType.WARDEN, 3, 2, 1);
                 warden.setPersistenceRequired();
                 target.setPersistenceRequired();
                 target.setNoAi(true);
@@ -1824,8 +1824,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var warden = helper.spawn(EntityTypes.WARDEN, 2, 2, 1);
-                var cow = helper.spawn(EntityTypes.COW, 2, 2, 4);
+                var warden = helper.spawn(EntityType.WARDEN, 2, 2, 1);
+                var cow = helper.spawn(EntityType.COW, 2, 2, 4);
                 cow.setPersistenceRequired();
                 cow.setNoAi(true);
                 var destination = helper.absoluteVec(Vec3.atBottomCenterOf(
@@ -1888,8 +1888,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var wither = helper.spawn(EntityTypes.WITHER, 1, 4, 1);
-                var cow = helper.spawn(EntityTypes.COW, 3, 2, 1);
+                var wither = helper.spawn(EntityType.WITHER, 1, 4, 1);
+                var cow = helper.spawn(EntityType.COW, 3, 2, 1);
                 wither.setPersistenceRequired();
                 wither.setInvulnerableTicks(0);
                 cow.setPersistenceRequired();
@@ -1911,8 +1911,8 @@ public final class MentaloutGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var controller = createController(helper);
-                var dragon = helper.spawn(EntityTypes.ENDER_DRAGON, 1, 20, 1);
-                var cow = helper.spawn(EntityTypes.COW, 3, 2, 1);
+                var dragon = helper.spawn(EntityType.ENDER_DRAGON, 1, 20, 1);
+                var cow = helper.spawn(EntityType.COW, 3, 2, 1);
                 cow.setPersistenceRequired();
                 var handle = forceTarget(controller, dragon, cow, 35L);
                 var destination = helper.absoluteVec(new Vec3(8.5, 20.0, 1.5));
@@ -2023,3 +2023,4 @@ public final class MentaloutGameTests {
         }
     }
 }
+

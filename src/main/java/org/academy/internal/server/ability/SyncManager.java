@@ -1,6 +1,6 @@
 package org.academy.internal.server.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.vanilla.MinecraftServerContext;
@@ -14,7 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class SyncManager {
-    private final Map<UUID, Set<Identifier>> playerSyncQueueMap = new ConcurrentHashMap<>();
+    private final Map<UUID, Set<ResourceLocation>> playerSyncQueueMap = new ConcurrentHashMap<>();
     private final List<Runnable> pendingTasks = new CopyOnWriteArrayList<>();
     private final MinecraftServerContext context;
 
@@ -44,9 +44,9 @@ public class SyncManager {
      * still mutate persistent data after the logout hook has removed that registration; those
      * late writes must remain valid without recreating an offline network queue.
      */
-    public boolean schedulePlayerSync(UUID uuid, Identifier syncType) {
+    public boolean schedulePlayerSync(UUID uuid, ResourceLocation syncType) {
         if (uuid == null || syncType == null) return false;
-        return playerSyncQueueMap.computeIfPresent(uuid, (_, syncQueue) -> {
+        return playerSyncQueueMap.computeIfPresent(uuid, (unused807, syncQueue) -> {
             syncQueue.add(syncType);
             return syncQueue;
         }) != null;

@@ -1,17 +1,17 @@
 package org.academy.internal.common.skilldata;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 
 public final class BioelectricSurgeData extends SkillData {
-    public static final Identifier ID = AcademyCraft.academy("bioelectric_surge_data");
+    public static final ResourceLocation ID = AcademyCraft.academy("bioelectric_surge_data");
 
     @SerializedName("accumulatedActiveTicks")
     private int accumulatedActiveTicks = 0;
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 

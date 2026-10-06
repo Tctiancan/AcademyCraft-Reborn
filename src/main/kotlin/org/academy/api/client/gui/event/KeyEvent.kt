@@ -1,6 +1,6 @@
 package org.academy.api.client.gui.event
 
-import net.minecraft.client.input.InputQuirks
+import net.minecraft.Util
 
 class KeyEvent(type: EventType, keyCode: Int, scanCode: Int, modifiers: Int) : InputEvent(type) {
     val keyCode: Int
@@ -27,6 +27,9 @@ class KeyEvent(type: EventType, keyCode: Int, scanCode: Int, modifiers: Int) : I
     }
 
     fun hasControlDownWithQuirk(): Boolean {
-        return (this.modifiers and InputQuirks.EDIT_SHORTCUT_KEY_MODIFIER) != 0
+        // 1.21.1 无 InputQuirks (26.2 新增): 内联其 EDIT_SHORTCUT_KEY_MODIFIER 逻辑.
+        // macOS 用 Command(8), 其余平台用 Ctrl(2), 与 26.2 `REPLACE_CTRL_KEY_WITH_CMD_KEY = ON_OSX` 一致.
+        val editShortcutModifier = if (Util.getPlatform() == Util.OS.OSX) 8 else 2
+        return (this.modifiers and editShortcutModifier) != 0
     }
 }

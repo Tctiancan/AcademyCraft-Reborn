@@ -8,8 +8,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.input.KeyEvent;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.Util;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.AcademyCraftClient;
 import org.academy.AcademyCraftConfig;
@@ -102,7 +102,7 @@ public final class InputSystem {
             Consumer<BindingContext> onStart,
             Consumer<BindingContext> onStop
     ) {
-        addMaintainedKeyBinding(keyName, combo, onStart, onStop, _ -> {
+        addMaintainedKeyBinding(keyName, combo, onStart, onStop, unused23 -> {
         }, () -> true);
     }
 
@@ -113,7 +113,7 @@ public final class InputSystem {
             Consumer<BindingContext> onStop,
             BooleanSupplier canRemainActive
     ) {
-        addMaintainedKeyBinding(keyName, combo, onStart, onStop, _ -> {
+        addMaintainedKeyBinding(keyName, combo, onStart, onStop, unused24 -> {
         }, canRemainActive);
     }
 
@@ -231,7 +231,7 @@ public final class InputSystem {
         return isBindingForSkill(keyName, skill.getKey());
     }
 
-    static boolean isBindingForSkill(String keyName, Identifier skillKey) {
+    static boolean isBindingForSkill(String keyName, ResourceLocation skillKey) {
         var skillName = skillKey.getPath();
         var namespacedSkillName = Util.makeDescriptionId("key", skillKey);
         return keyName.equals(skillName)

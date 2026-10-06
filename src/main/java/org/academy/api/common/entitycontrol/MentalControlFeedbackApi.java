@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.common.ability.mentalout.control.MentalControlFeedbackRegistry;
@@ -19,7 +19,7 @@ public final class MentalControlFeedbackApi {
      * Return a translatable component for localization, or null to use the built-in text.
      * Providers must not mutate game state. Registrations survive server restarts in the JVM.
      */
-    public static void registerImmuneFeedback(Identifier entityTypeId, ImmuneFeedbackProvider provider) {
+    public static void registerImmuneFeedback(ResourceLocation entityTypeId, ImmuneFeedbackProvider provider) {
         MentalControlFeedbackRegistry.register(entityTypeId, provider);
     }
 

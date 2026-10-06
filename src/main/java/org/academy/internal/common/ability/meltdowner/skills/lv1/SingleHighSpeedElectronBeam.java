@@ -239,7 +239,7 @@ public final class SingleHighSpeedElectronBeam extends Skill {
         }
 
         public static boolean tryAutomatedAttack(ServerPlayer player) {
-            return Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get().executeActive(player, (context, _) -> {
+            return Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get().executeActive(player, (context, unused490) -> {
                 var level = player.level();
                 var beam = new HighSpeedElectronBeam(EntityTypes.HIGH_SPEED_ELECTRON_BEAM.get(), level);
                 var viewOrigin = player.getEyePosition();

@@ -105,10 +105,10 @@ public class PlasmaGeneration extends Skill {
 
         InputSystem.addKeyBinding(Client.KEY_NAME_CHARGE, Client.CONFIG.getKeyBinding(Client.KEY_NAME_CHARGE,
                         InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_4, InputConstants.PRESS, 0)),
-                _ -> Client.onChargeStart());
+                unused283 -> Client.onChargeStart());
         InputSystem.addKeyBinding(Client.KEY_NAME_RELEASE, Client.CONFIG.getKeyBinding(Client.KEY_NAME_RELEASE,
                         InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_4, InputConstants.RELEASE, 0)),
-                _ -> Client.onFire());
+                unused284 -> Client.onFire());
     }
 
     @Override
@@ -280,7 +280,7 @@ public class PlasmaGeneration extends Skill {
             skill.reportActivity(player, true);
             var seconds = ticks / 20;
             if (seconds > 0 && seconds > state.lastConsumedSecond()) {
-                var paid = skill.executeContinuous(player, (_, _) -> {
+                var paid = skill.executeContinuous(player, (unused285, unused286) -> {
                 }, true);
                 if (!paid) {
                     clearCharge(player);

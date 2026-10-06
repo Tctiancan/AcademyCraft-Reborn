@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -196,7 +196,7 @@ public final class VectorBlast extends Skill {
             level.playSound(null, player.getX(), player.getY(), player.getZ(),
                     SoundEvents.GENERIC_EXPLODE, SoundSource.PLAYERS, 1.0f, 1.0f);
             SpawnVfxGraphPacket.broadcast(level,
-                    Identifier.fromNamespaceAndPath("academy", "vfxgraph/vector_blast"),
+                    ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/vector_blast"),
                     origin, direction, -1, 1f, 0.65f,
                     Map.of("length", (float) range, "width", (float) beamRadius,
                             "seed", (float) player.getRandom().nextInt(65536)));

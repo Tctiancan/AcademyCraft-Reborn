@@ -1,7 +1,7 @@
 package org.academy.api.client.hud.ability
 
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.command.DrawCommand

@@ -24,12 +24,12 @@ public final class ClientMusicCommand {
                         .then(Commands.literal("account")
                                 .then(Commands.literal("upload")
                                         .then(Commands.argument("provider", StringArgumentType.word())
-                                                .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                                .suggests((unused192, builder) -> SharedSuggestionProvider.suggest(
                                                         List.of("qq", "netease"), builder))
                                                 .executes(ClientMusicCommand::upload)))
                                 .then(Commands.literal("status")
                                         .then(Commands.argument("provider", StringArgumentType.word())
-                                                .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                                .suggests((unused193, builder) -> SharedSuggestionProvider.suggest(
                                                         List.of("qq", "netease"), builder))
                                                 .executes(ClientMusicCommand::status))))));
     }

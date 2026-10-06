@@ -7,7 +7,7 @@ import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -280,7 +280,7 @@ public final class ProgramEditorClientSmoke {
         public AbilityProgram restoredProgram(int slot) { return program; }
 
         @Override
-        public Set<Identifier> capabilities() { return Set.of(); }
+        public Set<ResourceLocation> capabilities() { return Set.of(); }
 
         @Override
         public void updateLocalProgram(int slot, AbilityProgram updated) { program = updated; }

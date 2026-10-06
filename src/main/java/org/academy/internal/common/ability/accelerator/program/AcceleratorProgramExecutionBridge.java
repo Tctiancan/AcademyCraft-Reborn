@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.accelerator.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.*;
 import org.academy.api.server.ability.AbilitySystemServer;
@@ -22,7 +22,7 @@ import java.util.function.LongSupplier;
 public final class AcceleratorProgramExecutionBridge {
     private static final int MAX_FUEL = ProgramLimits.DEFAULT.maxNodes()
             * ProgramLimits.DEFAULT.maxNodes() + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
 
     private AcceleratorProgramExecutionBridge() {
     }
@@ -38,7 +38,7 @@ public final class AcceleratorProgramExecutionBridge {
         Objects.requireNonNull(player, "player");
         Objects.requireNonNull(graph, "graph");
         var data = AbilitySystemServer.getSystem(player).getPlayerData(player.getUUID());
-        var capabilities = new HashSet<Identifier>();
+        var capabilities = new HashSet<ResourceLocation>();
         addLearnedCapability(data, capabilities, Skills.VECTOR_ACCEL.get().getKeyString());
         addLearnedCapability(data, capabilities,
                 Skills.KINETIC_ENERGY_APPLIED.get().getKeyString());
@@ -126,18 +126,18 @@ public final class AcceleratorProgramExecutionBridge {
         );
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
-        put(result, AcceleratorProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
+        put(result, AcceleratorProgramNodeIds.CASTER, (context, unused232, unused233) -> data(
                 "entity",
                 ProgramValueTypes.ENTITY_REFERENCE,
                 runtime(context).caster()
         ));
-        put(result, AcceleratorProgramNodeIds.LOOK_TARGET, (context, _, _) ->
+        put(result, AcceleratorProgramNodeIds.LOOK_TARGET, (context, unused234, unused235) ->
                 runtime(context).lookTarget()
                         .map(value -> data("entity", ProgramValueTypes.ENTITY_REFERENCE, value))
                         .orElseGet(() -> ProgramNodeStep.data(Map.of())));
-        put(result, AcceleratorProgramNodeIds.INCOMING_PROJECTILES, (context, _, _) -> data(
+        put(result, AcceleratorProgramNodeIds.INCOMING_PROJECTILES, (context, unused236, unused237) -> data(
                 "entities",
                 ProgramValueTypes.ENTITY_SET,
                 List.copyOf(Objects.requireNonNull(
@@ -145,14 +145,14 @@ public final class AcceleratorProgramExecutionBridge {
                         "Accelerator runtime returned a null projectile set"
                 ))
         ));
-        put(result, AcceleratorProgramNodeIds.OBSERVATION_INVERSE, (_, _, inputs) -> {
+        put(result, AcceleratorProgramNodeIds.OBSERVATION_INVERSE, (unused238, unused239, inputs) -> {
             var correction = vector(inputs, "expected").subtract(vector(inputs, "observed"));
             return ProgramNodeStep.data(Map.of(
                     "correction", new ProgramValue<>(ProgramValueTypes.VECTOR, correction),
                     "magnitude", new ProgramValue<>(ProgramValueTypes.FLOAT, correction.length())
             ));
         });
-        put(result, AcceleratorProgramNodeIds.VECTOR_REFLECTION, (_, _, inputs) -> {
+        put(result, AcceleratorProgramNodeIds.VECTOR_REFLECTION, (unused240, unused241, inputs) -> {
             var incident = vector(inputs, "incident");
             var normal = direction(inputs, "normal");
             var normalVector = ProgramVector.of(normal);
@@ -210,7 +210,7 @@ public final class AcceleratorProgramExecutionBridge {
                     return ProgramNodeStep.next("flow");
                 });
         put(result, AcceleratorProgramNodeIds.REDIRECT_PROJECTILE,
-                (context, _, inputs) -> {
+                (context, unused242, inputs) -> {
                     var runtime = runtime(context);
                     stage(context, runtime.redirectProjectile(
                             entity(inputs, "projectile"),
@@ -301,8 +301,8 @@ public final class AcceleratorProgramExecutionBridge {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {
@@ -312,11 +312,11 @@ public final class AcceleratorProgramExecutionBridge {
 
     private static void addLearnedCapability(
             Player data,
-            Set<Identifier> capabilities,
+            Set<ResourceLocation> capabilities,
             String skillId
     ) {
         if (data != null && data.isSkillLearned(skillId)) {
-            capabilities.add(Identifier.parse(skillId));
+            capabilities.add(ResourceLocation.parse(skillId));
         }
     }
 

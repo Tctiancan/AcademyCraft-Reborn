@@ -1,7 +1,7 @@
 package org.academy.internal.client.ability.program;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class ProgramClipboardCodecTest {
-    private static final Identifier CATEGORY = Identifier.parse("academy:mentalout");
+    private static final ResourceLocation CATEGORY = ResourceLocation.parse("academy:mentalout");
 
     @Test
     void fragmentKeepsAllSelectedNodesInternalEdgesAndLayout() {
@@ -39,7 +39,7 @@ class ProgramClipboardCodecTest {
 
         assertNotNull(ProgramClipboardCodec.decodeProgram(encoded, CATEGORY));
         assertNull(ProgramClipboardCodec.decodeProgram(
-                encoded, Identifier.parse("academy:teleport")));
+                encoded, ResourceLocation.parse("academy:teleport")));
         assertNull(ProgramClipboardCodec.decodeProgram("not a program", CATEGORY));
     }
 
@@ -69,7 +69,7 @@ class ProgramClipboardCodecTest {
 
     private static ProgramGraph.Node node(int id, String path) {
         return new ProgramGraph.Node(
-                id, Identifier.parse("academy:program/core/" + path), 1, new JsonObject());
+                id, ResourceLocation.parse("academy:program/core/" + path), 1, new JsonObject());
     }
 
     private static ProgramGraph.Edge edge(int from, String output, int to, String input) {

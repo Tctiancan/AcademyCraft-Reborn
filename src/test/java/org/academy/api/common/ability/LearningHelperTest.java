@@ -1,6 +1,6 @@
 package org.academy.api.common.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.junit.jupiter.api.Test;
 
@@ -73,7 +73,7 @@ class LearningHelperTest {
     }
 
     private static final class TestCategory extends AbilityCategory {
-        private final Identifier icon;
+        private final ResourceLocation icon;
 
         private TestCategory(String name) {
             super(1.0f);
@@ -81,7 +81,7 @@ class LearningHelperTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
+        public ResourceLocation getDeveloperIcon() {
             return icon;
         }
 
@@ -102,7 +102,7 @@ class LearningHelperTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
+        public ResourceLocation getDeveloperIcon() {
             return AcademyCraft.academy("test/no_common");
         }
 

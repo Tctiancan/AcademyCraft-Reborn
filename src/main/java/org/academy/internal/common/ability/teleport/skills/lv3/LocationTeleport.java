@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -63,7 +63,7 @@ import java.util.*;
 public final class LocationTeleport extends Skill {
     public static final int MAX_MARKS = 32;
     public static final int MILESTONE_MAX_MARKS = 48;
-    static final String DEATH_MARK_PREFIX = "死亡地点 ";
+    static final String DEATH_MARK_PREFIX = "姝讳骸鍦扮偣 ";
     private static final DateTimeFormatter DEATH_MARK_TIME =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
@@ -324,7 +324,7 @@ public final class LocationTeleport extends Skill {
         }
 
         public static ServerLevel resolveLevel(ServerPlayer player, Mark mark) {
-            var id = Identifier.tryParse(mark.dimension());
+            var id = ResourceLocation.tryParse(mark.dimension());
             if (id == null) return null;
             return player.level().getServer().getLevel(ResourceKey.create(Registries.DIMENSION, id));
         }

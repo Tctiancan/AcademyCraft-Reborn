@@ -7,7 +7,7 @@ import org.academy.internal.common.ability.mentalout.resistance.MentalResistance
 
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -33,9 +33,9 @@ public final class MentaloutControlContext extends ServerContext {
     public static final int CONTROL_PRIORITY = 100;
     private static final int DYNAMIC_SYNC_INTERVAL = 10;
     private static final int DYNAMIC_SYNC_BUDGET = 8;
-    private static final Identifier IMPRESSION_ATTACK_SPEED_ID = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation IMPRESSION_ATTACK_SPEED_ID = ResourceLocation.fromNamespaceAndPath(
             AcademyCraft.MOD_ID, "impression_proficiency_attack_speed");
-    private static final Identifier IMPRESSION_MOVEMENT_SPEED_ID = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation IMPRESSION_MOVEMENT_SPEED_ID = ResourceLocation.fromNamespaceAndPath(
             AcademyCraft.MOD_ID, "impression_proficiency_movement_speed");
 
     private static final byte SUPPORT_FULL = 0;
@@ -793,7 +793,7 @@ public final class MentaloutControlContext extends ServerContext {
         }
 
         entries.put(subject.getUUID(), entry);
-        BY_SUBJECT.computeIfAbsent(subject.getUUID(), _ -> new HashSet<>()).add(this);
+        BY_SUBJECT.computeIfAbsent(subject.getUUID(), unused508 -> new HashSet<>()).add(this);
         if (subject instanceof Mob mob) {
             MentalControlMemory.remember(player, mob);
             MentalControlRecall.allow(player, mob);
@@ -890,7 +890,7 @@ public final class MentaloutControlContext extends ServerContext {
 
     private ControlHandle applyPermanent(
             LivingEntity subject,
-            Identifier source,
+            ResourceLocation source,
             ControlDirective directive
     ) {
         return MentalControlApi.apply(ControlRequest.permanent(
@@ -912,7 +912,7 @@ public final class MentaloutControlContext extends ServerContext {
     private void setMisidentificationTarget(UUID targetUuid) {
         detachMisidentificationTarget();
         misidentificationTargetUuid = targetUuid;
-        BY_MISIDENTIFICATION_TARGET.computeIfAbsent(targetUuid, _ -> new HashSet<>()).add(this);
+        BY_MISIDENTIFICATION_TARGET.computeIfAbsent(targetUuid, unused509 -> new HashSet<>()).add(this);
     }
 
     private void transferMisidentificationTarget(LivingEntity previousTarget) {
@@ -1197,7 +1197,7 @@ public final class MentaloutControlContext extends ServerContext {
 
         private void applyModifier(
                 Holder<Attribute> attribute,
-                Identifier id
+                ResourceLocation id
         ) {
             var instance = subject.getAttribute(attribute);
             if (instance == null || instance.getModifier(id) != null) return;

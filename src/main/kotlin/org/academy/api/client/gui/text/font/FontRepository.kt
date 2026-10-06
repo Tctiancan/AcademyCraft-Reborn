@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.font
+﻿package org.academy.api.client.gui.text.font
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraft
 import org.lwjgl.system.MemoryStack
 import org.lwjgl.util.freetype.FT_Face
@@ -15,16 +15,16 @@ import java.util.concurrent.atomic.AtomicLong
 private val LOGGER = AcademyCraft.getLogger()
 
 object FontRepository {
-    val DEFAULT_FONT_ID: Identifier = AcademyCraft.academy("fonts/source-sans-3-regular.otf")
+    val DEFAULT_FONT_ID: ResourceLocation = AcademyCraft.academy("fonts/source-sans-3-regular.otf")
 
     val glyphExecutor: ExecutorService = Executors.newSingleThreadExecutor { r ->
         Thread(r, "AcademyCraft-MSDF-Generator").apply { isDaemon = true }
     }
 
-    private val loadedFonts = ConcurrentHashMap<Identifier, FontFace>()
+    private val loadedFonts = ConcurrentHashMap<ResourceLocation, FontFace>()
     private val library: Long
-    private val fontSearchOrder = CopyOnWriteArrayList<Identifier>()
-    private val charToFontCache = ConcurrentHashMap<Int, Identifier>()
+    private val fontSearchOrder = CopyOnWriteArrayList<ResourceLocation>()
+    private val charToFontCache = ConcurrentHashMap<Int, ResourceLocation>()
     private val resolutionCount = AtomicLong()
     private val fallbackCount = AtomicLong()
 
@@ -42,7 +42,7 @@ object FontRepository {
 
     fun isFontsReady(): Boolean = fontsReady
 
-    fun setFontSearchOrder(availableFonts: List<Identifier>) {
+    fun setFontSearchOrder(availableFonts: List<ResourceLocation>) {
         val previous = fontSearchOrder.toList()
         fontSearchOrder.clear()
         fontSearchOrder.add(DEFAULT_FONT_ID)
@@ -58,10 +58,10 @@ object FontRepository {
         )
     }
 
-    fun getFont(identifier: Identifier): FontFace =
+    fun getFont(identifier: ResourceLocation): FontFace =
         loadedFonts[identifier] ?: loadFont(identifier)
 
-    fun loadFont(identifier: Identifier): FontFace {
+    fun loadFont(identifier: ResourceLocation): FontFace {
         val font = FontFace(identifier, newFace(identifier))
         val previous = loadedFonts.put(identifier, font)
         previous?.close()
@@ -77,7 +77,7 @@ object FontRepository {
         return font
     }
 
-    fun newFace(identifier: Identifier): FT_Face {
+    fun newFace(identifier: ResourceLocation): FT_Face {
         val buffer: ByteBuffer = FontBytes.buffer(identifier)
             ?: throw RuntimeException("Font resource not found: $identifier")
         MemoryStack.stackPush().use { stack ->
@@ -101,12 +101,12 @@ object FontRepository {
 
     fun getFont(c: Int): FontFace = resolveFontForChar(c)
 
-    fun isFont(location: Identifier): Boolean {
+    fun isFont(location: ResourceLocation): Boolean {
         val path = location.path
         return path.endsWith(".ttf") || path.endsWith(".otf") || path.endsWith(".ttc")
     }
 
-    fun availableFontIds(): Set<Identifier> = loadedFonts.keys.toSet()
+    fun availableFontIds(): Set<ResourceLocation> = loadedFonts.keys.toSet()
 
     fun snapshot(): String {
         return buildString {
@@ -119,7 +119,7 @@ object FontRepository {
         }
     }
 
-    fun cachedResolutions(limit: Int = 64): List<Pair<String, Identifier>> =
+    fun cachedResolutions(limit: Int = 64): List<Pair<String, ResourceLocation>> =
         charToFontCache.entries.take(limit).map { String.format("U+%04X", it.key) to it.value }
 
     private fun resolveFontForChar(c: Int): FontFace {
@@ -136,7 +136,7 @@ object FontRepository {
         return getFont(fontId)
     }
 
-    private fun findFontIdForChar(c: Int): Identifier {
+    private fun findFontIdForChar(c: Int): ResourceLocation {
         for (id in fontSearchOrder) {
             val font = loadedFonts[id]
             if (font != null && font.hasGlyph(c)) return id

@@ -1,7 +1,7 @@
 package org.academy.internal.client.ability.aeromanip;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.internal.common.ability.aeromanip.network.FlowSensePacket;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -12,7 +12,7 @@ class FlowObservationCacheTest {
     @Test void oversizedWireBatchIsRejectedBeforeAllocatingItsRecords() {
         var bytes = Unpooled.buffer();
         try {
-            Identifier.STREAM_CODEC.encode(bytes, Identifier.fromNamespaceAndPath("minecraft", "overworld"));
+            ResourceLocation.STREAM_CODEC.encode(bytes, ResourceLocation.fromNamespaceAndPath("minecraft", "overworld"));
             bytes.writeLong(1).writeLong(1).writeBoolean(false);
             net.minecraft.network.codec.ByteBufCodecs.VAR_INT.encode(bytes, 60); bytes.writeFloat(32);
             net.minecraft.network.codec.ByteBufCodecs.VAR_INT.encode(bytes, Integer.MAX_VALUE);
@@ -20,7 +20,7 @@ class FlowObservationCacheTest {
         } finally { bytes.release(); }
     }
     private static FlowSensePacket packet(long session, long tick, boolean clear, List<FlowSensePacket.Sample> samples, List<Integer> removed) {
-        return new FlowSensePacket(Identifier.fromNamespaceAndPath("minecraft", "overworld"), session, tick, 60, 32, clear, samples, removed);
+        return new FlowSensePacket(ResourceLocation.fromNamespaceAndPath("minecraft", "overworld"), session, tick, 60, 32, clear, samples, removed);
     }
     private static FlowSensePacket.Sample sample(int id) { return new FlowSensePacket.Sample(id, new UUID(0, id), 0, 64 * 32, id * 32, 1); }
     @Test void batchesMergeAndOnlyExplicitRemovalsOrExpiryRemoveMarkers() {

@@ -75,13 +75,14 @@ public final class DarkmatterShaping extends Skill {
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_U,
                         InputConstants.PRESS, 0, true)
         );
-        // Keep the key available while a container screen is open so the inventory-slot
+        // Keep the key available
+// while a container screen is open so the inventory-slot
         // material action remains reachable. The handler below rejects every other screen use.
         configured = new InputSystem.KeyCombination(
                 configured.type(), configured.keys(), InputConstants.PRESS,
                 configured.modifiers(), true, configured.unbound());
         Client.CONFIG.setKeyBinding(Client.KEY_NAME_CAST, configured);
-        InputSystem.addKeyBinding(Client.KEY_NAME_CAST, configured, _ -> Client.cast());
+        InputSystem.addKeyBinding(Client.KEY_NAME_CAST, configured, unused423 -> Client.cast());
         MisakaNetworkClient.NETWORK_MANAGER.register(ClientPackets.class);
     }
 
@@ -325,7 +326,8 @@ public final class DarkmatterShaping extends Skill {
 
         static boolean isMaterialInventorySlot(int slotIndex) {
             // Player inventory indices 0..35 are storage/hotbar; 40 is the offhand.
-            // Armor indices deliberately remain invalid even if a forged request targets them.
+            // Armor indices deliberately remain invalid even
+// if a forged request targets them.
             return slotIndex >= 0 && slotIndex < 36 || slotIndex == 40;
         }
 

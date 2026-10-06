@@ -452,8 +452,8 @@ public class VectorDeviation extends Skill {
                     player, VectorDefenseCpBudget.Channel.DAMAGE, result.baseCpCost());
             var executed = skill.executeContinuous(
                     player,
-                    _ -> budgetedCost,
-                    (_, actualCost) -> {
+                    unused256 -> budgetedCost,
+                    (unused257, actualCost) -> {
                         VectorDefenseCpBudget.record(
                                 player, VectorDefenseCpBudget.Channel.DAMAGE, actualCost);
                         VectorEnvironmentalFeedbackController.emitRefraction(
@@ -551,8 +551,8 @@ public class VectorDeviation extends Skill {
                     player, VectorDefenseCpBudget.Channel.DAMAGE, result.baseCpCost());
             var executed = skill.executeContinuous(
                     player,
-                    _ -> budgetedCost,
-                    (_, actualCost) -> {
+                    unused258 -> budgetedCost,
+                    (unused259, actualCost) -> {
                         VectorDefenseCpBudget.record(
                                 player, VectorDefenseCpBudget.Channel.DAMAGE, actualCost);
                         if (emitFeedback) {
@@ -573,8 +573,8 @@ public class VectorDeviation extends Skill {
             var skill = Skills.VECTOR_DEVIATION.get();
             var executed = skill.executeContinuous(
                     player,
-                    _ -> VectorReflection.Server.projectileReflectionCost(0.0),
-                    (_, _) -> VectorReflection.Server.playReflectionSound(player),
+                    unused260 -> VectorReflection.Server.projectileReflectionCost(0.0),
+                    (unused261, unused262) -> VectorReflection.Server.playReflectionSound(player),
                     true
             );
             if (executed) VectorReflection.Server.deactivateAfterVectorChargeIfNeeded(player);
@@ -619,7 +619,7 @@ public class VectorDeviation extends Skill {
                     VectorDefenseCpBudget.Channel.PROJECTILE,
                     Math.max(1.0f, (float) speed)
             );
-            var executed = skill.executeContinuous(player, _ -> budgetedCost, (_, actualCost) -> {
+            var executed = skill.executeContinuous(player, unused263 -> budgetedCost, (unused264, actualCost) -> {
                 VectorDefenseCpBudget.record(
                         player, VectorDefenseCpBudget.Channel.PROJECTILE, actualCost);
                 VectorProjectileRedirects.mark(projectile, player, VectorRedirectKind.REFRACTION);

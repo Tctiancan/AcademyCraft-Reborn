@@ -14,9 +14,9 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -55,7 +55,7 @@ import java.util.concurrent.CompletableFuture;
 public final class AcademyCraftCommand {
     static final int MIN_COMMAND_ABILITY_LEVEL = 0;
     static final int MAX_COMMAND_ABILITY_LEVEL = 5;
-    static final Identifier SELF_SERVICE_CATEGORY =
+    static final ResourceLocation SELF_SERVICE_CATEGORY =
             AcademyCraft.academy(AbilityCategoryNames.LEVEL0);
 
     @SubscribeEvent
@@ -66,39 +66,39 @@ public final class AcademyCraftCommand {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
         dispatcher.register(Commands.literal("academy")
                 .then(Commands.literal("learn_all")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(AcademyCraftCommand::learnAllSkills))
                 .then(Commands.literal("learned")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(AcademyCraftCommand::listLearnedSkills))
                 .then(Commands.literal("learn")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
-                        .then(Commands.argument("skill_name", IdentifierArgument.id())
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .then(Commands.argument("skill_name", ResourceLocationArgument.id())
                                 .suggests(AcademyCraftCommand::suggestLearnableSkills)
                                 .executes(AcademyCraftCommand::learnSingleSkill)))
                 .then(Commands.literal("set_category")
-                        .then(Commands.argument("category_name", IdentifierArgument.id())
+                        .then(Commands.argument("category_name", ResourceLocationArgument.id())
                                 .suggests(AcademyCraftCommand::suggestAbilityCategories)
                                 .executes(AcademyCraftCommand::setAbilityCategory)))
                 .then(Commands.literal("level")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument(
                                         "level",
                                         abilityLevelArgument()
                                 )
                                 .executes(AcademyCraftCommand::setAbilityLevel)))
                 .then(Commands.literal("set_exp")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("max")
                                 .executes(AcademyCraftCommand::maxSkillExp))
-                        .then(Commands.argument("skill_name", IdentifierArgument.id())
+                        .then(Commands.argument("skill_name", ResourceLocationArgument.id())
                                 .suggests(AcademyCraftCommand::suggestLearnedSkills)
                                 .then(Commands.argument("amount", FloatArgumentType.floatArg(0, 3000))
                                         .executes(AcademyCraftCommand::setSkillExp)))
                 )
                 .then(propsCommands())
                 .then(Commands.literal("debug")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("god")
                                 .executes(AcademyCraftCommand::toggleSkillDebugMode))
                         .then(Commands.literal("vfxstats").executes(ctx -> {
@@ -112,12 +112,12 @@ public final class AcademyCraftCommand {
                         .then(TemporalTickDebugCommands.register())
                 )
                 .then(Commands.literal("dev")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("state", BoolArgumentType.bool())
                                 .executes(AcademyCraftCommand::toggleDevMode))
                 )
                 .then(Commands.literal("ability_exp")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.literal("get")
                                 .executes(ctx -> AbilityExpCommands.get(ctx, ctx.getSource().getPlayerOrException()))
                                 .then(Commands.argument("target", EntityArgument.player())
@@ -172,7 +172,7 @@ public final class AcademyCraftCommand {
         var enabled = BoolArgumentType.getBool(context, "state");
         AbilitySystemServer.setDevMode(enabled);
         context.getSource().sendSuccess(
-                () -> Component.literal("§e[AC Dev]§r Dev mode: " + (enabled ? "§aON" : "§cOFF")),
+                () -> Component.literal("搂e[AC Dev]搂r Dev mode: " + (enabled ? "搂aON" : "搂cOFF")),
                 true);
         return 1;
     }
@@ -182,8 +182,8 @@ public final class AcademyCraftCommand {
         var player = context.getSource().getPlayerOrException();
         var enabled = CommandUtils.getSystem(context).togglePlayerSkillDebugMode(player.getUUID());
         context.getSource().sendSuccess(
-                () -> Component.literal("§e[AC Debug]§r Skill god mode: "
-                        + (enabled ? "§aON" : "§cOFF")),
+                () -> Component.literal("搂e[AC Debug]搂r Skill god mode: "
+                        + (enabled ? "搂aON" : "搂cOFF")),
                 false
         );
         return 1;
@@ -234,7 +234,7 @@ public final class AcademyCraftCommand {
     private static int learnSingleSkill(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         var player = context.getSource().getPlayerOrException();
         var playerUuid = player.getUUID();
-        var skillIdentifier = IdentifierArgument.getId(context, "skill_name");
+        var skillIdentifier = ResourceLocationArgument.getId(context, "skill_name");
 
         var skillToLearn = Registries.SKILLS.get(skillIdentifier);
 
@@ -270,7 +270,7 @@ public final class AcademyCraftCommand {
     private static int setAbilityCategory(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         var player = context.getSource().getPlayerOrException();
         var playerUuid = player.getUUID();
-        var categoryIdentifier = IdentifierArgument.getId(context, "category_name");
+        var categoryIdentifier = ResourceLocationArgument.getId(context, "category_name");
 
         var categoryToSet = Registries.ABILITY_CATEGORIES.get(categoryIdentifier);
 
@@ -279,8 +279,7 @@ public final class AcademyCraftCommand {
             return 0;
         }
 
-        var isGameMaster = Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)
-                .test(context.getSource());
+        var isGameMaster = context.getSource().hasPermission(Commands.LEVEL_GAMEMASTERS);
         if (!canSetAbilityCategory(categoryIdentifier, isGameMaster)) {
             context.getSource().sendFailure(Component.literal(
                     "Operator permission is required to set an ability category other than "
@@ -339,7 +338,7 @@ public final class AcademyCraftCommand {
     private static int setSkillExp(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         var player = context.getSource().getPlayerOrException();
         var playerUuid = player.getUUID();
-        var skillIdentifier = IdentifierArgument.getId(context, "skill_name");
+        var skillIdentifier = ResourceLocationArgument.getId(context, "skill_name");
         var amount = FloatArgumentType.getFloat(context, "amount");
 
         var serverContext = player.level().getServer();
@@ -374,9 +373,9 @@ public final class AcademyCraftCommand {
 
         var updated = 0;
         for (var skillKey : learnedSkills) {
-            var identifier = Identifier.tryParse(skillKey);
+            var identifier = ResourceLocation.tryParse(skillKey);
             if (identifier == null) continue;
-            var skill = Registries.SKILLS.get(identifier).map(reference -> reference.value()).orElse(null);
+            var skill = Registries.SKILLS.get(identifier);
             if (skill != null && abilitySystemServer.setPlayerSkillProficiency(
                     playerUuid, skill, SkillData.MAX_PROFICIENCY)) {
                 updated++;
@@ -396,17 +395,16 @@ public final class AcademyCraftCommand {
     }
 
     private static CompletableFuture<Suggestions> suggestAbilityCategories(CommandContext<CommandSourceStack> context, SuggestionsBuilder builder) {
-        var isGameMaster = Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)
-                .test(context.getSource());
+        var isGameMaster = context.getSource().hasPermission(Commands.LEVEL_GAMEMASTERS);
         return SharedSuggestionProvider.suggest(
                 Registries.ABILITY_CATEGORIES.keySet().stream()
                         .filter(identifier -> canSetAbilityCategory(identifier, isGameMaster))
-                        .map(Identifier::toString),
+                        .map(ResourceLocation::toString),
                 builder
         );
     }
 
-    static boolean canSetAbilityCategory(Identifier category, boolean isGameMaster) {
+    static boolean canSetAbilityCategory(ResourceLocation category, boolean isGameMaster) {
         return isGameMaster || SELF_SERVICE_CATEGORY.equals(category);
     }
 
@@ -434,13 +432,13 @@ public final class AcademyCraftCommand {
 
         static LiteralArgumentBuilder<CommandSourceStack> register() {
             return Commands.literal("vectorcompat")
-                    .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                    .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                     .then(Commands.literal("inspect")
                             .executes(VectorCompatibilityCommands::inspect))
                     .then(Commands.literal("mode")
                             .executes(VectorCompatibilityCommands::showMode)
                             .then(Commands.argument("value", StringArgumentType.word())
-                                    .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                    .suggests((unused818, builder) -> SharedSuggestionProvider.suggest(
                                             Arrays.stream(VectorCompatibilityMode.values())
                                                     .map(value -> value.name().toLowerCase(Locale.ROOT)),
                                             builder
@@ -563,7 +561,7 @@ public final class AcademyCraftCommand {
                                                     BoolArgumentType.getBool(ctx, "active"))))))
                     .then(Commands.literal("proficiency")
                             .then(Commands.argument("target", EntityArgument.player())
-                                    .then(Commands.argument("skill", IdentifierArgument.id())
+                                    .then(Commands.argument("skill", ResourceLocationArgument.id())
                                             .suggests(AcademyCraftCommand::suggestLearnedSkills)
                                             .then(Commands.argument("value", FloatArgumentType.floatArg(0, 3000))
                                                     .executes(DarkmatterDebugCommands::proficiency)))));
@@ -574,7 +572,7 @@ public final class AcademyCraftCommand {
             var phase = manager.getPhaseSnapshot(player);
             var mp = manager.getView(player);
             var message = Component.literal(String.format(Locale.ROOT,
-                    "§e[Darkmatter: %s]§r\nL%d points=%d α=%d(%.2f/%.0f%%) β=%d(%.2f/%.0f%%) γ=%d(%.2f/%.0f%%) active=%s\nMP natural=%.2f created=%.2f total=%.2f / effective=%.2f base=%.2f\nCP debt=%.2f reserved-limit=%.2f",
+                    "搂e[Darkmatter: %s]搂r\nL%d points=%d 伪=%d(%.2f/%.0f%%) 尾=%d(%.2f/%.0f%%) 纬=%d(%.2f/%.0f%%) active=%s\nMP natural=%.2f created=%.2f total=%.2f / effective=%.2f base=%.2f\nCP debt=%.2f reserved-limit=%.2f",
                     player.getName().getString(), phase.abilityLevel(), phase.totalPoints(),
                     phase.alphaPoints(), phase.alphaPower(), phase.alphaRatio() * 100,
                     phase.betaPoints(), phase.betaPower(), phase.betaRatio() * 100,
@@ -613,7 +611,7 @@ public final class AcademyCraftCommand {
         private static int gamma(CommandContext<CommandSourceStack> ctx, ServerPlayer player,
                                  boolean active) {
             if (!DarkmatterSixWings.Server.debugSetActive(player, active)) {
-                ctx.getSource().sendFailure(Component.literal("Unable to set γ state."));
+                ctx.getSource().sendFailure(Component.literal("Unable to set 纬 state."));
                 return 0;
             }
             return info(ctx, player);
@@ -621,7 +619,7 @@ public final class AcademyCraftCommand {
 
         private static int proficiency(CommandContext<CommandSourceStack> ctx) throws CommandSyntaxException {
             var player = EntityArgument.getPlayer(ctx, "target");
-            var id = IdentifierArgument.getId(ctx, "skill");
+            var id = ResourceLocationArgument.getId(ctx, "skill");
             var value = FloatArgumentType.getFloat(ctx, "value");
             var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
             if (skill == null || skill.getCategory() != AbilityCategories.DARKMATTER.get()
@@ -695,12 +693,12 @@ public final class AcademyCraftCommand {
 
             Component message = Component.literal(String.format(
                     """
-                            §e[CP Debug: %s]§r
-                            §7UUID: %s§r
-                            §fLevel: §d%d§r
-                            §fCP: §b%.2f§r / §3%.2f§r
-                            §fSP: §e%d§r / §6%d§r
-                            §fStatus: §a%s§r (Timer: §6%d§r)""",
+                            搂e[CP Debug: %s]搂r
+                            搂7UUID: %s搂r
+                            搂fLevel: 搂d%d搂r
+                            搂fCP: 搂b%.2f搂r / 搂3%.2f搂r
+                            搂fSP: 搂e%d搂r / 搂6%d搂r
+                            搂fStatus: 搂a%s搂r (Timer: 搂6%d搂r)""",
                     name, uuid, level, current, max, currSP, maxSP, status, timer
             ));
             sendFeedback(context, message, broadcast);
@@ -730,7 +728,7 @@ public final class AcademyCraftCommand {
             var abilitySystemServer = serverContext.getAcademyCraftServer().getAbilitySystemServer();
             abilitySystemServer.setPlayerAvailableCP(uuid, value);
 
-            Component message = Component.literal(String.format("§e[AC Debug]§r Set Available CP for %s to: %.2f", player.getName().getString(), value));
+            Component message = Component.literal(String.format("搂e[AC Debug]搂r Set Available CP for %s to: %.2f", player.getName().getString(), value));
             sendFeedback(context, message, broadcast);
             return 1;
         }
@@ -741,7 +739,7 @@ public final class AcademyCraftCommand {
             var abilitySystemServer = serverContext.getAcademyCraftServer().getAbilitySystemServer();
             abilitySystemServer.setPlayerMaxCP(uuid, value);
 
-            Component message = Component.literal(String.format("§e[AC Debug]§r Set Max CP for %s to: %.2f", player.getName().getString(), value));
+            Component message = Component.literal(String.format("搂e[AC Debug]搂r Set Max CP for %s to: %.2f", player.getName().getString(), value));
             sendFeedback(context, message, broadcast);
             return 1;
         }
@@ -755,7 +753,7 @@ public final class AcademyCraftCommand {
                 abilitySystemServer.setPlayerStatus(uuid, status);
                 abilitySystemServer.setPlayerStateTimer(uuid, timer);
 
-                Component message = Component.literal(String.format("§e[AC Debug]§r Set Status for %s to: %s, Timer: %d", player.getName().getString(), status, timer));
+                Component message = Component.literal(String.format("搂e[AC Debug]搂r Set Status for %s to: %s, Timer: %d", player.getName().getString(), status, timer));
                 sendFeedback(context, message, broadcast);
             } catch (IllegalArgumentException e) {
                 context.getSource().sendFailure(Component.literal("Invalid status: " + statusName));
@@ -797,7 +795,7 @@ public final class AcademyCraftCommand {
             }
             var snapshot = MentalControlApi.snapshot(living);
             var text = new StringBuilder()
-                    .append("§e[Mental Control]§r ")
+                    .append("搂e[Mental Control]搂r ")
                     .append(living.getDisplayName().getString())
                     .append(" (").append(living.getUUID()).append(") tick=")
                     .append(snapshot.gameTime()).append('\n');
@@ -835,7 +833,7 @@ public final class AcademyCraftCommand {
     private static final class ProfileCommands {
         static LiteralArgumentBuilder<CommandSourceStack> register() {
             return Commands.literal("profile")
-                    .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                    .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                     .then(Commands.literal("start")
                             .executes(ctx -> start(ctx, 1))
                             .then(Commands.argument("interval_ms", IntegerArgumentType.integer(1, 1000))
@@ -866,7 +864,7 @@ public final class AcademyCraftCommand {
             AcademyProfiler.startSampling(intervalMs * 1000L);
             AcademyProfiler.startZoneCapture();
             ctx.getSource().sendSuccess(() -> Component.literal(
-                    "§e[AC Profiler]§r Sampling started (interval " + intervalMs + " ms) + zone capture on."
+                    "搂e[AC Profiler]搂r Sampling started (interval " + intervalMs + " ms) + zone capture on."
             ), true);
             return 1;
         }
@@ -874,14 +872,14 @@ public final class AcademyCraftCommand {
         private static int stop(CommandContext<CommandSourceStack> ctx) {
             AcademyProfiler.stopSampling();
             AcademyProfiler.stopZoneCapture();
-            ctx.getSource().sendSuccess(() -> Component.literal("§e[AC Profiler]§r Stopped."), true);
+            ctx.getSource().sendSuccess(() -> Component.literal("搂e[AC Profiler]搂r Stopped."), true);
             return 1;
         }
 
         private static int reset(CommandContext<CommandSourceStack> ctx) {
             AcademyProfiler.resetSampling();
             AcademyProfiler.resetZones();
-            ctx.getSource().sendSuccess(() -> Component.literal("§e[AC Profiler]§r Data cleared."), true);
+            ctx.getSource().sendSuccess(() -> Component.literal("搂e[AC Profiler]搂r Data cleared."), true);
             return 1;
         }
 
@@ -905,7 +903,7 @@ public final class AcademyCraftCommand {
         private static int snapshot(CommandContext<CommandSourceStack> ctx) {
             var snap = AcademyProfiler.snapshot();
             var sb = new StringBuilder();
-            sb.append("§e[AC Profiler Snapshot]§r\n");
+            sb.append("搂e[AC Profiler Snapshot]搂r\n");
             var sampler = snap.getSampler();
             if (sampler != null) {
                 sb.append("Sampler: ").append(sampler.totalSamples()).append(" samples, ")
@@ -948,11 +946,11 @@ public final class AcademyCraftCommand {
             try {
                 Files.writeString(file.toPath(), sb.toString(), StandardCharsets.UTF_8);
                 ctx.getSource().sendSuccess(() -> Component.literal(
-                        "§e[AC Profiler]§r Dumped to " + file.getAbsolutePath()
+                        "搂e[AC Profiler]搂r Dumped to " + file.getAbsolutePath()
                 ), true);
             } catch (IOException e) {
                 ctx.getSource().sendFailure(Component.literal(
-                        "§e[AC Profiler]§r Failed to write: " + e.getMessage()
+                        "搂e[AC Profiler]搂r Failed to write: " + e.getMessage()
                 ));
             }
             return 1;
@@ -965,7 +963,7 @@ public final class AcademyCraftCommand {
             var system = CommandUtils.getSystem(context);
             var exp = system.getPlayerAbilityExp(uuid);
             Component message = Component.literal(
-                    String.format("§e[AC]§r Ability exp for %s: §b%.2f", player.getName().getString(), exp));
+                    String.format("搂e[AC]搂r Ability exp for %s: 搂b%.2f", player.getName().getString(), exp));
             context.getSource().sendSuccess(() -> message, true);
             return 1;
         }
@@ -975,7 +973,7 @@ public final class AcademyCraftCommand {
             var system = CommandUtils.getSystem(context);
             system.setPlayerAbilityExp(uuid, amount);
             Component message = Component.literal(
-                    String.format("§e[AC]§r Set ability exp for %s to: §b%.2f", player.getName().getString(), amount));
+                    String.format("搂e[AC]搂r Set ability exp for %s to: 搂b%.2f", player.getName().getString(), amount));
             context.getSource().sendSuccess(() -> message, true);
             return 1;
         }
@@ -986,7 +984,7 @@ public final class AcademyCraftCommand {
             system.addPlayerAbilityExp(uuid, amount);
             var total = system.getPlayerAbilityExp(uuid);
             Component message = Component.literal(
-                    String.format("§e[AC]§r Added §b%.2f§r ability exp for %s. Total: §b%.2f", amount, player.getName().getString(), total));
+                    String.format("搂e[AC]搂r Added 搂b%.2f搂r ability exp for %s. Total: 搂b%.2f", amount, player.getName().getString(), total));
             context.getSource().sendSuccess(() -> message, true);
             return 1;
         }
@@ -999,12 +997,12 @@ public final class AcademyCraftCommand {
             var level = system.getPlayerLevel(uuid);
             Component message = Component.literal(String.format(
                     """
-                            §e[AC]§r Ability exp info for %s:
-                            §fLevel: §d%d§r
-                            §fExp: §b%.2f§r
-                            §fCan Level Up: %s§r""",
+                            搂e[AC]搂r Ability exp info for %s:
+                            搂fLevel: 搂d%d搂r
+                            搂fExp: 搂b%.2f搂r
+                            搂fCan Level Up: %s搂r""",
                     player.getName().getString(), level, exp,
-                    canLevelUp ? "§aYES" : "§cNO"));
+                    canLevelUp ? "搂aYES" : "搂cNO"));
             context.getSource().sendSuccess(() -> message, true);
             return 1;
         }

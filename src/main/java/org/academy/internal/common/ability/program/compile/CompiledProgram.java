@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program.compile;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.api.common.ability.program.ProgramNodeRole;
 import org.academy.api.common.ability.program.ProgramNodeSchema;
@@ -41,7 +41,7 @@ public record CompiledProgram(
 
     public record CompiledNode(
             int id,
-            Identifier typeId,
+            ResourceLocation typeId,
             ProgramNodeType<?> type,
             Object configuration,
             ProgramNodeRole role,

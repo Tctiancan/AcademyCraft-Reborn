@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.academy.internal.common.attachment.AttachmentTypes;
 
@@ -36,21 +36,21 @@ public final class WingFlightPose {
                 || verticalSpeed >= COASTING_MIN_VERTICAL_SPEED);
     }
 
-    public static Pose coastingPose(Avatar avatar) {
+    public static Pose coastingPose(Player avatar) {
         return isCoasting(avatar.getDeltaMovement()) ? Pose.SLOW : Pose.IDLE;
     }
 
-    public static boolean usesCompactCollision(Avatar avatar) {
+    public static boolean usesCompactCollision(Player avatar) {
         return hasActiveWing(avatar)
                 && avatar.getData(AttachmentTypes.WING_FLIGHT_POSE.get()) == Pose.FAST;
     }
 
-    public static boolean hasActiveFlightPose(Avatar avatar) {
+    public static boolean hasActiveFlightPose(Player avatar) {
         return hasActiveWing(avatar)
                 && avatar.getData(AttachmentTypes.WING_FLIGHT_POSE.get()) != Pose.IDLE;
     }
 
-    public static boolean hasActiveWing(Avatar avatar) {
+    public static boolean hasActiveWing(Player avatar) {
         return avatar.getData(AttachmentTypes.ACTIVATED_STORM_WING.get())
                 || avatar.getData(AttachmentTypes.ACTIVATED_BLACK_WING.get())
                 || avatar.getData(AttachmentTypes.ACTIVATED_WHITE_WING.get())

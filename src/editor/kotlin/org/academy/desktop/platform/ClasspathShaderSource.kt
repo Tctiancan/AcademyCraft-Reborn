@@ -1,8 +1,8 @@
-package org.academy.desktop.platform
+﻿package org.academy.desktop.platform
 
 import com.mojang.blaze3d.preprocessor.GlslPreprocessor
 import com.mojang.blaze3d.shaders.ShaderType
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import java.nio.file.Files
 import java.nio.file.Path
 
@@ -18,40 +18,40 @@ object ClasspathShaderSource {
     @Volatile
     var sourceDir: Path? = null
 
-    fun read(id: Identifier, type: ShaderType): String? {
+    fun read(id: ResourceLocation, type: ShaderType): String? {
         val extension = if (type == ShaderType.VERTEX) ".vsh" else ".fsh"
-        val raw = readResource(Identifier.fromNamespaceAndPath(id.namespace, "shaders/${id.path}$extension"))
+        val raw = readResource(ResourceLocation.fromNamespaceAndPath(id.namespace, "shaders/${id.path}$extension"))
             ?: return null
 
         val preprocessor = object : GlslPreprocessor() {
             override fun applyImport(isRelative: Boolean, path: String) = if (isRelative) {
-                readResource(Identifier.fromNamespaceAndPath(id.namespace, "shaders/include/$path"))
+                readResource(ResourceLocation.fromNamespaceAndPath(id.namespace, "shaders/include/$path"))
             } else {
-                readResource(Identifier.parse(path).withPrefix("shaders/include/"))
+                readResource(ResourceLocation.parse(path).withPrefix("shaders/include/"))
             }
         }
         return preprocessor.process(raw).joinToString("")
     }
 
-    private fun readResource(location: Identifier): String? {
+    private fun readResource(location: ResourceLocation): String? {
         readFromSourceDir(location)?.let { return it }
         readFromClasspath(location)?.let { return it }
         return readFromVanillaJar(location)
     }
 
-    private fun readFromSourceDir(location: Identifier): String? {
+    private fun readFromSourceDir(location: ResourceLocation): String? {
         val root = sourceDir ?: return null
         val file = root.resolve("assets").resolve(location.namespace).resolve(location.path)
         return if (Files.isRegularFile(file)) Files.readString(file) else null
     }
 
-    private fun readFromClasspath(location: Identifier): String? {
+    private fun readFromClasspath(location: ResourceLocation): String? {
         return ClasspathShaderSource.javaClass
             .getResourceAsStream("/assets/${location.namespace}/${location.path}")
             ?.use { stream -> stream.bufferedReader().readText() }
     }
 
-    private fun readFromVanillaJar(location: Identifier): String? {
+    private fun readFromVanillaJar(location: ResourceLocation): String? {
         return try {
             val codeSource = net.minecraft.SharedConstants::class.java.protectionDomain.codeSource ?: return null
             val locationUrl = codeSource.location

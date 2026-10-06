@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -74,7 +74,7 @@ import java.util.WeakHashMap;
 public final class LaminarCutter extends Skill {
     private static final double BLADE_HALF_WIDTH = 2.5;
     private static final double BLADE_HALF_THICKNESS = 0.55;
-    private static final Identifier LAMINAR_FRACTURE_ID = AcademyCraft.academy("laminar_fracture");
+    private static final ResourceLocation LAMINAR_FRACTURE_ID = AcademyCraft.academy("laminar_fracture");
 
     public LaminarCutter() {
         super(Builder.of(AbilityCategories.AEROMANIP.get()).damage().level(AbilityLevel.LEVEL3).energyCost(30_000)
@@ -106,7 +106,7 @@ public final class LaminarCutter extends Skill {
             AcademyCraftClient.Config.INSTANCE.save();
         }
         InputSystem.addMaintainedKeyBinding(
-                Client.KEY_NAME_CAST, binding, _ -> Client.start(), _ -> Client.stop());
+                Client.KEY_NAME_CAST, binding, unused348 -> Client.start(), unused349 -> Client.stop());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),
                 new AbilitySystemClient.SkillInfo(
@@ -353,8 +353,8 @@ public final class LaminarCutter extends Skill {
             };
             return skill.executeActiveWithResource(player, context -> (baseCost < 0.0f
                             ? tierCp : baseCost),
-                    _ -> tierAir * airCostMultiplier,
-                    (context, _) -> executeCut(
+                    unused350 -> tierAir * airCostMultiplier,
+                    (context, unused351) -> executeCut(
                             player,
                             origin,
                             normalizedDirection,

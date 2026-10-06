@@ -114,7 +114,7 @@ public final class BreathingBubble extends Skill {
                     defaultBinding,
                     InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_H,
                             InputConstants.RELEASE, 0));
-            InputSystem.addKeyBinding(KEY_NAME_CAST, binding, _ -> cast());
+            InputSystem.addKeyBinding(KEY_NAME_CAST, binding, unused328 -> cast());
         }
 
         private static void cast() {
@@ -177,7 +177,7 @@ public final class BreathingBubble extends Skill {
         @SubscribeEvent public static void moved(net.neoforged.neoforge.event.entity.EntityEvent.EnteringSection event) {
             if (event.getEntity() instanceof ServerPlayer player && Server.ACTIVE.get(player) == player.level()) {
                 var eye = player.getEyePosition();
-                Server.PROTECTION.computeIfAbsent(player.level(), _ -> new org.academy.api.server.ability.SectionEntityIndex<>())
+                Server.PROTECTION.computeIfAbsent(player.level(), unused329 -> new org.academy.api.server.ability.SectionEntityIndex<>())
                         .update(player.getId(), eye.x, eye.y, eye.z, player);
             }
         }
@@ -214,7 +214,7 @@ public final class BreathingBubble extends Skill {
                 return;
             }
             // No sustained-use lease: a dry pocket allows recovery at half the normal rate.
-            if (!skill.executeActiveWithResource(player, _ -> 0.0f, _ -> cost, (_, _) -> {
+            if (!skill.executeActiveWithResource(player, unused330 -> 0.0f, unused331 -> cost, (unused332, unused333) -> {
                 ACTIVE.put(player, player.level());
                 refresh(player, skill);
                 AeromanipVfx.burst(player.level(), player.getEyePosition(), activeRadius(skill.getEffectiveProficiencyMilestone(player)));
@@ -257,7 +257,7 @@ public final class BreathingBubble extends Skill {
 
         private static void refresh(ServerPlayer player, BreathingBubble skill) {
             var eye = player.getEyePosition();
-            PROTECTION.computeIfAbsent(player.level(), _ -> new org.academy.api.server.ability.SectionEntityIndex<>())
+            PROTECTION.computeIfAbsent(player.level(), unused334 -> new org.academy.api.server.ability.SectionEntityIndex<>())
                     .update(player.getId(), eye.x, eye.y, eye.z, player);
             var radius = activeRadius(skill.getEffectiveProficiencyMilestone(player));
             WaterSuppression.refresh(player.level(), player.getUUID(), player.getEyePosition(), radius);

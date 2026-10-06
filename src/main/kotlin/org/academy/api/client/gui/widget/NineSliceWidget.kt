@@ -1,8 +1,8 @@
 package org.academy.api.client.gui.widget
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.FilterMode
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.Canvas
@@ -12,7 +12,7 @@ import org.academy.api.client.gui.render.Canvas
  * 用于按钮/面板皮肤. 边框单位为纹理像素.
  */
 open class NineSliceWidget(
-    var texture: Identifier? = null,
+    var texture: ResourceLocation? = null,
     left: Float = 0f,
     right: Float = 0f,
     top: Float = 0f,
@@ -97,7 +97,7 @@ open class NineSliceWidget(
         val midW = (width - leftW - rightW).coerceAtLeast(0f)
         val midH = (height - topH - bottomH).coerceAtLeast(0f)
 
-        val sampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
+        val sampler = org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST)
 
         context.pose().pushPose()
         run {
@@ -145,8 +145,8 @@ open class NineSliceWidget(
 
     private fun submitPatch(
         context: Canvas,
-        textureView: com.mojang.blaze3d.textures.GpuTextureView,
-        sampler: com.mojang.blaze3d.textures.GpuSampler,
+        textureView: org.academy.api.client.render.texture.GpuTextureView,
+        sampler: org.academy.api.client.render.texture.GpuSampler,
         alpha: Float,
         x: Float, y: Float, w: Float, h: Float,
         u0: Float, v0: Float, u1: Float, v1: Float

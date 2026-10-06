@@ -1,7 +1,7 @@
 package org.academy.internal.client.render.vfx;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.vfx.Vfx;
@@ -16,7 +16,7 @@ import org.joml.Vector3f;
 
 /** Maps the server's resolved beam segments to editor-authored visuals on one game clock. */
 final class RailgunShotVfx implements Vfx {
-    private static final Identifier ASSET = Identifier.fromNamespaceAndPath("academy", "vfxgraph/railgun_shot");
+    private static final ResourceLocation ASSET = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/railgun_shot");
     private final RailgunRay ray;
     private ActiveEffect outgoing;
     private ActiveEffect reflected;

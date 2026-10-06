@@ -38,7 +38,7 @@ public final class AreaQueryService {
     public record Metrics(int candidates, int effects, int probes, long nanos, long longestCallbackNanos) { }
     public static Metrics metrics(ServerLevel level) { return state(level).metrics; }
     public static long indexNanos(ServerLevel level) { return state(level).indexNanos; }
-    private static State state(ServerLevel level) { return LEVELS.computeIfAbsent(level, _ -> new State()); }
+    private static State state(ServerLevel level) { return LEVELS.computeIfAbsent(level, unused175 -> new State()); }
 
     public static Session open(ServerLevel level, LivingEntity owner, Point point, Effect effect) {
         var session = new Session(level, owner, point, effect);
@@ -86,7 +86,8 @@ public final class AreaQueryService {
                     || !Double.isFinite(center.x) || !Double.isFinite(center.y) || !Double.isFinite(center.z)) {
                 close(); return;
             }
-            // Preserve an in-progress outer pass while walking; eligibility always uses the current center.
+            // Preserve an in-progress outer pass
+// while walking; eligibility always uses the current center.
             if (this.radius != radius || scanCenter.distanceToSqr(center) > 32 * 32) { cursor = null; nextScan = 0; scanCenter = center; }
             this.center = center; this.radius = radius;
             this.interval = Math.max(1, interval); this.maximum = Math.clamp(maximum, 1, MAX_EFFECTS);

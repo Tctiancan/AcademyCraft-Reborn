@@ -4,7 +4,7 @@ import org.academy.internal.common.ability.program.compile.CompiledProgram;
 import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
 
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.academy.api.server.time.TemporalApi;
 import org.academy.internal.server.time.TemporalRuntime;
@@ -37,7 +37,7 @@ public final class ServerProgramScheduler {
             ProgramSessionScheduler.SessionListener<SessionKey> listener
     ) {
         requireServerThread(server);
-        return SCHEDULERS.computeIfAbsent(server, _ -> new SchedulerState()).start(
+        return SCHEDULERS.computeIfAbsent(server, unused712 -> new SchedulerState()).start(
                 key,
                 program,
                 executors,
@@ -73,7 +73,7 @@ public final class ServerProgramScheduler {
             ProgramSessionScheduler.SessionListener<SessionKey> listener
     ) {
         requireServerThread(server);
-        return SCHEDULERS.computeIfAbsent(server, _ -> new SchedulerState()).resume(
+        return SCHEDULERS.computeIfAbsent(server, unused713 -> new SchedulerState()).resume(
                 key,
                 session,
                 executors,
@@ -224,8 +224,8 @@ public final class ServerProgramScheduler {
         }
     }
 
-    public record SessionKey(UUID ownerId, Identifier category, UUID programId, int slot) {
-        public SessionKey(UUID ownerId, Identifier category, UUID programId) {
+    public record SessionKey(UUID ownerId, ResourceLocation category, UUID programId, int slot) {
+        public SessionKey(UUID ownerId, ResourceLocation category, UUID programId) {
             this(ownerId, category, programId, -1);
         }
 

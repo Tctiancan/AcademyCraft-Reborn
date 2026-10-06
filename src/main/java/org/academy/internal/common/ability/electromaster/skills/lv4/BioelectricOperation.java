@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.electromaster.skills.lv4;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
@@ -51,7 +51,7 @@ import java.util.Set;
 import java.util.WeakHashMap;
 
 public final class BioelectricOperation extends Skill {
-    private static final Identifier MODIFIER_ID = AcademyCraft.academy(SkillNames.BIOELECTRIC_OPERATION);
+    private static final ResourceLocation MODIFIER_ID = AcademyCraft.academy(SkillNames.BIOELECTRIC_OPERATION);
     private static final String LEGACY_BIOELECTRIC_SURGE = "academy:bioelectric_surge";
 
     static {
@@ -93,7 +93,7 @@ public final class BioelectricOperation extends Skill {
                                 0
                         )
                 ),
-                _ -> Client.toggle()
+                unused462 -> Client.toggle()
         );
     }
 

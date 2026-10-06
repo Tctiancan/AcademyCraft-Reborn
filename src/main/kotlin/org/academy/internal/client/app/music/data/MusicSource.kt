@@ -1,7 +1,7 @@
-package org.academy.internal.client.app.music.data
+﻿package org.academy.internal.client.app.music.data
 
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import java.io.IOException
 import java.nio.ByteBuffer
 import java.nio.file.Files
@@ -13,7 +13,7 @@ data class MusicSource(val path: Any) {
         get() {
             val bytes: ByteArray
             when (path) {
-                is Identifier -> Minecraft.getInstance().resourceManager.open(path).use {
+                is ResourceLocation -> Minecraft.getInstance().resourceManager.open(path).use {
                     bytes = it.readAllBytes()
                 }
 
@@ -34,7 +34,7 @@ data class MusicSource(val path: Any) {
         }
 
     companion object {
-        fun fromIdentifier(location: Identifier): MusicSource {
+        fun fromIdentifier(location: ResourceLocation): MusicSource {
             return MusicSource(location)
         }
 

@@ -7,7 +7,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -105,7 +105,7 @@ public final class PlatinumWing extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, GLFW_KEY_U, GLFW_RELEASE, GLFW_MOD_ALT)
-        ), _ -> Client.toggle());
+        ), unused289 -> Client.toggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.PLATINUM_WING.get(), () -> {
             var player = Minecraft.getInstance().player;
             return player != null && player.getData(AttachmentTypes.ACTIVATED_PLATINUM_WING.get());
@@ -397,7 +397,7 @@ public final class PlatinumWing extends Skill {
             }
         }
 
-        private record ExecutionTombstone(UUID entityId, Identifier typeId, Identifier dimension,
+        private record ExecutionTombstone(UUID entityId, ResourceLocation typeId, ResourceLocation dimension,
                                           Vec3 position, long gameTime,
                                           boolean controllerBacked, String className, String displayName,
                                           float width, float height) {

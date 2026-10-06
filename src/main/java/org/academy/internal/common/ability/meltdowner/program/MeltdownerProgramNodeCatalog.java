@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.meltdowner.program;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.AbilityCategoryNames;
@@ -16,15 +16,15 @@ import java.util.function.Function;
  * Strongly typed Meltdowner target and action schemas.
  */
 public final class MeltdownerProgramNodeCatalog implements ProgramNodeLookup {
-    public static final Identifier MELTDOWNER =
+    public static final ResourceLocation MELTDOWNER =
             AcademyCraft.academy(AbilityCategoryNames.MELTDOWNER);
     public static final MeltdownerProgramNodeCatalog INSTANCE =
             new MeltdownerProgramNodeCatalog();
 
-    private final Map<Identifier, ProgramNodeType<?>> types;
+    private final Map<ResourceLocation, ProgramNodeType<?>> types;
 
     private MeltdownerProgramNodeCatalog() {
-        var result = new HashMap<Identifier, ProgramNodeType<?>>();
+        var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         put(result, MeltdownerProgramNodeIds.CASTER, unitType(
                 querySchema(), ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY,
                 categoryScope()));
@@ -35,23 +35,23 @@ public final class MeltdownerProgramNodeCatalog implements ProgramNodeLookup {
                 BeamConfiguration.CODEC, MeltdownerProgramNodeCatalog::electronBeamSchema,
                 MeltdownerProgramCapabilities.ELECTRON_BEAM));
         put(result, MeltdownerProgramNodeIds.ELECTRON_FAN, beamType(
-                ElectronFanConfiguration.CODEC, _ -> electronFanSchema(),
+                ElectronFanConfiguration.CODEC, unused486 -> electronFanSchema(),
                 MeltdownerProgramCapabilities.ELECTRON_FAN));
         put(result, MeltdownerProgramNodeIds.MINING_BEAM, beamType(
                 MiningBeamConfiguration.CODEC, MeltdownerProgramNodeCatalog::miningBeamSchema,
                 MeltdownerProgramCapabilities.MINING_BEAM));
         put(result, MeltdownerProgramNodeIds.ATOMIC_JET, beamType(
-                AtomicJetConfiguration.CODEC, _ -> atomicJetSchema(),
+                AtomicJetConfiguration.CODEC, unused487 -> atomicJetSchema(),
                 MeltdownerProgramCapabilities.ATOMIC_JET));
         types = Map.copyOf(result);
     }
 
     @Override
-    public ProgramNodeType<?> find(Identifier id) {
+    public ProgramNodeType<?> find(ResourceLocation id) {
         return types.get(id);
     }
 
-    public Map<Identifier, ProgramNodeType<?>> types() {
+    public Map<ResourceLocation, ProgramNodeType<?>> types() {
         return types;
     }
 
@@ -120,11 +120,11 @@ public final class MeltdownerProgramNodeCatalog implements ProgramNodeLookup {
 
     private static ProgramNodeType<PowerConfiguration> powerType(
             ProgramNodeSchema schema,
-            Identifier capability
+            ResourceLocation capability
     ) {
         return new FixedNodeType<>(
                 PowerConfiguration.CODEC,
-                _ -> schema,
+                unused488 -> schema,
                 ProgramNodeRole.ACTION,
                 ProgramNodePurity.ACTION,
                 capabilityScope(capability)
@@ -134,7 +134,7 @@ public final class MeltdownerProgramNodeCatalog implements ProgramNodeLookup {
     private static <C> ProgramNodeType<C> beamType(
             Codec<C> codec,
             Function<C, ProgramNodeSchema> schema,
-            Identifier capability
+            ResourceLocation capability
     ) {
         return new FixedNodeType<>(
                 codec,
@@ -153,7 +153,7 @@ public final class MeltdownerProgramNodeCatalog implements ProgramNodeLookup {
     ) {
         return new FixedNodeType<>(
                 MapCodec.unit(EmptyConfiguration.INSTANCE).codec(),
-                _ -> schema,
+                unused489 -> schema,
                 role,
                 purity,
                 scope
@@ -164,13 +164,13 @@ public final class MeltdownerProgramNodeCatalog implements ProgramNodeLookup {
         return ProgramNodeScope.category(MELTDOWNER);
     }
 
-    private static ProgramNodeScope capabilityScope(Identifier capability) {
+    private static ProgramNodeScope capabilityScope(ResourceLocation capability) {
         return new ProgramNodeScope(Set.of(MELTDOWNER), Set.of(capability));
     }
 
     private static void put(
-            Map<Identifier, ProgramNodeType<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeType<?>> result,
+            ResourceLocation id,
             ProgramNodeType<?> type
     ) {
         if (result.putIfAbsent(id, type) != null) {

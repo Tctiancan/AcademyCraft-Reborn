@@ -5,7 +5,7 @@ import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
 import java.util.List;
@@ -13,8 +13,8 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.*;
 
 class AddonNodeContractTest {
-    private static final Identifier CATEGORY = Identifier.parse("addon_test:category");
-    private static final Identifier NODE = Identifier.parse("addon_test:node");
+    private static final ResourceLocation CATEGORY = ResourceLocation.parse("addon_test:category");
+    private static final ResourceLocation NODE = ResourceLocation.parse("addon_test:node");
 
     private record Node(String translation, ProgramValueType type, int revision, boolean valid) implements ProgramNodeExtension<Integer> {
         @Override public Codec<Integer> configurationCodec() { return Codec.INT.fieldOf("value").codec(); }

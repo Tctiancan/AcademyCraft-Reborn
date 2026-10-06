@@ -97,7 +97,7 @@ public final class PrecisionOperationManager {
 
     private static CompiledSlotResult compiled(ServerPlayer player, int slot) {
         var data = getOrCreateData(player);
-        var cache = COMPILED.computeIfAbsent(player.getUUID(), _ -> new CachedPrograms());
+        var cache = COMPILED.computeIfAbsent(player.getUUID(), unused524 -> new CachedPrograms());
         if (cache.revision != data.revision()) {
             cache.revision = data.revision();
             Arrays.fill(cache.programs, null);

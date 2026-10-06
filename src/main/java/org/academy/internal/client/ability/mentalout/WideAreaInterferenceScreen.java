@@ -2,10 +2,8 @@ package org.academy.internal.client.ability.mentalout;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.input.KeyEvent;
-import net.minecraft.client.input.MouseButtonEvent;
+import org.academy.api.client.render.texture.FilterMode;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.CropBlock;
 import org.academy.api.common.entitycontrol.WorkSelection;
@@ -368,12 +366,22 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        // The panel/chrome and grid rendering live in extractRenderState; UiScreen.render does not
+        // dispatch that hook itself, so it is invoked here (mirroring ChunkLeapScreen) to keep the
+        // drawing visible above the widget tree (ScreenDispatcher draws widgets on ScreenEvent.Render.Post).
+        extractBackground(graphics, mouseX, mouseY, partialTick);
+        extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
     }
 
     @Override
     public void extractRenderState(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             int mouseX,
             int mouseY,
             float partialTick
@@ -510,17 +518,13 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         return String.join("/", values);
     }
 
-    private void renderTargetGridImages(GuiGraphicsExtractor graphics) {
+    private void renderTargetGridImages(GuiGraphics graphics) {
+        // 26.2-specific RenderPipeline/Sampler image extraction is dropped in 1.21.1;
+        // only the placeholder fill is kept so each target tile still reads as occupied.
         for (var target : targetTiles()) {
             var tile = target.bounds();
-            var texture = WideAreaInterferenceClientState.targetFrame(target.targetId());
-            if (texture != null) {
-                graphics.innerBlit(
-                        Render.RenderPipelines.IMAGE_OPAQUE,
-                        texture,
-                        RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR),
-                        tile.x, tile.y, tile.right(), tile.bottom(),
-                        0.0f, 1.0f, 1.0f, 0.0f, -1);
+            if (WideAreaInterferenceClientState.targetFrame(target.targetId()) != null) {
+                graphics.fill(tile.x, tile.y, tile.right(), tile.bottom(), 0xD0000000);
             } else {
                 graphics.fill(tile.x, tile.y, tile.right(), tile.bottom(), 0xD0000000);
             }
@@ -568,16 +572,12 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         return List.copyOf(tiles);
     }
 
-    private void renderPlayerBackground(GuiGraphicsExtractor graphics) {
+    private void renderPlayerBackground(GuiGraphics graphics) {
         graphics.fill(0, 0, width, height, 0xFF000000);
+        // 26.2-specific RenderPipeline/Sampler player-frame extraction is dropped in 1.21.1;
+        // the opaque backdrop is kept so the target-view background still frames the UI.
         var texture = WideAreaInterferenceClientState.playerFrame();
         if (texture == null) return;
-        graphics.innerBlit(
-                Render.RenderPipelines.IMAGE_OPAQUE,
-                texture,
-                RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR),
-                0, 0, width, height,
-                0.0f, 1.0f, 1.0f, 0.0f, -1);
     }
 
     private void renderDisplayOverlay(ProgramUiGraphics graphics, int mouseX, int mouseY) {
@@ -869,12 +869,12 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         updateLayout();
-        var x = event.x();
-        var y = event.y();
+        var x = mouseX;
+        var y = mouseY;
         if (workOpen && WideAreaInterferenceClientState.isRtsView() && workPanel.contains(x, y)) {
-            if (event.button() == 0) {
+            if (button == 0) {
                 if (workPage == 3 && y >= workPanel.y + scaled(80) && y < workPanel.y + scaled(102)) {
                     blurWorkInputs();
                     Arrays.fill(movementKeys, false);
@@ -895,7 +895,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             return true;
         }
         blurWorkInputs();
-        if (event.button() == 0) {
+        if (button == 0) {
             if (selectAllButton.contains(x, y)) {
                 MentaloutRosterClientState.snapshot().entries()
                         .forEach(entry -> selectedTargets.add(entry.targetUuid()));
@@ -976,11 +976,11 @@ public final class WideAreaInterferenceScreen extends UiScreen {
                 beginDrag(DragMode.SELECT, x, y);
                 return true;
             }
-        } else if ((event.button() == 1 || event.button() == 2) && display.contains(x, y)
+        } else if ((button == 1 || button == 2) && display.contains(x, y)
                 && WideAreaInterferenceClientState.isRtsView()) {
             if (altDown()) WideAreaInterferenceClientState.clearHiddenBlocks();
             else {
-                if (event.button() == 1) anchorRtsCenter();
+                if (button == 1) anchorRtsCenter();
                 WideAreaInterferenceClientState.stopPan();
                 beginDrag(DragMode.PAN, x, y);
             }
@@ -990,31 +990,31 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
-        if (dragMode == DragMode.PAN && (event.button() == 1 || event.button() == 2)) {
-            if (event.button() == 1) WideAreaInterferenceClientState.orbit(dragX, dragY);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (dragMode == DragMode.PAN && (button == 1 || button == 2)) {
+            if (button == 1) WideAreaInterferenceClientState.orbit(dragX, dragY);
             else WideAreaInterferenceClientState.panFromMouse(dragX, dragY);
             return true;
         }
-        if (dragMode != DragMode.NONE && event.button() == 0) {
+        if (dragMode != DragMode.NONE && button == 0) {
             dragEndX = Mth.clamp(event.x(), display.x, display.right());
-            dragEndY = Mth.clamp(event.y(), display.y, display.bottom());
+            dragEndY = Mth.clamp(mouseY, display.y, display.bottom());
             updateSelectionEnd(dragEndX, dragEndY);
             syncWorldState();
             return true;
         }
-        return super.mouseDragged(event, dragX, dragY);
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        if (dragMode == DragMode.PAN && (event.button() == 1 || event.button() == 2)) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (dragMode == DragMode.PAN && (button == 1 || button == 2)) {
             dragMode = DragMode.NONE;
             return true;
         }
-        if (dragMode != DragMode.NONE && event.button() == 0) {
+        if (dragMode != DragMode.NONE && button == 0) {
             dragEndX = Mth.clamp(event.x(), display.x, display.right());
-            dragEndY = Mth.clamp(event.y(), display.y, display.bottom());
+            dragEndY = Mth.clamp(mouseY, display.y, display.bottom());
             updateSelectionEnd(dragEndX, dragEndY);
             var completed = dragMode;
             if (completed == DragMode.SELECT) completeWorldSelection();
@@ -1067,14 +1067,14 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     @Override
     public boolean keyPressed(KeyEvent event) {
         if (hasFocusedWorkInput()) return super.keyPressed(event);
-        if (event.key() == InputConstants.KEY_ESCAPE) {
+        if (keyCode == InputConstants.KEY_ESCAPE) {
             if (armedAction != null || pickingWorkPoint != null || dragMode != DragMode.NONE) {
                 armedAction = null; pickingWorkPoint = null; dragMode = DragMode.NONE; return true;
             }
             if (workOpen) { workOpen = false; return true; }
         }
         if (WideAreaInterferenceClientState.isRtsView()) {
-            switch (event.key()) {
+            switch (keyCode) {
                 case InputConstants.KEY_W, InputConstants.KEY_UP -> movementKeys[0] = true;
                 case InputConstants.KEY_S, InputConstants.KEY_DOWN -> movementKeys[1] = true;
                 case InputConstants.KEY_A, InputConstants.KEY_LEFT -> movementKeys[2] = true;
@@ -1108,8 +1108,8 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     @Override
-    public boolean keyReleased(KeyEvent event) {
-        switch (event.key()) {
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        switch (keyCode) {
             case InputConstants.KEY_LSHIFT, InputConstants.KEY_RSHIFT -> zoomKeys[0] = false;
             case InputConstants.KEY_SPACE -> zoomKeys[1] = false;
             case InputConstants.KEY_W, InputConstants.KEY_UP -> movementKeys[0] = false;
@@ -1117,7 +1117,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             case InputConstants.KEY_A, InputConstants.KEY_LEFT -> movementKeys[2] = false;
             case InputConstants.KEY_D, InputConstants.KEY_RIGHT -> movementKeys[3] = false;
             default -> {
-                return super.keyReleased(event);
+                return super.keyReleased(keyCode, scanCode, modifiers);
             }
         }
         return true;

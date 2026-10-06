@@ -2,7 +2,7 @@ package org.academy.api.common.ability.program;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonNull;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
 import java.util.Objects;
@@ -21,7 +21,7 @@ public record ProgramGraph(List<Node> nodes, List<Edge> edges) {
 
     public record Node(
             int id,
-            Identifier type,
+            ResourceLocation type,
             int schemaVersion,
             JsonElement configuration
     ) {

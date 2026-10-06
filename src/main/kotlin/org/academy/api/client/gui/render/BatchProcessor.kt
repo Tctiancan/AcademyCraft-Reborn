@@ -1,15 +1,15 @@
 package org.academy.api.client.gui.render
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice
-import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.vertex.MeshData
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
 import org.academy.api.client.gui.command.ExpandableDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Render.Buffers.getByteBufferBuilder
+import org.academy.api.client.render.RenderPipeline
 import org.academy.api.client.render.TextureBinding
 import org.academy.api.client.render.UniformBinding
 import org.academy.api.client.render.UniformPayload
+import java.nio.ByteBuffer
 
 object BatchProcessor {
     private const val CLIP_LEFT = 0x1
@@ -350,7 +350,7 @@ object BatchProcessor {
     }
 
     interface UboUploader {
-        fun <T : DynamicUniform> upload(payload: UniformPayload<T>): GpuBufferSlice
+        fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer
     }
 
     private class BatchState(initialCommand: SubmittedCommand) {

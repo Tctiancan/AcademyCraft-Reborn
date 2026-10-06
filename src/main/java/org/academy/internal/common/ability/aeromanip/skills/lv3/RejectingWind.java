@@ -112,7 +112,7 @@ public final class RejectingWind extends Skill {
             AcademyCraftClient.Config.INSTANCE.save();
         }
         InputSystem.addMaintainedKeyBinding(
-                Client.KEY_NAME_CAST, binding, _ -> Client.start(), _ -> Client.stop());
+                Client.KEY_NAME_CAST, binding, unused352 -> Client.start(), unused353 -> Client.stop());
     }
 
     @Override
@@ -195,9 +195,9 @@ public final class RejectingWind extends Skill {
             var skill = Skills.REJECTING_WIND.get();
             return skill.executeActiveWithResource(
                     player,
-                    _ -> 25.0f,
-                    _ -> 24.0f,
-                    (_, _) -> cast(player, skill, AeromanipChargeTier.INSTANT));
+                    unused354 -> 25.0f,
+                    unused355 -> 24.0f,
+                    (unused356, unused357) -> cast(player, skill, AeromanipChargeTier.INSTANT));
         }
 
         private static final class ChargeContext extends AeromanipChargeContext {
@@ -220,9 +220,9 @@ public final class RejectingWind extends Skill {
                 };
                 skill.executeActiveWithResource(
                         player,
-                        _ -> cp,
-                        _ -> air,
-                        (_, _) -> cast(player, skill, tier));
+                        unused358 -> cp,
+                        unused359 -> air,
+                        (unused360, unused361) -> cast(player, skill, tier));
             }
 
             @Override

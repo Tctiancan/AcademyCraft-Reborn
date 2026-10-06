@@ -1,33 +1,23 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.*;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.attribute.PlayerAttributes;
 import org.academy.api.common.ability.electromaster.LevitationTuning;
@@ -58,23 +48,50 @@ import java.util.List;
 import java.util.UUID;
 
 /** Exercises the live damage mixins, beam resolver and server magnetic movement. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class ElectromasterReworkGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("electromaster_rework_regression_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void electromasterHealth(GameTestHelper helper) throws Exception {
+        withActors(helper, ElectromasterReworkGameTests::health);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("health", "resources", "attacks", "projectiles", "support")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("electromaster_rework/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("electromaster_rework_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 100, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void electromasterResources(GameTestHelper helper) throws Exception {
+        withActors(helper, ElectromasterReworkGameTests::resources);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void electromasterAttacks(GameTestHelper helper) throws Exception {
+        withActors(helper, ElectromasterReworkGameTests::attacks);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void electromasterProjectiles(GameTestHelper helper) throws Exception {
+        withActors(helper, ElectromasterReworkGameTests::projectiles);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void electromasterSupport(GameTestHelper helper) throws Exception {
+        withActors(helper, ElectromasterReworkGameTests::support);
+    }
+
+    @FunctionalInterface
+    private interface ActorScenario {
+        void run(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) throws Exception;
+    }
+
+    private static void withActors(GameTestHelper helper, ActorScenario scenario) throws Exception {
+        var attacker = player(helper, 2, 3, 5);
+        var defender = player(helper, 8, 3, 5);
+        try {
+            scenario.run(helper, attacker, defender);
+            helper.succeed();
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Cannot exercise skill entry point", exception);
+        } finally {
+            var players = helper.getLevel().getServer().getPlayerList();
+            players.remove(attacker);
+            players.remove(defender);
         }
     }
 
@@ -86,7 +103,6 @@ public final class ElectromasterReworkGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         var position = helper.absoluteVec(new Vec3(x, y, z));
         player.snapTo(position.x, position.y, position.z, 0, 0);
@@ -115,7 +131,7 @@ public final class ElectromasterReworkGameTests {
     }
 
     private static void health(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) throws ReflectiveOperationException {
-        var npc = helper.spawn(EntityTypes.COW, 6, 4, 6);
+        var npc = helper.spawn(EntityType.COW, 6, 4, 6);
         npc.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100);
         npc.setHealth(100);
         var account = new TestAccount(100);
@@ -149,7 +165,7 @@ public final class ElectromasterReworkGameTests {
         close(helper, 100, npc.getHealth(), "CTA fully absorbed does not install a lower projection");
         var before = account.current();
         var eventsBefore = absorbed.size();
-        check(helper, !HealthLossGuards.commit(npc, 100, 90, _ -> false), "Rejected writer reports failure");
+        check(helper, !HealthLossGuards.commit(npc, 100, 90, unused816 -> false), "Rejected writer reports failure");
         close(helper, before, account.current(), "Rejected writer refunds");
         check(helper, absorbed.size() == eventsBefore, "Refunded absorption cannot emit a shield event");
         HealthLossGuards.maintenance(npc, () -> { npc.setHealth(99); return null; });
@@ -172,7 +188,7 @@ public final class ElectromasterReworkGameTests {
         close(helper, 20, customMass.current(), "Custom hurt notification cannot charge a second time");
         check(helper, custom.notifications == 1, "Custom hurt callback still executes");
         HealthLossGuards.set(custom, key, customMass, 1, false);
-        var projected = helper.spawn(EntityTypes.COW, 7, 4, 7);
+        var projected = helper.spawn(EntityType.COW, 7, 4, 7);
         projected.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100);
         projected.setHealth(100);
         check(helper, org.academy.internal.common.entitycontrol.TrueHealthOffsetRuntime.install(projected, 80), "Projection setup");
@@ -239,12 +255,12 @@ public final class ElectromasterReworkGameTests {
         var system = learn(attacker);
         var base = helper.absoluteVec(new Vec3(6, 4, 4));
         attacker.snapTo(base.x, base.y, base.z, 0, 0);
-        var target = helper.spawn(EntityTypes.HUSK, 6, 4, 8);
+        var target = helper.spawn(EntityType.HUSK, 6, 4, 8);
         target.setNoAi(true);
         target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
         target.setHealth(1000);
         target.setItemSlot(EquipmentSlot.CHEST, new ItemStack(Items.DIAMOND_CHESTPLATE));
-        var neutral = helper.spawn(EntityTypes.COW, 7, 4, 8);
+        var neutral = helper.spawn(EntityType.COW, 7, 4, 8);
         var cowHealth = neutral.getHealth();
         var actor = new AbilityActorContext(attacker, Skills.IRON_SAND_ARSENAL.get(), 1.5, 2, 3, new TestAccount(100));
         IronSandActions.whip(actor, 12);
@@ -260,7 +276,7 @@ public final class ElectromasterReworkGameTests {
         close(helper, 877, target.getHealth(), "Cloud deals 16AD");
         check(helper, target.getItemBySlot(EquipmentSlot.CHEST).getDamageValue() > wear, "3000 cloud wears armor");
         close(helper, cowHealth, neutral.getHealth(), "Neutral entities are excluded");
-        var npc = helper.spawn(EntityTypes.COW, 6, 4, 5);
+        var npc = helper.spawn(EntityType.COW, 6, 4, 5);
         npc.setYRot(0);
         MagneticFieldEffects.setPassives(npc, true);
         close(helper, 2, npc.getAttribute(PlayerAttributes.TRUE_RESISTANCE).getValue(), "NPC buffer uses public API");
@@ -271,10 +287,10 @@ public final class ElectromasterReworkGameTests {
     }
 
     private static void projectiles(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) {
-        var owner = helper.spawn(EntityTypes.SKELETON, 3, 4, 3);
+        var owner = helper.spawn(EntityType.SKELETON, 3, 4, 3);
         var mass = new TestAccount(18);
         var center = defender.getBoundingBox().getCenter();
-        var arrow = new net.minecraft.world.entity.projectile.arrow.Arrow(EntityTypes.ARROW, helper.getLevel());
+        var arrow = new net.minecraft.world.entity.projectile.Arrow(EntityType.ARROW, helper.getLevel());
         arrow.setOwner(owner);
         arrow.setPos(center.add(-10, 0, 0));
         arrow.setDeltaMovement(20, 0, 0);
@@ -282,7 +298,7 @@ public final class ElectromasterReworkGameTests {
         check(helper, HostileProjectiles.tryDestroy(defender, arrow, mass, 2, 9), "Swept interception catches fast arrow");
         close(helper, 9, mass.current(), "Intercept cost is paid once");
         check(helper, !HostileProjectiles.tryDestroy(defender, arrow, mass, 2, 9), "Removed projectile cannot repay");
-        arrow = new net.minecraft.world.entity.projectile.arrow.Arrow(EntityTypes.ARROW, helper.getLevel());
+        arrow = new net.minecraft.world.entity.projectile.Arrow(EntityType.ARROW, helper.getLevel());
         arrow.setOwner(defender);
         arrow.setPos(center);
         check(helper, !HostileProjectiles.tryDestroy(defender, arrow, mass, 2, 9), "Own projectile is excluded");
@@ -482,9 +498,9 @@ public final class ElectromasterReworkGameTests {
         }
     }
 
-    private static final class NotifyingCow extends net.minecraft.world.entity.animal.cow.Cow {
+    private static final class NotifyingCow extends net.minecraft.world.entity.animal.Cow {
         int notifications;
-        NotifyingCow(ServerLevel level) { super(EntityTypes.COW, level); }
+        NotifyingCow(ServerLevel level) { super(EntityType.COW, level); }
         @Override public boolean hurtServer(ServerLevel level, net.minecraft.world.damagesource.DamageSource source, float amount) {
             notifications++;
             setHealth(getHealth() - 4);
@@ -499,51 +515,5 @@ public final class ElectromasterReworkGameTests {
         @Override public double capacity() { return 1000; }
         @Override public boolean tryConsume(double cost) { if (cost < 0 || cost > mass + 1e-6) return false; mass = Math.max(0, mass - cost); return true; }
         @Override public double recover(double amount) { mass += amount; return amount; }
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            var attacker = player(helper, 2, 3, 5);
-            var defender = player(helper, 8, 3, 5);
-            try {
-                switch (scenario) {
-                    case "health" -> health(helper, attacker, defender);
-                    case "resources" -> resources(helper, attacker, defender);
-                    case "attacks" -> attacks(helper, attacker, defender);
-                    case "projectiles" -> projectiles(helper, attacker, defender);
-                    case "support" -> support(helper, attacker, defender);
-                    default -> throw new IllegalArgumentException(scenario);
-                }
-                helper.succeed();
-            } catch (ReflectiveOperationException exception) {
-                throw new IllegalStateException("Cannot exercise skill entry point", exception);
-            } finally {
-                var players = helper.getLevel().getServer().getPlayerList();
-                players.remove(attacker);
-                players.remove(defender);
-            }
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Magnetic field and iron sand rework regression");
-        }
     }
 }

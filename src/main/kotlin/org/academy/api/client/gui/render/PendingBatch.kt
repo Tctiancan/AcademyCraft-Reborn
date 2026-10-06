@@ -1,7 +1,7 @@
 package org.academy.api.client.gui.render
 
-import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.vertex.MeshData
+import org.academy.api.client.render.RenderPipeline
 import org.academy.api.client.render.TextureBinding
 import org.academy.api.client.render.UniformBinding
 

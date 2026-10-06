@@ -3,17 +3,16 @@ package org.academy.internal.common.world.entity.projectile;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.damage.SkillDamageSource;
@@ -184,29 +183,32 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        input.getString("academy_attached_entity").ifPresent(value ->
-                attachedEntityUuid = parseUuid(value));
-        input.getString("academy_booster").ifPresent(value -> boosterUuid = parseUuid(value));
-        entityData.set(ATTACHMENT_X, input.getIntOr("academy_attachment_x_milli", 0) / 1_000.0f);
-        entityData.set(ATTACHMENT_Y, input.getIntOr("academy_attachment_y_milli", 0) / 1_000.0f);
-        entityData.set(ATTACHMENT_Z, input.getIntOr("academy_attachment_z_milli", 0) / 1_000.0f);
-        entityData.set(BOOSTED, input.getBooleanOr("academy_boosted", false));
-        attachedTicks = Math.max(0, input.getIntOr("academy_attached_ticks", 0));
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("academy_attached_entity", CompoundTag.TAG_STRING)) {
+            attachedEntityUuid = parseUuid(tag.getString("academy_attached_entity"));
+        }
+        if (tag.contains("academy_booster", CompoundTag.TAG_STRING)) {
+            boosterUuid = parseUuid(tag.getString("academy_booster"));
+        }
+        entityData.set(ATTACHMENT_X, (tag.contains("academy_attachment_x_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_attachment_x_milli") : 0) / 1_000.0f);
+        entityData.set(ATTACHMENT_Y, (tag.contains("academy_attachment_y_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_attachment_y_milli") : 0) / 1_000.0f);
+        entityData.set(ATTACHMENT_Z, (tag.contains("academy_attachment_z_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_attachment_z_milli") : 0) / 1_000.0f);
+        entityData.set(BOOSTED, tag.contains("academy_boosted", CompoundTag.TAG_BYTE) && tag.getBoolean("academy_boosted"));
+        attachedTicks = Math.max(0, tag.contains("academy_attached_ticks", CompoundTag.TAG_INT) ? tag.getInt("academy_attached_ticks") : 0);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        if (attachedEntityUuid != null) output.putString("academy_attached_entity", attachedEntityUuid.toString());
-        if (boosterUuid != null) output.putString("academy_booster", boosterUuid.toString());
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (attachedEntityUuid != null) tag.putString("academy_attached_entity", attachedEntityUuid.toString());
+        if (boosterUuid != null) tag.putString("academy_booster", boosterUuid.toString());
         var offset = attachmentOffset();
-        output.putInt("academy_attachment_x_milli", (int) Math.round(offset.x * 1_000.0));
-        output.putInt("academy_attachment_y_milli", (int) Math.round(offset.y * 1_000.0));
-        output.putInt("academy_attachment_z_milli", (int) Math.round(offset.z * 1_000.0));
-        output.putBoolean("academy_boosted", isBoosted());
-        output.putInt("academy_attached_ticks", attachedTicks);
+        tag.putInt("academy_attachment_x_milli", (int) Math.round(offset.x * 1_000.0));
+        tag.putInt("academy_attachment_y_milli", (int) Math.round(offset.y * 1_000.0));
+        tag.putInt("academy_attachment_z_milli", (int) Math.round(offset.z * 1_000.0));
+        tag.putBoolean("academy_boosted", isBoosted());
+        tag.putInt("academy_attached_ticks", attachedTicks);
     }
 
     private static UUID parseUuid(String value) {

@@ -2,63 +2,58 @@ package org.academy.internal.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemEntityRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import org.academy.api.common.util.MathUtil;
-import org.academy.internal.client.renderer.entity.state.HighSpeedJetNozzleRenderState;
 import org.academy.internal.common.world.entity.skill.HighSpeedJetNozzle;
 
 /** Renders the attached nozzle as a compact directional dropper head. */
 public final class HighSpeedJetNozzleRenderer
-        extends EntityRenderer<HighSpeedJetNozzle, HighSpeedJetNozzleRenderState> {
-    private final ItemModelResolver itemModelResolver;
+        extends EntityRenderer<HighSpeedJetNozzle> {
     private ItemStack displayStack = ItemStack.EMPTY;
 
     public HighSpeedJetNozzleRenderer(EntityRendererProvider.Context context) {
         super(context);
-        itemModelResolver = context.getItemModelResolver();
+        shadowRadius = 0.0f;
     }
 
     @Override
-    public void submit(
-            HighSpeedJetNozzleRenderState state,
-            PoseStack poseStack,
-            SubmitNodeCollector nodeCollector,
-            CameraRenderState cameraRenderState
-    ) {
+    public void render(HighSpeedJetNozzle entity,
+                       float entityYaw,
+                       float partialTick,
+                       PoseStack poseStack,
+                       MultiBufferSource bufferSource,
+                       int packedLight) {
+        if (displayStack.isEmpty()) displayStack = Items.DROPPER.getDefaultInstance();
+        var active = entity.activeTicks() > 0;
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YN.rotationDegrees(state.yRot));
-        poseStack.mulPose(Axis.XP.rotationDegrees(state.xRot));
-        poseStack.scale(state.active ? 0.34f : 0.3f,
-                state.active ? 0.34f : 0.3f,
-                state.active ? 0.34f : 0.3f);
-        ItemEntityRenderer.submitMultipleFromCount(
-                poseStack, nodeCollector, state.lightCoords, state, MathUtil.RANDOM_SOURCE);
+        poseStack.mulPose(Axis.YN.rotationDegrees(entity.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(entity.getXRot()));
+        poseStack.scale(active ? 0.34f : 0.3f,
+                active ? 0.34f : 0.3f,
+                active ? 0.34f : 0.3f);
+        Minecraft.getInstance().getItemRenderer().renderStatic(
+                displayStack,
+                ItemDisplayContext.FIXED,
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                poseStack,
+                bufferSource,
+                entity.level(),
+                entity.getId()
+        );
         poseStack.popPose();
     }
 
     @Override
-    public HighSpeedJetNozzleRenderState createRenderState() {
-        return new HighSpeedJetNozzleRenderState();
-    }
-
-    @Override
-    public void extractRenderState(
-            HighSpeedJetNozzle entity,
-            HighSpeedJetNozzleRenderState state,
-            float partialTick
-    ) {
-        super.extractRenderState(entity, state, partialTick);
-        state.xRot = entity.getXRot();
-        state.yRot = entity.getYRot();
-        state.active = entity.activeTicks() > 0;
-        if (displayStack.isEmpty()) displayStack = Items.DROPPER.getDefaultInstance();
-        state.extractItemGroupRenderState(entity, displayStack, itemModelResolver);
+    public ResourceLocation getTextureLocation(HighSpeedJetNozzle entity) {
+        return MissingTextureAtlasSprite.getLocation();
     }
 }

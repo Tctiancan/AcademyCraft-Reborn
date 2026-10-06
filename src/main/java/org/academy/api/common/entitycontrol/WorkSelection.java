@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -29,7 +29,7 @@ public final class WorkSelection {
     }
 
     /** Inclusive opposite vertices from GUI coordinates; rejects incomplete and out-of-world input. */
-    public static BlockWorkRegion parseVertices(Identifier dimension, String[] coordinates, int minY, int maxY) {
+    public static BlockWorkRegion parseVertices(ResourceLocation dimension, String[] coordinates, int minY, int maxY) {
         if (coordinates.length != 6) throw new IllegalArgumentException("Two XYZ vertices required");
         var values = Arrays.stream(coordinates).map(String::trim).mapToInt(Integer::parseInt).toArray();
         var region = new BlockWorkRegion(dimension, new BlockPos(values[0], values[1], values[2]),
@@ -40,7 +40,7 @@ public final class WorkSelection {
         return region;
     }
 
-    public static BlockWorkRegion region(Identifier dimension, AABB bounds) {
+    public static BlockWorkRegion region(ResourceLocation dimension, AABB bounds) {
         return new BlockWorkRegion(dimension,
                 BlockPos.containing(bounds.minX, bounds.minY, bounds.minZ),
                 BlockPos.containing(bounds.maxX - 1, bounds.maxY - 1, bounds.maxZ - 1));

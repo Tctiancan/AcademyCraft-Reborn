@@ -5,7 +5,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -103,7 +103,7 @@ public final class AeromanipFieldSyncPacket extends Packet<ClientPacketListener,
         var safeType = Math.clamp(type, 0, AirflowField.Type.values().length - 1);
         var safeShape = Math.clamp(shape, 0, AirflowField.Shape.values().length - 1);
         return new AirflowField(fieldId, ownerId,
-                ResourceKey.create(Registries.DIMENSION, Identifier.parse(dimension)),
+                ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(dimension)),
                 AirflowField.Type.values()[safeType], AirflowField.Shape.values()[safeShape],
                 new Vec3(x, y, z), new Vec3(dx, dy, dz),
                 radius, length, strength, durationTicks, proficiencyMilestone);

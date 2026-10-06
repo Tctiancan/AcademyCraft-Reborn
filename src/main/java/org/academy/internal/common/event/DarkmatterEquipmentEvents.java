@@ -1,6 +1,6 @@
 package org.academy.internal.common.event;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -48,7 +48,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class DarkmatterEquipmentEvents {
-    private static final Identifier ENCHANTMENT_PENETRATION_ID =
+    private static final ResourceLocation ENCHANTMENT_PENETRATION_ID =
             AcademyCraft.academy("darkmatter_enchantment_penetration");
     private static final Set<LivingIncomingDamageEvent> CONVERTED_DAMAGE_EVENTS =
             Collections.newSetFromMap(Collections.synchronizedMap(new WeakHashMap<>()));

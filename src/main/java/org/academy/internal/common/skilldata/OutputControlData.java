@@ -1,13 +1,13 @@
 package org.academy.internal.common.skilldata;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.program.ProgramPowerScale;
 
 public final class OutputControlData extends SkillData {
-    public static final Identifier ID = AcademyCraft.academy("output_control_data");
+    public static final ResourceLocation ID = AcademyCraft.academy("output_control_data");
 
     @SerializedName("abilityOutput")
     private float abilityOutput = 1.0f;
@@ -19,7 +19,7 @@ public final class OutputControlData extends SkillData {
     private float jumpHeight = 1.0f;
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 

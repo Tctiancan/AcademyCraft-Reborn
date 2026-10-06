@@ -19,7 +19,7 @@ object BitmapGlyphDebug {
                 for (row in 0 until raw.height) {
                     for (col in 0 until raw.width) {
                         val gray = pixels[row * raw.width + col].toInt() and 0xFF
-                        image.setPixelABGR(col, row, (0xFF shl 24) or (gray shl 16) or (gray shl 8) or gray)
+                        image.setPixelRGBA(col, row, (0xFF shl 24) or (gray shl 16) or (gray shl 8) or gray)
                     }
                 }
                 Files.createDirectories(outputDir)

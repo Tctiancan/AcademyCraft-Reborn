@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.darkmatter;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 
 import java.util.*;
@@ -9,30 +9,30 @@ import java.util.*;
  * Extensible registry used by blueprint validation, runtime stats and client model selection.
  */
 public final class DarkmatterCreatureRegistries {
-    private static final Map<Identifier, DarkmatterCreaturePartType> PARTS = new LinkedHashMap<>();
-    private static final Map<Identifier, DarkmatterCreatureModuleType> MODULES = new LinkedHashMap<>();
+    private static final Map<ResourceLocation, DarkmatterCreaturePartType> PARTS = new LinkedHashMap<>();
+    private static final Map<ResourceLocation, DarkmatterCreatureModuleType> MODULES = new LinkedHashMap<>();
 
-    public static final Identifier HEAD_JAW = id("head_melee_jaw");
-    public static final Identifier HEAD_CANNON = id("head_direct_cannon");
-    public static final Identifier HEAD_HOMING = id("head_homing_cannon");
-    public static final Identifier TORSO_WALK = id("torso_walking");
-    public static final Identifier TORSO_FLY = id("torso_flying");
-    public static final Identifier TORSO_SWIM = id("torso_swimming");
-    public static final Identifier LIMBS_GUARD = id("limbs_guard");
-    public static final Identifier LIMBS_MINER = id("limbs_excavation");
-    public static final Identifier LIMBS_CARRIER = id("limbs_carrier");
-    public static final Identifier ADDITIONAL_NONE = id("additional_none");
-    public static final Identifier ADDITIONAL_CARAPACE = id("additional_carapace");
-    public static final Identifier ADDITIONAL_SENSOR = id("additional_sensor");
-    public static final Identifier ADDITIONAL_WEAPON = id("additional_weapon");
+    public static final ResourceLocation HEAD_JAW = id("head_melee_jaw");
+    public static final ResourceLocation HEAD_CANNON = id("head_direct_cannon");
+    public static final ResourceLocation HEAD_HOMING = id("head_homing_cannon");
+    public static final ResourceLocation TORSO_WALK = id("torso_walking");
+    public static final ResourceLocation TORSO_FLY = id("torso_flying");
+    public static final ResourceLocation TORSO_SWIM = id("torso_swimming");
+    public static final ResourceLocation LIMBS_GUARD = id("limbs_guard");
+    public static final ResourceLocation LIMBS_MINER = id("limbs_excavation");
+    public static final ResourceLocation LIMBS_CARRIER = id("limbs_carrier");
+    public static final ResourceLocation ADDITIONAL_NONE = id("additional_none");
+    public static final ResourceLocation ADDITIONAL_CARAPACE = id("additional_carapace");
+    public static final ResourceLocation ADDITIONAL_SENSOR = id("additional_sensor");
+    public static final ResourceLocation ADDITIONAL_WEAPON = id("additional_weapon");
 
-    public static final Identifier MODULE_GUARD = id("module_guard");
-    public static final Identifier MODULE_FOCUS = id("module_focus_fire");
-    public static final Identifier MODULE_PICKUP = id("module_pickup");
-    public static final Identifier MODULE_EXCAVATION = id("module_excavation");
-    public static final Identifier MODULE_SCOUT = id("module_scout");
-    public static final Identifier MODULE_SELF_REPAIR = id("module_self_repair");
-    public static final Identifier MODULE_FORMATION = id("module_formation");
+    public static final ResourceLocation MODULE_GUARD = id("module_guard");
+    public static final ResourceLocation MODULE_FOCUS = id("module_focus_fire");
+    public static final ResourceLocation MODULE_PICKUP = id("module_pickup");
+    public static final ResourceLocation MODULE_EXCAVATION = id("module_excavation");
+    public static final ResourceLocation MODULE_SCOUT = id("module_scout");
+    public static final ResourceLocation MODULE_SELF_REPAIR = id("module_self_repair");
+    public static final ResourceLocation MODULE_FORMATION = id("module_formation");
 
     static {
         registerPart(new DarkmatterCreaturePartType(HEAD_JAW,
@@ -102,11 +102,11 @@ public final class DarkmatterCreatureRegistries {
         return type;
     }
 
-    public static Optional<DarkmatterCreaturePartType> part(Identifier id) {
+    public static Optional<DarkmatterCreaturePartType> part(ResourceLocation id) {
         return Optional.ofNullable(PARTS.get(id));
     }
 
-    public static Optional<DarkmatterCreatureModuleType> module(Identifier id) {
+    public static Optional<DarkmatterCreatureModuleType> module(ResourceLocation id) {
         return Optional.ofNullable(MODULES.get(id));
     }
 
@@ -118,7 +118,7 @@ public final class DarkmatterCreatureRegistries {
         return List.copyOf(MODULES.values());
     }
 
-    private static Identifier id(String path) {
+    private static ResourceLocation id(String path) {
         return AcademyCraft.academy(path);
     }
 }

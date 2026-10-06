@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import java.util.Optional;
 
@@ -9,7 +9,7 @@ final class ExtensionExecutionView implements ProgramExecutionContext {
     private final ProgramVmContext vm;
     private final ProgramNodeExtension<?> extension;
     private final int nodeId;
-    private final Identifier nodeType;
+    private final ResourceLocation nodeType;
     private boolean active = true;
 
     ExtensionExecutionView(ProgramVmContext vm, ProgramNodeExtension<?> extension) {
@@ -21,7 +21,7 @@ final class ExtensionExecutionView implements ProgramExecutionContext {
 
     @Override public long gameTime() { return vm.gameTime(); }
     @Override public int nodeId() { return nodeId; }
-    @Override public Identifier nodeType() { return nodeType; }
+    @Override public ResourceLocation nodeType() { return nodeType; }
     @Override public Optional<ProgramTargetResolver> targetResolver() { return vm.targetResolver(); }
 
     @Override

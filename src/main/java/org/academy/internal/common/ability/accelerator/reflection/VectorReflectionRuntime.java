@@ -201,7 +201,8 @@ public final class VectorReflectionRuntime {
         if (!shouldRebuildObservers(
                 player.isRemoved(), registeredAsPlayer, conflictingRegistration, chunkTracked)) {
             // A canceled kill/remove attempt must never churn an otherwise healthy tracker. This
-            // final guard also makes stale repair requests harmless.
+            //
+// final guard also makes stale repair requests harmless.
             anchor.observerRebuildRequested = false;
             return;
         }

@@ -61,7 +61,7 @@ public final class MentalTakeover extends Skill {
                         InputConstants.PRESS,
                         GLFW.GLFW_MOD_ALT
                 )
-        ), _ -> Client.use());
+        ), unused541 -> Client.use());
     }
 
     @Override

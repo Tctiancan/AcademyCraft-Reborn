@@ -1,9 +1,9 @@
 package org.academy.internal.client.app.settings.ui
 
 import com.mojang.blaze3d.platform.InputConstants
-import com.mojang.blaze3d.textures.FilterMode
+import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraftClient
 import org.academy.api.client.ability.AbilitySystemClient
 import org.academy.api.client.app.App
@@ -32,7 +32,7 @@ object SkillSettingsApp : App {
         return translate("app.academy.skill_settings.name")
     }
 
-    override fun icon(): Identifier {
+    override fun icon(): ResourceLocation {
         return R.textures.gui.app.abilitysettings.ability_settings
     }
 
@@ -809,11 +809,11 @@ object SkillSettingsApp : App {
             }.getOrNull()
         }
 
-        private fun resolveSkillIcon(info: AbilitySystemClient.SkillInfo): Identifier {
+        private fun resolveSkillIcon(info: AbilitySystemClient.SkillInfo): ResourceLocation {
             val skill = info.skill
             val placeholder = R.textures.gui.icon.close
             val categoryIcon = skill.category.developerIcon
-            val inferred = Identifier.fromNamespaceAndPath(
+            val inferred = ResourceLocation.fromNamespaceAndPath(
                 skill.key.namespace,
                 "textures/ability/${skill.category.key.path}/skill/${skill.key.path}/icon.png"
             )

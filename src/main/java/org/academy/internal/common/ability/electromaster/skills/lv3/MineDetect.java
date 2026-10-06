@@ -10,7 +10,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.tags.TagKey;
@@ -102,7 +102,7 @@ public final class MineDetect extends Skill {
                                 InputConstants.MOD_ALT
                         )
                 ),
-                _ -> Client.toggle()
+                unused459 -> Client.toggle()
         );
         NeoForge.EVENT_BUS.register(Client.class);
     }
@@ -126,11 +126,11 @@ public final class MineDetect extends Skill {
         public static final String KEY_NAME_TOGGLE = SkillNames.MINE_DETECT + "_toggle";
         private static final TagKey<Block> FORGE_ORES = TagKey.create(
                 Registries.BLOCK,
-                Identifier.fromNamespaceAndPath("forge", "ores")
+                ResourceLocation.fromNamespaceAndPath("forge", "ores")
         );
         private static final TagKey<Block> COMMON_ORES = TagKey.create(
                 Registries.BLOCK,
-                Identifier.fromNamespaceAndPath("c", "ores")
+                ResourceLocation.fromNamespaceAndPath("c", "ores")
         );
         private static final LongOpenHashSet ORES = new LongOpenHashSet();
         private static final Map<Block, Boolean> ORE_CACHE = new IdentityHashMap<>();

@@ -35,7 +35,7 @@ public final class HostileTargetRuntime {
 
     public static boolean mark(LivingEntity attacker, LivingEntity target) {
         if (!canMark(attacker, target)) return false;
-        MARKS.computeIfAbsent(attacker, _ -> new WeakHashMap<>())
+        MARKS.computeIfAbsent(attacker, unused799 -> new WeakHashMap<>())
                 .put(target, now(attacker) + HostileTargets.MARK_DURATION_TICKS);
         return true;
     }

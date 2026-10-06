@@ -1,7 +1,7 @@
 package org.academy.internal.client.ability.teleport;
 
-import net.minecraft.client.gui.screens.LevelLoadingScreen;
-import net.minecraft.client.multiplayer.LevelLoadTracker;
+import java.util.function.BooleanSupplier;
+import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
@@ -71,7 +71,8 @@ public final class ChunkLeapTransition {
 
     @SubscribeEvent
     public static void onRegisterTransitionScreens(RegisterDimensionTransitionScreenEvent event) {
-        // Registered for every dimension; the factory decides per transition whether to intercept.
+        // Registered
+// for every dimension; the factory decides per transition whether to intercept.
         for (var dimension : new ResourceKey[]{Level.OVERWORLD, Level.NETHER, Level.END}) {
             @SuppressWarnings("unchecked")
             var key = (ResourceKey<Level>) dimension;
@@ -79,12 +80,12 @@ public final class ChunkLeapTransition {
         }
     }
 
-    private static LevelLoadingScreen createScreen(LevelLoadTracker tracker, LevelLoadingScreen.Reason reason) {
+    private static ReceivingLevelScreen createScreen(BooleanSupplier levelReceived, ReceivingLevelScreen.Reason reason) {
         if (ChunkLeapClientConfig.seamlessTransition() && isLeapTransition()) {
             // Consume the attribution: one leap should not mask a later unrelated transition.
             clearPossibleTransition();
-            return new ChunkLeapLoadingScreen(tracker, reason);
+            return new ChunkLeapLoadingScreen(levelReceived, reason);
         }
-        return new LevelLoadingScreen(tracker, reason);
+        return new ReceivingLevelScreen(levelReceived, reason);
     }
 }

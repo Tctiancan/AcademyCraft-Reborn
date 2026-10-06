@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Optional;
 
@@ -20,7 +20,7 @@ public interface ProgramExecutionContext {
         throw new IllegalStateException("This context does not accept world actions");
     }
 
-    Identifier nodeType();
+    ResourceLocation nodeType();
 
     /**
      * Returns the runtime's restricted, read-only target resolver when one is available.

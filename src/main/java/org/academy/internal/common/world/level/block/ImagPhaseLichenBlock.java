@@ -11,7 +11,7 @@ public final class ImagPhaseLichenBlock extends GlowLichenBlock {
     public ImagPhaseLichenBlock(Properties properties) {
         super(properties
                 .replaceable()
-                .noCollision()
+                .noCollission()
                 .strength(0.2F)
                 .sound(SoundType.VINE)
                 .lightLevel(GlowLichenBlock.emission(7))

@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class ChunkLeapRegionTest {
     private static final ResourceKey<Level> NETHER = key("minecraft:the_nether");
 
     private static ResourceKey<Level> key(String id) {
-        return ResourceKey.create(Registries.DIMENSION, Identifier.parse(id));
+        return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(id));
     }
     @Test
     void buildsFromTwoCornersRegardlessOfOrder() {

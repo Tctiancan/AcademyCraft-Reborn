@@ -17,7 +17,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
@@ -40,7 +40,7 @@ import java.util.Locale;
 import java.util.UUID;
 
 /**
- * Live-world verification for the 区块跃迁 swap.
+ * Live-world verification for the 鍖哄潡璺冭縼 swap.
  *
  * <p>These run against a real {@link ServerLevel} inside the NeoForge GameTest harness, which is the
  * only place the risky half of the feature is observable: block entities must survive the section
@@ -54,7 +54,7 @@ import java.util.UUID;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class ChunkSwapGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("chunk_swap_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("chunk_swap_function");
     private static final int ROUND_TRIP_CHUNK_X = 400;
     private static final int SECTION_BYTES_CHUNK_X = 404;
     private static final int CROSS_DIMENSION_SOURCE_CHUNK_X = 408;
@@ -80,13 +80,13 @@ public final class ChunkSwapGameTests {
         event.registerTest(AcademyCraft.academy("chunk_swap_cross_dimension_relights_empty_section"),
                 new SwapTest(data(environment), SwapScenario.CROSS_DIMENSION_LIGHT));
         event.registerTest(AcademyCraft.academy("chunk_leap_end_player_preload"),
-                new SwapTest(new TestData<>(environment, Identifier.withDefaultNamespace("empty"),
+                new SwapTest(new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
                         12000, 0, true, Rotation.NONE, false, 1, 1, false, 16), SwapScenario.END_PLAYER_PRELOAD));
     }
 
     private static TestData<Holder<TestEnvironmentDefinition<?>>> data(
             Holder<TestEnvironmentDefinition<?>> environment) {
-        return new TestData<>(environment, Identifier.withDefaultNamespace("empty"),
+        return new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
                 400, 0, true, Rotation.NONE, false, 1, 1, false, 16);
     }
 

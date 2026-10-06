@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.accelerator.reflection.compat;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -21,7 +21,7 @@ public final class VectorProjectileCompatRegistry extends
         SimpleJsonResourceReloadListener<VectorProjectileCompatProfile> {
     private static final VectorProjectileCompatRegistry INSTANCE =
             new VectorProjectileCompatRegistry();
-    private static volatile Set<Identifier> ownerlessPeerCollisionSuppressedTypes = Set.of();
+    private static volatile Set<ResourceLocation> ownerlessPeerCollisionSuppressedTypes = Set.of();
 
     private VectorProjectileCompatRegistry() {
         super(
@@ -42,7 +42,7 @@ public final class VectorProjectileCompatRegistry extends
 
     @Override
     protected void apply(
-            Map<Identifier, VectorProjectileCompatProfile> prepared,
+            Map<ResourceLocation, VectorProjectileCompatProfile> prepared,
             ResourceManager resourceManager,
             ProfilerFiller profiler
     ) {

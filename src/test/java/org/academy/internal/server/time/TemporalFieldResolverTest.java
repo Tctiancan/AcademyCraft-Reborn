@@ -1,7 +1,7 @@
 package org.academy.internal.server.time;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class TemporalFieldResolverTest {
     private static final ResourceKey<Level> DIMENSION = ResourceKey.create(
             Registries.DIMENSION,
-            Identifier.fromNamespaceAndPath("test", "temporal_resolver")
+            ResourceLocation.fromNamespaceAndPath("test", "temporal_resolver")
     );
     private static final Set<TemporalChannel> ENTITY =
             Set.of(TemporalChannel.ENTITY);

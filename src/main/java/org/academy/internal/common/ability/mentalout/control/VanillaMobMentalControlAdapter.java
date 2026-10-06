@@ -3,11 +3,11 @@ package org.academy.internal.common.ability.mentalout.control;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ambient.Bat;
-import net.minecraft.world.entity.animal.squid.Squid;
+import net.minecraft.world.entity.animal.Squid;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.monster.Shulker;
-import net.minecraft.world.entity.monster.warden.Warden;
+import net.minecraft.world.entity.monster.Warden;
 import org.academy.api.common.entitycontrol.*;
 
 public final class VanillaMobMentalControlAdapter implements MentalControlAdapter {

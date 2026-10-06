@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.darkmatter.skills.lv5;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -63,9 +63,9 @@ public final class DarkmatterSixWings extends Skill {
 
     public static final float MIN_RESERVED_CP = 120.0f;
     public static final float ACTIVATION_MATTER_COST = 10.0f;
-    private static final Identifier FLIGHT_SOURCE =
+    private static final ResourceLocation FLIGHT_SOURCE =
             AcademyCraft.academy(SkillNames.DARKMATTER_SIX_WINGS);
-    private static final Identifier TRUE_RESISTANCE_MODIFIER_ID =
+    private static final ResourceLocation TRUE_RESISTANCE_MODIFIER_ID =
             AcademyCraft.academy("darkmatter_six_wings_true_resistance");
 
     public DarkmatterSixWings() {

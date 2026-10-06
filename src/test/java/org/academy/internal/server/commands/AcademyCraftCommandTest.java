@@ -1,6 +1,6 @@
 package org.academy.internal.server.commands;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.junit.jupiter.api.Test;
 
@@ -25,7 +25,7 @@ class AcademyCraftCommandTest {
         assertFalse(AcademyCraftCommand.canSetAbilityCategory(
                 AcademyCraft.academy("darkmatter"), false));
         assertFalse(AcademyCraftCommand.canSetAbilityCategory(
-                Identifier.withDefaultNamespace("level0"), false));
+                ResourceLocation.withDefaultNamespace("level0"), false));
     }
 
     @Test
@@ -33,7 +33,7 @@ class AcademyCraftCommandTest {
         assertTrue(AcademyCraftCommand.canSetAbilityCategory(
                 AcademyCraft.academy("darkmatter"), true));
         assertTrue(AcademyCraftCommand.canSetAbilityCategory(
-                Identifier.fromNamespaceAndPath("example", "custom"), true));
+                ResourceLocation.fromNamespaceAndPath("example", "custom"), true));
     }
 
     @Test

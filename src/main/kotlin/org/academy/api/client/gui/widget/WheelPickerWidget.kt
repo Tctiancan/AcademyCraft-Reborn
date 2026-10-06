@@ -1,7 +1,7 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
 import com.mojang.blaze3d.platform.InputConstants
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.event.*
@@ -345,7 +345,7 @@ open class WheelPickerWidget : AbstractWidgetContainer() {
     }
 
     protected open fun renderCurtain(context: Canvas, centerY: Float) {
-        val alpha = ARGB.alpha(curtainColor) / 255.0f * context.accumulatedAlpha
+        val alpha = FastColor.ARGB32.alpha(curtainColor) / 255.0f * context.accumulatedAlpha
         if (alpha <= 0f) return
         val halfItem = itemHeight / 2f
         context.pose().pushPose()
@@ -355,9 +355,9 @@ open class WheelPickerWidget : AbstractWidgetContainer() {
                 FillRectDrawCommand(
                     width,
                     itemHeight,
-                    ARGB.red(curtainColor) / 255.0f,
-                    ARGB.green(curtainColor) / 255.0f,
-                    ARGB.blue(curtainColor) / 255.0f,
+                    FastColor.ARGB32.red(curtainColor) / 255.0f,
+                    FastColor.ARGB32.green(curtainColor) / 255.0f,
+                    FastColor.ARGB32.blue(curtainColor) / 255.0f,
                     alpha
                 )
             )
@@ -366,13 +366,13 @@ open class WheelPickerWidget : AbstractWidgetContainer() {
     }
 
     protected open fun renderIndicator(context: Canvas, centerY: Float) {
-        val alpha = ARGB.alpha(indicatorColor) / 255.0f * context.accumulatedAlpha
+        val alpha = FastColor.ARGB32.alpha(indicatorColor) / 255.0f * context.accumulatedAlpha
         if (alpha <= 0f) return
         val halfItem = itemHeight / 2f
         val halfSize = indicatorSize / 2f
-        val red = ARGB.red(indicatorColor) / 255.0f
-        val green = ARGB.green(indicatorColor) / 255.0f
-        val blue = ARGB.blue(indicatorColor) / 255.0f
+        val red = FastColor.ARGB32.red(indicatorColor) / 255.0f
+        val green = FastColor.ARGB32.green(indicatorColor) / 255.0f
+        val blue = FastColor.ARGB32.blue(indicatorColor) / 255.0f
 
         context.pose().pushPose()
         run {

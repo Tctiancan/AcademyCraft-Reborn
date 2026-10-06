@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.shape
+﻿package org.academy.api.client.gui.text.shape
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.text.model.GlyphRun
 import org.academy.api.client.gui.text.model.TextBlob
 import org.academy.api.client.gui.text.model.TextLine
@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test
 
 class CaretGeometryTest {
     private fun blob(): TextBlob {
-        val font = Identifier.parse("academy:test")
+        val font = ResourceLocation.parse("academy:test")
         val run = GlyphRun(
             font,
             glyphIndices = intArrayOf(1, 2, 3),

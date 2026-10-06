@@ -1,9 +1,9 @@
 package org.academy.api.client.gui.text.record
 
-import com.mojang.blaze3d.pipeline.RenderPipeline
+import org.academy.api.client.render.RenderPipeline
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.LocalBounds
@@ -26,7 +26,7 @@ abstract class GlyphRunDrawCommand protected constructor(
         TextureBinding(
             "Sampler0",
             textureView,
-            RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
+            org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.LINEAR)
         )
     ),
     uniforms

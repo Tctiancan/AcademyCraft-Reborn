@@ -239,7 +239,8 @@ public final class SkillTuning {
     }
 
     // ------------------------------------------------------------------
-    // Level / player resolution for gameplay call sites
+    // Level / player resolution
+// for gameplay call sites
     // ------------------------------------------------------------------
 
     public static float maxHealthDamageMultiplier(@Nullable Level level, Skill skill) {

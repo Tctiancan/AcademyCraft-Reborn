@@ -73,7 +73,7 @@ public final class QqAudioCache {
                     deleteCorruptFiles(mid);
                     throw new RuntimeException(exception);
                 }
-            }, AcademyCraft.executorService).whenComplete((_, _) -> {
+            }, AcademyCraft.executorService).whenComplete((unused185, unused186) -> {
                 synchronized (LOCK) {
                     IN_FLIGHT.remove(mid);
                 }

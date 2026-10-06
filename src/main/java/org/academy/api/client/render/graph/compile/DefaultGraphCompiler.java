@@ -59,7 +59,7 @@ public final class DefaultGraphCompiler implements GraphCompiler {
     private static Set<String> reachableNodes(Graph graph) {
         Map<String, List<String>> reverse = new HashMap<>();
         for (var edge : graph.edges()) {
-            reverse.computeIfAbsent(edge.to().nodeId(), _ -> new ArrayList<>()).add(edge.from().nodeId());
+            reverse.computeIfAbsent(edge.to().nodeId(), unused27 -> new ArrayList<>()).add(edge.from().nodeId());
         }
 
         Set<String> reachable = new HashSet<>();

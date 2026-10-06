@@ -55,7 +55,7 @@ class OmniCraftingTableScreen(
     override fun containerTick() {
         super.containerTick()
         val fill = fluidFill ?: return
-        val stored = (minecraft.level?.getBlockEntity(mainPos)
+        val stored = (minecraft?.level?.getBlockEntity(mainPos)
                 as? OmniCraftingTableBlockEntity)?.imagPhaseFluidStored ?: 0
         val ratio = (stored.toFloat() / OmniCraftingTableBlockEntity.MAX_FLUID_STORAGE)
             .coerceIn(0f, 1f)

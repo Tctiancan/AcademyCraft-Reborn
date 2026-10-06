@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -9,7 +9,7 @@ public record ControlInspection(
         ControlCapability capability,
         UUID leaseId,
         UUID controllerId,
-        Identifier source,
+        ResourceLocation source,
         UUID scopeId,
         int priority,
         long expiresAt,
@@ -31,7 +31,7 @@ public record ControlInspection(
             ControlCapability capability,
             UUID leaseId,
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             long expiresAt,
             ControlDirective directive

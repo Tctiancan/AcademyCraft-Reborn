@@ -2,7 +2,7 @@ package org.academy.internal.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.MobRenderer;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.internal.client.model.DarkmatterCreatureModel;
 import org.academy.internal.client.renderer.entity.state.DarkmatterCreatureRenderState;
@@ -19,7 +19,7 @@ public final class DarkmatterBeetleRenderer extends MobRenderer<
     }
 
     @Override
-    public Identifier getTextureLocation(DarkmatterCreatureRenderState state) {
+    public ResourceLocation getTextureLocation(DarkmatterCreatureRenderState state) {
         return R.textures.darkmatter_beetle;
     }
 

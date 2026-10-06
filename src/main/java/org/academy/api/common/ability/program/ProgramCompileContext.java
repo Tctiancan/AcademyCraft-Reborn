@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 import java.util.Set;
@@ -9,8 +9,8 @@ import java.util.Set;
  * Server-authoritative category and entitlement snapshot used during compilation.
  */
 public record ProgramCompileContext(
-        Identifier category,
-        Set<Identifier> capabilities,
+        ResourceLocation category,
+        Set<ResourceLocation> capabilities,
         ProgramLimits limits
 ) {
     public ProgramCompileContext {

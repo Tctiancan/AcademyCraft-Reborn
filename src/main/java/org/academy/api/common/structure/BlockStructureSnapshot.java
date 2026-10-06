@@ -3,17 +3,20 @@ package org.academy.api.common.structure;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.world.level.EmptyBlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
+import org.academy.AcademyCraft;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
@@ -117,55 +120,62 @@ public final class BlockStructureSnapshot {
         return depth * 0.5;
     }
 
-    public void save(ValueOutput output) {
-        var list = output.childrenList("blocks");
+    public void save(CompoundTag output, HolderLookup.Provider registries) {
+        var ops = RegistryOps.create(NbtOps.INSTANCE, registries);
+        var list = new ListTag();
         for (var block : blocks) {
-            var child = list.addChild();
+            var child = new CompoundTag();
             var position = block.relativePosition();
             child.putInt("x", position.getX());
             child.putInt("y", position.getY());
             child.putInt("z", position.getZ());
-            child.store("state", BlockState.CODEC, block.state());
+            BlockState.CODEC.encodeStart(ops, block.state()).resultOrPartial(AcademyCraft.LOGGER::error)
+                    .ifPresent(value -> child.put("state", value));
             if (block.blockEntityData != null) {
-                child.store("block_entity", CompoundTag.CODEC, block.blockEntityData);
+                child.put("block_entity", block.blockEntityData);
             }
             child.putBoolean(
                     "falls_during_settlement",
                     block.settlementMode == BlockStructureSettlementMode.FALLING
             );
             child.putBoolean("has_collision_snapshot", true);
-            var collision = child.childrenList("collision");
+            var collision = new ListTag();
             for (var box : block.collisionBoxes) {
-                var boxOutput = collision.addChild();
+                var boxOutput = new CompoundTag();
                 boxOutput.putDouble("min_x", box.minX);
                 boxOutput.putDouble("min_y", box.minY);
                 boxOutput.putDouble("min_z", box.minZ);
                 boxOutput.putDouble("max_x", box.maxX);
                 boxOutput.putDouble("max_y", box.maxY);
                 boxOutput.putDouble("max_z", box.maxZ);
+                collision.add(boxOutput);
             }
+            child.put("collision", collision);
+            list.add(child);
         }
+        output.put("blocks", list);
     }
 
-    public static BlockStructureSnapshot load(ValueInput input) {
+    public static BlockStructureSnapshot load(CompoundTag input, HolderLookup.Provider registries) {
+        var ops = RegistryOps.create(NbtOps.INSTANCE, registries);
         var blocks = new ArrayList<BlockData>();
-        for (var child : input.childrenListOrEmpty("blocks")) {
+        for (var childTag : input.getList("blocks", CompoundTag.TAG_COMPOUND)) {
             if (blocks.size() >= MAX_BLOCKS) return EMPTY;
-            var state = child.read("state", BlockState.CODEC).orElse(Blocks.AIR.defaultBlockState());
+            if (!(childTag instanceof CompoundTag child)) continue;
+            var state = BlockState.CODEC.decode(ops, child.get("state"))
+                    .resultOrPartial(AcademyCraft.LOGGER::error)
+                    .map(result -> result.getFirst())
+                    .orElse(Blocks.AIR.defaultBlockState());
             if (state.isAir()) continue;
             var position = new BlockPos(
-                    child.getIntOr("x", 0),
-                    child.getIntOr("y", 0),
-                    child.getIntOr("z", 0)
+                    child.getInt("x"),
+                    child.getInt("y"),
+                    child.getInt("z")
             );
-            var blockEntityData = child.read("block_entity", CompoundTag.CODEC).orElse(null);
+            var blockEntityData = child.contains("block_entity") ? child.getCompound("block_entity") : null;
             var collisionBoxes = readCollisionBoxes(child);
-            var settlementMode = child.getBooleanOr(
-                    "falls_during_settlement",
-                    BlockStructureSettlementPolicy.naturalMode(
-                            state,
-                            blockEntityData != null
-                    ) == BlockStructureSettlementMode.FALLING
+            var settlementMode = child.getBoolean(
+                    "falls_during_settlement"
             ) ? BlockStructureSettlementMode.FALLING : BlockStructureSettlementMode.FIXED;
             blocks.add(collisionBoxes == null
                     ? new BlockData(position, state, blockEntityData, settlementMode)
@@ -390,20 +400,21 @@ public final class BlockStructureSnapshot {
         }
     }
 
-    private static @Nullable List<AABB> readCollisionBoxes(ValueInput input) {
-        if (!input.getBooleanOr("has_collision_snapshot", false)) return null;
-        var collisionInput = input.childrenList("collision");
+    private static @Nullable List<AABB> readCollisionBoxes(CompoundTag input) {
+        if (!input.getBoolean("has_collision_snapshot")) return null;
+        var collisionInput = input.getList("collision", CompoundTag.TAG_COMPOUND);
         if (collisionInput.isEmpty()) return List.of();
         var boxes = new ArrayList<AABB>();
-        for (var child : collisionInput.get()) {
+        for (var childTag : collisionInput) {
+            if (!(childTag instanceof CompoundTag child)) continue;
             if (boxes.size() >= MAX_COLLISION_BOXES_PER_BLOCK) return null;
             boxes.add(new AABB(
-                    child.getDoubleOr("min_x", 0.0),
-                    child.getDoubleOr("min_y", 0.0),
-                    child.getDoubleOr("min_z", 0.0),
-                    child.getDoubleOr("max_x", 0.0),
-                    child.getDoubleOr("max_y", 0.0),
-                    child.getDoubleOr("max_z", 0.0)
+                    child.getDouble("min_x"),
+                    child.getDouble("min_y"),
+                    child.getDouble("min_z"),
+                    child.getDouble("max_x"),
+                    child.getDouble("max_y"),
+                    child.getDouble("max_z")
             ));
         }
         return boxes;

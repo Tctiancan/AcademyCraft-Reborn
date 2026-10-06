@@ -1,6 +1,6 @@
 package org.academy.internal.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.entitycontrol.*;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class ControlDestinationTest {
 
     @Test
     void fixedDestinationsRejectNonFiniteCoordinates() {
-        var dimension = Identifier.withDefaultNamespace("overworld");
+        var dimension = ResourceLocation.withDefaultNamespace("overworld");
 
         assertThrows(IllegalArgumentException.class, () -> new ControlDestination.Position(
                 dimension,

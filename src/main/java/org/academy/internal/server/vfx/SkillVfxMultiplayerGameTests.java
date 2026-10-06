@@ -20,7 +20,7 @@ import net.minecraft.network.VarInt;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.entity.Entity;
@@ -49,7 +49,7 @@ import org.slf4j.Logger;
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class SkillVfxMultiplayerGameTests {
     private static final Logger LOGGER = AcademyCraft.getLogger();
-    private static final Identifier TYPE = AcademyCraft.academy("skill_vfx_multiplayer_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("skill_vfx_multiplayer_function");
     private SkillVfxMultiplayerGameTests() {}
 
     @SubscribeEvent
@@ -64,7 +64,7 @@ public final class SkillVfxMultiplayerGameTests {
             var environment = event.registerEnvironment(AcademyCraft.academy("skill_vfx_multiplayer_environment_" + count),
                     new TestEnvironmentDefinition.AllOf(List.of()));
             event.registerTest(AcademyCraft.academy("skill_vfx_multiplayer_" + count), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 220, 0, true,
+                    environment, ResourceLocation.withDefaultNamespace("empty"), 220, 0, true,
                     Rotation.NONE, false, 1, 1, false, 16), count));
         }
     }

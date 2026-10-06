@@ -6,10 +6,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Rotation;
@@ -29,7 +29,7 @@ import java.util.List;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TrueHealthOffsetGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("true_health_offset_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("true_health_offset_function");
     private TrueHealthOffsetGameTests() {}
 
     @SubscribeEvent
@@ -41,7 +41,7 @@ public final class TrueHealthOffsetGameTests {
     public static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(AcademyCraft.academy("true_health_offset"),
                 new TestEnvironmentDefinition.AllOf(List.of()));
-        var data = new TestData<>(environment, Identifier.withDefaultNamespace("empty"),
+        var data = new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
                 460, 0, true, Rotation.NONE, false, 1, 1, false, 16);
         event.registerTest(AcademyCraft.academy("true_health_offset"), new OffsetTest(data));
     }
@@ -71,7 +71,7 @@ public final class TrueHealthOffsetGameTests {
         helper.assertTrue(SkillDamageUtil.applyVerifiedTrueHealth(locked, dm, 20), "DM detonation must share projection");
         close(helper, 60, locked.getHealth(), "DM accumulates from effective health");
 
-        var ordinary = helper.spawn(EntityTypes.COW, 5, 2, 3);
+        var ordinary = helper.spawn(EntityType.COW, 5, 2, 3);
         ordinary.setNoAi(true);
         ordinary.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100);
         ordinary.setHealth(100);
@@ -97,13 +97,13 @@ public final class TrueHealthOffsetGameTests {
         level.addFreshEntity(restored);
         close(helper, 60, restored.getHealth(), "Serialized state restores with a new instance mask");
 
-        var lethal = helper.spawn(EntityTypes.COW, 9, 2, 3);
+        var lethal = helper.spawn(EntityType.COW, 9, 2, 3);
         helper.assertTrue(SkillDamageUtil.applyVerifiedTrueHealth(lethal, cta, 100), "Lethal CTA must commit");
         helper.assertTrue(lethal.isDeadOrDying(), "Projected zero must enter death");
         var lethalState = ((HealthOffsetAccess) lethal).academy$getHealthOffset();
         helper.assertTrue(lethalState != null && lethalState.dead, "Death freezes projection");
 
-        var protectedCow = helper.spawn(EntityTypes.COW, 11, 2, 3);
+        var protectedCow = helper.spawn(EntityType.COW, 11, 2, 3);
         protectedCow.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                 new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.TOTEM_OF_UNDYING));
         helper.assertTrue(SkillDamageUtil.applyVerifiedTrueHealth(protectedCow, cta, 100), "Totem hit must commit");
@@ -112,7 +112,7 @@ public final class TrueHealthOffsetGameTests {
                 "Totem must clear zero projection");
 
 
-        var canceled = helper.spawn(EntityTypes.COW, 12, 2, 5);
+        var canceled = helper.spawn(EntityType.COW, 12, 2, 5);
         java.util.function.Consumer<net.neoforged.neoforge.event.entity.living.LivingDeathEvent> cancelDeath =
                 event -> { if (event.getEntity() == canceled) event.setCanceled(true); };
         net.neoforged.neoforge.common.NeoForge.EVENT_BUS.addListener(cancelDeath);
@@ -142,7 +142,7 @@ public final class TrueHealthOffsetGameTests {
             net.neoforged.neoforge.common.NeoForge.EVENT_BUS.unregister(cancelHeal);
         }
 
-        var opaque = new Cow(EntityTypes.COW, level) {
+        var opaque = new Cow(EntityType.COW, level) {
             @Override public float getHealth() { return 100; }
             @Override public void setHealth(float value) {}
         };
@@ -177,7 +177,7 @@ public final class TrueHealthOffsetGameTests {
 
     private static final class LockedCow extends Cow {
         private boolean locked;
-        private LockedCow(Level level) { super(EntityTypes.COW, level); }
+        private LockedCow(Level level) { super(EntityType.COW, level); }
         @Override public void setHealth(float value) {
             if (!locked || value >= 100) super.setHealth(value);
         }
@@ -195,3 +195,4 @@ public final class TrueHealthOffsetGameTests {
         @Override protected MutableComponent typeDescription() { return Component.literal("True health projection"); }
     }
 }
+

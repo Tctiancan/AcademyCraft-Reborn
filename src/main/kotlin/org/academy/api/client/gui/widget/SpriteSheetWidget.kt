@@ -1,10 +1,10 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.layout.Orientation
 
 open class SpriteSheetWidget(
-    texture: Identifier,
+    texture: ResourceLocation,
     protected val orientation: Orientation,
     protected val sheetWidth: Int,
     protected val sheetHeight: Int,

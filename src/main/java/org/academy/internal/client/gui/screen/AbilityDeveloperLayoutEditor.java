@@ -1,6 +1,6 @@
 package org.academy.internal.client.gui.screen;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.fml.loading.FMLPaths;
 import org.academy.AcademyCraft;
 import org.academy.api.client.ability.AbilitySystemClient;
@@ -120,7 +120,7 @@ public final class AbilityDeveloperLayoutEditor {
                     if (line.isEmpty() || line.startsWith("#")) continue;
                     if (line.startsWith("[") && line.endsWith("]")) {
                         var raw = line.substring(1, line.length() - 1).strip();
-                        category = Identifier.parse(raw).toString();
+                        category = ResourceLocation.parse(raw).toString();
                         result.computeIfAbsent(category, ignored -> new LinkedHashMap<>());
                         continue;
                     }
@@ -128,7 +128,7 @@ public final class AbilityDeveloperLayoutEditor {
                     var equals = line.indexOf('=');
                     var comma = line.indexOf(',', equals + 1);
                     if (equals <= 0 || comma <= equals) continue;
-                    var skill = Identifier.parse(line.substring(0, equals).strip()).toString();
+                    var skill = ResourceLocation.parse(line.substring(0, equals).strip()).toString();
                     var x = Float.parseFloat(line.substring(equals + 1, comma).strip());
                     var y = Float.parseFloat(line.substring(comma + 1).strip());
                     if (Float.isFinite(x) && Float.isFinite(y)) {

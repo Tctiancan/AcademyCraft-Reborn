@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.electromaster.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
@@ -22,7 +22,7 @@ import java.util.function.LongSupplier;
 public final class ElectromasterProgramExecutionBridge {
     private static final int MAX_FUEL = ProgramLimits.DEFAULT.maxNodes()
             * ProgramLimits.DEFAULT.maxNodes() + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
 
     private ElectromasterProgramExecutionBridge() {
     }
@@ -103,24 +103,24 @@ public final class ElectromasterProgramExecutionBridge {
         );
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
-        put(result, ElectromasterProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
+        put(result, ElectromasterProgramNodeIds.CASTER, (context, unused439, unused440) -> data(
                 "entity", ProgramValueTypes.ENTITY_REFERENCE, runtime(context).caster()));
-        put(result, ElectromasterProgramNodeIds.LOOK_TARGET, (context, _, _) ->
+        put(result, ElectromasterProgramNodeIds.LOOK_TARGET, (context, unused441, unused442) ->
                 runtime(context).lookTarget()
                         .map(value -> data(
                                 "entity", ProgramValueTypes.ENTITY_REFERENCE, value))
                         .orElseGet(() -> ProgramNodeStep.data(Map.of())));
         put(result, ElectromasterProgramNodeIds.CHARGEABLE_BLOCKS,
-                (context, _, inputs) -> data(
+                (context, unused443, inputs) -> data(
                         "blocks",
                         ProgramValueTypes.BLOCK_POSITION_SET,
                         runtime(context).chargeableBlocksAround(
                                 worldPosition(inputs, "center"),
                                 floatValue(inputs, "radius"))));
         put(result, ElectromasterProgramNodeIds.MAGNETIC_ENTITIES,
-                (context, _, inputs) -> data(
+                (context, unused444, inputs) -> data(
                         "entities",
                         ProgramValueTypes.ENTITY_SET,
                         runtime(context).magneticEntitiesAround(
@@ -279,8 +279,8 @@ public final class ElectromasterProgramExecutionBridge {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {

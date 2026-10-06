@@ -2,12 +2,12 @@ package org.academy.api.common.ability.data;
 
 import com.google.gson.JsonElement;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 /** Codec for addon-owned state only; enabled/proficiency remain separate Academy fields. */
-public record SkillStateType<T>(Identifier id, Codec<T> codec, Supplier<T> defaultValue,
+public record SkillStateType<T>(ResourceLocation id, Codec<T> codec, Supplier<T> defaultValue,
                                 int version, Migration migration) {
     public SkillStateType {
         Objects.requireNonNull(id);
@@ -16,7 +16,7 @@ public record SkillStateType<T>(Identifier id, Codec<T> codec, Supplier<T> defau
         Objects.requireNonNull(migration);
         if (version < 1) throw new IllegalArgumentException("State version must be positive");
     }
-    public static <T> SkillStateType<T> of(Identifier id, Codec<T> codec, Supplier<T> defaults) {
+    public static <T> SkillStateType<T> of(ResourceLocation id, Codec<T> codec, Supplier<T> defaults) {
         return new SkillStateType<>(id, codec, defaults, 1, (version, value) -> {
             if (version != 1) throw new IllegalArgumentException("Unsupported skill state version " + version);
             return value;

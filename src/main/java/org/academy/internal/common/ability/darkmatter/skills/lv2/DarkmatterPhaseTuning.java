@@ -87,9 +87,9 @@ public final class DarkmatterPhaseTuning extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 keyName,
                 binding,
-                _ -> Client.control(direction, true),
-                _ -> Client.control(direction, false),
-                _ -> Client.heartbeat(direction),
+                unused424 -> Client.control(direction, true),
+                unused425 -> Client.control(direction, false),
+                unused426 -> Client.heartbeat(direction),
                 () -> AbilitySystemClient.canUseSkill(Skills.DARKMATTER_PHASE_TUNING.get())
         );
     }
@@ -192,7 +192,7 @@ public final class DarkmatterPhaseTuning extends Skill {
          */
         public static boolean beginTuning(ServerPlayer player, Direction direction) {
             if (!Skills.DARKMATTER_PHASE_TUNING.get().isEnabled(player)) return false;
-            TUNING.compute(player.getUUID(), (_, existing) -> {
+            TUNING.compute(player.getUUID(), (unused427, existing) -> {
                 var now = player.level().getGameTime();
                 if (existing != null && existing.direction == direction
                         && existing.level == player.level()) {
@@ -209,7 +209,7 @@ public final class DarkmatterPhaseTuning extends Skill {
          * Ends the lease only when the released direction matches the active direction.
          */
         public static void endTuning(ServerPlayer player, Direction direction) {
-            TUNING.computeIfPresent(player.getUUID(), (_, state) ->
+            TUNING.computeIfPresent(player.getUUID(), (unused428, state) ->
                     state.direction == direction ? null : state);
         }
 

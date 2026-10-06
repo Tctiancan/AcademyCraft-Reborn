@@ -168,7 +168,7 @@ public final class VectorAccel extends Skill {
             public Context(LocalPlayer player) {
                 this.player = player;
                 chargeStartTick = player.tickCount
-                        + Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+                        + Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
             }
 
             private static float modifiedFriction(float friction, float modifier) {
@@ -470,7 +470,7 @@ public final class VectorAccel extends Skill {
             var skill = Skills.VECTOR_ACCEL.get();
             var maxChargeTicks = skill.hasProficiencyMilestone(player, 2) ? 30L : MAX_CHARGE_TICKS;
             var chargeRatio = getChargeRatio(startTick, player.level().getGameTime(), maxChargeTicks);
-            skill.executeActive(player, (_, _) -> {
+            skill.executeActive(player, (unused248, unused249) -> {
                 var direction = normalizeDashDirection(player.getLookAngle());
                 EntityMotionGuard.runWithMotionSource(
                         player,

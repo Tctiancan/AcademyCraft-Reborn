@@ -41,23 +41,23 @@ public final class MusicCommand {
         return Commands.literal("account")
                 .then(Commands.literal("status")
                         .then(Commands.argument("provider", StringArgumentType.word())
-                                .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                .suggests((unused819, builder) -> SharedSuggestionProvider.suggest(
                                         List.of("qq", "netease"), builder))
                                 .executes(MusicCommand::accountStatus)))
                 .then(Commands.literal("clear")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .then(Commands.argument("provider", StringArgumentType.word())
-                                .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                .suggests((unused820, builder) -> SharedSuggestionProvider.suggest(
                                         List.of("qq", "netease"), builder))
                                 .executes(MusicCommand::accountClear)));
     }
 
     private static LiteralArgumentBuilder<CommandSourceStack> playlistCommands() {
         return Commands.literal("playlist")
-                .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                 .then(Commands.literal("import")
                         .then(Commands.argument("provider", StringArgumentType.word())
-                                .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                .suggests((unused821, builder) -> SharedSuggestionProvider.suggest(
                                         List.of("qq", "netease"), builder))
                                 .then(Commands.argument("playlist_id", StringArgumentType.word())
                                         .executes(MusicCommand::playlistImport))))
@@ -67,7 +67,7 @@ public final class MusicCommand {
                 .then(Commands.literal("disable").executes(ctx -> playlistSetEnabled(ctx, false)))
                 .then(Commands.literal("mode")
                         .then(Commands.argument("value", StringArgumentType.word())
-                                .suggests((_, builder) -> SharedSuggestionProvider.suggest(
+                                .suggests((unused822, builder) -> SharedSuggestionProvider.suggest(
                                         List.of("SEQUENTIAL", "SHUFFLE", "LOOP"), builder))
                                 .executes(MusicCommand::playlistSetMode)))
                 .then(Commands.literal("reload").executes(MusicCommand::playlistReload));
@@ -221,10 +221,10 @@ public final class MusicCommand {
                 .then(Commands.literal("skip").executes(MusicCommand::voteSkip))
                 .then(Commands.literal("toggle").executes(MusicCommand::toggleSubscribe))
                 .then(Commands.literal("force_skip")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(MusicCommand::forceSkip))
                 .then(Commands.literal("clear")
-                        .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS))
+                        .requires(c -> c.hasPermission(Commands.LEVEL_GAMEMASTERS))
                         .executes(MusicCommand::clearQueue));
     }
 

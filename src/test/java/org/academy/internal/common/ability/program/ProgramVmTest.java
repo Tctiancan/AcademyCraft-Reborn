@@ -8,7 +8,7 @@ import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
@@ -24,15 +24,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProgramVmTest {
-    private static final Identifier CATEGORY = AcademyCraft.academy("mentalout");
-    private static final Identifier ENTRY = AcademyCraft.academy("test/entry");
-    private static final Identifier LOOP = AcademyCraft.academy("test/loop");
-    private static final Identifier CALL_LOOP = AcademyCraft.academy("test/call_loop");
-    private static final Identifier CONTINUE_LOOP = AcademyCraft.academy("test/continue_loop");
-    private static final Identifier BREAK_LOOP = AcademyCraft.academy("test/break_loop");
-    private static final Identifier INCREMENT = AcademyCraft.academy("test/increment");
-    private static final Identifier YIELD = AcademyCraft.academy("test/yield");
-    private static final Identifier STOP = AcademyCraft.academy("test/stop");
+    private static final ResourceLocation CATEGORY = AcademyCraft.academy("mentalout");
+    private static final ResourceLocation ENTRY = AcademyCraft.academy("test/entry");
+    private static final ResourceLocation LOOP = AcademyCraft.academy("test/loop");
+    private static final ResourceLocation CALL_LOOP = AcademyCraft.academy("test/call_loop");
+    private static final ResourceLocation CONTINUE_LOOP = AcademyCraft.academy("test/continue_loop");
+    private static final ResourceLocation BREAK_LOOP = AcademyCraft.academy("test/break_loop");
+    private static final ResourceLocation INCREMENT = AcademyCraft.academy("test/increment");
+    private static final ResourceLocation YIELD = AcademyCraft.academy("test/yield");
+    private static final ResourceLocation STOP = AcademyCraft.academy("test/stop");
 
     @Test
     void recordsExecutedBranchPathForInvocation() {
@@ -309,8 +309,8 @@ class ProgramVmTest {
         return result.program();
     }
 
-    private static Map<Identifier, ProgramNodeType<?>> nodeTypes() {
-        var result = new HashMap<Identifier, ProgramNodeType<?>>();
+    private static Map<ResourceLocation, ProgramNodeType<?>> nodeTypes() {
+        var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         result.put(ENTRY, type(
                 ProgramNodeRole.ENTRY,
                 new ProgramNodeSchema(
@@ -372,8 +372,8 @@ class ProgramVmTest {
         return result;
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> executors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> executors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
         result.put(LOOP, (context, _, _) -> {
             var counter = context.variable("counter")
                     .map(value -> (Integer) value.value())
@@ -447,7 +447,7 @@ class ProgramVmTest {
         return new ProgramPortDefinition(name, ProgramValueTypes.FLOW, false, 1);
     }
 
-    private static ProgramGraph.Node node(int id, Identifier type) {
+    private static ProgramGraph.Node node(int id, ResourceLocation type) {
         return new ProgramGraph.Node(id, type, 1, new JsonObject());
     }
 

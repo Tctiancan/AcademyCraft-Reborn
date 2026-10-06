@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.api.common.entitycontrol.*;
 import org.junit.jupiter.api.Test;
@@ -13,14 +13,14 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class MentalControlRuntimeTest {
-    private static final Identifier SOURCE_A = Identifier.fromNamespaceAndPath("academy", "test_a");
-    private static final Identifier SOURCE_B = Identifier.fromNamespaceAndPath("academy", "test_b");
-    private static final Identifier DIMENSION = Identifier.withDefaultNamespace("overworld");
+    private static final ResourceLocation SOURCE_A = ResourceLocation.fromNamespaceAndPath("academy", "test_a");
+    private static final ResourceLocation SOURCE_B = ResourceLocation.fromNamespaceAndPath("academy", "test_b");
+    private static final ResourceLocation DIMENSION = ResourceLocation.withDefaultNamespace("overworld");
 
     private static MentalControlRuntime.LeaseInput input(
             UUID controller,
             UUID subject,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             long expiresAt,
             EnumMap<ControlDomain, ControlDirective> directives
@@ -92,7 +92,7 @@ class MentalControlRuntimeTest {
 
     private static MentalControlRuntime.AdapterRegistration registration(String path, int priority) {
         return new MentalControlRuntime.AdapterRegistration(
-                Identifier.fromNamespaceAndPath("academy", path),
+                ResourceLocation.fromNamespaceAndPath("academy", path),
                 priority,
                 new MentalControlAdapter() {
                     @Override
@@ -142,7 +142,7 @@ class MentalControlRuntimeTest {
         table.add(input(UUID.randomUUID(), subject, SOURCE_B, 2, 100, target(highTarget)));
         assertEquals(highTarget, table.forcedTarget(subject, 0));
 
-        table.add(input(UUID.randomUUID(), subject, Identifier.withDefaultNamespace("test_c"), 2, 100, target(newestTarget)));
+        table.add(input(UUID.randomUUID(), subject, ResourceLocation.withDefaultNamespace("test_c"), 2, 100, target(newestTarget)));
         assertEquals(newestTarget, table.forcedTarget(subject, 0));
     }
 

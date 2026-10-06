@@ -78,11 +78,6 @@ public final class DarkmatterBowItem extends BowItem implements DarkmatterShaped
     }
 
     @Override
-    public boolean isCombineRepairable(ItemStack stack) {
-        return false;
-    }
-
-    @Override
     public float getXpRepairRatio(ItemStack stack) {
         return 0.0f;
     }

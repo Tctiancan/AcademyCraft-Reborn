@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.darkmatter.creature;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.darkmatter.DarkmatterCreaturePartType;
 import org.academy.api.common.ability.darkmatter.DarkmatterCreatureRegistries;
 
@@ -92,7 +92,7 @@ public final class DarkmatterCreatureBlueprint {
         var used = 0;
         if (modules == null) modules = new ArrayList<>();
         for (var raw : modules) {
-            var id = Identifier.tryParse(raw);
+            var id = ResourceLocation.tryParse(raw);
             if (id == null || !seen.add(raw)) {
                 errors.add("module:" + raw);
                 continue;
@@ -107,7 +107,7 @@ public final class DarkmatterCreatureBlueprint {
 
     private static void validatePart(List<String> errors, String raw,
                                      DarkmatterCreaturePartType.BodySlot slot, String field) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null || DarkmatterCreatureRegistries.part(id)
                 .filter(type -> type.slot() == slot).isEmpty()) errors.add(field);
     }
@@ -122,7 +122,7 @@ public final class DarkmatterCreatureBlueprint {
         var used = 0;
         for (var raw : modules) {
             if (!seen.add(raw)) continue;
-            var id = Identifier.tryParse(raw);
+            var id = ResourceLocation.tryParse(raw);
             if (id != null) used += DarkmatterCreatureRegistries.module(id)
                     .map(type -> type.budgetCost()).orElse(0);
         }
@@ -154,7 +154,7 @@ public final class DarkmatterCreatureBlueprint {
     }
 
     private void applyPart(DarkmatterCreaturePartType.MutableStats stats, String raw, int alpha, int total) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null) return;
         var a = Math.clamp(alpha, 0, total) / 50.0f;
         var b = (total - Math.clamp(alpha, 0, total)) / 50.0f;

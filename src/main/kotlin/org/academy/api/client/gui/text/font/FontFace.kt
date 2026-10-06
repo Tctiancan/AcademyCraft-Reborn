@@ -1,7 +1,7 @@
-package org.academy.api.client.gui.text.font
+﻿package org.academy.api.client.gui.text.font
 
 import lovely.cane.jmsdfgen.ImportFont
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.lwjgl.util.freetype.FT_Face
 import org.lwjgl.util.freetype.FreeType
 import java.util.concurrent.ConcurrentHashMap
@@ -10,7 +10,7 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.round
 
-class FontFace(identifier: Identifier, val face: FT_Face) {
+class FontFace(identifier: ResourceLocation, val face: FT_Face) {
     val descriptor: FontDescriptor = FontDescriptor(identifier, FontStyles.fromFreeType(face.style_flags().toInt()))
 
     val metrics: FontMetrics = FontMetrics(

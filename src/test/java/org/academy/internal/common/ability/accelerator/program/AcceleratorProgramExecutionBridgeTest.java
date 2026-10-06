@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.accelerator.program;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
 import org.academy.internal.common.ability.program.editor.ProgramEditorDocument;
@@ -379,7 +379,7 @@ class AcceleratorProgramExecutionBridgeTest {
 
     private static ProgramGraph.Node node(
             int id,
-            Identifier type,
+            ResourceLocation type,
             JsonObject configuration
     ) {
         var nodeType = AbilityProgramDefinitions.require(
@@ -390,7 +390,7 @@ class AcceleratorProgramExecutionBridgeTest {
 
     private static ProgramGraph.Node strengthNode(
             int id,
-            Identifier type,
+            ResourceLocation type,
             int strength
     ) {
         var configuration = new JsonObject();

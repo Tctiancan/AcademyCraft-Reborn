@@ -1,63 +1,29 @@
 package org.academy.internal.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import org.academy.api.client.resources.R;
-import org.academy.internal.client.model.SolarGenModel;
-import org.academy.internal.client.renderer.blockentity.state.SolarGenRenderState;
 import org.academy.internal.common.world.level.block.entity.SolarGenBlockEntity;
-import org.jspecify.annotations.Nullable;
 
-public final class SolarGenRenderer implements BlockEntityRenderer<SolarGenBlockEntity, SolarGenRenderState> {
+public final class SolarGenRenderer implements BlockEntityRenderer<SolarGenBlockEntity> {
     public static final SolarGenRenderer INSTANCE = new SolarGenRenderer();
-    public static final SolarGenModel MODEL = new SolarGenModel(SolarGenModel.createBodyLayer().bakeRoot());
 
     private SolarGenRenderer() {
     }
 
     @Override
-    public SolarGenRenderState createRenderState() {
-        return new SolarGenRenderState();
+    public void render(SolarGenBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        // C-stun: 26.2 渲染状态管线暂不移植，占位不渲染。
     }
 
     @Override
-    public void extractRenderState(SolarGenBlockEntity blockEntity, SolarGenRenderState renderState, float partialTick, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
-        BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPosition, breakProgress);
-        renderState.ageInTicks = blockEntity.ticks + partialTick;
-        renderState.facing = blockEntity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
-        renderState.foldingState = blockEntity.foldingState;
-        renderState.unfoldingState = blockEntity.unfoldingState;
+    public boolean shouldRenderOffScreen(SolarGenBlockEntity blockEntity) {
+        return true;
     }
 
     @Override
-    public void submit(SolarGenRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
-        var facing = renderState.facing;
-        var yRot = facing.getOpposite().toYRot();
-        var packedLight = renderState.lightCoords;
-        var packedOverlay = OverlayTexture.NO_OVERLAY;
-
-        poseStack.pushPose();
-        poseStack.translate(0.5f, 1.5f, 0.5f);
-        poseStack.mulPose(Axis.XP.rotationDegrees(180));
-        poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
-
-        MODEL.setupAnim(renderState);
-        nodeCollector.submitModel(MODEL, renderState, poseStack, RenderTypes.entityCutout(R.textures.model.solar_gen), packedLight, packedOverlay, 0, renderState.breakProgress);
-
-        poseStack.popPose();
-    }
-
-    @Override
-    public AABB getRenderBoundingBox(SolarGenBlockEntity blockEntity) {
-        return blockEntity.getRenderBoundingBox();
+    public int getViewDistance() {
+        return Minecraft.getInstance().options.getEffectiveRenderDistance() * 16;
     }
 }

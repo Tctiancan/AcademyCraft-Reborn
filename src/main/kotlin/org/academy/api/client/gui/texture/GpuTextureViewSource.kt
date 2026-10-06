@@ -1,7 +1,7 @@
 package org.academy.api.client.gui.texture
 
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 /**
  * 直接持有已解析 GPU view 的源 (借用视图, close 空实现).

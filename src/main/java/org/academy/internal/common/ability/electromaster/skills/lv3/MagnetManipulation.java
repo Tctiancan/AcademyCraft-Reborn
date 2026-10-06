@@ -11,7 +11,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -174,17 +174,17 @@ public class MagnetManipulation extends Skill {
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R, InputConstants.PRESS, 0),
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_N, InputConstants.PRESS, 0),
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_X, InputConstants.PRESS, 0)),
-                _ -> Client.onMoveStart(PullMode.TARGET_TO_PLAYER),
-                _ -> Client.onMoveStop(PullMode.TARGET_TO_PLAYER),
+                unused455 -> Client.onMoveStart(PullMode.TARGET_TO_PLAYER),
+                unused456 -> Client.onMoveStop(PullMode.TARGET_TO_PLAYER),
                 // The maintained-binding heartbeat fires every 20 client ticks; the server drops the
                 // context after 40 silent ticks, so every callback must refresh it.
-                _ -> { if (Client.activeMode != null) MisakaNetworkClient.send(MoveStartPacket.TARGET_TO_PLAYER); },
+                unused457 -> { if (Client.activeMode != null) MisakaNetworkClient.send(MoveStartPacket.TARGET_TO_PLAYER); },
                 () -> AbilitySystemClient.canUseSkill(this) && Minecraft.getInstance().player != null
                         && Minecraft.getInstance().player.isAlive() && Minecraft.getInstance().gui.screen() == null);
         InputSystem.addKeyBinding(Client.KEY_NAME_LEVITATION,
                 Client.CONFIG.getKeyBinding(Client.KEY_NAME_LEVITATION,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R, InputConstants.PRESS, InputConstants.MOD_SHIFT)),
-                _ -> { if (AbilitySystemClient.canUseSkill(this)) MisakaNetworkClient.send(MoveStartPacket.PLAYER_TO_TARGET); });
+                unused458 -> { if (AbilitySystemClient.canUseSkill(this)) MisakaNetworkClient.send(MoveStartPacket.PLAYER_TO_TARGET); });
         org.academy.api.client.hud.ability.ToggleStatusHud.Companion.registerStateProvider(this,
                 () -> Minecraft.getInstance().player != null && Minecraft.getInstance().player.getData(AttachmentTypes.MAGNETIC_LEVITATION_REQUESTED));
         org.academy.api.client.hud.ability.ToggleStatusHud.Companion.registerDetailProvider(this, () -> {

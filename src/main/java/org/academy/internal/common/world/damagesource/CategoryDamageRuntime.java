@@ -2,7 +2,7 @@ package org.academy.internal.common.world.damagesource;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -51,7 +51,7 @@ public final class CategoryDamageRuntime {
     public static final int INTERRUPTION_MAX_TICKS = 20;
     public static final int CHARGE_TIMEOUT_TICKS = 100;
     public static final int RADIATION_TICKS = 200;
-    private static final Identifier PARALYSIS_SPEED = AcademyCraft.academy("electrical_paralysis");
+    private static final ResourceLocation PARALYSIS_SPEED = AcademyCraft.academy("electrical_paralysis");
     private static final EquipmentSlot[] ARMOR = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
@@ -131,7 +131,7 @@ public final class CategoryDamageRuntime {
                                 @Nullable DamageSource cause) {
         if (!(target.level() instanceof ServerLevel) || !target.isAlive() || points <= 0
                 || target instanceof Player player && DamageTypes.isImmunePlayer(player)) return 0;
-        var state = CHARGES.computeIfAbsent(target.getUUID(), _ -> new ChargeState(target));
+        var state = CHARGES.computeIfAbsent(target.getUUID(), unused781 -> new ChargeState(target));
         var now = now(target);
         if (now >= state.chargeExpires) state.points = 0;
         var sum = (long) state.points + points;
@@ -139,7 +139,8 @@ public final class CategoryDamageRuntime {
         state.points = (int) (sum % 5L);
         state.chargeExpires = now + CHARGE_TIMEOUT_TICKS;
         if (discharges > 0) {
-            // Roll once per discharge; a new shorter roll cannot shorten an existing lock.
+            // Roll once per discharge; a
+// new shorter roll cannot shorten an existing lock.
             var duration = INTERRUPTION_MIN_TICKS + target.getRandom().nextInt(
                     INTERRUPTION_MAX_TICKS - INTERRUPTION_MIN_TICKS + 1);
             // Resolve damage first: a rejected/fully immune hit must never grant the action lock.
@@ -175,7 +176,8 @@ public final class CategoryDamageRuntime {
             return false;
         }
         // Zero charge on the secondary source prevents its completion callback from recharging.
-        // Batch simultaneous thresholds without an unbounded loop for public API callers.
+        // Batch simultaneous thresholds without an unbounded loop
+// for public API callers.
         var settings = ((org.academy.api.server.vanilla.MinecraftServerContext) level.getServer())
                 .getAcademyCraftServer().getAbilityConfig().electromaster;
         var damage = settings.paralysisDamage(target.getMaxHealth());
@@ -263,7 +265,7 @@ public final class CategoryDamageRuntime {
     public static void damageEquipment(LivingEntity target, int amount, boolean includeHands) {
         if (!(target.level() instanceof ServerLevel) || !target.isAlive() || amount <= 0) return;
         var now = now(target);
-        var state = WEAR.computeIfAbsent(target.getUUID(), _ -> new WearState());
+        var state = WEAR.computeIfAbsent(target.getUUID(), unused782 -> new WearState());
         if (now >= state.expires) {
             state.used.clear();
             state.expires = now + 10L;
@@ -343,12 +345,12 @@ public final class CategoryDamageRuntime {
             return head;
         }
         var type = target.getType();
-        if (type == EntityTypes.SKELETON) return new ItemStack(Items.SKELETON_SKULL);
-        if (type == EntityTypes.WITHER_SKELETON) return new ItemStack(Items.WITHER_SKELETON_SKULL);
-        if (type == EntityTypes.ZOMBIE) return new ItemStack(Items.ZOMBIE_HEAD);
-        if (type == EntityTypes.CREEPER) return new ItemStack(Items.CREEPER_HEAD);
-        if (type == EntityTypes.PIGLIN) return new ItemStack(Items.PIGLIN_HEAD);
-        if (type == EntityTypes.ENDER_DRAGON) return new ItemStack(Items.DRAGON_HEAD);
+        if (type == EntityType.SKELETON) return new ItemStack(Items.SKELETON_SKULL);
+        if (type == EntityType.WITHER_SKELETON) return new ItemStack(Items.WITHER_SKELETON_SKULL);
+        if (type == EntityType.ZOMBIE) return new ItemStack(Items.ZOMBIE_HEAD);
+        if (type == EntityType.CREEPER) return new ItemStack(Items.CREEPER_HEAD);
+        if (type == EntityType.PIGLIN) return new ItemStack(Items.PIGLIN_HEAD);
+        if (type == EntityType.ENDER_DRAGON) return new ItemStack(Items.DRAGON_HEAD);
         return ItemStack.EMPTY;
     }
 
@@ -410,7 +412,7 @@ public final class CategoryDamageRuntime {
 
     private static final class ChargeState {
         final WeakReference<LivingEntity> target;
-        final Map<Identifier, Integer> cooldownEnds = new HashMap<>();
+        final Map<ResourceLocation, Integer> cooldownEnds = new HashMap<>();
         int points;
         long chargeExpires;
         long paralyzedUntil;
@@ -423,3 +425,4 @@ public final class CategoryDamageRuntime {
         long expires;
     }
 }
+

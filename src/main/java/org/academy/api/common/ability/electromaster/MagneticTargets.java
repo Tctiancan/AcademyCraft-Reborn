@@ -2,7 +2,7 @@ package org.academy.api.common.ability.electromaster;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.item.FallingBlockEntity;
@@ -21,15 +21,15 @@ import java.util.Locale;
 public final class MagneticTargets {
     private static final TagKey<Block> MAGNETIC_BLOCKS = TagKey.create(
             Registries.BLOCK,
-            Identifier.fromNamespaceAndPath(AcademyCraft.MOD_ID, "magnetic_blocks")
+            ResourceLocation.fromNamespaceAndPath(AcademyCraft.MOD_ID, "magnetic_blocks")
     );
     private static final TagKey<Item> MAGNETIC_ITEMS = TagKey.create(
             Registries.ITEM,
-            Identifier.fromNamespaceAndPath(AcademyCraft.MOD_ID, "magnetic_items")
+            ResourceLocation.fromNamespaceAndPath(AcademyCraft.MOD_ID, "magnetic_items")
     );
     private static final TagKey<EntityType<?>> MAGNETIC_ENTITY_TYPES = TagKey.create(
             Registries.ENTITY_TYPE,
-            Identifier.fromNamespaceAndPath(AcademyCraft.MOD_ID, "magnetic_entities")
+            ResourceLocation.fromNamespaceAndPath(AcademyCraft.MOD_ID, "magnetic_entities")
     );
     private static final EquipmentSlot[] CHECKED_EQUIPMENT_SLOTS = {
             EquipmentSlot.MAINHAND,
@@ -53,7 +53,7 @@ public final class MagneticTargets {
     public static boolean hasMagneticKeyword(String path) {
         if (path == null || path.isBlank()) return false;
         var normalized = path.toLowerCase(Locale.ROOT).replace('-', '_');
-        var tokens = normalized.split("[/_.]");
+        var tokens = normalized.split("[/unused158.]");
         for (var token : tokens) {
             if (MAGNETIC_KEYWORDS.contains(token)) return true;
         }

@@ -1,9 +1,9 @@
-package org.academy.internal.client.app.music.backend
+﻿package org.academy.internal.client.app.music.backend
 
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.state.UiState
 import org.academy.internal.client.app.music.netease.NeteaseMusicService
@@ -12,12 +12,12 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ConcurrentHashMap
 
 object AccountAvatarCache {
-    private val textures = ConcurrentHashMap<String, Identifier>()
+    private val textures = ConcurrentHashMap<String, ResourceLocation>()
     private val downloads = ConcurrentHashMap<String, CompletableFuture<*>>()
 
     val textureState = UiState(0)
 
-    fun textureFor(provider: OnlineMusicManager.Provider, avatarUrl: String?): Identifier? {
+    fun textureFor(provider: OnlineMusicManager.Provider, avatarUrl: String?): ResourceLocation? {
         if (avatarUrl.isNullOrBlank()) return null
         val key = "${provider.storageName}_${avatarUrl.hashCode()}"
         textures[key]?.let { return it }
@@ -45,7 +45,7 @@ object AccountAvatarCache {
     private fun registerTexture(key: String, bytes: ByteArray) {
         runCatching {
             val image = NativeImage.read(ByteArrayInputStream(bytes))
-            val texture = DynamicTexture({ "academy_music_avatar_$key" }, image)
+            val texture = DynamicTexture(image)
             val location = AcademyCraft.academy("music_avatar/$key")
             Minecraft.getInstance().textureManager.register(location, texture)
             textures[key] = location

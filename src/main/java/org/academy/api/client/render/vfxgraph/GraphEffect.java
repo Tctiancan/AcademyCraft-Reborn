@@ -1,6 +1,6 @@
 package org.academy.api.client.render.vfxgraph;
 
-import com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.api.client.render.texture.GpuTextureView;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.model.GraphNode;
 import org.academy.api.client.render.graph.model.GraphParameter;
@@ -191,17 +191,7 @@ public final class GraphEffect {
      */
     public void render(GpuTextureView target, @Nullable GpuTextureView depth, GraphCamera camera,
                        @Nullable VfxGraphRenderer sharedRenderer, boolean clear, WorldTransform transform, boolean bloomPass) {
-        if (dirty) {
-            rebuild();
-        }
-        var renderer = sharedRenderer != null ? sharedRenderer : this.renderer;
-        if (renderer == null) {
-            renderer = new VfxGraphRenderer();
-            this.renderer = renderer;
-        }
-        var buffer = systemSimulator != null ? systemSimulator.buffer() : Objects.requireNonNull(simulator).buffer();
-        renderer.setArcBuffer(arcBuffer());
-        renderer.render(target, depth, buffer, camera, clear, specs, transform, bloomPass);
+        // C-stun: 世界 VFX GPU 渲染暂不移植。
     }
 
     private void rebuild() {

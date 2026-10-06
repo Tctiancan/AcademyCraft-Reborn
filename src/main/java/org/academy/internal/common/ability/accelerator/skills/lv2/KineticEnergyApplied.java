@@ -8,7 +8,7 @@ import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -323,12 +323,12 @@ public class KineticEnergyApplied extends Skill {
 
     public static final class Server {
         private static final Set<ServerPlayer> MIGRATED_PLAYERS = Collections.newSetFromMap(new WeakHashMap<>());
-        private static final Identifier MOD_MOVEMENT_SPEED = AcademyCraft.academy("kea_movement_speed");
-        private static final Identifier MOD_KNOCKBACK_RESISTANCE = AcademyCraft.academy("kea_knockback_resistance");
-        private static final Identifier MOD_STEP_HEIGHT = AcademyCraft.academy("kea_step_height");
-        private static final Identifier MOD_MOVEMENT_EFFICIENCY = AcademyCraft.academy("kea_movement_efficiency");
-        private static final Identifier MOD_EXPLOSION_KNOCKBACK_RESISTANCE = AcademyCraft.academy("kea_explosion_knockback_resistance");
-        private static final Identifier MOD_JUMP_STRENGTH = AcademyCraft.academy("kea_jump_strength");
+        private static final ResourceLocation MOD_MOVEMENT_SPEED = AcademyCraft.academy("kea_movement_speed");
+        private static final ResourceLocation MOD_KNOCKBACK_RESISTANCE = AcademyCraft.academy("kea_knockback_resistance");
+        private static final ResourceLocation MOD_STEP_HEIGHT = AcademyCraft.academy("kea_step_height");
+        private static final ResourceLocation MOD_MOVEMENT_EFFICIENCY = AcademyCraft.academy("kea_movement_efficiency");
+        private static final ResourceLocation MOD_EXPLOSION_KNOCKBACK_RESISTANCE = AcademyCraft.academy("kea_explosion_knockback_resistance");
+        private static final ResourceLocation MOD_JUMP_STRENGTH = AcademyCraft.academy("kea_jump_strength");
 
         private Server() {
         }
@@ -783,7 +783,7 @@ public class KineticEnergyApplied extends Skill {
             syncModifier(player.getAttribute(Attributes.JUMP_STRENGTH), MOD_JUMP_STRENGTH, 0.58, enabled);
         }
 
-        private static void syncModifier(AttributeInstance attribute, Identifier id, double amount, boolean enabled) {
+        private static void syncModifier(AttributeInstance attribute, ResourceLocation id, double amount, boolean enabled) {
             if (attribute == null) return;
             var current = attribute.getModifier(id);
             if (!enabled) {

@@ -2,45 +2,43 @@ package org.academy.internal.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.ItemEntityRenderer;
-import net.minecraft.client.renderer.item.ItemModelResolver;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.academy.api.common.util.MathUtil;
-import org.academy.internal.client.renderer.entity.state.ThrownCoinRenderState;
+import net.minecraft.world.item.ItemDisplayContext;
 import org.academy.internal.common.world.entity.projectile.ThrownCoin;
 
-public class ThrownCoinRenderer extends EntityRenderer<ThrownCoin, ThrownCoinRenderState> {
-    private final ItemModelResolver itemModelResolver;
-
+public class ThrownCoinRenderer extends EntityRenderer<ThrownCoin> {
     public ThrownCoinRenderer(EntityRendererProvider.Context context) {
         super(context);
-        itemModelResolver = context.getItemModelResolver();
     }
 
     @Override
-    public void submit(ThrownCoinRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
+    public void render(ThrownCoin entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YN.rotationDegrees(renderState.yRot));
-        poseStack.mulPose(Axis.XP.rotationDegrees(renderState.angle * 50));
+        poseStack.mulPose(Axis.YN.rotationDegrees(entity.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(Mth.lerp(partialTick, entity.angleOld, entity.angle) * 50));
         poseStack.translate(0, -0.125f, 0);
-        ItemEntityRenderer.submitMultipleFromCount(poseStack, nodeCollector, renderState.lightCoords, renderState, MathUtil.RANDOM_SOURCE);
+        Minecraft.getInstance().getItemRenderer().renderStatic(
+                entity.getItem(),
+                ItemDisplayContext.FIXED,
+                packedLight,
+                OverlayTexture.NO_OVERLAY,
+                poseStack,
+                bufferSource,
+                entity.level(),
+                entity.getId()
+        );
         poseStack.popPose();
     }
 
     @Override
-    public ThrownCoinRenderState createRenderState() {
-        return new ThrownCoinRenderState();
-    }
-
-    @Override
-    public void extractRenderState(ThrownCoin entity, ThrownCoinRenderState reusedState, float partialTick) {
-        super.extractRenderState(entity, reusedState, partialTick);
-        reusedState.angle = Mth.lerp(partialTick, entity.angleOld, entity.angle);
-        reusedState.yRot = entity.getYRot();
-        reusedState.extractItemGroupRenderState(entity, entity.getItem(), itemModelResolver);
+    public ResourceLocation getTextureLocation(ThrownCoin entity) {
+        return MissingTextureAtlasSprite.getLocation();
     }
 }

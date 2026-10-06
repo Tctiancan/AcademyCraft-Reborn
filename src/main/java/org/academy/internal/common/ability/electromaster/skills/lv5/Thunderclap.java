@@ -223,7 +223,7 @@ public class Thunderclap extends Skill {
             var milestone = skill.getEffectiveProficiencyMilestone(player);
             var targetPos = resolveTarget(player, level, milestone);
             if (targetPos == null) return;
-            skill.executeActive(player, (context, _) -> strike(player, level, targetPos, context.milestone()));
+            skill.executeActive(player, (context, unused481) -> strike(player, level, targetPos, context.milestone()));
         }
 
         private static @Nullable Vec3 resolveTarget(ServerPlayer player, ServerLevel level, int milestone) {

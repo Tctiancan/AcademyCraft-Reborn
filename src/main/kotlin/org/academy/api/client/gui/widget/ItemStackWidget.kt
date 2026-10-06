@@ -1,8 +1,5 @@
 package org.academy.api.client.gui.widget
 
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.item.TrackingItemStackRenderState
-import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.item.ItemStack
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.command.ItemStackDrawCommand
@@ -34,27 +31,11 @@ open class ItemStackWidget(stack: ItemStack) : AbstractWidget() {
         val paddedHeight = height - lp.paddingTop - lp.paddingBottom
         if (paddedWidth <= 0f || paddedHeight <= 0f) return
 
-        val minecraft = Minecraft.getInstance()
-        val itemState = TrackingItemStackRenderState()
-        try {
-            minecraft.itemModelResolver.updateForTopItem(
-                itemState,
-                stack,
-                ItemDisplayContext.GUI,
-                minecraft.level,
-                minecraft.player,
-                0
-            )
-        } catch (exception: Throwable) {
-            LOGGER.error("Failed to resolve item model for {}", stack, exception)
-            return
-        }
-
         context.pose().pushPose()
         context.pose().translate(lp.paddingLeft, lp.paddingTop)
         context.submit(
             ItemStackDrawCommand(
-                itemState,
+                stack,
                 paddedWidth,
                 paddedHeight,
                 alpha * context.accumulatedAlpha

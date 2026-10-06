@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.FillRectDrawCommand
@@ -30,10 +30,10 @@ open class ProgressBarWidget : AbstractWidget() {
 
         if (width <= 0 || height <= 0) return
 
-        val bgRed = ARGB.red(backgroundColor) / 255.0f
-        val bgGreen = ARGB.green(backgroundColor) / 255.0f
-        val bgBlue = ARGB.blue(backgroundColor) / 255.0f
-        val bgAlpha = ARGB.alpha(backgroundColor) / 255.0f
+        val bgRed = FastColor.ARGB32.red(backgroundColor) / 255.0f
+        val bgGreen = FastColor.ARGB32.green(backgroundColor) / 255.0f
+        val bgBlue = FastColor.ARGB32.blue(backgroundColor) / 255.0f
+        val bgAlpha = FastColor.ARGB32.alpha(backgroundColor) / 255.0f
         context.submit(
             generateBackDrawCommand(
                 width,
@@ -49,10 +49,10 @@ open class ProgressBarWidget : AbstractWidget() {
         var ratio = if (range > 0) (progress - min) / range else 0.0f
         ratio = Mth.clamp(ratio, 0.0f, 1.0f)
 
-        val fgRed = ARGB.red(progressColor) / 255.0f
-        val fgGreen = ARGB.green(progressColor) / 255.0f
-        val fgBlue = ARGB.blue(progressColor) / 255.0f
-        val fgAlpha = ARGB.alpha(progressColor) / 255.0f
+        val fgRed = FastColor.ARGB32.red(progressColor) / 255.0f
+        val fgGreen = FastColor.ARGB32.green(progressColor) / 255.0f
+        val fgBlue = FastColor.ARGB32.blue(progressColor) / 255.0f
+        val fgAlpha = FastColor.ARGB32.alpha(progressColor) / 255.0f
 
         if (orientation == Orientation.HORIZONTAL) {
             val progressWidth = width * ratio

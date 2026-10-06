@@ -97,9 +97,9 @@ public final class DarkmatterGeneration extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 keyName,
                 binding,
-                _ -> Client.control(mode, true),
-                _ -> Client.control(mode, false),
-                _ -> Client.heartbeat(mode),
+                unused419 -> Client.control(mode, true),
+                unused420 -> Client.control(mode, false),
+                unused421 -> Client.heartbeat(mode),
                 () -> AbilitySystemClient.canUseSkill(Skills.DARKMATTER_GENERATION.get())
         );
     }
@@ -242,7 +242,7 @@ public final class DarkmatterGeneration extends Skill {
             var skill = Skills.DARKMATTER_GENERATION.get();
             if (packet.pressed()) {
                 if (!skill.isEnabled(player)) return;
-                HOLDING.compute(player.getUUID(), (_, existing) -> {
+                HOLDING.compute(player.getUUID(), (unused422, existing) -> {
                     var now = player.level().getGameTime();
                     if (existing != null && existing.mode == packet.mode()
                             && existing.level == player.level()) {

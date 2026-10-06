@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
@@ -84,9 +84,9 @@ abstract class AbstractWidgetContainer : AbstractWidget(), WidgetContainer {
         if (widget.isFocused) outlineColor = -0xff0100
         else if (widget.isHovered) outlineColor = -0xffff01
 
-        val red = ARGB.red(outlineColor) / 255.0f
-        val green = ARGB.green(outlineColor) / 255.0f
-        val blue = ARGB.blue(outlineColor) / 255.0f
+        val red = FastColor.ARGB32.red(outlineColor) / 255.0f
+        val green = FastColor.ARGB32.green(outlineColor) / 255.0f
+        val blue = FastColor.ARGB32.blue(outlineColor) / 255.0f
         val alpha = 0.8f
         val thickness = 0.5f
 

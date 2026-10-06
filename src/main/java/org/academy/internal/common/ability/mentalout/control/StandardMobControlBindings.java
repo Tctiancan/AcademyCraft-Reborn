@@ -364,7 +364,8 @@ final class StandardMobControlBindings {
         public void beforeMoveControlTick() {
             // Flying mobs commonly replace their velocity or wanted position from MoveControl.
             // Reassert after navigation and immediately before that tick so the controlled
-            // destination remains the final movement owner for this server tick.
+            // destination remains the
+// final movement owner for this server tick.
             if (!complete && target != null) navigator.reassert(target, 1.0, false);
         }
 
@@ -678,7 +679,8 @@ final class StandardMobControlBindings {
 
             var navigation = mob.getNavigation();
             if (activePath != null && activePath.isDone()) {
-                // A vanilla path may end at its last reachable node while still outside our
+                // A vanilla path may end at its last reachable node
+// while still outside our
                 // precise one-block radius. Rebuild immediately instead of leaving a ten-tick
                 // window in which a vanilla goal can take ownership of navigation again.
                 activePath = null;
@@ -843,8 +845,10 @@ final class StandardMobControlBindings {
                 var waypoint = activePath.getNextEntityPos(mob);
                 mob.getMoveControl().setWantedPosition(waypoint.x, waypoint.y, waypoint.z, speed);
             } else {
-                // The exclusive movement lease prevents goals and custom AI from issuing a new
-                // route. Keep the entity still while waiting for the next controlled path attempt.
+                // The exclusive movement lease prevents goals and custom AI from issuing a
+// new
+                // route. Keep the entity still
+// while waiting for the next controlled path attempt.
                 navigation.stop();
                 mob.getMoveControl().setWantedPosition(
                         mob.getX(),
@@ -906,7 +910,8 @@ final class StandardMobControlBindings {
             if (dx * dx + dz * dz > 1.0E-6) {
                 var yRot = (float) (Mth.atan2(dz, dx) * 180.0 / Mth.PI) - 90.0F;
                 // Cube mobs only jump when their controller's aggressive cadence expires. Use
-                // that shorter cadence for mental navigation as well; it changes no target or
+                // that shorter cadence
+// for mental navigation as well; it changes no target or
                 // damage decision, but prevents a valid route from spending most of its lease idle.
                 cubeMove.academy$setMentalControlDirection(yRot, true);
             }

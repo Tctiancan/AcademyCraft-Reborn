@@ -79,7 +79,7 @@ val generateModsToml = tasks.register("generateModsToml") {
     inputs.property("description", project.property("mod_description"))
     inputs.property("neoVersion", neoVersion)
     inputs.property("minecraftVersionRange", minecraftVersion)
-    inputs.property("misakaVersion", misakaVersion)
+//    inputs.property("misakaVersion", misakaVersion)
 
     outputs.file(tomlFile)
 
@@ -93,7 +93,7 @@ val generateModsToml = tasks.register("generateModsToml") {
         val description = inputs.properties["description"] as String
         val neoVersion = inputs.properties["neoVersion"] as String
         val minecraftVersionRange = inputs.properties["minecraftVersionRange"] as String
-        val misakaVersion = inputs.properties["misakaVersion"] as String
+//        val misakaVersion = inputs.properties["misakaVersion"] as String
 
         val config = TomlFormat.newConfig()
         config.set<String>("modLoader", "kotlinforforge")
@@ -129,7 +129,7 @@ val generateModsToml = tasks.register("generateModsToml") {
         addDep("neoforge", "[$neoVersion,)")
         addDep("minecraft", minecraftVersionRange)
         addDep("kotlinforforge", loaderVersionRange)
-        addDep("misaka_network", misakaVersion)
+//        addDep("misaka_network", misakaVersion)
         addDep("curios", "[16.0.0,)", "optional")
         addDep("beyonddimensions", "*", "optional")
 
@@ -475,7 +475,7 @@ dependencies {
     compat(libs.jade)
     compat(libs.jei)
 
-    apiAndJarJar(libs.misaka)
+//    apiAndJarJar(libs.misaka)
 
     apiAndJarJar(libs.jmsdfgen.core)
     apiAndJarJar(libs.jmsdfgen.ext)

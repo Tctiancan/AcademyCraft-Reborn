@@ -1,7 +1,7 @@
 package org.academy.api.client.render.shader.pipeline;
 
 import com.mojang.blaze3d.shaders.ShaderType;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +37,7 @@ class DynamicShaderSourceTest {
     @Test
     void getReturnsNullForUnknown() {
         var source = new DynamicShaderSource();
-        assertNull(source.get(Identifier.fromNamespaceAndPath("academy", "missing"),
+        assertNull(source.get(ResourceLocation.fromNamespaceAndPath("academy", "missing"),
                 ShaderType.FRAGMENT));
     }
 }

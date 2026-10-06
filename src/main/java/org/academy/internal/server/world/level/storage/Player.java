@@ -1,7 +1,7 @@
 package org.academy.internal.server.world.level.storage;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.AbilityLevel;
@@ -136,7 +136,7 @@ public final class Player {
     }
 
     private static int resolveMaxSkillLevel(String skillId) {
-        var id = Identifier.tryParse(skillId);
+        var id = ResourceLocation.tryParse(skillId);
         if (id == null) return 3;
         return Registries.SKILLS.get(id)
                 .map(reference -> reference.value().getMaxSkillLevel())
@@ -273,7 +273,7 @@ public final class Player {
     public void setProgramSharedVariable(
             String category, String name, ProgramSharedVariables.SavedValue value
     ) {
-        sharedVariables().computeIfAbsent(category, _ -> new HashMap<>()).put(name, value);
+        sharedVariables().computeIfAbsent(category, unused831 -> new HashMap<>()).put(name, value);
         markDirty();
     }
 
@@ -435,7 +435,7 @@ public final class Player {
             return true;
         }
         return abilityProgramBooks.entrySet().removeIf(entry ->
-                Identifier.tryParse(entry.getKey()) == null
+                ResourceLocation.tryParse(entry.getKey()) == null
                         || entry.getValue() == null
                         || entry.getValue().isBlank());
     }

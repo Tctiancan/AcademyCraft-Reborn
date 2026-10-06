@@ -1,25 +1,18 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -28,13 +21,9 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.enchanting.EnchantedEntityLootEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.attribute.AbilityFactor;
 import org.academy.api.common.attribute.PlayerAttributes;
@@ -49,24 +38,41 @@ import java.util.List;
 import java.util.UUID;
 
 /** Real player events and ability loot tables, including controlled breakers without tools. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class PropsGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("props_regression_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void attributes(GameTestHelper helper) {
+        runScenario(helper, "attributes");
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("attributes", "experience_orbs", "activity", "damage", "ability_loot", "structures", "loaded_devices")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("props/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("props_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 40, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
-        }
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void experienceOrbs(GameTestHelper helper) {
+        runScenario(helper, "experience_orbs");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void activity(GameTestHelper helper) {
+        runScenario(helper, "activity");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void damage(GameTestHelper helper) {
+        runScenario(helper, "damage");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void abilityLoot(GameTestHelper helper) {
+        runScenario(helper, "ability_loot");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void structures(GameTestHelper helper) {
+        runScenario(helper, "structures");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void loadedDevices(GameTestHelper helper) {
+        runScenario(helper, "loaded_devices");
     }
 
     private static ServerPlayer createPlayer(GameTestHelper helper) {
@@ -171,7 +177,7 @@ public final class PropsGameTests {
         var originalReferences = new java.util.HashMap<>(chunk.getAllReferences());
         var structure = level.registryAccess().lookupOrThrow(Registries.STRUCTURE).getOrThrow(
                 net.minecraft.resources.ResourceKey.create(Registries.STRUCTURE,
-                        Identifier.withDefaultNamespace("buried_treasure"))).value();
+                        ResourceLocation.withDefaultNamespace("buried_treasure"))).value();
         var ownPos = chunk.getPos();
         var missingPos = new net.minecraft.world.level.ChunkPos(ownPos.x() + 1_024, ownPos.z() + 1_024);
         var ownReference = net.minecraft.world.level.ChunkPos.pack(ownPos.x(), ownPos.z());
@@ -215,7 +221,8 @@ public final class PropsGameTests {
 
     private static void scanStructures(ServerPlayer player) {
         try {
-            // Keep the private injection ABI used by addons; exercise the actual production scan.
+            // Keep the
+// private injection ABI used by addons; exercise the actual production scan.
             var scan = org.academy.internal.server.ability.PropsManager.class
                     .getDeclaredMethod("checkStructures", ServerPlayer.class);
             scan.setAccessible(true);
@@ -325,7 +332,7 @@ public final class PropsGameTests {
 
     private static void damage(GameTestHelper helper, ServerPlayer player) {
         var data = AbilitySystemServer.getSystem(player).getPlayerData(player.getUUID()).getPropsData();
-        var target = helper.spawn(EntityTypes.COW, new BlockPos(2, 2, 2));
+        var target = helper.spawn(EntityType.COW, new BlockPos(2, 2, 2));
         target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(100.0);
         target.setHealth(100.0f);
         target.hurtServer(helper.getLevel(), player.damageSources().playerAttack(player), 18.0f);
@@ -342,7 +349,7 @@ public final class PropsGameTests {
         var level = helper.getLevel();
         var pos = helper.absolutePos(new BlockPos(2, 2, 2));
         var state = Blocks.DIAMOND_ORE.defaultBlockState();
-        var subject = helper.spawn(EntityTypes.COW, new BlockPos(3, 2, 2));
+        var subject = helper.spawn(EntityType.COW, new BlockPos(3, 2, 2));
         player.getAttribute(PlayerAttributes.PERCEPTION).setBaseValue(2_000.0);
         var total = 0;
         for (var sample = 0; sample < 256; sample++) {
@@ -373,33 +380,5 @@ public final class PropsGameTests {
 
     private static void close(GameTestHelper helper, double actual, double expected, String message) {
         helper.assertTrue(Math.abs(actual - expected) < 1.0E-5, message + ": " + actual + " != " + expected);
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runScenario(helper, scenario);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("P.R.O.P.S regression");
-        }
     }
 }

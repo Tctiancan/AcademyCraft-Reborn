@@ -1,7 +1,7 @@
 package org.academy.internal.common.world.damagesource;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -59,12 +59,12 @@ public final class CtaFriendlyFireWhitelist {
         if (entity == null || entry == null || entry.isBlank()) return false;
         if ("tamed".equalsIgnoreCase(entry)) return FriendlyFireSetting.getOwnerUuid(entity) != null;
         if (entry.regionMatches(true, 0, TAG_PREFIX, 0, TAG_PREFIX.length())) {
-            var id = Identifier.tryParse(entry.substring(TAG_PREFIX.length()).strip());
+            var id = ResourceLocation.tryParse(entry.substring(TAG_PREFIX.length()).strip());
             if (id == null) return false;
             var tag = TagKey.create(BuiltInRegistries.ENTITY_TYPE.key(), id);
             return entity.getType().builtInRegistryHolder().is(tag);
         }
-        var id = Identifier.tryParse(entry.strip());
+        var id = ResourceLocation.tryParse(entry.strip());
         return id != null && Objects.equals(BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()), id);
     }
 }

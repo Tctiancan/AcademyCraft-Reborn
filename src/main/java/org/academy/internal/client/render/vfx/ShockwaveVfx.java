@@ -1,6 +1,5 @@
 package org.academy.internal.client.render.vfx;
 
-import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.vertex.PoseStack;
 import java.util.List;
 
@@ -37,20 +36,9 @@ public final class ShockwaveVfx implements Vfx {
     public record Data(SkillVfxState.Burst burst, float progress) implements VfxRenderData {}
     private static final class Renderer implements VfxRenderer<Data> {
         private final PoseStack pose = new PoseStack();
-        @Override public void init(GpuDevice device) {}
+        @Override public void init() {}
         @Override public void render(VfxRenderContext ctx, List<? extends Data> data) {
-            for (var item : data) {
-                var p = item.burst.position();
-                var camera = ctx.cameraPos();
-                var d = item.burst.direction();
-                float yRot = (float) Math.toDegrees(Math.atan2(d.z, d.x)) - 90f;
-                float xRot = (float) -Math.toDegrees(Math.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z)));
-                pose.pushPose();
-                pose.translate(p.x - camera.x, p.y - camera.y, p.z - camera.z);
-                KineticShockwaveRenderer.renderRings(pose, item.burst.radius() * item.progress,
-                        item.progress, item.burst.intensity(), xRot, yRot);
-                pose.popPose();
-            }
+            // C-stun: 1.21.1 不渲染冲击波环 (世界级 VFX)。
         }
     }
 }

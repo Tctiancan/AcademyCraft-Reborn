@@ -1,9 +1,5 @@
 package org.academy.internal.client.profiler
 
-import com.mojang.blaze3d.GpuFormat
-import com.mojang.blaze3d.resource.RenderTargetDescriptor
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
 import imgui.ImGui
 import imgui.extension.implot.ImPlot
 import imgui.flag.ImGuiTableColumnFlags
@@ -14,13 +10,10 @@ import imgui.type.ImInt
 import net.minecraft.client.Minecraft
 import org.academy.Dev
 import org.academy.api.client.gui.imgui.ImGuiUtilApi
-import org.academy.api.client.render.Render
-import org.academy.api.client.render.TextureBinding
 import org.academy.api.common.profiler.AcademyProfiler
 import org.academy.api.common.profiler.SampledNode
 import org.academy.api.common.profiler.SamplerSnapshot
 import org.academy.api.common.profiler.ZoneProfiler
-import org.joml.Vector4f
 
 object ImGuiProfilerWindow {
     @Volatile
@@ -49,32 +42,9 @@ object ImGuiProfilerWindow {
     fun renderToMainScreen() {
         if (!visible || !Dev.HAS_IM_GUI) return
         val mc = Minecraft.getInstance()
-        val main = mc.gameRenderer.mainRenderTarget()
-        val pool = Render.Buffers.getResourcePool()
-        val desc = RenderTargetDescriptor(
-            main.width, main.height, true, Vector4f(0f), GpuFormat.RGBA8_UNORM
-        )
-        val target = pool.acquire(desc)
-        try {
-            val color = target.getColorTextureView() ?: return
-            ImGuiUtilApi.render(target) { draw() }
-            val mainColor = main.getColorTextureView() ?: return
-            Render.runBlitPass(
-                mainColor,
-                Render.RenderPipelines.BLIT_SCREEN_PREMULTIPLIED_ALPHA,
-                Render.Buffers.getInstance().fsQuadVBNDC,
-                listOf(
-                    TextureBinding(
-                        "Sampler0", color,
-                        RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
-                    )
-                ),
-                mutableListOf(),
-                false
-            )
-        } finally {
-            pool.release(desc, target)
-        }
+        // C-stun: 1.21.1 无 26.2 的资源池/双缓冲后处理, 将 ImGui 直接绘制到主渲染目标.
+        val main = mc.getMainRenderTarget()
+        ImGuiUtilApi.render(main) { draw() }
     }
 
     private fun draw() {

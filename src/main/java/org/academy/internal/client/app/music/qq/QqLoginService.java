@@ -476,7 +476,8 @@ public final class QqLoginService {
                 }
             }
         } catch (RuntimeException ignored) {
-            // A cookie-only response is still valid for older QQ Music login servers.
+            // A cookie-only response is still valid
+// for older QQ Music login servers.
         }
 
         var jsonCredential = credentialFromData(data, cookies);

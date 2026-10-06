@@ -1,6 +1,6 @@
 package org.academy.api.common.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.junit.jupiter.api.Test;
 
@@ -67,7 +67,7 @@ class SkillInitialStateTest {
     }
 
     private static final class TestCategory extends AbilityCategory {
-        private final Identifier icon;
+        private final ResourceLocation icon;
 
         private TestCategory(String name) {
             super(1.0f);
@@ -75,7 +75,7 @@ class SkillInitialStateTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
+        public ResourceLocation getDeveloperIcon() {
             return icon;
         }
 

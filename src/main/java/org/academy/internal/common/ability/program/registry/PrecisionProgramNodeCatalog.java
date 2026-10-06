@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.program.registry;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
@@ -16,13 +16,13 @@ import java.util.Map;
  * Its executors are composed with the common algebra by the shared program action gateway.
  */
 public final class PrecisionProgramNodeCatalog implements ProgramNodeLookup {
-    public static final Identifier MENTALOUT = AcademyCraft.academy("mentalout");
+    public static final ResourceLocation MENTALOUT = AcademyCraft.academy("mentalout");
     public static final PrecisionProgramNodeCatalog INSTANCE = new PrecisionProgramNodeCatalog();
 
-    private final Map<Identifier, ProgramNodeType<?>> types;
+    private final Map<ResourceLocation, ProgramNodeType<?>> types;
 
     private PrecisionProgramNodeCatalog() {
-        var mutable = new HashMap<Identifier, ProgramNodeType<?>>();
+        var mutable = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         mutable.put(PrecisionProgramNodeIds.ON_CAST, new EntryNodeType());
         for (var kind : PrecisionGraph.NodeKind.values()) {
             mutable.put(PrecisionProgramNodeIds.id(kind), new PrecisionNodeType(kind));
@@ -31,11 +31,11 @@ public final class PrecisionProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     @Override
-    public ProgramNodeType<?> find(Identifier id) {
+    public ProgramNodeType<?> find(ResourceLocation id) {
         return types.get(id);
     }
 
-    public Map<Identifier, ProgramNodeType<?>> types() {
+    public Map<ResourceLocation, ProgramNodeType<?>> types() {
         return types;
     }
 

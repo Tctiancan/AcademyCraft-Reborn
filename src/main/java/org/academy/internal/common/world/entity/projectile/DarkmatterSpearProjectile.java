@@ -1,6 +1,7 @@
 package org.academy.internal.common.world.entity.projectile;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -10,11 +11,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.academy.AcademyCraft;
@@ -29,7 +28,7 @@ import org.academy.internal.common.world.item.Items;
  * Server-authoritative shaped spear projection; gamma launches return after impact.
  */
 public final class DarkmatterSpearProjectile extends AbstractArrow implements ItemSupplier {
-    private static final Identifier PENETRATION_ID =
+    private static final ResourceLocation PENETRATION_ID =
             AcademyCraft.academy("darkmatter_spear_projectile_penetration");
     private float phaseDamage = 5.0f;
     private float penetration;
@@ -163,31 +162,31 @@ public final class DarkmatterSpearProjectile extends AbstractArrow implements It
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        phaseDamage = input.getIntOr("academy_damage_milli", 5000) / 1000.0f;
-        penetration = input.getIntOr("academy_penetration_milli", 0) / 1000.0f;
-        gammaPower = input.getIntOr("academy_gamma_milli", 0) / 1000.0f;
-        betaPower = input.getIntOr("academy_beta_milli", 0) / 1000.0f;
-        launchSpeed = input.getIntOr("academy_speed_milli", 1500) / 1000.0f;
-        shapingMilestone = Math.clamp(input.getIntOr("academy_shaping_milestone", 0), 0, 3);
-        sixWingsMilestone = Math.clamp(input.getIntOr("academy_six_wings_milestone", 0), 0, 3);
-        maximumLifetime = Math.max(5, input.getIntOr("academy_maximum_lifetime", 20));
-        returning = input.getIntOr("academy_returning", 0) != 0;
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        phaseDamage = (tag.contains("academy_damage_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_damage_milli") : 5000) / 1000.0f;
+        penetration = (tag.contains("academy_penetration_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_penetration_milli") : 0) / 1000.0f;
+        gammaPower = (tag.contains("academy_gamma_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_gamma_milli") : 0) / 1000.0f;
+        betaPower = (tag.contains("academy_beta_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_beta_milli") : 0) / 1000.0f;
+        launchSpeed = (tag.contains("academy_speed_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_speed_milli") : 1500) / 1000.0f;
+        shapingMilestone = Math.clamp(tag.contains("academy_shaping_milestone", CompoundTag.TAG_INT) ? tag.getInt("academy_shaping_milestone") : 0, 0, 3);
+        sixWingsMilestone = Math.clamp(tag.contains("academy_six_wings_milestone", CompoundTag.TAG_INT) ? tag.getInt("academy_six_wings_milestone") : 0, 0, 3);
+        maximumLifetime = Math.max(5, tag.contains("academy_maximum_lifetime", CompoundTag.TAG_INT) ? tag.getInt("academy_maximum_lifetime") : 20);
+        returning = (tag.contains("academy_returning", CompoundTag.TAG_INT) ? tag.getInt("academy_returning") : 0) != 0;
         if (returning) setNoPhysics(true);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        output.putInt("academy_damage_milli", Math.round(phaseDamage * 1000.0f));
-        output.putInt("academy_penetration_milli", Math.round(penetration * 1000.0f));
-        output.putInt("academy_gamma_milli", Math.round(gammaPower * 1000.0f));
-        output.putInt("academy_beta_milli", Math.round(betaPower * 1000.0f));
-        output.putInt("academy_speed_milli", Math.round(launchSpeed * 1000.0f));
-        output.putInt("academy_shaping_milestone", shapingMilestone);
-        output.putInt("academy_six_wings_milestone", sixWingsMilestone);
-        output.putInt("academy_maximum_lifetime", maximumLifetime);
-        output.putInt("academy_returning", returning ? 1 : 0);
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("academy_damage_milli", Math.round(phaseDamage * 1000.0f));
+        tag.putInt("academy_penetration_milli", Math.round(penetration * 1000.0f));
+        tag.putInt("academy_gamma_milli", Math.round(gammaPower * 1000.0f));
+        tag.putInt("academy_beta_milli", Math.round(betaPower * 1000.0f));
+        tag.putInt("academy_speed_milli", Math.round(launchSpeed * 1000.0f));
+        tag.putInt("academy_shaping_milestone", shapingMilestone);
+        tag.putInt("academy_six_wings_milestone", sixWingsMilestone);
+        tag.putInt("academy_maximum_lifetime", maximumLifetime);
+        tag.putInt("academy_returning", returning ? 1 : 0);
     }
 }

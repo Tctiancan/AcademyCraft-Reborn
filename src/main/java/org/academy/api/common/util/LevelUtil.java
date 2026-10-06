@@ -488,7 +488,7 @@ public class LevelUtil {
                 pos,
                 breaker.gameMode.getGameModeForPlayer()
         ) || state.getBlock() instanceof GameMasterBlock && !breaker.canUseGameMasterBlocks();
-        var event = new BreakBlockEvent(level, pos, state, breaker);
+        var event = new BlockEvent.BreakEvent(level, pos, state, breaker);
         event.setCanceled(restricted);
         NeoForge.EVENT_BUS.post(event);
         return !event.isCanceled();

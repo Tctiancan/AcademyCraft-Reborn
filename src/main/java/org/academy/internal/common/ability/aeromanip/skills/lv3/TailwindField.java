@@ -107,7 +107,7 @@ public final class TailwindField extends Skill {
             AcademyCraftClient.Config.INSTANCE.save();
         }
         InputSystem.addMaintainedKeyBinding(
-                Client.KEY_NAME_CAST, binding, _ -> Client.start(), _ -> Client.stop());
+                Client.KEY_NAME_CAST, binding, unused362 -> Client.start(), unused363 -> Client.stop());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),
                 new AbilitySystemClient.SkillInfo(
@@ -219,9 +219,9 @@ public final class TailwindField extends Skill {
                 };
                 skill.executeActiveWithResource(
                         player,
-                        _ -> cp,
-                        _ -> air,
-                        (_, _) -> createField(player, skill, mode));
+                        unused364 -> cp,
+                        unused365 -> air,
+                        (unused366, unused367) -> createField(player, skill, mode));
             }
 
             @Override

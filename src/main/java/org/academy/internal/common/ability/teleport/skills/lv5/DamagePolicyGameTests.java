@@ -11,19 +11,19 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.Container;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.arrow.Arrow;
+import net.minecraft.world.entity.projectile.Arrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -56,7 +56,7 @@ import java.util.function.Supplier;
 /** Runs with the live NeoForge event bus and applied damage mixins. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DamagePolicyGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("damage_policy_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("damage_policy_function");
     private static UUID targetId;
     private static boolean weaken;
 
@@ -69,7 +69,7 @@ public final class DamagePolicyGameTests {
     private static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
         event.registerTest(AcademyCraft.academy("damage_policy"), new DamageTest(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 100, 0, true,
+                environment, ResourceLocation.withDefaultNamespace("empty"), 100, 0, true,
                 Rotation.NONE, false, 1, 1, false, 16)));
     }
 
@@ -103,7 +103,7 @@ public final class DamagePolicyGameTests {
             for (var type : List.of(DamageTypes.DM_DAMAGE, DamageTypes.AERO_DAMAGE, DamageTypes.ELECTRO_DAMAGE, DamageTypes.MELT_DAMAGE,
                     DamageTypes.SPACE_DAMAGE, DamageTypes.MENTAL_DAMAGE, DamageTypes.VEC, DamageTypes.CTA)) {
                 for (var purePercentage : List.of(false, true)) {
-                    var target = helper.spawn(EntityTypes.COW, 3, 2, 5);
+                    var target = helper.spawn(EntityType.COW, 3, 2, 5);
                     target.setNoAi(true);
                     target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0);
                     target.setHealth(1000.0f);
@@ -156,16 +156,16 @@ public final class DamagePolicyGameTests {
                     .getMethod("getItem", Player.class).invoke(null, player);
             helper.assertTrue(inventory != null, "Chest Item must attach its actual player inventory");
             inventory.setItem(0, BuiltInRegistries.ITEM
-                    .getValue(Identifier.parse("chest_item:stronger_stone")).getDefaultInstance());
+                    .getValue(ResourceLocation.parse("chest_item:stronger_stone")).getDefaultInstance());
             inventory.setItem(1, BuiltInRegistries.ITEM
-                    .getValue(Identifier.parse("chest_item:fission_emblem")).getDefaultInstance());
+                    .getValue(ResourceLocation.parse("chest_item:fission_emblem")).getDefaultInstance());
             var config = (Supplier<?>) Class
                     .forName("com.ytgld.chest_item.items.gold.StrongerStone$ConfigItem")
                     .getField("intValue").get(null);
             var multiplier = ((Number) config.get()).floatValue() * 1.1f;
             for (var type : List.of(DamageTypes.DM_DAMAGE, DamageTypes.AERO_DAMAGE, DamageTypes.ELECTRO_DAMAGE, DamageTypes.MELT_DAMAGE,
                     DamageTypes.SPACE_DAMAGE, DamageTypes.MENTAL_DAMAGE, DamageTypes.VEC, DamageTypes.CTA)) {
-                var target = helper.spawn(EntityTypes.COW, 3, 2, 5);
+                var target = helper.spawn(EntityType.COW, 3, 2, 5);
                 target.setNoAi(true);
                 target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0);
                 target.setHealth(1000.0f);
@@ -190,7 +190,7 @@ public final class DamagePolicyGameTests {
 
     private static void verifyCategoryEffects(GameTestHelper helper, ServerPlayer player) {
         var level = helper.getLevel();
-        var electric = helper.spawn(EntityTypes.COW, 3, 2, 5);
+        var electric = helper.spawn(EntityType.COW, 3, 2, 5);
         electric.setNoAi(true);
         electric.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
         electric.setHealth(1000);
@@ -210,7 +210,7 @@ public final class DamagePolicyGameTests {
                 "Discharge must consume five points");
         helper.assertTrue(Math.abs(electric.getAttributeValue(Attributes.MOVEMENT_SPEED) - originalSpeed * 0.2) < 1e-6,
                 "Paralysis must reduce movement speed by exactly 80%");
-        var receiver = helper.spawn(EntityTypes.COW, 4, 2, 5);
+        var receiver = helper.spawn(EntityType.COW, 4, 2, 5);
         receiver.setNoAi(true);
         receiver.hurtServer(level, electric.damageSources().mobAttack(electric), 10);
         helper.assertTrue(receiver.getHealth() == receiver.getMaxHealth(),
@@ -235,7 +235,7 @@ public final class DamagePolicyGameTests {
         receiver.discard();
         electric.discard();
 
-        var blocked = helper.spawn(EntityTypes.COW, 3, 2, 5);
+        var blocked = helper.spawn(EntityType.COW, 3, 2, 5);
         blocked.getAttribute(Attributes.MAX_ABSORPTION).setBaseValue(100);
         blocked.setAbsorptionAmount(100);
         blocked.hurtServer(level, arc, 5);
@@ -243,7 +243,7 @@ public final class DamagePolicyGameTests {
                 "An absorption-only hit must not award electrical charge");
         blocked.discard();
 
-        var irradiated = helper.spawn(EntityTypes.COW, 3, 2, 5);
+        var irradiated = helper.spawn(EntityType.COW, 3, 2, 5);
         irradiated.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
         irradiated.setHealth(1000);
         irradiated.addEffect(new MobEffectInstance(
@@ -264,7 +264,7 @@ public final class DamagePolicyGameTests {
                 "Radiation must preserve a stronger existing debuff");
         irradiated.discard();
 
-        var lawTarget = helper.spawn(EntityTypes.COW, 3, 2, 5);
+        var lawTarget = helper.spawn(EntityType.COW, 3, 2, 5);
         lawTarget.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
         lawTarget.setHealth(1000);
         lawTarget.getAttribute(Attributes.ARMOR).setBaseValue(1000);
@@ -281,7 +281,7 @@ public final class DamagePolicyGameTests {
                 "Law detonation must retain darkmatter category identity");
         lawTarget.discard();
 
-        var armored = helper.spawn(EntityTypes.COW, 3, 2, 5);
+        var armored = helper.spawn(EntityType.COW, 3, 2, 5);
         armored.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
         armored.setHealth(1000);
         var chest = new ItemStack(Items.DIAMOND_CHESTPLATE);
@@ -327,7 +327,7 @@ public final class DamagePolicyGameTests {
             level.getServer().getPlayerList().remove(defender);
         }
 
-        var zombie = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 5);
+        var zombie = helper.spawn(EntityType.ZOMBIE, 3, 2, 5);
         zombie.setNoAi(true);
         var drops = new ArrayList<ItemEntity>();
         var space = SkillDamageSource.of(player, Skills.THREATENING_TELEPORT.get());
@@ -370,3 +370,4 @@ public final class DamagePolicyGameTests {
         }
     }
 }
+

@@ -1,9 +1,9 @@
 package org.academy.api.client.gui.command
 
-import com.mojang.blaze3d.buffers.Std140Builder
-import com.mojang.blaze3d.buffers.Std140SizeCalculator
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Render
+import org.academy.api.client.render.Std140Builder
+import org.academy.api.client.render.Std140SizeCalculator
 import org.academy.api.client.render.UniformPayload
 import org.joml.Vector2f
 import org.joml.Vector4f

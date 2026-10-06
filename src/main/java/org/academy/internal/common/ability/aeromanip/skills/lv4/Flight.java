@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.aeromanip.skills.lv4;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.phys.Vec3;
@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.WeakHashMap;
 
 public final class Flight extends Skill {
-    private static final Identifier FLIGHT_SOURCE = AcademyCraft.academy(SkillNames.FLIGHT);
+    private static final ResourceLocation FLIGHT_SOURCE = AcademyCraft.academy(SkillNames.FLIGHT);
     private static final float DEFAULT_FLYING_SPEED = 0.05f;
 
     public Flight() {
@@ -88,7 +88,7 @@ public final class Flight extends Skill {
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_F,
                         InputConstants.RELEASE, InputConstants.MOD_ALT));
-        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, _ -> Client.toggle());
+        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused368 -> Client.toggle());
     }
 
     @Override
@@ -209,7 +209,7 @@ public final class Flight extends Skill {
                         var airCost = Math.max(0.0f, AeromanipConfig.skillFloat(
                                 player, SkillNames.FLIGHT, "compressedAirPerInterval", 2.0f));
                         skill.executeContinuousWithResource(
-                                player, _ -> 0.0f, _ -> airCost, (_, _) -> { }, true);
+                                player, unused369 -> 0.0f, unused370 -> airCost, (unused371, unused372) -> { }, true);
                     }
                     skill.reportActivity(player, true);
                 } else {

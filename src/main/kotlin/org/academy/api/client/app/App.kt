@@ -1,6 +1,6 @@
-package org.academy.api.client.app
+﻿package org.academy.api.client.app
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.widget.WidgetContext
 
 interface App {
@@ -8,5 +8,5 @@ interface App {
 
     fun name(): String
 
-    fun icon(): Identifier
+    fun icon(): ResourceLocation
 }

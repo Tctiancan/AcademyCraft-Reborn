@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.precision;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
 import org.academy.internal.common.ability.program.compile.CompiledProgram;
@@ -22,7 +22,7 @@ import java.util.function.LongSupplier;
  */
 final class PrecisionProgramExecutionBridge {
     private static final int MAX_FUEL = PrecisionGraph.MAX_NODES * PrecisionGraph.MAX_NODES + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> PRECISION_EXECUTORS =
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> PRECISION_EXECUTORS =
             createPrecisionExecutors();
 
     private PrecisionProgramExecutionBridge() {
@@ -160,8 +160,8 @@ final class PrecisionProgramExecutionBridge {
         return ReplayResult.failure(diagnostic, result.nodeId(), result.diagnostic());
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createPrecisionExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createPrecisionExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
         for (var kind : PrecisionGraph.NodeKind.values()) {
             result.put(PrecisionProgramNodeIds.id(kind), new TraceExecutor(kind));
         }

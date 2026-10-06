@@ -7,7 +7,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundSource;
@@ -60,7 +60,7 @@ public final class FleshRipping extends Skill {
     private static final double MAX_RANGE = 64.0;
     private static final int PROFICIENT_LOCK_GRACE_TICKS = 10;
     private static final float BASE_DAMAGE = 12.0f;
-    private static final Identifier FLESH_RIPPING_ARMOR_ID = AcademyCraft.academy("flesh_ripping_armor");
+    private static final ResourceLocation FLESH_RIPPING_ARMOR_ID = AcademyCraft.academy("flesh_ripping_armor");
 
     public FleshRipping() {
         super(Builder

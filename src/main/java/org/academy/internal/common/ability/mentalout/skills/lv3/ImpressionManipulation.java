@@ -68,7 +68,7 @@ public final class ImpressionManipulation extends Skill {
                         InputConstants.PRESS,
                         InputConstants.MOD_ALT
                 )
-        ), _ -> Client.use());
+        ), unused540 -> Client.use());
     }
 
     @Override

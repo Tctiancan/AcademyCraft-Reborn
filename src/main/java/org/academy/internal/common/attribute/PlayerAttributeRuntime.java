@@ -1,7 +1,7 @@
 package org.academy.internal.common.attribute;
 
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.damagesource.DamageSource;
@@ -28,14 +28,14 @@ import java.util.Deque;
 
 @EventBusSubscriber
 public final class PlayerAttributeRuntime {
-    private static final Identifier MUSCLE_DAMAGE = AcademyCraft.academy("attribute_bonus.muscle_damage");
-    private static final Identifier LEGACY_MUSCLE_KNOCKBACK = AcademyCraft.academy("attribute_bonus.muscle_knockback");
-    private static final Identifier DEXTERITY_STEP = AcademyCraft.academy("attribute_bonus.dexterity_step");
-    private static final Identifier ENDURANCE_HEALTH = AcademyCraft.academy("attribute_bonus.endurance_health");
-    private static final Identifier DEXTERITY_SPEED = AcademyCraft.academy("attribute_bonus.dexterity_speed");
-    private static final Identifier LEGACY_ENDURANCE_JUMP = AcademyCraft.academy("attribute_bonus.endurance_jump");
-    private static final Identifier DEXTERITY_JUMP = AcademyCraft.academy("attribute_bonus.dexterity_jump");
-    private static final Identifier DEXTERITY_SAFE_FALL = AcademyCraft.academy(
+    private static final ResourceLocation MUSCLE_DAMAGE = AcademyCraft.academy("attribute_bonus.muscle_damage");
+    private static final ResourceLocation LEGACY_MUSCLE_KNOCKBACK = AcademyCraft.academy("attribute_bonus.muscle_knockback");
+    private static final ResourceLocation DEXTERITY_STEP = AcademyCraft.academy("attribute_bonus.dexterity_step");
+    private static final ResourceLocation ENDURANCE_HEALTH = AcademyCraft.academy("attribute_bonus.endurance_health");
+    private static final ResourceLocation DEXTERITY_SPEED = AcademyCraft.academy("attribute_bonus.dexterity_speed");
+    private static final ResourceLocation LEGACY_ENDURANCE_JUMP = AcademyCraft.academy("attribute_bonus.endurance_jump");
+    private static final ResourceLocation DEXTERITY_JUMP = AcademyCraft.academy("attribute_bonus.dexterity_jump");
+    private static final ResourceLocation DEXTERITY_SAFE_FALL = AcademyCraft.academy(
             "attribute_bonus.dexterity_safe_fall");
     private static final ThreadLocal<Deque<DamageSource>> DAMAGE_CONTEXT =
             ThreadLocal.withInitial(ArrayDeque::new);
@@ -184,7 +184,7 @@ public final class PlayerAttributeRuntime {
         return attribute == null ? 0 : Mth.clamp(attribute.getValue(), 0.0, 8.0);
     }
 
-    public static void syncTrueResistanceModifier(Player player, Identifier id,
+    public static void syncTrueResistanceModifier(Player player, ResourceLocation id,
                                                   double amount, boolean enabled) {
         syncModifier(
                 player.getAttribute(PlayerAttributes.TRUE_RESISTANCE),
@@ -261,7 +261,7 @@ public final class PlayerAttributeRuntime {
         return Double.isFinite(value) ? Math.max(0.0, value) : 0.0;
     }
 
-    private static void syncModifier(AttributeInstance attribute, Identifier id, double amount,
+    private static void syncModifier(AttributeInstance attribute, ResourceLocation id, double amount,
                                      AttributeModifier.Operation operation, boolean permanent) {
         if (attribute == null) return;
         var current = attribute.getModifier(id);

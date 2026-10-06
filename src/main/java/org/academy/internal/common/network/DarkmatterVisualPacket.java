@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.vfx.RepairVisualParts;
@@ -30,7 +30,7 @@ public final class DarkmatterVisualPacket extends Packet<ClientPacketListener, D
     }
 
     public static final StreamCodec<ByteBuf, DarkmatterVisualPacket> CODEC = StreamCodec.of((b, p) -> {
-        Identifier.STREAM_CODEC.encode(b, p.dimension);
+        ResourceLocation.STREAM_CODEC.encode(b, p.dimension);
         b.writeByte(p.kind.ordinal());
         ByteBufCodecs.VAR_INT.encode(b, p.entityId);
         b.writeBoolean(p.active);
@@ -44,7 +44,7 @@ public final class DarkmatterVisualPacket extends Packet<ClientPacketListener, D
             b.writeDouble(p.area.second().radius()); b.writeDouble(p.area.second().minimumDot());
         }
     }, b -> {
-        var dimension = Identifier.STREAM_CODEC.decode(b);
+        var dimension = ResourceLocation.STREAM_CODEC.decode(b);
         int kind = b.readUnsignedByte();
         if (kind >= Kind.values().length) throw new IllegalArgumentException("Invalid matter effect kind");
         int entity = ByteBufCodecs.VAR_INT.decode(b);
@@ -58,7 +58,7 @@ public final class DarkmatterVisualPacket extends Packet<ClientPacketListener, D
                 width, height, range, parts, finished, seed, area);
     });
 
-    public final Identifier dimension;
+    public final ResourceLocation dimension;
     public final Kind kind;
     public final int entityId;
     public final boolean active, finished;
@@ -68,12 +68,12 @@ public final class DarkmatterVisualPacket extends Packet<ClientPacketListener, D
     public final long seed;
     public final @org.jspecify.annotations.Nullable DirectionalArea area;
 
-    public DarkmatterVisualPacket(Identifier dimension, Kind kind, int entityId, boolean active, Vec3 position,
+    public DarkmatterVisualPacket(ResourceLocation dimension, Kind kind, int entityId, boolean active, Vec3 position,
                                   float width, float height, float range, int parts, boolean finished, long seed) {
         this(dimension, kind, entityId, active, position, width, height, range, parts, finished, seed, null);
     }
 
-    public DarkmatterVisualPacket(Identifier dimension, Kind kind, int entityId, boolean active, Vec3 position,
+    public DarkmatterVisualPacket(ResourceLocation dimension, Kind kind, int entityId, boolean active, Vec3 position,
                                   float width, float height, float range, int parts, boolean finished, long seed,
                                   @org.jspecify.annotations.Nullable DirectionalArea area) {
         if (entityId < -1 || !Double.isFinite(position.lengthSqr()) || !finiteBound(width, 32)

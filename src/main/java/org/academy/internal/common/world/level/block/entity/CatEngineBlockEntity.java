@@ -1,13 +1,13 @@
 package org.academy.internal.common.world.level.block.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.academy.api.common.wireless.WirelessUser;
 import org.jspecify.annotations.Nullable;
 
@@ -104,17 +104,19 @@ public final class CatEngineBlockEntity extends BlockEntity implements WirelessU
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (connectedNodePos != null) {
-            output.putLong("connected_node_pos", connectedNodePos.asLong());
+            tag.putLong("connected_node_pos", connectedNodePos.asLong());
         }
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         connectedNodePos = null;
-        input.getLong("connected_node_pos").ifPresent(nodePos -> connectedNodePos = BlockPos.of(nodePos));
+        if (tag.contains("connected_node_pos", CompoundTag.TAG_LONG)) {
+            connectedNodePos = BlockPos.of(tag.getLong("connected_node_pos"));
+        }
     }
 }

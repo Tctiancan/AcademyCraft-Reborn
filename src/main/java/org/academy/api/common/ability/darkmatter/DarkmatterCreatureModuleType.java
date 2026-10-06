@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.darkmatter;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import org.jspecify.annotations.Nullable;
@@ -11,7 +11,7 @@ import java.util.Objects;
  * Public descriptor for an independently budgeted creature AI/utility module.
  */
 public record DarkmatterCreatureModuleType(
-        Identifier id,
+        ResourceLocation id,
         int budgetCost,
         @Nullable ModuleHandler handler
 ) {
@@ -34,7 +34,7 @@ public record DarkmatterCreatureModuleType(
 
     @FunctionalInterface
     public interface ModuleHandler {
-        ModuleHandler NONE = (_, _, _) -> {
+        ModuleHandler NONE = (unused151, unused152, unused153) -> {
         };
 
         void tick(Mob creature,

@@ -4,8 +4,8 @@ import net.minecraft.util.Unit;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import net.minecraft.world.entity.monster.warden.Warden;
-import net.minecraft.world.entity.monster.warden.WardenAi;
+import net.minecraft.world.entity.monster.Warden;
+import net.minecraft.world.entity.monster.WardenAi;
 import org.academy.api.common.entitycontrol.*;
 
 import java.util.UUID;
@@ -64,7 +64,8 @@ public final class WardenMentalControlAdapter implements MentalControlAdapter {
             firstTick = false;
 
             // Reassert after cancelling transitional activities so the next Brain tick enters
-            // FIGHT directly instead of waiting for a vanilla anger/roar transition.
+            // FIGHT directly instead of waiting
+// for a vanilla anger/roar transition.
             MentalControlRuntime.maintainTarget(warden);
         }
 

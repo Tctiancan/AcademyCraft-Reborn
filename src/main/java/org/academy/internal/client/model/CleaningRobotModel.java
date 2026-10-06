@@ -7,12 +7,12 @@ import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
+import org.academy.internal.common.world.entity.vehicle.CleaningRobot;
 
 /**
  * @author MapleBadd
  */
-public class CleaningRobotModel extends EntityModel<EntityRenderState> {
+public class CleaningRobotModel extends EntityModel<CleaningRobot> {
     private final ModelPart all;
     private final ModelPart top;
     private final ModelPart bottom;
@@ -28,6 +28,10 @@ public class CleaningRobotModel extends EntityModel<EntityRenderState> {
         rleg = bottom.getChild("rleg");
         lleg = bottom.getChild("lleg");
         bleg = bottom.getChild("bleg");
+    }
+
+    @Override
+    public void setupAnim(CleaningRobot entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
     }
 
     public static LayerDefinition createBodyLayer() {

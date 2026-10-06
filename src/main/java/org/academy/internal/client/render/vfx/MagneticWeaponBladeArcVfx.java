@@ -3,7 +3,7 @@ package org.academy.internal.client.render.vfx;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ParticleStatus;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.arc.ArcPath;
@@ -42,7 +42,7 @@ public final class MagneticWeaponBladeArcVfx {
         var adapter = new MagneticWeaponBladeArcVfx(blade);
         var effect = VfxGraphManager.INSTANCE.spawn(AcademyCraft.academy("vfxgraph/magnetic_weapon"),
                 blade.position().toVector3f());
-        effect.bindArcs("paths", _ -> adapter.paths);
+        effect.bindArcs("paths", unused219 -> adapter.paths);
         effect.bindGameTime("time");
         effect.bindFrame(adapter::sample);
         effect.setRenderDistance(48);
@@ -176,7 +176,7 @@ public final class MagneticWeaponBladeArcVfx {
     private void emitActivation(Quality quality,
                                 Vec3 bladePosition, long seed) {
         var owner = blade.level().getEntity(blade.getOwnerId());
-        if (!(owner instanceof Avatar avatar)) return;
+        if (!(owner instanceof Player avatar)) return;
         var forward = Vec3.directionFromRotation(0.0f, avatar.getYRot()).normalize();
         var right = new Vec3(-forward.z, 0.0, forward.x);
         var handSign = avatar.getMainArm() == HumanoidArm.RIGHT ? 1.0 : -1.0;

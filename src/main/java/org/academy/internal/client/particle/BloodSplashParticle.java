@@ -3,13 +3,14 @@ package org.academy.internal.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 
-public final class BloodSplashParticle extends SingleQuadParticle {
+public final class BloodSplashParticle extends TextureSheetParticle {
     private static final int SPLASH_LIFETIME = 6;
     private static final double SPEED_MULTIPLIER = 3.5;
 
@@ -18,8 +19,9 @@ public final class BloodSplashParticle extends SingleQuadParticle {
     private BloodSplashParticle(ClientLevel level, double x, double y, double z,
                                 double xSpeed, double ySpeed, double zSpeed,
                                 SpriteSet sprites, RandomSource random) {
-        super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprites.first());
+        super(level, x, y, z, xSpeed, ySpeed, zSpeed);
         this.sprites = sprites;
+        setSprite(sprites.get(random));
         setParticleSpeed(
                 xSpeed * SPEED_MULTIPLIER,
                 ySpeed * SPEED_MULTIPLIER,
@@ -46,8 +48,8 @@ public final class BloodSplashParticle extends SingleQuadParticle {
     }
 
     @Override
-    protected Layer getLayer() {
-        return Layer.TRANSLUCENT;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public static final class Provider implements ParticleProvider<SimpleParticleType> {

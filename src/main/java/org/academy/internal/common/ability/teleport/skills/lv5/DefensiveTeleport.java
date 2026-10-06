@@ -88,13 +88,13 @@ public final class DefensiveTeleport extends Skill {
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_N,
                         InputConstants.PRESS, 0),
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_X,
-                        InputConstants.PRESS, 0)), _ -> Client.start());
+                        InputConstants.PRESS, 0)), unused775 -> Client.start());
         InputSystem.addKeyBinding(Client.KEY_NAME_END, Client.CONFIG.getKeyBindingMigratingDefaults(
                 Client.KEY_NAME_END,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_N,
                         InputConstants.RELEASE, 0),
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_X,
-                        InputConstants.RELEASE, 0)), _ -> Client.end());
+                        InputConstants.RELEASE, 0)), unused776 -> Client.end());
     }
 
     @Override
@@ -301,7 +301,7 @@ public final class DefensiveTeleport extends Skill {
                     .toList();
             if (selected.isEmpty()) return;
 
-            skill.executeActive(player, (ctx, _) -> {
+            skill.executeActive(player, (ctx, unused777) -> {
                 var index = 0;
                 for (var entity : selected) {
                     if (!EntityMotionGuard.canApplyMotionFrom(player, entity)) continue;

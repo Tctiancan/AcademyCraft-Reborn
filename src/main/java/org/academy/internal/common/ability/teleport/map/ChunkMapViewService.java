@@ -8,7 +8,7 @@ import org.academy.internal.common.ability.teleport.chunk.ChunkTicketLeaseManage
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -169,7 +169,7 @@ public final class ChunkMapViewService {
             return;
         }
         // A page closed without a tracked session: release by dimension id alone.
-        var id = Identifier.tryParse(packet.dimensionId());
+        var id = ResourceLocation.tryParse(packet.dimensionId());
         if (id != null) {
             ChunkTicketLeaseManager.cancelViewLease(ChunkTicketLeaseManager.viewOwner(player.getUUID(),
                     ResourceKey.create(Registries.DIMENSION, id)));

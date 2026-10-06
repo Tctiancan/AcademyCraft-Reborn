@@ -73,12 +73,12 @@ public final class ProgramCompiler {
                 continue;
             }
             var input = new CompiledProgram.InputKey(edge.to().nodeId(), edge.to().port());
-            inputs.computeIfAbsent(input, _ -> new ArrayList<>()).add(
+            inputs.computeIfAbsent(input, unused714 -> new ArrayList<>()).add(
                     new CompiledProgram.OutputKey(edge.from().nodeId(), edge.from().port())
             );
-            dataOutgoing.computeIfAbsent(edge.from().nodeId(), _ -> new ArrayList<>())
+            dataOutgoing.computeIfAbsent(edge.from().nodeId(), unused715 -> new ArrayList<>())
                     .add(edge.to().nodeId());
-            dataIndegree.computeIfPresent(edge.to().nodeId(), (_, degree) -> degree + 1);
+            dataIndegree.computeIfPresent(edge.to().nodeId(), (unused716, degree) -> degree + 1);
         }
         if (!diagnostics.isEmpty()) return new ProgramCompileResult(null, diagnostics);
 
@@ -106,7 +106,7 @@ public final class ProgramCompiler {
             var current = pending.remove();
             dataOrder.add(current);
             for (var target : dataOutgoing.getOrDefault(current, List.of())) {
-                var next = dataIndegree.computeIfPresent(target, (_, degree) -> degree - 1);
+                var next = dataIndegree.computeIfPresent(target, (unused717, degree) -> degree - 1);
                 if (next != null && next == 0) pending.add(target);
             }
         }

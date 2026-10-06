@@ -1,22 +1,11 @@
 package org.academy.internal.server.ability.gametest;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.level.block.Rotation;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.AbilityCategories;
@@ -24,31 +13,25 @@ import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
 import org.academy.mixin.common.LivingHealthDataAccessor;
 
-import java.util.List;
-
 import static org.academy.internal.server.ability.gametest.HostileTargetGameTests.check;
 import static org.academy.internal.server.ability.gametest.HostileTargetGameTests.player;
 
 /** Exercises the transformed parent getter together with the real synced health data item. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class VectorHealthCoremodGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("vector_health_coremod_test_function");
-
     private VectorHealthCoremodGameTests() {
     }
 
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
-    }
-
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(AcademyCraft.academy("vector_health_coremod"),
-                new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("vector_health_coremod"), new Instance(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 80, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void vectorHealthCoremod(GameTestHelper helper) {
+        var subject = player(helper, 4);
+        try {
+            run(helper, subject);
+            helper.succeed();
+        } finally {
+            VectorReflection.Server.clearProtection(subject);
+            helper.getLevel().getServer().getPlayerList().remove(subject);
+        }
     }
 
     private static void near(GameTestHelper helper, float expected, float actual, String message) {
@@ -92,35 +75,5 @@ public final class VectorHealthCoremodGameTests {
         VectorReflection.Server.clearProtection(player);
         player.setHealth(5);
         near(helper, 5, player.getHealth(), "ordinary health after deactivation");
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            var subject = player(helper, 4);
-            try {
-                VectorHealthCoremodGameTests.run(helper, subject);
-                helper.succeed();
-            } finally {
-                VectorReflection.Server.clearProtection(subject);
-                helper.getLevel().getServer().getPlayerList().remove(subject);
-            }
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("NeoForge coremod player health protection");
-        }
     }
 }

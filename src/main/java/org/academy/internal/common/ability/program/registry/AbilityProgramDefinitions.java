@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.program.registry;
 import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
 
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramNodeExtension;
 import org.academy.api.common.ability.program.ProgramNodeRole;
 import org.academy.api.common.registries.Registries;
@@ -25,7 +25,7 @@ import java.util.Map;
  * Built-in programmable ability-category definitions.
  */
 public final class AbilityProgramDefinitions {
-    private static volatile Map<Identifier, AbilityProgramDefinition> DEFINITIONS = index(List.of(
+    private static volatile Map<ResourceLocation, AbilityProgramDefinition> DEFINITIONS = index(List.of(
             ElectromasterProgramDefinition.create(),
             TeleportProgramDefinition.create(),
             AcceleratorProgramDefinition.create(),
@@ -58,17 +58,17 @@ public final class AbilityProgramDefinitions {
                             ProgramEditorNodeCatalog.Group.FLOW, metadata.translationKey(),
                             metadata.portTranslationPrefix(), null).build();
             result.put(category.getKey(), new AbilityProgramDefinition(category.getKey(),
-                    Map.of(profile.entryNode().identifier(), entry), _ -> null, editor,
+                    Map.of(profile.entryNode().identifier(), entry), unused725 -> null, editor,
                     profile.limits(), profile.spatialLimits()));
         }
         DEFINITIONS = Map.copyOf(result);
     }
 
-    public static @Nullable AbilityProgramDefinition find(Identifier category) {
+    public static @Nullable AbilityProgramDefinition find(ResourceLocation category) {
         return DEFINITIONS.get(category);
     }
 
-    public static AbilityProgramDefinition require(Identifier category) {
+    public static AbilityProgramDefinition require(ResourceLocation category) {
         var definition = find(category);
         if (definition == null) {
             throw new IllegalArgumentException("Unknown ability program category " + category);
@@ -84,10 +84,10 @@ public final class AbilityProgramDefinitions {
         return DEFINITIONS.values();
     }
 
-    static Map<Identifier, AbilityProgramDefinition> index(
+    static Map<ResourceLocation, AbilityProgramDefinition> index(
             List<AbilityProgramDefinition> definitions
     ) {
-        var result = new LinkedHashMap<Identifier, AbilityProgramDefinition>();
+        var result = new LinkedHashMap<ResourceLocation, AbilityProgramDefinition>();
         for (var definition : definitions) {
             if (result.putIfAbsent(definition.category(), definition) != null) {
                 throw new IllegalStateException(

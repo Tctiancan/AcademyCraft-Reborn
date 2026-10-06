@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -105,7 +105,7 @@ public final class Railgun extends Skill {
         return isVanillaAmmoId(BuiltInRegistries.ITEM.getKey(stack.getItem()));
     }
 
-    static boolean isVanillaAmmoId(Identifier id) {
+    static boolean isVanillaAmmoId(ResourceLocation id) {
         return AmmoKind.fromVanillaId(id) != null;
     }
 
@@ -150,7 +150,7 @@ public final class Railgun extends Skill {
             Client.CLIENT_CONFIG.setKeyBinding(Client.KEY_NAME_START, startBinding);
             AcademyCraftClient.Config.INSTANCE.save();
         }
-        InputSystem.addKeyBinding(Client.KEY_NAME_START, startBinding, _ -> Client.start());
+        InputSystem.addKeyBinding(Client.KEY_NAME_START, startBinding, unused473 -> Client.start());
 
         var endBinding = Client.CLIENT_CONFIG.getKeyBinding(
                 Client.KEY_NAME_END,
@@ -161,7 +161,7 @@ public final class Railgun extends Skill {
             Client.CLIENT_CONFIG.setKeyBinding(Client.KEY_NAME_END, endBinding);
             AcademyCraftClient.Config.INSTANCE.save();
         }
-        InputSystem.addKeyBinding(Client.KEY_NAME_END, endBinding, _ -> Client.end());
+        InputSystem.addKeyBinding(Client.KEY_NAME_END, endBinding, unused474 -> Client.end());
 
         ClientSyncManager.register(SyncKeys.RAILGUN_CHARGING.get(), Client::setCharging);
     }
@@ -189,12 +189,12 @@ public final class Railgun extends Skill {
             this.damageMultiplier = damageMultiplier;
         }
 
-        private static @Nullable AmmoKind fromVanillaId(Identifier id) {
-            if (Identifier.withDefaultNamespace("iron_ingot").equals(id)) return IRON_INGOT;
-            if (Identifier.withDefaultNamespace("iron_block").equals(id)) return IRON_BLOCK;
-            if (Identifier.withDefaultNamespace("anvil").equals(id)
-                    || Identifier.withDefaultNamespace("chipped_anvil").equals(id)
-                    || Identifier.withDefaultNamespace("damaged_anvil").equals(id)) return ANVIL;
+        private static @Nullable AmmoKind fromVanillaId(ResourceLocation id) {
+            if (ResourceLocation.withDefaultNamespace("iron_ingot").equals(id)) return IRON_INGOT;
+            if (ResourceLocation.withDefaultNamespace("iron_block").equals(id)) return IRON_BLOCK;
+            if (ResourceLocation.withDefaultNamespace("anvil").equals(id)
+                    || ResourceLocation.withDefaultNamespace("chipped_anvil").equals(id)
+                    || ResourceLocation.withDefaultNamespace("damaged_anvil").equals(id)) return ANVIL;
             return null;
         }
 
@@ -464,7 +464,7 @@ public final class Railgun extends Skill {
 
                 var fired = new boolean[1];
                 var skill = Skills.RAILGUN.get();
-                skill.executeActive(player, (_, _) -> {
+                skill.executeActive(player, (unused475, unused476) -> {
                     ammo.consume(player);
                     fire(skill, ammo);
                     fired[0] = true;
@@ -512,9 +512,9 @@ public final class Railgun extends Skill {
                                 damageSource,
                                 damageRadius
                         )
-                        .damage(_ -> damage * (proficiencyMilestone >= 2 && hitIndex.getAndIncrement() > 0
+                        .damage(unused477 -> damage * (proficiencyMilestone >= 2 && hitIndex.getAndIncrement() > 0
                                 ? 0.6f : 1.0f))
-                        .onHit((target, _, hurt) -> {
+                        .onHit((target, unused478, hurt) -> {
                             if (hurt && proficiencyMilestone >= 3 && shockTriggered.compareAndSet(false, true)) {
                                 triggerImpactShock(player, target.position(), damage * 0.25f, target);
                             }

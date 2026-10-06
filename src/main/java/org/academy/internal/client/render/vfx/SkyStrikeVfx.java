@@ -1,7 +1,7 @@
 package org.academy.internal.client.render.vfx;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
@@ -41,7 +41,7 @@ public final class SkyStrikeVfx implements Vfx {
         this.feedbackAttenuation = clamp01(feedbackAttenuation);
         var detail = claimDetail(requestedDetail);
         detailedSlot = detail != SkyStrikeGeometry.Detail.COLUMN_ONLY;
-        var asset = Identifier.fromNamespaceAndPath(AcademyCraft.MOD_ID,
+        var asset = ResourceLocation.fromNamespaceAndPath(AcademyCraft.MOD_ID,
                 profile == SkyStrikeProfile.THUNDERCLAP
                         ? "vfxgraph/sky_strike_thunderclap" : "vfxgraph/sky_strike_storm");
         try {

@@ -72,7 +72,7 @@ public final class WhiteWing extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, GLFW_KEY_B, GLFW_RELEASE, GLFW_MOD_SHIFT)
-        ), _ -> Client.toggle());
+        ), unused290 -> Client.toggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.WHITE_WING.get(), () -> {
             var player = Minecraft.getInstance().player;
             return player != null && player.getData(AttachmentTypes.ACTIVATED_WHITE_WING.get());

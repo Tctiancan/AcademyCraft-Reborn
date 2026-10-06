@@ -26,7 +26,7 @@ public final class VectorDefenseCpBudget {
         var system = AbilitySystemServer.getSystem(player);
         var playerId = player.getUUID();
         var gameTime = player.level().getGameTime();
-        var window = WINDOWS.computeIfAbsent(new BudgetKey(playerId, channel), _ -> new Window());
+        var window = WINDOWS.computeIfAbsent(new BudgetKey(playerId, channel), unused244 -> new Window());
         var spentActualCp = window.spentSince(gameTime, gameTime - WINDOW_TICKS + 1L);
         return limitBaseCost(
                 requestedBaseCost,
@@ -59,7 +59,7 @@ public final class VectorDefenseCpBudget {
     public static void record(ServerPlayer player, Channel channel, float actualCpCost) {
         if (player == null || channel == null
                 || !(actualCpCost > 0.0f) || !Float.isFinite(actualCpCost)) return;
-        WINDOWS.computeIfAbsent(new BudgetKey(player.getUUID(), channel), _ -> new Window())
+        WINDOWS.computeIfAbsent(new BudgetKey(player.getUUID(), channel), unused245 -> new Window())
                 .record(player.level().getGameTime(), actualCpCost);
     }
 

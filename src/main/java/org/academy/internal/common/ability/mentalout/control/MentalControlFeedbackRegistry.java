@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.mentalout.control;
 
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.AcademyCraft;
@@ -14,13 +14,13 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public final class MentalControlFeedbackRegistry {
-    private static final ConcurrentHashMap<Identifier, ImmuneFeedbackProvider> PROVIDERS = new ConcurrentHashMap<>();
-    private static final Set<Identifier> REPORTED_FAILURES = ConcurrentHashMap.newKeySet();
+    private static final ConcurrentHashMap<ResourceLocation, ImmuneFeedbackProvider> PROVIDERS = new ConcurrentHashMap<>();
+    private static final Set<ResourceLocation> REPORTED_FAILURES = ConcurrentHashMap.newKeySet();
 
     private MentalControlFeedbackRegistry() {
     }
 
-    public static void register(Identifier entityTypeId, ImmuneFeedbackProvider provider) {
+    public static void register(ResourceLocation entityTypeId, ImmuneFeedbackProvider provider) {
         Objects.requireNonNull(entityTypeId, "entityTypeId");
         Objects.requireNonNull(provider, "provider");
         if (PROVIDERS.putIfAbsent(entityTypeId, provider) != null) {

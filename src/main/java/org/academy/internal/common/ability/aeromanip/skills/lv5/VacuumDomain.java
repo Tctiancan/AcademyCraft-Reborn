@@ -120,7 +120,7 @@ public final class VacuumDomain extends Skill {
         var binding = Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE,
                 Client.CONFIG.getKeyBinding(Client.LEGACY_KEY_NAME_CAST, defaultBinding));
-        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, _ -> Client.toggle());
+        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused405 -> Client.toggle());
         ToggleStatusHud.Companion.registerStateProvider(
                 Skills.VACUUM_DOMAIN.get(),
                 () -> AbilitySystemClient.getSkillData(Skills.VACUUM_DOMAIN.get())
@@ -290,7 +290,7 @@ public final class VacuumDomain extends Skill {
                             ? baseCost * 0.75f
                             : baseCost;
                     enabled = skill.executeContinuousWithResource(
-                            player, _ -> 0.0f, _ -> airCost, (_, _) -> { }, true);
+                            player, unused406 -> 0.0f, unused407 -> airCost, (unused408, unused409) -> { }, true);
                 }
             }
             if (!enabled) {

@@ -167,7 +167,7 @@ public class BallLightning extends Skill {
         public static void handle(ActivatePacket packet) {
             var player = packet.getPacketListener().getPlayer();
             if (ACTIVE.containsKey(player)) return;
-            Skills.BALL_LIGHTNING.get().executeActive(player, (skillContext, _) -> {
+            Skills.BALL_LIGHTNING.get().executeActive(player, (skillContext, unused479) -> {
                 var context = new Context(player, skillContext.milestone());
                 ACTIVE.put(player, context);
                 AbilitySystemServer.registerContext(context);

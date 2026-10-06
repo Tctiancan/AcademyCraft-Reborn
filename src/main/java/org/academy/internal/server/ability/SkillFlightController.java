@@ -1,6 +1,6 @@
 package org.academy.internal.server.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.neoforged.neoforge.common.NeoForgeMod;
@@ -12,7 +12,7 @@ public final class SkillFlightController {
     private SkillFlightController() {
     }
 
-    public static void setSource(ServerPlayer player, Identifier source, boolean enabled) {
+    public static void setSource(ServerPlayer player, ResourceLocation source, boolean enabled) {
         var attribute = player.getAttribute(NeoForgeMod.CREATIVE_FLIGHT);
         if (attribute == null) return;
 

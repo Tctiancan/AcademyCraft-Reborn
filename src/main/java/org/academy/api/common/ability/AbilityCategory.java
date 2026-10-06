@@ -5,9 +5,9 @@ import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.damagesource.DamageType;
 import org.academy.api.common.damage.AbilityDamageProfile;
 import org.academy.api.common.ability.program.ProgramProfile;
@@ -35,11 +35,11 @@ public abstract class AbilityCategory {
     private final float probability;
     private final @Nullable AbilityFactorProfile developmentProfile;
 
-    private Map<Identifier, Skill> skills = new LinkedHashMap<>();
+    private Map<ResourceLocation, Skill> skills = new LinkedHashMap<>();
     private boolean sealed;
 
     /** Stable namespaced codec for persistence; CODEC retains the legacy numeric representation. */
-    public static final Codec<AbilityCategory> ID_CODEC = Identifier.CODEC.flatXmap(
+    public static final Codec<AbilityCategory> ID_CODEC = ResourceLocation.CODEC.flatXmap(
             id -> Registries.ABILITY_CATEGORIES.get(id)
                     .map(holder -> DataResult.success(holder.value()))
                     .orElseGet(() -> DataResult.error(() -> "Unknown ability category " + id)),
@@ -84,7 +84,7 @@ public abstract class AbilityCategory {
 
     public final void seal() {
         if (sealed) return;
-        var sorted = new LinkedHashMap<Identifier, Skill>();
+        var sorted = new LinkedHashMap<ResourceLocation, Skill>();
         skills.values().stream().sorted(Comparator.comparingInt(Skill::getDisplayOrder)
                 .thenComparing(skill -> skill.getKey().toString()))
                 .forEach(skill -> sorted.put(skill.getKey(), skill));
@@ -121,7 +121,7 @@ public abstract class AbilityCategory {
         return Optional.empty();
     }
 
-    public Identifier getKey() {
+    public ResourceLocation getKey() {
         return Objects.requireNonNull(Registries.ABILITY_CATEGORIES.getKey(this), "This ability category has not been registered.");
     }
 
@@ -132,7 +132,7 @@ public abstract class AbilityCategory {
     /**
      * 能力在开发机左侧面板中显示的图标喵
      */
-    public abstract Identifier getDeveloperIcon();
+    public abstract ResourceLocation getDeveloperIcon();
 
     /**
      * 能力在开发机左侧面板中显示的名称喵
@@ -145,7 +145,7 @@ public abstract class AbilityCategory {
 
     public static final class Builder {
         private @Nullable String translationKey;
-        private @Nullable Identifier icon;
+        private @Nullable ResourceLocation icon;
         private float probability;
         private @Nullable AbilityFactorProfile development;
         private @Nullable AbilityResourceSpec resource;
@@ -159,7 +159,7 @@ public abstract class AbilityCategory {
             return this;
         }
 
-        public Builder icon(Identifier value) {
+        public Builder icon(ResourceLocation value) {
             icon = Objects.requireNonNull(value);
             return this;
         }
@@ -213,7 +213,7 @@ public abstract class AbilityCategory {
 
     private static final class DeclaredCategory extends AbilityCategory {
         private final String name;
-        private final Identifier icon;
+        private final ResourceLocation icon;
         private final boolean commonSkills;
         private final Optional<AbilityResourceSpec> resource;
         private final Optional<ResourceKey<DamageType>> damageType;
@@ -233,7 +233,7 @@ public abstract class AbilityCategory {
 
         @Override public String getDisplayName() { return L10nUtil.get(name); }
         @Override public String getDescriptionId() { return name; }
-        @Override public Identifier getDeveloperIcon() { return icon; }
+        @Override public ResourceLocation getDeveloperIcon() { return icon; }
         @Override public boolean supportsCommonSkills() { return commonSkills; }
         @Override public Optional<AbilityResourceSpec> getResourceSpec() { return resource; }
         @Override public Optional<ResourceKey<DamageType>> getDefaultDamageType() { return damageType; }

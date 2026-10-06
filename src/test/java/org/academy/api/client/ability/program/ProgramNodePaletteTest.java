@@ -2,7 +2,7 @@ package org.academy.api.client.ability.program;
 
 import com.google.gson.JsonObject;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 import java.util.List;
 import java.util.UUID;
@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProgramNodePaletteTest {
     @Test void presetsFollowServerSnapshotAndOwnTheirConfiguration() {
-        var id = Identifier.fromNamespaceAndPath("test", UUID.randomUUID().toString());
+        var id = ResourceLocation.fromNamespaceAndPath("test", UUID.randomUUID().toString());
         var config = new JsonObject(); config.addProperty("package_id", "one");
         var preset = new ProgramNodePalette.Preset(config, Component.literal("Named spell"));
         var current = new AtomicReference<>(List.of(preset));
@@ -25,7 +25,7 @@ class ProgramNodePaletteTest {
         assertNull(ProgramNodePalette.label(id, preset.configuration()));
     }
     @Test void duplicateProvidersAreRejected() {
-        var id = Identifier.fromNamespaceAndPath("test", UUID.randomUUID().toString());
+        var id = ResourceLocation.fromNamespaceAndPath("test", UUID.randomUUID().toString());
         ProgramNodePalette.register(id, List::of);
         assertThrows(IllegalStateException.class, () -> ProgramNodePalette.register(id, List::of));
     }

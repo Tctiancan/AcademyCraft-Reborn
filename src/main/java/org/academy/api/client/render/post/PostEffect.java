@@ -4,7 +4,7 @@ import com.mojang.blaze3d.GpuFormat;
 import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.textures.FilterMode;
+import org.academy.api.client.render.texture.FilterMode;
 import net.minecraft.client.Minecraft;
 import org.academy.api.client.render.Render;
 import org.academy.api.client.render.TextureBinding;
@@ -44,7 +44,7 @@ public final class PostEffect {
         Render.runBlitPass(
                 sceneColorView, Render.RenderPipelines.BLIT_SCREEN_WITHOUT_BLEND,
                 Render.Buffers.getInstance().getFSQuadVBNDC(),
-                List.of(new TextureBinding("Sampler0", main, RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST))),
+                List.of(new TextureBinding("Sampler0", main, org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST))),
                 List.of(),
                 false
         );

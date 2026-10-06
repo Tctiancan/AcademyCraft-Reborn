@@ -4,7 +4,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.vfx.SkillVfxState;
 import org.academy.internal.client.render.vfx.SkillVfxClient;
@@ -20,12 +20,12 @@ import org.misaka.api.common.network.packet.PacketType;
 public final class SkillVfxPacket extends Packet<ClientPacketListener, SkillVfxPacket> {
     public static final StreamCodec<ByteBuf, SkillVfxPacket> CODEC = StreamCodec.of(
             (buffer, packet) -> packet.write(buffer), SkillVfxPacket::read);
-    public final Identifier dimension;
+    public final ResourceLocation dimension;
     public final long id;
     public final long revision;
     public final SkillVfxState state;
 
-    public SkillVfxPacket(Identifier dimension, long id, long revision, SkillVfxState state) {
+    public SkillVfxPacket(ResourceLocation dimension, long id, long revision, SkillVfxState state) {
         this.dimension = dimension;
         this.id = id;
         this.revision = revision;
@@ -33,7 +33,7 @@ public final class SkillVfxPacket extends Packet<ClientPacketListener, SkillVfxP
     }
 
     private void write(ByteBuf b) {
-        Identifier.STREAM_CODEC.encode(b, dimension);
+        ResourceLocation.STREAM_CODEC.encode(b, dimension);
         ByteBufCodecs.VAR_LONG.encode(b, id);
         ByteBufCodecs.VAR_LONG.encode(b, revision);
         b.writeByte(switch (state) {
@@ -96,7 +96,7 @@ public final class SkillVfxPacket extends Packet<ClientPacketListener, SkillVfxP
     }
 
     private static SkillVfxPacket read(ByteBuf b) {
-        var dimension = Identifier.STREAM_CODEC.decode(b);
+        var dimension = ResourceLocation.STREAM_CODEC.decode(b);
         long id = ByteBufCodecs.VAR_LONG.decode(b), revision = ByteBufCodecs.VAR_LONG.decode(b);
         int type = b.readUnsignedByte();
         var pos = vector(b);

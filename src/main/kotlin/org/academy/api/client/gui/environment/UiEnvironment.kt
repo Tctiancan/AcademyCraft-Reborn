@@ -1,7 +1,7 @@
 package org.academy.api.client.gui.environment
 
-import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.GpuTextureView
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.texture.TextureSource
 import org.academy.api.client.gui.unit.Density
 import java.io.InputStream
@@ -34,9 +34,9 @@ interface UiEnvironment {
 
     fun openResource(namespace: String, path: String): InputStream?
 
-    fun loadTexture(identifier: Identifier): GpuTextureView
+    fun loadTexture(identifier: ResourceLocation): GpuTextureView
 
-    fun createDynamicTextureSource(identifier: Identifier, bytes: ByteArray): TextureSource
+    fun createDynamicTextureSource(identifier: ResourceLocation, bytes: ByteArray): TextureSource
 
     fun clipboard(): String = ""
 

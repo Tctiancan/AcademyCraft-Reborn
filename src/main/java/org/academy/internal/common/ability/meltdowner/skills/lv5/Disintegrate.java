@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -54,7 +54,7 @@ import java.util.UUID;
 public class Disintegrate extends Skill {
     private static final double PRIMARY_RANGE = 30.0;
     private static final double SCATTER_RADIUS = 12.0;
-    private static final Identifier DISINTEGRATION_ID = AcademyCraft.academy("disintegration_armor");
+    private static final ResourceLocation DISINTEGRATION_ID = AcademyCraft.academy("disintegration_armor");
 
     public Disintegrate() {
         super(Builder.of(AbilityCategories.MELTDOWNER.get())
@@ -75,7 +75,7 @@ public class Disintegrate extends Skill {
         InputSystem.addKeyBinding(Client.KEY, Client.CONFIG.getKeyBinding(Client.KEY,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_K,
                                 InputConstants.PRESS, InputConstants.MOD_ALT | InputConstants.MOD_SHIFT)),
-                _ -> Client.onUse());
+                unused505 -> Client.onUse());
     }
 
     @Override
@@ -138,7 +138,7 @@ public class Disintegrate extends Skill {
                             100.0f,
                             context.system().getPlayerMaxCP(player.getUUID()) * 0.2f
                     ),
-                    (context, _) -> {
+                    (context, unused506) -> {
                         var level = player.level();
                         cleanup(level.getGameTime());
                         var start = ContinuousBeam.mainHandOrigin(player, 0.2f);

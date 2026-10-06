@@ -53,7 +53,7 @@ public final class SensoryDistortion extends Skill {
                         InputConstants.PRESS,
                         InputConstants.MOD_ALT
                 )
-        ), _ -> Client.use());
+        ), unused535 -> Client.use());
     }
 
     @Override

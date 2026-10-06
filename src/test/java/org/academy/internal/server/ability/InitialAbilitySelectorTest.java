@@ -1,6 +1,6 @@
 package org.academy.internal.server.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.AbilityFactorProfile;
 import org.academy.internal.common.ability.development.AbilityDevelopmentProfiles;
@@ -66,8 +66,8 @@ class InitialAbilitySelectorTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
-            return Identifier.parse("academy:test");
+        public ResourceLocation getDeveloperIcon() {
+            return ResourceLocation.parse("academy:test");
         }
 
         @Override

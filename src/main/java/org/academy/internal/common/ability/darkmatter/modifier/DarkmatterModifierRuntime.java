@@ -8,7 +8,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -19,7 +19,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Shearable;
@@ -27,11 +26,11 @@ import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.monster.illager.AbstractIllager;
-import net.minecraft.world.entity.npc.villager.Villager;
+import net.minecraft.world.entity.monster.AbstractIllager;
+import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -49,7 +48,7 @@ import net.neoforged.neoforge.event.entity.EntityTeleportEvent;
 import net.neoforged.neoforge.event.entity.ProjectileImpactEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.darkmatter.DarkmatterModifiers;
@@ -72,11 +71,11 @@ import java.util.concurrent.ConcurrentHashMap;
  * Runtime hook set for shaped-item modifiers. All item data is read from the embedded profile.
  */
 public final class DarkmatterModifierRuntime {
-    private static final Identifier GRAVITY_ID = AcademyCraft.academy("shaping_antigravity");
-    private static final Identifier SAFE_FALL_ID = AcademyCraft.academy("shaping_safe_fall");
-    private static final Identifier BLOCK_REACH_ID = AcademyCraft.academy("shaping_block_reach");
-    private static final Identifier ENTITY_REACH_ID = AcademyCraft.academy("shaping_entity_reach");
-    private static final Identifier PROJECTILE_PENETRATION_ID =
+    private static final ResourceLocation GRAVITY_ID = AcademyCraft.academy("shaping_antigravity");
+    private static final ResourceLocation SAFE_FALL_ID = AcademyCraft.academy("shaping_safe_fall");
+    private static final ResourceLocation BLOCK_REACH_ID = AcademyCraft.academy("shaping_block_reach");
+    private static final ResourceLocation ENTITY_REACH_ID = AcademyCraft.academy("shaping_entity_reach");
+    private static final ResourceLocation PROJECTILE_PENETRATION_ID =
             AcademyCraft.academy("shaping_projectile_penetration");
     private static final TagKey<Block> ADDITIONAL_HARVESTABLE_CROPS = TagKey.create(
             Registries.BLOCK, AcademyCraft.academy("darkmatter_harvestable/crops"));
@@ -167,8 +166,7 @@ public final class DarkmatterModifierRuntime {
         var lightning = DarkmatterItemUtil.modifierLevel(weapon, DarkmatterModifiers.LIGHTNING);
         if (lightning > 0 && target.level() instanceof ServerLevel level
                 && level.getRandom().nextFloat() < 0.10f * lightning) {
-            var bolt = net.minecraft.world.entity.EntityTypes.LIGHTNING_BOLT.create(
-                    level, EntitySpawnReason.TRIGGERED);
+            var bolt = net.minecraft.world.entity.EntityType.LIGHTNING_BOLT.create(level);
             if (bolt != null) {
                 bolt.snapTo(target.position());
                 bolt.setCause(attacker);
@@ -181,8 +179,7 @@ public final class DarkmatterModifierRuntime {
         if (feathers > 0 && target.level() instanceof ServerLevel level) {
             for (var index = 0; index < feathers; index++) {
                 var feather = org.academy.internal.common.world.entity.EntityTypes
-                        .DARKMATTER_FEATHER_PROJECTILE.get().create(
-                                level, EntitySpawnReason.TRIGGERED);
+                        .DARKMATTER_FEATHER_PROJECTILE.get().create(level);
                 if (feather == null) continue;
                 var angle = Math.PI * 2.0 * index / Math.max(1, feathers);
                 feather.configure(attacker, target,
@@ -339,7 +336,7 @@ public final class DarkmatterModifierRuntime {
         }
 
         @SubscribeEvent
-        public static void onBreak(BreakBlockEvent event) {
+        public static void onBreak(BlockEvent.BreakEvent event) {
             if (!(event.getPlayer() instanceof ServerPlayer player)) return;
             var held = player.getMainHandItem();
             if (DarkmatterItemUtil.modifierLevel(held, DarkmatterModifiers.MAGNETIC) > 0) {
@@ -454,7 +451,8 @@ public final class DarkmatterModifierRuntime {
             return DarkmatterItemUtil.damageIntegrity(stack, amount / 12_000.0f);
         }
         // Coatings also support normally indestructible targets. Such targets keep their
-        // vanilla durability semantics while still receiving the configured active effect.
+        // vanilla durability semantics
+// while still receiving the configured active effect.
         if (!stack.isDamageableItem()) return true;
         stack.hurtAndBreak(amount, player, hand == InteractionHand.MAIN_HAND
                 ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
@@ -466,7 +464,7 @@ public final class DarkmatterModifierRuntime {
             if (!SpatialStorageUnitItem.isEnabled(unit)) continue;
             var id = unit.get(ItemDataComponents.SPATIAL_STORAGE_ID.get());
             if (id != null && SpatialStorageSavedData.get(level.getServer())
-                    .consumeOne(id, resource -> resource.toStack().is(HARVEST_REPLANT_ITEMS))) return true;
+                    .consumeOne(id, resource -> resource.is(HARVEST_REPLANT_ITEMS))) return true;
         }
         for (var item : level.getEntitiesOfClass(ItemEntity.class,
                 new AABB(pos).inflate(1.5), entity ->
@@ -509,7 +507,7 @@ public final class DarkmatterModifierRuntime {
 
     private static void replaceAttribute(ServerPlayer player,
                                          Holder<Attribute> attribute,
-                                         Identifier id, double amount,
+                                         ResourceLocation id, double amount,
                                          AttributeModifier.Operation operation) {
         var instance = player.getAttribute(attribute);
         if (instance == null) return;

@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
@@ -16,15 +16,15 @@ import java.util.WeakHashMap;
 
 /** Per-instance immunity sources supplement data-pack entity-type immunity tags. Server thread only. */
 public final class MentalImmunity {
-    private static final Map<LivingEntity, Map<Identifier, Component>> SOURCES = new WeakHashMap<>();
+    private static final Map<LivingEntity, Map<ResourceLocation, Component>> SOURCES = new WeakHashMap<>();
     private static final Set<UUID> SUPPRESSED = new HashSet<>();
     private MentalImmunity() {}
 
-    public static void set(LivingEntity subject, Identifier source, Component feedback, boolean enabled) {
+    public static void set(LivingEntity subject, ResourceLocation source, Component feedback, boolean enabled) {
         if (subject.level().isClientSide() || isSuppressed(subject)) return;
         var values = SOURCES.get(subject);
         if (enabled) {
-            if (values == null) values = SOURCES.computeIfAbsent(subject, _ -> new LinkedHashMap<>());
+            if (values == null) values = SOURCES.computeIfAbsent(subject, unused165 -> new LinkedHashMap<>());
             var first = values.put(source, feedback.copy()) == null;
             if (first) MentalControlRuntime.releaseBySubject(subject.level().getServer(), subject.getUUID());
         } else if (values != null) {

@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.mentalout.skills.lv5;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.AbilityProgram;
@@ -90,7 +90,7 @@ public final class PrecisionOperation {
 
     public static final class Data extends SkillData {
         public static final int SCHEMA_VERSION = 5;
-        public static final Identifier ID = AcademyCraft.academy("precision_operation");
+        public static final ResourceLocation ID = AcademyCraft.academy("precision_operation");
 
         @SerializedName("schemaVersion")
         private int schemaVersion = SCHEMA_VERSION;
@@ -199,7 +199,7 @@ public final class PrecisionOperation {
         }
 
         @Override
-        public Identifier getType() {
+        public ResourceLocation getType() {
             return ID;
         }
     }

@@ -1,6 +1,6 @@
 package org.academy.api.server.damage;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.api.server.ability.AbilityResourceAccount;
 
@@ -17,7 +17,7 @@ import java.util.function.Supplier;
 
 /** Resource-backed protection at health submission, shared by normal and true-health writers. */
 public final class HealthLossGuards {
-    private static final Map<LivingEntity, Map<Identifier, Protection>> PROTECTIONS = new WeakHashMap<>();
+    private static final Map<LivingEntity, Map<ResourceLocation, Protection>> PROTECTIONS = new WeakHashMap<>();
     private static final ThreadLocal<Set<LivingEntity>> WRITING = ThreadLocal.withInitial(
             () -> Collections.newSetFromMap(new IdentityHashMap<>()));
     private static final ThreadLocal<Map<LivingEntity, java.util.List<DeathProtection>>> DEATH_PROTECTIONS =
@@ -39,7 +39,7 @@ public final class HealthLossGuards {
             throw new IllegalArgumentException("Remaining health must be positive and finite");
         }
         var protection = new DeathProtection(remainingHealth);
-        var scopes = DEATH_PROTECTIONS.get().computeIfAbsent(subject, _ -> new ArrayList<>());
+        var scopes = DEATH_PROTECTIONS.get().computeIfAbsent(subject, unused178 -> new ArrayList<>());
         scopes.add(protection);
         try {
             return new ProtectedResult<>(action.get(), protection.prevented);
@@ -61,13 +61,13 @@ public final class HealthLossGuards {
                 loss > 0 && absorbed + 1.0E-6 >= loss);
     }
 
-    public static void set(LivingEntity subject, Identifier source, AbilityResourceAccount account,
+    public static void set(LivingEntity subject, ResourceLocation source, AbilityResourceAccount account,
                            double costPerHealth, boolean enabled) {
-        set(subject, source, account, costPerHealth, enabled, _ -> {});
+        set(subject, source, account, costPerHealth, enabled, unused179 -> {});
     }
 
     /** Reports only successfully committed protection, never previews or refunded health writes. */
-    public static void set(LivingEntity subject, Identifier source, AbilityResourceAccount account,
+    public static void set(LivingEntity subject, ResourceLocation source, AbilityResourceAccount account,
                            double costPerHealth, boolean enabled, Consumer<Resolution> onAbsorbed) {
         if (subject.level().isClientSide()) return;
         if (!enabled) {
@@ -79,7 +79,7 @@ public final class HealthLossGuards {
             return;
         }
         if (!Double.isFinite(costPerHealth) || costPerHealth <= 0) throw new IllegalArgumentException("Invalid health cost");
-        PROTECTIONS.computeIfAbsent(subject, _ -> new LinkedHashMap<>())
+        PROTECTIONS.computeIfAbsent(subject, unused180 -> new LinkedHashMap<>())
                 .put(source, new Protection(account, costPerHealth, onAbsorbed));
     }
 
@@ -145,7 +145,8 @@ public final class HealthLossGuards {
 
     private static float effectiveCurrent(LivingEntity subject, float rawCurrent) {
         if (((org.academy.internal.common.entitycontrol.HealthOffsetAccess) subject).academy$getHealthOffset() == null) return rawCurrent;
-        // An existing projection is already committed damage, not a fresh bill for this resource.
+        // An existing projection is already committed damage, not a fresh bill
+// for this resource.
         return Math.min(rawCurrent, org.academy.internal.common.entitycontrol.TrueHealthOffsetRuntime.effectiveHealth(subject));
     }
 

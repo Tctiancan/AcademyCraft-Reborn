@@ -132,7 +132,7 @@ public final class MagneticWeaponAttackContext implements AutoCloseable {
             if (!Double.isFinite(speed)) return NONE;
             var damage = kineticWeapon.damageConditions()
                     .filter(condition -> condition.test(0, speed, speed, 1.0))
-                    .map(_ -> (float) Math.floor(speed * kineticWeapon.damageMultiplier()))
+                    .map(unused461 -> (float) Math.floor(speed * kineticWeapon.damageMultiplier()))
                     .orElse(0.0f);
             var knockback = kineticWeapon.knockbackConditions()
                     .map(condition -> condition.test(0, speed, speed, 1.0)).orElse(false);

@@ -103,12 +103,12 @@ public final class LinearAttackPayload {
         private final Skill skill;
         private final DamageSource outgoingDamageSource;
         private final float radius;
-        private DamageCalculator damageCalculator = _ -> 0.0f;
-        private DamageCalculator maximumHealthCalculator = _ -> 0.0f;
-        private Predicate<Entity> targetFilter = _ -> true;
-        private Predicate<Entity> outboundTargetFilter = _ -> true;
-        private Predicate<Entity> returnTargetFilter = _ -> true;
-        private HitEffect hitEffect = (_, _, _) -> {
+        private DamageCalculator damageCalculator = unused762 -> 0.0f;
+        private DamageCalculator maximumHealthCalculator = unused763 -> 0.0f;
+        private Predicate<Entity> targetFilter = unused764 -> true;
+        private Predicate<Entity> outboundTargetFilter = unused765 -> true;
+        private Predicate<Entity> returnTargetFilter = unused766 -> true;
+        private HitEffect hitEffect = (unused767, unused768, unused769) -> {
         };
 
         private Builder(

@@ -3,7 +3,7 @@ package org.academy.internal.server.ability;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.stats.Stats;
@@ -12,7 +12,7 @@ import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
-import net.minecraft.world.entity.monster.zombie.ZombieVillager;
+import net.minecraft.world.entity.monster.ZombieVillager;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
@@ -108,7 +108,7 @@ public final class PropsManager implements AbilitySubsystem {
     public void tick(ServerPlayer player) {
         var storedPlayer = playerDataManager.getData(player.getUUID());
         if (storedPlayer != null) mirrorAttributes(player, storedPlayer);
-        var snapshot = activity.computeIfAbsent(player.getUUID(), _ -> ActivitySnapshot.capture(player));
+        var snapshot = activity.computeIfAbsent(player.getUUID(), unused800 -> ActivitySnapshot.capture(player));
         tickActivity(player, snapshot);
 
         var gameTime = player.level().getGameTime();
@@ -280,7 +280,7 @@ public final class PropsManager implements AbilitySubsystem {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public void onDamagePre(LivingDamageEvent.Pre event) {
         if (!(event.getEntity() instanceof ServerPlayer player)) return;
-        healthBeforeDamage.computeIfAbsent(player.getUUID(), _ -> new ArrayDeque<>())
+        healthBeforeDamage.computeIfAbsent(player.getUUID(), unused801 -> new ArrayDeque<>())
                 .push(player.getHealth());
     }
 
@@ -412,9 +412,9 @@ public final class PropsManager implements AbilitySubsystem {
     }
 
     private static Milestone specialMilestone(EntityType<?> type) {
-        if (type == EntityTypes.ELDER_GUARDIAN) return new Milestone(ELDER_GUARDIAN_MILESTONE, 100.0);
-        if (type == EntityTypes.WITHER) return new Milestone(WITHER_MILESTONE, 500.0);
-        if (type == EntityTypes.ENDER_DRAGON) return new Milestone(ENDER_DRAGON_MILESTONE, 300.0);
+        if (type == EntityType.ELDER_GUARDIAN) return new Milestone(ELDER_GUARDIAN_MILESTONE, 100.0);
+        if (type == EntityType.WITHER) return new Milestone(WITHER_MILESTONE, 500.0);
+        if (type == EntityType.ENDER_DRAGON) return new Milestone(ENDER_DRAGON_MILESTONE, 300.0);
         return null;
     }
 
@@ -431,7 +431,7 @@ public final class PropsManager implements AbilitySubsystem {
         return null;
     }
 
-    private static int stat(ServerPlayer player, Identifier id) {
+    private static int stat(ServerPlayer player, ResourceLocation id) {
         return player.getStats().getValue(Stats.CUSTOM.get(id));
     }
 
@@ -513,3 +513,4 @@ public final class PropsManager implements AbilitySubsystem {
     private record Milestone(int bit, double reward) {
     }
 }
+

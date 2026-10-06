@@ -56,7 +56,7 @@ public final class BlockStructureKinetics {
         return propel(
                 structure,
                 controller,
-                (moving, _) -> targetPosition.subtract(moving.position())
+                (moving, unused166) -> targetPosition.subtract(moving.position())
                         .scale(HOLD_POSITION_GAIN)
                         .subtract(moving.velocity().scale(HOLD_VELOCITY_DAMPING))
                         .scale(moving.mass()),

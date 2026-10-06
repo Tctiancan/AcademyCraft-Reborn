@@ -5,7 +5,7 @@ import io.netty.handler.codec.DecoderException;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.academy.internal.common.network.PacketTypes;
@@ -25,7 +25,7 @@ import java.util.UUID;
 public final class FlowSensePacket extends Packet<ClientPacketListener, FlowSensePacket> {
     public static final int MAX_BATCH = 96;
     public static final StreamCodec<ByteBuf, FlowSensePacket> CODEC = StreamCodec.of(FlowSensePacket::write, FlowSensePacket::read);
-    public final Identifier dimension;
+    public final ResourceLocation dimension;
     public final long session, tick;
     public final int leaseTicks;
     public final float range;
@@ -42,7 +42,7 @@ public final class FlowSensePacket extends Packet<ClientPacketListener, FlowSens
         }
         private static int quantize(double value) { return (int) Math.round(Math.clamp(value, -30_000_000, 30_000_000) * 32); }
     }
-    public FlowSensePacket(Identifier dimension, long session, long tick, int leaseTicks, float range,
+    public FlowSensePacket(ResourceLocation dimension, long session, long tick, int leaseTicks, float range,
                            boolean clear, List<Sample> updates, List<Integer> removed) {
         if (updates.size() > MAX_BATCH || removed.size() > MAX_BATCH || leaseTicks < 1 || leaseTicks > 600
                 || !Float.isFinite(range) || range <= 0 || range > 512) throw new IllegalArgumentException("Invalid flow batch");
@@ -51,7 +51,7 @@ public final class FlowSensePacket extends Packet<ClientPacketListener, FlowSens
         this.updates = List.copyOf(updates); this.removed = List.copyOf(removed);
     }
     private static void write(ByteBuf buf, FlowSensePacket packet) {
-        Identifier.STREAM_CODEC.encode(buf, packet.dimension);
+        ResourceLocation.STREAM_CODEC.encode(buf, packet.dimension);
         buf.writeLong(packet.session).writeLong(packet.tick).writeBoolean(packet.clear);
         ByteBufCodecs.VAR_INT.encode(buf, packet.leaseTicks); buf.writeFloat(packet.range);
         ByteBufCodecs.VAR_INT.encode(buf, packet.updates.size());
@@ -64,7 +64,7 @@ public final class FlowSensePacket extends Packet<ClientPacketListener, FlowSens
         for (int id : packet.removed) ByteBufCodecs.VAR_INT.encode(buf, id);
     }
     private static FlowSensePacket read(ByteBuf buf) {
-        var dimension = Identifier.STREAM_CODEC.decode(buf);
+        var dimension = ResourceLocation.STREAM_CODEC.decode(buf);
         long session = buf.readLong(), tick = buf.readLong();
         boolean clear = buf.readBoolean();
         int lease = ByteBufCodecs.VAR_INT.decode(buf);

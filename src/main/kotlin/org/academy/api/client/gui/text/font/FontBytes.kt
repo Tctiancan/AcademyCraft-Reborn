@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.font
+﻿package org.academy.api.client.gui.text.font
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.lwjgl.system.MemoryUtil
 import java.io.IOException
@@ -8,10 +8,10 @@ import java.nio.ByteBuffer
 import java.util.concurrent.ConcurrentHashMap
 
 object FontBytes {
-    private val bytes = ConcurrentHashMap<Identifier, ByteArray>()
-    private val buffers = ConcurrentHashMap<Identifier, ByteBuffer>()
+    private val bytes = ConcurrentHashMap<ResourceLocation, ByteArray>()
+    private val buffers = ConcurrentHashMap<ResourceLocation, ByteBuffer>()
 
-    fun bytes(id: Identifier): ByteArray? {
+    fun bytes(id: ResourceLocation): ByteArray? {
         bytes[id]?.let { return it }
         val stream = UiEnvironment.get().openResource(id.namespace, id.path) ?: return null
         return try {
@@ -23,7 +23,7 @@ object FontBytes {
         }
     }
 
-    fun buffer(id: Identifier): ByteBuffer? {
+    fun buffer(id: ResourceLocation): ByteBuffer? {
         buffers[id]?.let { return it }
         val data = bytes(id) ?: return null
         val buffer = MemoryUtil.memAlloc(data.size)

@@ -1,24 +1,23 @@
 package org.academy.internal.client.model;
 
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.academy.internal.client.renderer.blockentity.state.WindGenTopRenderState;
 
 
 /**
  * @author MapleBadd
  */
-public class WindGenTopModel extends Model<WindGenTopRenderState> {
+public class WindGenTopModel {
     private final ModelPart all;
+    private final ModelPart root;
 
     public WindGenTopModel(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        this.root = root;
         all = root.getChild("all");
     }
 

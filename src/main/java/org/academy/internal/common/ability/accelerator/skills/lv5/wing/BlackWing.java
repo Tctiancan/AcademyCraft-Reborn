@@ -93,7 +93,7 @@ public final class BlackWing extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, GLFW_KEY_B, GLFW_RELEASE, GLFW_MOD_ALT)
-        ), _ -> Client.toggle());
+        ), unused287 -> Client.toggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.BLACK_WING.get(), () -> {
             var player = Minecraft.getInstance().player;
             return player != null && player.getData(AttachmentTypes.ACTIVATED_BLACK_WING.get());
@@ -216,7 +216,7 @@ public final class BlackWing extends Skill {
         }
 
         private static void startTracking(ServerPlayer observer, ServerPlayer target) {
-            OBSERVERS.computeIfAbsent(target, _ -> Collections.newSetFromMap(new WeakHashMap<>())).add(observer);
+            OBSERVERS.computeIfAbsent(target, unused288 -> Collections.newSetFromMap(new WeakHashMap<>())).add(observer);
             var session = refreshSession(target);
             if (session == null) return;
             var last = session.lastAttack;

@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,7 +33,7 @@ public final class MentalPerceptionRuntime {
             ServerPlayer controller,
             LivingEntity observer,
             LivingEntity hidden,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             long expiresAt
     ) {
@@ -50,7 +50,7 @@ public final class MentalPerceptionRuntime {
 
         var id = UUID.randomUUID();
         var key = new PairKey(observer.getUUID(), hidden.getUUID());
-        var relation = RELATIONS.computeIfAbsent(key, _ -> new Relation(observer, hidden));
+        var relation = RELATIONS.computeIfAbsent(key, unused510 -> new Relation(observer, hidden));
         var wasHidden = relation.isHidden();
         var suppressedAmbient = relation.suppressesAmbient();
         var lease = new Lease(
@@ -222,7 +222,7 @@ public final class MentalPerceptionRuntime {
     }
 
     private static void index(Map<UUID, Set<UUID>> index, UUID key, UUID id) {
-        index.computeIfAbsent(key, _ -> new HashSet<>()).add(id);
+        index.computeIfAbsent(key, unused511 -> new HashSet<>()).add(id);
     }
 
     private static void unindex(Map<UUID, Set<UUID>> index, UUID key, UUID id) {
@@ -260,7 +260,7 @@ public final class MentalPerceptionRuntime {
             UUID id,
             UUID controllerId,
             PairKey key,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             long expiresAt,
             long order,

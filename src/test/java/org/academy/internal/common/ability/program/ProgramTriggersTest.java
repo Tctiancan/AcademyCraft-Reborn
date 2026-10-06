@@ -9,7 +9,7 @@ import org.academy.internal.common.ability.program.registry.PrecisionProgramNode
 
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
 
@@ -191,7 +191,7 @@ class ProgramTriggersTest {
     }
 
     private static CompiledProgram compiled(
-            Identifier type,
+            ResourceLocation type,
             JsonObject configuration
     ) {
         var result = AbilityProgramDefinitions.mentalout()
@@ -201,7 +201,7 @@ class ProgramTriggersTest {
     }
 
     private static AbilityProgram program(
-            Identifier type,
+            ResourceLocation type,
             JsonObject configuration
     ) {
         return new AbilityProgram(
@@ -216,7 +216,7 @@ class ProgramTriggersTest {
 
     private static ProgramGraph.Node node(
             int id,
-            Identifier type,
+            ResourceLocation type,
             JsonObject configuration
     ) {
         return new ProgramGraph.Node(id, type, 1, configuration);

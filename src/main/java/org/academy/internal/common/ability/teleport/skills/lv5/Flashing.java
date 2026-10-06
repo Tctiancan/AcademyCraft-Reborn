@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundSource;
@@ -69,7 +69,7 @@ public final class Flashing extends Skill {
     static final int REPEAT_TICKS = 6;
     static final int DASH_INVULNERABILITY_TICKS = 4;
     static final double DASH_TRUE_RESISTANCE = 8.0;
-    private static final Identifier DASH_RESISTANCE_ID =
+    private static final ResourceLocation DASH_RESISTANCE_ID =
             AcademyCraft.academy("flashing_true_resistance");
     static final int AUTO_ESCAPE_COOLDOWN_TICKS = 200;
     private static final double[] AUTO_ESCAPE_ANGLE_OFFSETS = {

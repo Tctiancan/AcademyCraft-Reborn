@@ -1,29 +1,28 @@
 package org.academy.internal.client.model;
 
-import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.academy.internal.client.definitions.AbilityControlTabletAnimation;
 import org.academy.internal.client.renderer.special.AbilityControlTabletRenderState;
 
-public final class AbilityControlTabletModel extends Model<AbilityControlTabletRenderState> {
+public final class AbilityControlTabletModel {
     public static final AbilityControlTabletModel MODEL = new AbilityControlTabletModel(
             createBodyLayer(false).bakeRoot()
     );
     public static final AbilityControlTabletModel SCREEN_MODEL = new AbilityControlTabletModel(
             createBodyLayer(true).bakeRoot()
     );
-    private final KeyframeAnimation open;
+    private final ModelPart root;
+    private final AnimationDefinition open;
 
     private AbilityControlTabletModel(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
-        open = AbilityControlTabletAnimation.OPEN.bake(root);
+        this.root = root;
+        open = AbilityControlTabletAnimation.OPEN;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -98,9 +97,7 @@ public final class AbilityControlTabletModel extends Model<AbilityControlTabletR
         return LayerDefinition.create(meshDefinition, 48, 48);
     }
 
-    @Override
     public void setupAnim(AbilityControlTabletRenderState renderState) {
-        super.setupAnim(renderState);
-        open.apply(renderState.animationTimeMillis(), 1.0F);
+        KeyframeAnimationApplier.apply(open, renderState.animationTimeMillis(), 1.0F, root, new org.joml.Vector3f());
     }
 }

@@ -1,383 +1,112 @@
 package org.academy.api.client.gui.render
 
-import com.mojang.blaze3d.PrimitiveTopology
-import com.mojang.blaze3d.buffers.GpuBuffer
-import com.mojang.blaze3d.buffers.GpuBufferSlice
-import com.mojang.blaze3d.buffers.GpuFence
-import com.mojang.blaze3d.pipeline.RenderPipeline
-import com.mojang.blaze3d.systems.RenderPass
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.GpuTextureView
-import org.academy.AcademyCraft
+import com.mojang.blaze3d.vertex.BufferUploader
+import com.mojang.blaze3d.vertex.DefaultVertexFormat
+import com.mojang.blaze3d.vertex.MeshData
+import com.mojang.blaze3d.vertex.VertexFormat
+import net.minecraft.client.renderer.GameRenderer
+import net.minecraft.client.renderer.ShaderInstance
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.render.TextureBinding
-import org.academy.api.client.render.UniformBinding
-import java.lang.AutoCloseable
-import java.util.*
 import kotlin.math.ceil
 import kotlin.math.floor
-import kotlin.math.max
 
+/**
+ * 移植自 Minecraft 26.2 的 GPU 命令编码器, 适配 1.21.1 即时渲染.
+ *
+ * 26.2 版本使用 device/commandEncoder/renderPass + CPU 环形 GpuBuffer 把网格上载后
+ * 一次性命令编码提交; 1.21.1 无对应 API, 改为直接对 [BatchProcessor] 产出的
+ * [MeshData] 走 [BufferUploader.drawWithShader] 即时上载绘制.
+ *
+ * 迁移策略 (C-stun):
+ * - 几何: 按网格顶点格式选择内置 shader, 用 RenderSystem 全局矩阵/管线即时绘制.
+ * - 纹理: 按 [TextureBinding] 的 sampler 槽绑定 1.21.1 [ResourceLocation].
+ * - Uniform: 1.21.1 无 26.2 式 GPU UBO 通道, 首版整体跳过 (占位).
+ * - Scissor: 复用原物理像素换算, 落到 [RenderSystem.enableScissor].
+ */
 class CommandExecutor : AutoCloseable {
-    private var globalBuffer: GpuBuffer? = null
-    private var writeOffset = 0L
 
-    private val activeRegions = ArrayDeque<FrameRegion>()
-    private val retiredBuffers = ArrayDeque<RetiredBuffer>()
-
-    fun execute(
-        batches: List<PendingBatch>,
-        color: GpuTextureView,
-        projectionUbo: GpuBufferSlice,
-        dynamicTransformsUbo: GpuBuffer,
-        guiScale: Float
-    ) {
-        processRetiredBuffers()
-
+    /**
+     * 提交一批网格到当前 1.21.1 渲染目标.
+     *
+     * @param batches 已按批次合并、顶点已生成好的网格 (来自 [BatchProcessor]).
+     * @param guiScale 物理像素 / GUI 空间像素之比, 用于 scissor 换算.
+     */
+    fun execute(batches: List<PendingBatch>, guiScale: Float) {
         if (batches.isEmpty()) return
 
-        val meshAbsoluteOffsets = mutableListOf<MeshOffsetInfo>()
-        val allocation = prepareBuffer(batches, meshAbsoluteOffsets)
-
-        if (globalBuffer == null) return
-        val buffer = globalBuffer!!
-
-        val drawCalls = uploadAndBuildDrawCalls(batches, meshAbsoluteOffsets, allocation, buffer)
-
-        submitRenderPass(drawCalls, color, projectionUbo, dynamicTransformsUbo, guiScale)
-
-        recordFence(allocation)
-    }
-
-    private data class MeshOffsetInfo(
-        val batchIndex: Int,
-        val meshIndex: Int,
-        val absoluteOffset: Long,
-        val length: Long
-    )
-
-    private fun prepareBuffer(batches: List<PendingBatch>, offsets: MutableList<MeshOffsetInfo>): AllocationResult {
-        var allocation = tryAllocate(batches, offsets)
-
-        if (globalBuffer == null) {
-            ensureCapacity(allocation.totalSize)
-            allocation = tryAllocate(batches, offsets)
-        } else if (allocation.needsRotate || allocation.totalSize > globalBuffer!!.size()) {
-            val requiredSize = allocation.totalSize
-            retireCurrentBuffer()
-            ensureCapacity(max(requiredSize, INITIAL_CAPACITY))
-            allocation = tryAllocate(batches, offsets)
+        for (batch in batches) {
+            if (!applyScissor(batch.scissorArea, guiScale)) continue
+            drawBatch(batch)
         }
-        return allocation
+        RenderSystem.disableScissor()
     }
 
-    private fun tryAllocate(batches: List<PendingBatch>, outOffsets: MutableList<MeshOffsetInfo>): AllocationResult {
-        outOffsets.clear()
-        var currentPtr = allocateMeshOffsets(batches, writeOffset, outOffsets)
+    private fun drawBatch(batch: PendingBatch) {
+        bindTextures(batch.textures)
 
-        var endPtr = currentPtr
-        var startPtr = writeOffset
-        var requiredLength = endPtr - startPtr
-        var needsRotate = false
-
-        if (globalBuffer != null && endPtr > globalBuffer!!.size()) {
-            outOffsets.clear()
-            currentPtr = allocateMeshOffsets(batches, 0, outOffsets)
-            startPtr = 0
-            endPtr = currentPtr
-            requiredLength = endPtr
-
-            if (globalBuffer != null && endPtr <= globalBuffer!!.size()) {
-                if (isRegionConflicted(startPtr, endPtr)) needsRotate = true
-            } else needsRotate = true
-        } else if (isRegionConflicted(startPtr, endPtr)) needsRotate = true
-
-        return AllocationResult(startPtr, endPtr, requiredLength, requiredLength, needsRotate)
-    }
-
-    private fun allocateMeshOffsets(
-        batches: List<PendingBatch>,
-        startPtr: Long,
-        outOffsets: MutableList<MeshOffsetInfo>
-    ): Long {
-        var currentPtr = startPtr
-        for (batchIdx in batches.indices) {
-            val batch = batches[batchIdx]
-            for (meshIdx in batch.meshDataList.indices) {
-                val mesh = batch.meshDataList[meshIdx]
-                val stride = mesh.drawState().format().vertexSize
-                currentPtr = align(currentPtr, stride)
-                outOffsets.add(MeshOffsetInfo(batchIdx, meshIdx, currentPtr, mesh.vertexBuffer().remaining().toLong()))
-                currentPtr += mesh.vertexBuffer().remaining().toLong()
-            }
-        }
-        return currentPtr
-    }
-
-    private fun uploadAndBuildDrawCalls(
-        batches: List<PendingBatch>,
-        offsets: List<MeshOffsetInfo>,
-        allocation: AllocationResult,
-        buffer: GpuBuffer
-    ): List<DrawCall> {
-        buffer.map(allocation.start, allocation.length, false, true).use { mapped ->
-            val mappedBuffer = mapped.data()
-            for ((batchIndex, meshIndex, absoluteOffset) in offsets) {
-                val mesh = batches[batchIndex].meshDataList[meshIndex]
-                mappedBuffer.position(Math.toIntExact(absoluteOffset - allocation.start))
-                mappedBuffer.put(mesh.vertexBuffer())
-            }
-        }
-
-        val drawCalls = mutableListOf<DrawCall>()
-        var offsetIdx = 0
-        for (batchIdx in batches.indices) {
-            val batch = batches[batchIdx]
-            val slices = mutableListOf<GpuBufferSlice>()
-            val slotIndices = batch.slotIndices
-            var indexCount = 0
-            for (meshIdx in batch.meshDataList.indices) {
-                val info = offsets[offsetIdx]
-                slices.add(buffer.slice(info.absoluteOffset, info.length))
-                if (batch.slotIndices[meshIdx] == 0) {
-                    indexCount = batch.indexCount
-                }
-                offsetIdx++
-            }
-            drawCalls.add(
-                DrawCall(
-                    batch.pipeline,
-                    batch.scissorArea,
-                    batch.textures,
-                    batch.uniforms,
-                    slices,
-                    slotIndices,
-                    indexCount,
-                    batch.instanceCount
-                )
-            )
-            for (mesh in batch.meshDataList) {
-                mesh.close()
-            }
-        }
-        return drawCalls
-    }
-
-    private fun submitRenderPass(
-        drawCalls: List<DrawCall>,
-        color: GpuTextureView,
-        projectionUbo: GpuBufferSlice,
-        dynamicTransformsUbo: GpuBuffer,
-        guiScale: Float
-    ) {
-        val sequentialIndexBuffer = RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS)
-        val indexBuffer = sequentialIndexBuffer.getBuffer(drawCalls.maxOf { it.indexCount })
-        val indexType = sequentialIndexBuffer.type()
-
-        val commandEncoder = RenderSystem.getDevice().createCommandEncoder()
-        commandEncoder.createRenderPass(
-            { "UIRender" }, color, Optional.empty()
-        ).use { renderPass ->
-            renderPass.setIndexBuffer(indexBuffer, indexType)
-            for (drawCall in drawCalls) {
-                if (configureDrawCall(
-                        renderPass,
-                        drawCall,
-                        projectionUbo,
-                        dynamicTransformsUbo,
-                        guiScale
-                    )
-                ) {
-                    renderPass.drawIndexed(
-                        drawCall.indexCount,
-                        drawCall.instanceCount,
-                        0,
-                        0,
-                        0
-                    )
-                }
-            }
+        for (mesh in batch.meshDataList) {
+            drawMesh(mesh)
         }
     }
 
-    private fun configureDrawCall(
-        renderPass: RenderPass,
-        drawCall: DrawCall,
-        projectionUbo: GpuBufferSlice,
-        dynamicTransformsUbo: GpuBuffer,
-        guiScale: Float
-    ): Boolean {
-        renderPass.setPipeline(drawCall.pipeline)
-
-        val bindings = drawCall.pipeline.vertexFormatBindings
-        for (i in bindings.indices) {
-            if (bindings[i] == null) {
-                renderPass.setVertexBuffer(i, null)
-            }
+    private fun bindTextures(textures: List<TextureBinding>) {
+        for (texture in textures) {
+            val location = texture.location ?: continue
+            RenderSystem.setShaderTexture(texture.samplerSlot, location)
         }
-
-        for (i in drawCall.vertexSlices.indices) {
-            val slot = drawCall.slotIndices[i]
-            renderPass.setVertexBuffer(slot, drawCall.vertexSlices[i])
-        }
-
-        val scissor = drawCall.scissorArea
-        if (scissor != null) {
-            val physicalWidth = UiEnvironment.get().physicalWidth
-            val physicalHeight = UiEnvironment.get().physicalHeight
-            val pos = scissor.position
-            val eps = 1e-4f
-            val left = floor(pos.x * guiScale + eps).toInt()
-            val right = ceil((pos.x + scissor.width) * guiScale - eps).toInt()
-            val glBottom = floor(physicalHeight - (pos.y + scissor.height) * guiScale + eps).toInt()
-            val glTop = ceil(physicalHeight - pos.y * guiScale - eps).toInt()
-            val clampedX = left.coerceIn(0, physicalWidth)
-            val clampedY = glBottom.coerceIn(0, physicalHeight)
-            val clampedRight = right.coerceIn(0, physicalWidth)
-            val clampedBottom = glTop.coerceIn(0, physicalHeight)
-            val clampedWidth = (clampedRight - clampedX).coerceAtLeast(0)
-            val clampedHeight = (clampedBottom - clampedY).coerceAtLeast(0)
-            if (clampedWidth <= 0 || clampedHeight <= 0) return false
-            renderPass.enableScissor(clampedX, clampedY, clampedWidth, clampedHeight)
-        } else {
-            renderPass.disableScissor()
-        }
-
-        renderPass.setUniform("Projection", projectionUbo)
-        renderPass.setUniform("DynamicTransforms", dynamicTransformsUbo)
-
-        return bindResources(renderPass, drawCall)
     }
 
-    private fun bindResources(renderPass: RenderPass, drawCall: DrawCall): Boolean {
-        for (texture in drawCall.textures) {
-            val value = texture.view
-            if (value.isClosed) {
-                logger.error("Sampler {} has been closed, skipping draw call.", texture.name)
-                return false
-            }
-            renderPass.bindTexture(texture.name, value, texture.sampler)
+    private fun drawMesh(mesh: MeshData) {
+        val shader = shaderFor(mesh.drawState().format()) ?: return
+        RenderSystem.setShader { shader }
+        BufferUploader.drawWithShader(mesh)
+        // MeshData 为 CPU 侧一次性分配; 完成后立即释放内存.
+        mesh.close()
+    }
+
+    /**
+     * 依据网格顶点格式选择内置 shader. 1.21.1 下 [BufferUploader.drawWithShader] 使用
+     * RenderSystem 当前绑定的 shader, 其 attribute 布局须与网格格式一致.
+     */
+    private fun shaderFor(format: VertexFormat): ShaderInstance? {
+        return when (format) {
+            DefaultVertexFormat.POSITION -> GameRenderer.getPositionShader()
+            DefaultVertexFormat.POSITION_COLOR -> GameRenderer.getPositionColorShader()
+            DefaultVertexFormat.POSITION_TEX -> GameRenderer.getPositionTexShader()
+            DefaultVertexFormat.POSITION_TEX_COLOR -> GameRenderer.getPositionTexColorShader()
+            else -> null
         }
-        for (uniform in drawCall.uniforms) {
-            val slice = uniform.slice
-            if (slice.buffer().isClosed) {
-                logger.error("Uniform {} has been closed, skipping draw call.", uniform.name)
-                return false
-            }
-            renderPass.setUniform(uniform.name, slice)
-        }
+    }
+
+    /**
+     * 把 GUI 空间 scissor 矩形换算为 1.21.1 物理像素(左下原点)并启用; 退化矩形返回 false
+     * 以跳过整个批次. 坐标语义沿用 26.2 原实现.
+     */
+    private fun applyScissor(scissor: ScissorRect?, guiScale: Float): Boolean {
+        if (scissor == null) return true
+
+        val physicalWidth = UiEnvironment.get().physicalWidth
+        val physicalHeight = UiEnvironment.get().physicalHeight
+        val pos = scissor.position
+        val eps = 1e-4f
+        val left = floor(pos.x * guiScale + eps).toInt()
+        val right = ceil((pos.x + scissor.width) * guiScale - eps).toInt()
+        val glBottom = floor(physicalHeight - (pos.y + scissor.height) * guiScale + eps).toInt()
+        val glTop = ceil(physicalHeight - pos.y * guiScale - eps).toInt()
+
+        val x = left.coerceIn(0, physicalWidth)
+        val y = glBottom.coerceIn(0, physicalHeight)
+        val w = (right.coerceIn(0, physicalWidth) - x).coerceAtLeast(0)
+        val h = (glTop.coerceIn(0, physicalHeight) - y).coerceAtLeast(0)
+        if (w <= 0 || h <= 0) return false
+
+        RenderSystem.enableScissor(x, y, w, h)
         return true
     }
 
-    private fun recordFence(allocation: AllocationResult) {
-        val fence = RenderSystem.getDevice().createCommandEncoder().createFence()
-        activeRegions.addLast(FrameRegion(allocation.start, allocation.end, fence))
-        writeOffset = allocation.end
-    }
-
-    private fun processRetiredBuffers() {
-        while (!retiredBuffers.isEmpty()) {
-            val retired = retiredBuffers.peekFirst()
-            if (retired.isReady) {
-                retired.free()
-                retiredBuffers.pollFirst()
-            } else break
-        }
-    }
-
-    private fun isRegionConflicted(start: Long, end: Long): Boolean {
-        cleanupActiveRegions()
-        for (region in activeRegions) if (region.intersects(start, end)) return true
-        return false
-    }
-
-    private fun cleanupActiveRegions() {
-        while (!activeRegions.isEmpty()) {
-            val region = activeRegions.peekFirst()
-            if (region.fence.awaitCompletion(0)) {
-                region.fence.close()
-                activeRegions.pollFirst()
-            } else break
-        }
-    }
-
-    private fun retireCurrentBuffer() {
-        if (globalBuffer != null) {
-            retiredBuffers.add(RetiredBuffer(globalBuffer!!, ArrayDeque(activeRegions)))
-            globalBuffer = null
-            activeRegions.clear()
-            writeOffset = 0L
-        }
-    }
-
-    private fun ensureCapacity(requiredBytes: Long) {
-        var newSize = max(INITIAL_CAPACITY, requiredBytes)
-        if (!retiredBuffers.isEmpty()) {
-            newSize = max(retiredBuffers.last.buffer.size(), newSize)
-        }
-        val usage = GpuBuffer.USAGE_VERTEX or GpuBuffer.USAGE_COPY_DST or GpuBuffer.USAGE_MAP_WRITE
-        globalBuffer = RenderSystem.getDevice().createBuffer(
-            { "AC UI StreamingBuffer" }, usage, newSize
-        )
-        writeOffset = 0L
-    }
-
     override fun close() {
-        if (globalBuffer != null) {
-            globalBuffer!!.close()
-            globalBuffer = null
-        }
-        for ((_, _, fence) in activeRegions) fence.close()
-        activeRegions.clear()
-        for (retired in retiredBuffers) retired.free()
-        retiredBuffers.clear()
-        writeOffset = 0L
-    }
-
-    private data class FrameRegion(val start: Long, val end: Long, val fence: GpuFence) {
-        fun intersects(otherStart: Long, otherEnd: Long): Boolean {
-            return start < otherEnd && otherStart < end
-        }
-    }
-
-    private data class RetiredBuffer(val buffer: GpuBuffer, val regions: Deque<FrameRegion>) {
-        val isReady: Boolean
-            get() {
-                return regions.isEmpty() || regions.last.fence.awaitCompletion(0)
-            }
-
-        fun free() {
-            for ((_, _, fence) in regions) fence.close()
-            regions.clear()
-            buffer.close()
-        }
-    }
-
-    private data class AllocationResult(
-        val start: Long,
-        val end: Long,
-        val length: Long,
-        val totalSize: Long,
-        val needsRotate: Boolean
-    )
-
-    private data class DrawCall(
-        val pipeline: RenderPipeline,
-        val scissorArea: ScissorRect?,
-        val textures: List<TextureBinding>,
-        val uniforms: List<UniformBinding>,
-        val vertexSlices: List<GpuBufferSlice>,
-        val slotIndices: List<Int>,
-        val indexCount: Int,
-        val instanceCount: Int
-    )
-
-    companion object {
-        private val logger = AcademyCraft.getLogger()
-        private const val INITIAL_CAPACITY = 4L * 1024L * 1024L
-
-        private fun align(offset: Long, alignment: Int): Long {
-            return (offset + (alignment - 1)) / alignment * alignment
-        }
+        // 1.21.1 即时模式下无跨帧 GPU 资源需要释放 (由 mesh.close / RenderSystem 管理).
     }
 }

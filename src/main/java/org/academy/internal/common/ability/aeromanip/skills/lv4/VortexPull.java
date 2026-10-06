@@ -110,7 +110,7 @@ public final class VortexPull extends Skill {
             AcademyCraftClient.Config.INSTANCE.save();
         }
         InputSystem.addMaintainedKeyBinding(
-                Client.KEY_NAME_CAST, binding, _ -> Client.start(), _ -> Client.stop());
+                Client.KEY_NAME_CAST, binding, unused393 -> Client.start(), unused394 -> Client.stop());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),
                 new AbilitySystemClient.SkillInfo(
@@ -208,9 +208,9 @@ public final class VortexPull extends Skill {
                 };
                 skill.executeActiveWithResource(
                         player,
-                        _ -> cp,
-                        _ -> air,
-                        (_, _) -> cast(player, skill, tier));
+                        unused395 -> cp,
+                        unused396 -> air,
+                        (unused397, unused398) -> cast(player, skill, tier));
             }
 
             @Override

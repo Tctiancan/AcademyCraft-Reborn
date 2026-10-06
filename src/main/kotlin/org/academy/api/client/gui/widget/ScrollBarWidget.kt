@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.layout.Orientation
@@ -38,10 +38,10 @@ open class ScrollBarWidget(orientation: Orientation) :
     }
 
     private fun renderTrack(context: Canvas, finalAlpha: Float) {
-        val trackAlpha = ARGB.alpha(trackColor) / 255.0f * finalAlpha
-        val r = ARGB.red(trackColor) / 255.0f
-        val g = ARGB.green(trackColor) / 255.0f
-        val b = ARGB.blue(trackColor) / 255.0f
+        val trackAlpha = FastColor.ARGB32.alpha(trackColor) / 255.0f * finalAlpha
+        val r = FastColor.ARGB32.red(trackColor) / 255.0f
+        val g = FastColor.ARGB32.green(trackColor) / 255.0f
+        val b = FastColor.ARGB32.blue(trackColor) / 255.0f
         val trackCommand = FillRectDrawCommand(width, height, r, g, b, trackAlpha)
         context.submit(trackCommand)
     }
@@ -50,10 +50,10 @@ open class ScrollBarWidget(orientation: Orientation) :
         val thumbStart = thumbPosition
         val thumbSize = thumbSize
 
-        val thumbAlpha = ARGB.alpha(thumbColor) / 255.0f * finalAlpha
-        val r = ARGB.red(thumbColor) / 255.0f
-        val g = ARGB.green(thumbColor) / 255.0f
-        val b = ARGB.blue(thumbColor) / 255.0f
+        val thumbAlpha = FastColor.ARGB32.alpha(thumbColor) / 255.0f * finalAlpha
+        val r = FastColor.ARGB32.red(thumbColor) / 255.0f
+        val g = FastColor.ARGB32.green(thumbColor) / 255.0f
+        val b = FastColor.ARGB32.blue(thumbColor) / 255.0f
 
         context.pose().pushPose()
         context.pose().translate(0.0f, 0.0f)

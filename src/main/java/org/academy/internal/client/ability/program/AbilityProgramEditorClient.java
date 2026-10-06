@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -123,7 +123,7 @@ public final class AbilityProgramEditorClient {
         return category != null && isSupportedCategoryId(category.getKey());
     }
 
-    public static boolean isSupportedCategoryId(@Nullable Identifier category) {
+    public static boolean isSupportedCategoryId(@Nullable ResourceLocation category) {
         return category != null
                 && !category.equals(AcademyCraft.academy(AbilityCategoryNames.LEVEL0))
                 && AbilityProgramDefinitions.find(category) != null;
@@ -191,7 +191,7 @@ public final class AbilityProgramEditorClient {
         ));
     }
 
-    static boolean validBook(Identifier category, ProgramBook book) {
+    static boolean validBook(ResourceLocation category, ProgramBook book) {
         if (book == null
                 || book.schemaVersion() != ProgramBook.CURRENT_SCHEMA_VERSION
                 || book.slots().size() != SLOT_COUNT) {
@@ -212,7 +212,7 @@ public final class AbilityProgramEditorClient {
                 && cached.slots().stream().anyMatch(slot -> !slot.empty());
     }
 
-    static ProgramBook decodeBook(Identifier category, @Nullable String encoded) {
+    static ProgramBook decodeBook(ResourceLocation category, @Nullable String encoded) {
         if (encoded == null || encoded.isBlank()) return ProgramBook.empty(SLOT_COUNT);
         try {
             var decoded = ProgramBookCodec.decode(Base64.getDecoder().decode(encoded));
@@ -233,7 +233,7 @@ public final class AbilityProgramEditorClient {
         return ProgramBook.empty(SLOT_COUNT);
     }
 
-    private static State state(UUID playerId, Identifier category) {
+    private static State state(UUID playerId, ResourceLocation category) {
         var key = storageKey(playerId, category);
         return STATES.computeIfAbsent(key, ignored -> {
             var book = decodeBook(category, config.programBooks.get(key));
@@ -241,18 +241,18 @@ public final class AbilityProgramEditorClient {
         });
     }
 
-    static String storageKey(UUID playerId, Identifier category) {
+    static String storageKey(UUID playerId, ResourceLocation category) {
         return playerId + "|" + category;
     }
 
-    private static Set<Identifier> learnedCapabilities() {
+    private static Set<ResourceLocation> learnedCapabilities() {
         return AbilitySystemClient.LEARNED_SKILLS.stream()
                 .filter(Objects::nonNull)
                 .map(Skill::getKey)
                 .collect(Collectors.toUnmodifiableSet());
     }
 
-    private static AbilityProgram emptyProgram(UUID playerId, Identifier category, int slot) {
+    private static AbilityProgram emptyProgram(UUID playerId, ResourceLocation category, int slot) {
         slot = Math.clamp(slot, 0, SLOT_COUNT - 1);
         var id = UUID.nameUUIDFromBytes((
                 "academy:ability_program:" + playerId + ":" + category + ":" + slot
@@ -276,7 +276,7 @@ public final class AbilityProgramEditorClient {
         AcademyCraftClient.Config.INSTANCE.save();
     }
 
-    public static void handleSync(Identifier category, byte[] encoded, boolean dismissedStarter) {
+    public static void handleSync(ResourceLocation category, byte[] encoded, boolean dismissedStarter) {
         if (!isSupportedCategoryId(category)) return;
         var decoded = ProgramBookCodec.decode(encoded);
         if (!decoded.valid() || !validBook(category, decoded.book())) return;
@@ -315,7 +315,7 @@ public final class AbilityProgramEditorClient {
         }
     }
 
-    public static void handleExtensionMismatch(Identifier category) {
+    public static void handleExtensionMismatch(ResourceLocation category) {
         var minecraft = Minecraft.getInstance();
         var player = minecraft.player;
         if (player != null) {
@@ -335,7 +335,7 @@ public final class AbilityProgramEditorClient {
     }
 
     public static void handleResult(
-            Identifier category,
+            ResourceLocation category,
             int slot,
             AbilityProgramManager.FeedbackType type,
             long revision,
@@ -474,7 +474,7 @@ public final class AbilityProgramEditorClient {
         private final AbilityCategory category;
         private final State state;
         private final UUID playerId;
-        private final Set<Identifier> capabilities;
+        private final Set<ResourceLocation> capabilities;
 
         private Session(AbilityCategory category, State state) {
             this.category = category;
@@ -499,7 +499,8 @@ public final class AbilityProgramEditorClient {
 
         @Override
         public boolean showStarter() {
-            // Wait for the current world's preference to avoid a prompt flashing on join.
+            // Wait
+// for the current world's preference to avoid a prompt flashing on join.
             return Boolean.FALSE.equals(starterDismissed);
         }
 
@@ -559,7 +560,7 @@ public final class AbilityProgramEditorClient {
         }
 
         @Override
-        public Set<Identifier> capabilities() {
+        public Set<ResourceLocation> capabilities() {
             return capabilities;
         }
 

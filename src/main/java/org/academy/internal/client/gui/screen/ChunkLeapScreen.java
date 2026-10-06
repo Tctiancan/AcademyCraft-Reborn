@@ -1,10 +1,8 @@
 package org.academy.internal.client.gui.screen;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.input.KeyEvent;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.EditBox;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
@@ -37,7 +35,7 @@ import java.util.UUID;
 /**
  * Full-screen 区块跃迁 map: a zoomable, draggable chunk grid with box selection.
  *
- * <p>The shell is drawn immediately against {@link GuiGraphicsExtractor}; all rects are derived from
+ * <p>The shell is drawn immediately against {@link GuiGraphics}; all rects are derived from
  * the window size each frame, so the layout adapts instead of overflowing on small windows. Everything
  * operable by keyboard (mode, slot, dimension) is also a clickable header button.
  *
@@ -157,7 +155,7 @@ public final class ChunkLeapScreen extends UiScreen {
             ChunkLeapGodViewClient.reset();
             if (dimension != null) {
                 MisakaNetworkClient.send(new ChunkLeapPackets.GodViewRequestPacket(
-                        dimension.identifier().toString(), 0, 0, false));
+                        dimension.location().toString(), 0, 0, false));
             }
         }
         ChunkMapClientState.removeListener(dataListener);
@@ -178,7 +176,7 @@ public final class ChunkLeapScreen extends UiScreen {
         if (result.isEmpty() && minecraft.level != null) {
             result.add(minecraft.level.dimension());
         }
-        result.sort((a, b) -> a.identifier().toString().compareTo(b.identifier().toString()));
+        result.sort((a, b) -> a.location().toString().compareTo(b.location().toString()));
         return result;
     }
 
@@ -242,7 +240,8 @@ public final class ChunkLeapScreen extends UiScreen {
             var z = coordinateValue(coordinateZBox == null ? null : coordinateZBox.getValue());
             panChunkX = x >> 4;
             panChunkZ = z >> 4;
-            // A new centre is a new region; re-anchor and refetch around it.
+            // A
+// new centre is a new region; re-anchor and refetch around it.
             zoom = minZoom();
             syncAnchor();
             flash("chunk_leap.status.moved", MUTED);
@@ -275,10 +274,10 @@ public final class ChunkLeapScreen extends UiScreen {
             return;
         }
         if (minecraft.player != null && minecraft.player.level().dimension().equals(dimension)) {
-            panChunkX = minecraft.player.chunkPosition().x();
-            panChunkZ = minecraft.player.chunkPosition().z();
+            panChunkX = minecraft.player.chunkPosition().x;
+            panChunkZ = minecraft.player.chunkPosition().z;
         } else {
-            var remembered = centerByDimension.get(dimension.identifier().toString());
+            var remembered = centerByDimension.get(dimension.location().toString());
             if (remembered != null) {
                 panChunkX = remembered[0];
                 panChunkZ = remembered[1];
@@ -294,14 +293,16 @@ public final class ChunkLeapScreen extends UiScreen {
     /** Switches the viewed dimension page, remembering the current centre. */
     private void switchDimension(ResourceKey<Level> next) {
         if (next == null || next.equals(dimension)) return;
-        centerByDimension.put(dimension.identifier().toString(), new double[]{panChunkX, panChunkZ});
+        centerByDimension.put(dimension.location().toString(), new double[]{panChunkX, panChunkZ});
         dimension = next;
         dimensionIndex = dimensions.indexOf(next);
         viewClient.newEpoch();
         ChunkMapClientState.beginView(dimension, viewClient.epoch());
         jumpToPlayer(false);
-        // Clear the raster even if the window did not move: the two dimensions share one texture, so
-        // without this the previous dimension's pixels stay visible in every chunk the new one has not
+        // Clear the raster even
+// if the window did not move: the two dimensions share one texture, so
+        // without this the previous dimension's pixels stay visible in every chunk the
+// new one has not
         // reported yet — including void chunks, which report no blocks at all.
         syncAnchor();
         flash("chunk_leap.status.dimension", MUTED);
@@ -411,8 +412,24 @@ public final class ChunkLeapScreen extends UiScreen {
 
     // ---------------------------------------------------------------- render
 
+    /**
+     * 1.21.1 渲染入口。原 26.2 由 {@code extractRenderState} 承担的绘制在此编排: 先由 super.render
+     * 绘制原版背景与 renderable(坐标输入框), 再叠加本屏的内容面板。God view 时整屏由真实地形构成,
+     * 仅绘制提示条。
+     */
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        if (ChunkLeapGodView.isActive()) {
+            renderGodViewOverlay(graphics);
+            return;
+        }
+        super.render(graphics, mouseX, mouseY, partialTick);
+        extractBackground(graphics, mouseX, mouseY, partialTick);
+        extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // God view replaces the whole map: the detached camera renders real terrain behind this screen, so
         // only a small hint bar is drawn. The screen stays open to keep receiving the C and Esc keys.
         if (ChunkLeapGodView.isActive()) {
@@ -458,10 +475,6 @@ public final class ChunkLeapScreen extends UiScreen {
         graphics.fill(g.right() - 1, g.top(), g.right(), g.bottom(), BORDER_DIM);
 
         renderSidePanel(graphics, mouseX, mouseY);
-        if (coordinateXBox != null && coordinateZBox != null) {
-            coordinateXBox.extractRenderState(graphics, mouseX, mouseY, partialTick);
-            coordinateZBox.extractRenderState(graphics, mouseX, mouseY, partialTick);
-        }
         renderFooter(graphics);
 
         if (confirmTicks > 0) {
@@ -474,29 +487,29 @@ public final class ChunkLeapScreen extends UiScreen {
     private int statusTicksInternal;
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         // In the god view the real world IS the content, so no blur or dimming is applied: the player must
         // see the terrain exactly as the game draws it, not through a tinted overlay.
         if (ChunkLeapGodView.isActive()) return;
-        extractBlurredBackground(graphics);
-        extractTransparentBackground(graphics);
+        // C-stun (1.21.1): 26.2 的 extractBlurredBackground/extractTransparentBackground 离屏模糊背景
+        // 管线未移植; super.render() 已在 render 中提供了原版背景, 此处留空占位。
     }
 
-    private void renderHeader(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void renderHeader(GuiGraphics graphics, int mouseX, int mouseY) {
         graphics.fill(4, 4, width - 4, HEADER_H + 2, 0x50000000);
         graphics.fill(4, HEADER_H + 2, width - 4, HEADER_H + 3, PANEL_BORDER);
 
         var x = 10;
-        graphics.text(font, Component.translatable("skill.academy.chunk_leap"), x, 10, TEXT);
+        graphics.drawString(font, Component.translatable("skill.academy.chunk_leap"), x, 10, TEXT);
         x += font.width(Component.translatable("skill.academy.chunk_leap")) + 14;
 
         // Dimension cycle: ‹ name ›, clickable arrows.
-        var dimName = Component.literal(dimension.identifier().getPath());
+        var dimName = Component.literal(dimension.location().getPath());
         var dimW = font.width(dimName);
         buttonRects.put("dim_prev", new int[]{x, 7, 10, 12});
         buttonRects.put("dim_next", new int[]{x + 14 + dimW + 4, 7, 10, 12});
         headerControl(graphics, "‹", x, 7, 10, 12, mouseX, mouseY);
-        graphics.text(font, dimName, x + 14, 10, ACCENT);
+        graphics.drawString(font, dimName, x + 14, 10, ACCENT);
         headerControl(graphics, "›", x + 14 + dimW + 4, 7, 10, 12, mouseX, mouseY);
         x += 14 + dimW + 4 + 10 + 14;
 
@@ -507,7 +520,7 @@ public final class ChunkLeapScreen extends UiScreen {
         buttonRects.put("mode", new int[]{x, 6, modeW, 14});
         var modeHovered = inside(mouseX, mouseY, x, 6, modeW, 14);
         graphics.fill(x, 6, x + modeW, 6 + 14, modeHovered ? 0x50C77DFF : 0x28C77DFF);
-        graphics.text(font, page == Page.BLOCKS ? blocksLabel : entitiesLabel,
+        graphics.drawString(font, page == Page.BLOCKS ? blocksLabel : entitiesLabel,
                 x + 6, 10, page == Page.BLOCKS ? TEXT : MUTED);
         x += modeW + 8;
 
@@ -532,23 +545,23 @@ public final class ChunkLeapScreen extends UiScreen {
             var msg = Component.translatable(statusMessage);
             var msgW = font.width(msg);
             var right = width - panelWidth() - 16;
-            graphics.text(font, msg, right - msgW, 10, statusColor);
+            graphics.drawString(font, msg, right - msgW, 10, statusColor);
         }
     }
 
-    private void headerControl(GuiGraphicsExtractor graphics, String glyph, int x, int y, int w, int h,
+    private void headerControl(GuiGraphics graphics, String glyph, int x, int y, int w, int h,
                                double mouseX, double mouseY) {
         var hovered = inside(mouseX, mouseY, x, y, w, h);
         graphics.fill(x, y, x + w, y + h, hovered ? 0x40FFFFFF : 0x18FFFFFF);
-        graphics.text(font, Component.literal(glyph), x + w / 2 - 2, y + 2, hovered ? TEXT : DIM);
+        graphics.drawString(font, Component.literal(glyph), x + w / 2 - 2, y + 2, hovered ? TEXT : DIM);
     }
 
-    private void slotTab(GuiGraphicsExtractor graphics, int x, int y, int w, Component label,
+    private void slotTab(GuiGraphics graphics, int x, int y, int w, Component label,
                          boolean active, double mouseX, double mouseY) {
         var hovered = inside(mouseX, mouseY, x, y, w, 14);
         graphics.fill(x, y, x + w, y + 14,
                 active ? (hovered ? 0x50C77DFF : 0x38C77DFF) : 0x14000000);
-        graphics.text(font, label, x + 5, y + 3, active ? TEXT : MUTED);
+        graphics.drawString(font, label, x + 5, y + 3, active ? TEXT : MUTED);
     }
 
     /**
@@ -558,10 +571,10 @@ public final class ChunkLeapScreen extends UiScreen {
      * incomplete for a while. Without an explicit indicator that reads as "broken" rather than
      * "loading" — which is exactly how the blank cross-dimension map was reported.
      */
-    private void renderLoadingBanner(GuiGraphicsExtractor graphics, ChunkMapRenderer.Geometry g,
+    private void renderLoadingBanner(GuiGraphics graphics, ChunkMapRenderer.Geometry g,
                                      int mouseX, int mouseY) {
         if (dimension == null) return;
-        var map = ChunkMapClientState.map(dimension.identifier().toString());
+        var map = ChunkMapClientState.map(dimension.location().toString());
         var total = map.total();
         var loaded = map.loaded();
         // Only the server knows the full picture; prefer its counters, fall back to tile coverage.
@@ -579,7 +592,7 @@ public final class ChunkLeapScreen extends UiScreen {
         border(graphics, barX - 6, barY - 6, barW + 12, 30, BORDER_DIM);
         var label = Component.translatable("chunk_leap.loading",
                 Math.round(ratio * 100), loaded, total);
-        graphics.text(font, label, barX, barY - 1, TEXT);
+        graphics.drawString(font, label, barX, barY - 1, TEXT);
         graphics.fill(barX, barY + 11, barX + barW, barY + 17, 0x40FFFFFF);
         graphics.fill(barX, barY + 11, barX + (int) (barW * ratio), barY + 17, ACCENT);
     }
@@ -598,11 +611,11 @@ public final class ChunkLeapScreen extends UiScreen {
             return;
         }
         var chunk = chunkAt(mouseX, mouseY);
-        var key = ChunkPos.pack(chunk.x(), chunk.z());
+        var key = ChunkPos.asLong(chunk.x, chunk.z);
         hoveredChunk = key;
         if (key == inspectedChunk) return;
-        var dimensionId = dimension.identifier().toString();
-        if (ChunkMapClientState.inspection(dimensionId, chunk.x(), chunk.z()) != null) {
+        var dimensionId = dimension.location().toString();
+        if (ChunkMapClientState.inspection(dimensionId, chunk.x, chunk.z) != null) {
             inspectedChunk = key;
             return;
         }
@@ -611,42 +624,42 @@ public final class ChunkLeapScreen extends UiScreen {
         lastInspectRequestMs = now;
         inspectedChunk = key;
         MisakaNetworkClient.send(new ChunkLeapPackets.InspectRequestPacket(
-                dimensionId, chunk.x(), chunk.z()));
+                dimensionId, chunk.x, chunk.z));
     }
 
     /** Renders the inspection readout for the hovered chunk, if one has arrived. */
-    private int renderInspection(GuiGraphicsExtractor graphics, int x, int y, int inner) {
+    private int renderInspection(GuiGraphics graphics, int x, int y, int inner) {
         if (hoveredChunk == Long.MIN_VALUE || dimension == null) return y;
         var chunk = net.minecraft.world.level.ChunkPos.unpack(hoveredChunk);
         var report = ChunkMapClientState.inspection(
-                dimension.identifier().toString(), chunk.x(), chunk.z());
-        graphics.text(font, Component.translatable("chunk_leap.inspect.title"), x, y, DIM);
+                dimension.location().toString(), chunk.x, chunk.z);
+        graphics.drawString(font, Component.translatable("chunk_leap.inspect.title"), x, y, DIM);
         y += 10;
-        graphics.text(font, Component.translatable("chunk_leap.inspect.chunk", chunk.x(), chunk.z()),
+        graphics.drawString(font, Component.translatable("chunk_leap.inspect.chunk", chunk.x, chunk.z),
                 x, y, ACCENT);
         y += 10;
         if (report == null) {
-            graphics.text(font, Component.translatable("chunk_leap.inspect.pending"), x, y, MUTED);
+            graphics.drawString(font, Component.translatable("chunk_leap.inspect.pending"), x, y, MUTED);
             return y + 11;
         }
         if (!report.loaded()) {
-            graphics.text(font, Component.translatable("chunk_leap.inspect.unloaded"), x, y, MUTED);
+            graphics.drawString(font, Component.translatable("chunk_leap.inspect.unloaded"), x, y, MUTED);
             return y + 11;
         }
         var surface = Component.translatable("chunk_leap.inspect.surface",
                 shortId(report.surfaceBlock()), report.surfaceY());
-        graphics.text(font, surface, x, y, TEXT);
+        graphics.drawString(font, surface, x, y, TEXT);
         y += 10;
         if (!report.biome().isEmpty()) {
-            graphics.text(font, Component.translatable("chunk_leap.inspect.biome", shortId(report.biome())),
+            graphics.drawString(font, Component.translatable("chunk_leap.inspect.biome", shortId(report.biome())),
                     x, y, TEXT);
             y += 10;
         }
-        graphics.text(font, Component.translatable("chunk_leap.inspect.entities", report.entityCount()),
+        graphics.drawString(font, Component.translatable("chunk_leap.inspect.entities", report.entityCount()),
                 x, y, TEXT);
         y += 11;
         for (var entry : report.palette()) {
-            graphics.text(font, Component.literal("· " + shortId(entry.blockId()) + " ×" + entry.count()),
+            graphics.drawString(font, Component.literal("· " + shortId(entry.blockId()) + " ×" + entry.count()),
                     x, y, MUTED);
             y += 9;
         }
@@ -658,7 +671,7 @@ public final class ChunkLeapScreen extends UiScreen {
         var colon = id.indexOf(':');
         return colon < 0 ? id : id.substring(colon + 1);
     }
-    private void renderSidePanel(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void renderSidePanel(GuiGraphics graphics, int mouseX, int mouseY) {
         var panelW = panelWidth();
         var x = width - panelW - 6;
         var y = HEADER_H + 4;
@@ -669,26 +682,27 @@ public final class ChunkLeapScreen extends UiScreen {
         var cursorY = y + 6;
 
         // Region cards
-        graphics.text(font, Component.translatable("chunk_leap.side.source"), x + 6, cursorY, ACCENT);
+        graphics.drawString(font, Component.translatable("chunk_leap.side.source"), x + 6, cursorY, ACCENT);
         cursorY = renderRegionCard(graphics, x + 5, cursorY + 10, inner, sourceCardText());
-        graphics.text(font, Component.translatable("chunk_leap.side.target"), x + 6, cursorY + 4, ACCENT);
+        graphics.drawString(font, Component.translatable("chunk_leap.side.target"), x + 6, cursorY + 4, ACCENT);
         cursorY = renderRegionCard(graphics, x + 5, cursorY + 14, inner, targetCardText());
         cursorY += 6;
 
         if (selectionClamped && page == Page.BLOCKS) {
-            graphics.text(font, Component.translatable("chunk_leap.validate.clamped",
+            graphics.drawString(font, Component.translatable("chunk_leap.validate.clamped",
                     ChunkLeapClientConfig.maxRegionChunks()), x + 6, cursorY, DANGER);
             cursorY += 11;
         }
 
         // Validation
         var validation = validationMessage();
-        graphics.text(font, validation.component(), x + 6, cursorY,
+        graphics.drawString(font, validation.component(), x + 6, cursorY,
                 validation.valid() ? GOOD : DANGER);
         cursorY += 12;
 
         // Entity mode: name the picked entity and its destination, so the player can confirm the
-        // selection without hunting for the dot again.
+        // selection without hunting
+// for the dot again.
         if (page == Page.ENTITIES) {
             cursorY = renderEntityDetails(graphics, x + 6, cursorY, inner);
         }
@@ -697,21 +711,22 @@ public final class ChunkLeapScreen extends UiScreen {
         var cost = page == Page.BLOCKS
                 ? ChunkLeapCost.forSwap(selection.sourceCount(), selection.hasTarget() ? 0 : 0)
                 : ChunkLeapCost.forEntityTeleport();
-        graphics.text(font, Component.translatable("chunk_leap.side.cost", cost), x + 6, cursorY, TEXT);
+        graphics.drawString(font, Component.translatable("chunk_leap.side.cost", cost), x + 6, cursorY, TEXT);
         cursorY += 12;
 
         // View load progress
-        var map = ChunkMapClientState.map(dimension.identifier().toString());
+        var map = ChunkMapClientState.map(dimension.location().toString());
         var total = Math.max(1, map.total());
         var ratio = Math.min(1f, map.loaded() / (float) total);
         graphics.fill(x + 6, cursorY, x + 6 + inner, cursorY + 4, 0x30FFFFFF);
         graphics.fill(x + 6, cursorY, x + 6 + (int) (inner * ratio), cursorY + 4, ACCENT);
         cursorY += 6;
-        graphics.text(font, Component.translatable("chunk_leap.side.loaded", map.loaded(), map.total()),
+        graphics.drawString(font, Component.translatable("chunk_leap.side.loaded", map.loaded(), map.total()),
                 x + 6, cursorY, MUTED);
         cursorY += 12;
 
-        // Destination preload while an operation is in flight
+        // Destination preload
+// while an operation is in flight
         if (pendingOpId != null) {
             var preload = ChunkMapClientState.preloadProgress(pendingOpId);
             var preloadRatio = preload == null ? 0f : preload.fraction();
@@ -719,17 +734,18 @@ public final class ChunkLeapScreen extends UiScreen {
             graphics.fill(x + 6, cursorY, x + 6 + (int) (inner * preloadRatio), cursorY + 4,
                     preload != null && preload.ready() ? GOOD : ACCENT);
             cursorY += 6;
-            graphics.text(font, Component.translatable("chunk_leap.side.preload",
+            graphics.drawString(font, Component.translatable("chunk_leap.side.preload",
                     Math.round(preloadRatio * 100)), x + 6, cursorY, MUTED);
             cursorY += 12;
         }
 
-        // Inspection readout for the hovered chunk: the real blocks, biome and entity count.
+        // Inspection readout
+// for the hovered chunk: the real blocks, biome and entity count.
         cursorY = renderInspection(graphics, x + 6, cursorY, inner);
 
         // Coordinate entry: the only practical way to reach a far location, since the map only loads
         // a bounded region around its centre.
-        graphics.text(font, Component.translatable("chunk_leap.coord.label"), x + 6, cursorY, DIM);
+        graphics.drawString(font, Component.translatable("chunk_leap.coord.label"), x + 6, cursorY, DIM);
         cursorY += 11;
         if (coordinateXBox != null && coordinateZBox != null) {
             var gap = 4;
@@ -753,13 +769,13 @@ public final class ChunkLeapScreen extends UiScreen {
         var label = page == Page.BLOCKS
                 ? Component.translatable("chunk_leap.action.swap")
                 : Component.translatable("chunk_leap.action.teleport");
-        graphics.text(font, label, x + 6 + (inner - font.width(label)) / 2, cursorY + 4,
+        graphics.drawString(font, label, x + 6 + (inner - font.width(label)) / 2, cursorY + 4,
                 canExecute ? TEXT : MUTED);
         executeRect = new int[]{x + 6, cursorY, inner, ROW_H};
         cursorY += ROW_H + 6;
 
         // Secondary hints
-        graphics.text(font, Component.translatable("chunk_leap.action.clear_hint"), x + 6, cursorY, MUTED);
+        graphics.drawString(font, Component.translatable("chunk_leap.action.clear_hint"), x + 6, cursorY, MUTED);
     }
 
     private static void placeCoordinateBox(EditBox box, int frameX, int textY, int frameWidth) {
@@ -768,7 +784,7 @@ public final class ChunkLeapScreen extends UiScreen {
         box.setWidth(Math.max(1, frameWidth - 4));
     }
 
-    private static void renderCoordinateFrame(GuiGraphicsExtractor graphics, int x, int y, int width,
+    private static void renderCoordinateFrame(GuiGraphics graphics, int x, int y, int width,
                                               EditBox box) {
         graphics.fill(x, y, x + width, y + 14,
                 box.isFocused() ? 0x40000000 : 0x24000000);
@@ -776,19 +792,19 @@ public final class ChunkLeapScreen extends UiScreen {
                 box.isFocused() ? PANEL_BORDER : BORDER_DIM);
     }
 
-    private int renderRegionCard(GuiGraphicsExtractor graphics, int x, int y, int w, RegionCard card) {
+    private int renderRegionCard(GuiGraphics graphics, int x, int y, int w, RegionCard card) {
         graphics.fill(x, y, x + w, y + CARD_H, 0x28000000);
         border(graphics, x, y, w, CARD_H, BORDER_DIM);
         if (card == null) {
-            graphics.text(font, Component.translatable("chunk_leap.region.none"), x + 4, y + 3, MUTED);
-            graphics.text(font, Component.translatable("chunk_leap.region.none_hint"), x + 4, y + 14, MUTED);
+            graphics.drawString(font, Component.translatable("chunk_leap.region.none"), x + 4, y + 3, MUTED);
+            graphics.drawString(font, Component.translatable("chunk_leap.region.none_hint"), x + 4, y + 14, MUTED);
             return y + CARD_H;
         }
-        graphics.text(font, Component.literal(card.dimension().identifier().getPath()), x + 4, y + 3, ACCENT);
+        graphics.drawString(font, Component.literal(card.dimension().location().getPath()), x + 4, y + 3, ACCENT);
         var bounds = card.bounds();
         var width = bounds == null ? 1 : bounds.width();
         var height = bounds == null ? 1 : bounds.height();
-        graphics.text(font, Component.translatable("chunk_leap.region.count", card.count(), width, height),
+        graphics.drawString(font, Component.translatable("chunk_leap.region.count", card.count(), width, height),
                 x + 4, y + 14, TEXT);
         return y + CARD_H;
     }
@@ -834,7 +850,8 @@ public final class ChunkLeapScreen extends UiScreen {
             return new Validation(false, Component.translatable("chunk_leap.validate.incomplete"));
         }
         // Only the viewed dimension has tile data on this client, so coverage is gated per side and only
-        // for the page currently shown. The server load-checks both sides before committing anyway.
+        //
+// for the page currently shown. The server load-checks both sides before committing anyway.
         if (source.dimension().equals(dimension)) {
             var missing = ChunkMapClientState.missingTileCount(source.dimension(), source.bounds());
             if (missing > 0) {
@@ -869,16 +886,16 @@ public final class ChunkLeapScreen extends UiScreen {
     /** What a region card shows: a dimension, a chunk count and a bounding box. */
     private record RegionCard(ResourceKey<Level> dimension, int count, ChunkLeapRegion bounds) {
     }
-    private void renderFooter(GuiGraphicsExtractor graphics) {
+    private void renderFooter(GuiGraphics graphics) {
         var r = canvasRect();
         var cx = r[0] + r[2] / 2;
         var line1 = Component.translatable("chunk_leap.hint.line1");
         var line2 = Component.translatable("chunk_leap.hint.line2");
-        graphics.text(font, line1, cx - font.width(line1) / 2, height - FOOTER_H + 2, MUTED);
-        graphics.text(font, line2, cx - font.width(line2) / 2, height - FOOTER_H + 13, MUTED);
+        graphics.drawString(font, line1, cx - font.width(line1) / 2, height - FOOTER_H + 2, MUTED);
+        graphics.drawString(font, line2, cx - font.width(line2) / 2, height - FOOTER_H + 13, MUTED);
     }
 
-    private void renderConfirmOverlay(GuiGraphicsExtractor graphics) {
+    private void renderConfirmOverlay(GuiGraphics graphics) {
         var result = validationMessage();
         if (!result.valid()) {
             confirmTicks = 0;
@@ -891,14 +908,15 @@ public final class ChunkLeapScreen extends UiScreen {
         graphics.fill(x, y, x + boxW, y + boxH, 0xE0101014);
         border(graphics, x, y, boxW, boxH, PANEL_BORDER);
         // Entity and chunk modes are different operations, so the confirmation must not reuse the
-        // chunk-swap wording for an entity teleport.
+        // chunk-swap wording
+// for an entity teleport.
         var prefix = page == Page.ENTITIES ? "chunk_leap.confirm_entity." : "chunk_leap.confirm.";
-        graphics.text(font, Component.translatable(prefix + "title"), x + 10, y + 10, ACCENT);
-        graphics.text(font, Component.translatable(prefix + "body"), x + 10, y + 24, TEXT);
-        graphics.text(font, Component.translatable(prefix + "keys"), x + 10, y + 42, MUTED);
+        graphics.drawString(font, Component.translatable(prefix + "title"), x + 10, y + 10, ACCENT);
+        graphics.drawString(font, Component.translatable(prefix + "body"), x + 10, y + 24, TEXT);
+        graphics.drawString(font, Component.translatable(prefix + "keys"), x + 10, y + 42, MUTED);
     }
 
-    private static void border(GuiGraphicsExtractor graphics, int x, int y, int w, int h, int color) {
+    private static void border(GuiGraphics graphics, int x, int y, int w, int h, int color) {
         graphics.fill(x, y, x + w, y + 1, color);
         graphics.fill(x, y + h - 1, x + w, y + h, color);
         graphics.fill(x, y, x + 1, y + h, color);
@@ -912,19 +930,17 @@ public final class ChunkLeapScreen extends UiScreen {
     // ---------------------------------------------------------------- input
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        var mouseX = event.x();
-        var mouseY = event.y();
-
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
         // In the god view the map is not on screen, so clicks must not act on it.
         if (ChunkLeapGodView.isActive()) {
             return true;
         }
 
         // Native EditBox input only works when the click itself reaches the box; setting the focus flag
-        // without forwarding the click leaves the caret/input handler uninitialised.
-        if (event.button() == 0 && (focusCoordinateBox(event, doubleClick, coordinateXBox)
-                || focusCoordinateBox(event, doubleClick, coordinateZBox))) {
+        // without
+// forwarding the click leaves the caret/input handler uninitialised.
+        if (button == 0 && (focusCoordinateBox(mouseX, mouseY, button, coordinateXBox)
+                || focusCoordinateBox(mouseX, mouseY, button, coordinateZBox))) {
             return true;
         }
         clearCoordinateFocus();
@@ -946,7 +962,7 @@ public final class ChunkLeapScreen extends UiScreen {
                     placingTarget = true;
                 }
                 default -> {
-                    return super.mouseClicked(event, doubleClick);
+                    return super.mouseClicked(mouseX, mouseY, button);
                 }
             }
             return true;
@@ -985,12 +1001,12 @@ public final class ChunkLeapScreen extends UiScreen {
 
         var g = geometry();
         if (inside(mouseX, mouseY, g.left(), g.top(), g.width(), g.height())) {
-            if (event.button() == 1 || event.button() == 2 || event.hasShiftDown()) {
+            if (button == 1 || button == 2 || hasShiftDown()) {
                 panning = true;
-            } else if (event.button() == 0) {
+            } else if (button == 0) {
                 if (page == Page.ENTITIES) {
                     handleEntityClick(mouseX, mouseY);
-                } else if (event.hasControlDown()) {
+                } else if (hasControlDown()) {
                     // Ctrl-click edits the selection chunk by chunk, so a selection need not be a
                     // rectangle: isolated chunks can be added or removed individually.
                     var chunk = chunkAt(mouseX, mouseY);
@@ -1022,13 +1038,13 @@ public final class ChunkLeapScreen extends UiScreen {
             }
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
-    private boolean focusCoordinateBox(MouseButtonEvent event, boolean doubleClick, EditBox box) {
-        if (box == null || !box.isMouseOver(event.x(), event.y())) return false;
+    private boolean focusCoordinateBox(double mouseX, double mouseY, int button, EditBox box) {
+        if (box == null || !box.isMouseOver(mouseX, mouseY)) return false;
         setCoordinateFocus(box);
-        box.mouseClicked(event, doubleClick);
+        box.mouseClicked(mouseX, mouseY, button);
         return true;
     }
 
@@ -1057,40 +1073,41 @@ public final class ChunkLeapScreen extends UiScreen {
      * selection's moving corner near the viewport top-left and wrecked panning.
      */
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dx, double dy) {
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
         var g = geometry();
         if (panning) {
-            panChunkX -= dx / g.chunkSize();
-            panChunkZ -= dy / g.chunkSize();
+            panChunkX -= dragX / g.chunkSize();
+            panChunkZ -= dragY / g.chunkSize();
             viewClient.invalidate();
             ensureAnchorCoversView();
             return true;
         }
         if (dragging) {
             // Defensive: never let a drag run without its anchor being set.
-            if (dragAnchor == null) dragAnchor = chunkAt(event.x(), event.y());
-            var current = chunkAt(event.x(), event.y());
+            if (dragAnchor == null) dragAnchor = chunkAt(mouseX, mouseY);
+            var current = chunkAt(mouseX, mouseY);
             var cap = ChunkLeapClientConfig.maxRegionChunks();
             var region = ChunkLeapRegion.of(dimension, dragAnchor, current).clampArea(dragAnchor, cap);
-            // The anchor corner stays put while clamping, so the rectangle never jumps under the cursor.
+            // The anchor corner stays put
+// while clamping, so the rectangle never jumps under the cursor.
             selection.setRectangle(dimension,
-                    region.minChunkX() == dragAnchor.x() ? dragAnchor : current,
-                    region.minChunkX() == dragAnchor.x() ? current : dragAnchor);
+                    region.minChunkX() == dragAnchor.x ? dragAnchor : current,
+                    region.minChunkX() == dragAnchor.x ? current : dragAnchor);
             selectionClamped = selection.sourceCount() >= cap;
             return true;
         }
-        return super.mouseDragged(event, dx, dy);
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (panning || dragging) {
             panning = false;
             dragging = false;
             dragAnchor = null;
             return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -1130,29 +1147,30 @@ public final class ChunkLeapScreen extends UiScreen {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        // While typing, input belongs to the focused axis. Enter submits both values, Tab switches axes,
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        // While typing, input belongs to the focused axis. Enter submits both values, Tab
+// switches axes,
         // and Escape leaves coordinate entry without closing the screen.
         if (coordinateInputFocused()) {
-            if (event.key() == InputConstants.KEY_ESCAPE) {
+            if (keyCode == InputConstants.KEY_ESCAPE) {
                 clearCoordinateFocus();
                 return true;
             }
-            if (event.key() == InputConstants.KEY_TAB) {
+            if (keyCode == InputConstants.KEY_TAB) {
                 setCoordinateFocus(coordinateXBox.isFocused() ? coordinateZBox : coordinateXBox);
                 return true;
             }
-            if (event.key() == InputConstants.KEY_RETURN
-                    || event.key() == InputConstants.KEY_NUMPADENTER) {
+            if (keyCode == InputConstants.KEY_RETURN
+                    || keyCode == InputConstants.KEY_NUMPADENTER) {
                 submitCoordinates();
                 return true;
             }
-            return super.keyPressed(event);
+            return super.keyPressed(keyCode, scanCode, modifiers);
         }
         // WASD pans whichever view is showing. Handled after the text fields so screen shortcuts can never
         // steal keys from an active editor.
-        if (handlePanKey(event.key())) return true;
-        switch (event.key()) {
+        if (handlePanKey(keyCode)) return true;
+        switch (keyCode) {
             case InputConstants.KEY_TAB -> {
                 page = page == Page.BLOCKS ? Page.ENTITIES : Page.BLOCKS;
                 return true;
@@ -1256,7 +1274,7 @@ public final class ChunkLeapScreen extends UiScreen {
             default -> {
             }
         }
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     // ---------------------------------------------------------------- actions
@@ -1267,7 +1285,7 @@ public final class ChunkLeapScreen extends UiScreen {
             var target = selection.entityTarget();
             if (entityId < 0 || target == null) return;
             MisakaNetworkClient.send(new ChunkLeapPackets.EntityTeleportPacket(
-                    entityId, dimension.identifier().toString(),
+                    entityId, dimension.location().toString(),
                     target.getX(), target.getY(), target.getZ()));
             flash("chunk_leap.status.entity_requested", MUTED);
             return;
@@ -1277,7 +1295,8 @@ public final class ChunkLeapScreen extends UiScreen {
         if (source == null || target == null) return;
         pendingOpId = UUID.randomUUID();
         // A cross-dimension swap will respawn the local player, so arm the attribution window that
-        // lets ChunkLeapTransition substitute its lightweight loading screen for ours only.
+        // lets ChunkLeapTransition substitute its lightweight loading screen
+// for ours only.
         if (minecraft.player != null && !source.dimension().equals(target.dimension())) {
             ChunkLeapTransition.markPossibleTransition();
         }
@@ -1327,7 +1346,7 @@ public final class ChunkLeapScreen extends UiScreen {
         return type == null ? Component.literal("?") : type.getDescription();
     }
     /** Draws the localized name of whatever entity dot is under the cursor. */
-    private void renderEntityTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void renderEntityTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (page != Page.ENTITIES || renderer == null || dimension == null) return;
         var hovered = renderer.hoveredMarker(geometry(), mouseX, mouseY, dimension);
         if (hovered == null) return;
@@ -1335,22 +1354,22 @@ public final class ChunkLeapScreen extends UiScreen {
     }
 
     /** Names the selected entity and shows where it will be sent. */
-    private int renderEntityDetails(GuiGraphicsExtractor graphics, int x, int y, int inner) {
+    private int renderEntityDetails(GuiGraphics graphics, int x, int y, int inner) {
         var marker = selectedMarker();
         if (marker == null) {
-            graphics.text(font, Component.translatable("chunk_leap.entity.none"), x, y, MUTED);
+            graphics.drawString(font, Component.translatable("chunk_leap.entity.none"), x, y, MUTED);
             return y + 12;
         }
-        graphics.text(font, Component.translatable("chunk_leap.entity.selected", entityName(marker.typeId())),
+        graphics.drawString(font, Component.translatable("chunk_leap.entity.selected", entityName(marker.typeId())),
                 x, y, ACCENT);
         y += 11;
         var target = selection.entityTarget();
         if (target != null) {
-            graphics.text(font, Component.translatable("chunk_leap.entity.destination",
+            graphics.drawString(font, Component.translatable("chunk_leap.entity.destination",
                     target.getX(), target.getZ()), x, y, TEXT);
             y += 11;
         } else {
-            graphics.text(font, Component.translatable("chunk_leap.entity.pick_destination"), x, y, MUTED);
+            graphics.drawString(font, Component.translatable("chunk_leap.entity.pick_destination"), x, y, MUTED);
             y += 11;
         }
         return y + 2;
@@ -1359,7 +1378,7 @@ public final class ChunkLeapScreen extends UiScreen {
     /** The marker record for the selected entity id, or null when none is picked. */
     private ChunkLeapPackets.Marker selectedMarker() {
         if (selection.entityId() < 0 || dimension == null) return null;
-        for (var marker : ChunkMapClientState.map(dimension.identifier().toString()).markers()) {
+        for (var marker : ChunkMapClientState.map(dimension.location().toString()).markers()) {
             if (marker.entityId() == selection.entityId()) return marker;
         }
         return null;
@@ -1383,7 +1402,7 @@ public final class ChunkLeapScreen extends UiScreen {
         }
         var chunk = ChunkPos.unpack(hoveredChunk);
         MisakaNetworkClient.send(new ChunkLeapPackets.GodViewRequestPacket(
-                dimension.identifier().toString(),
+                dimension.location().toString(),
                 chunk.getMinBlockX() + 8, chunk.getMinBlockZ() + 8, true));
         flash("chunk_leap.status.god_view_requested", MUTED);
     }
@@ -1393,7 +1412,7 @@ public final class ChunkLeapScreen extends UiScreen {
         ChunkLeapGodViewClient.reset();
         if (dimension != null) {
             MisakaNetworkClient.send(new ChunkLeapPackets.GodViewRequestPacket(
-                    dimension.identifier().toString(), 0, 0, false));
+                    dimension.location().toString(), 0, 0, false));
         }
         // Terrain was streamed into the client cache, so the map must refetch what it is showing.
         viewClient.invalidate();
@@ -1401,13 +1420,13 @@ public final class ChunkLeapScreen extends UiScreen {
     }
 
     /** The only UI shown during the god view: a caption saying how to get back. */
-    private void renderGodViewOverlay(GuiGraphicsExtractor graphics) {
+    private void renderGodViewOverlay(GuiGraphics graphics) {
         var label = Component.translatable("chunk_leap.god_view.caption");
         var padding = 6;
         var boxW = font.width(label) + padding * 2;
         var x = (width - boxW) / 2;
         graphics.fill(x, 6, x + boxW, 6 + 14, 0xA0101014);
-        graphics.text(font, label, x + padding, 10, ACCENT);
+        graphics.drawString(font, label, x + padding, 10, ACCENT);
     }
     /**
      * Pans the active view when a movement key is pressed.
@@ -1432,7 +1451,8 @@ public final class ChunkLeapScreen extends UiScreen {
         }
         if (ChunkLeapGodView.isActive()) {
             ChunkLeapGodView.move(forward, strafe);
-            // The height above the new terrain is unknown, so ask the server where the surface is there.
+            // The height above the
+// new terrain is unknown, so ask the server where the surface is there.
             requestGodViewAtCurrentFocus();
             return true;
         }
@@ -1450,7 +1470,7 @@ public final class ChunkLeapScreen extends UiScreen {
     private void requestGodViewAtCurrentFocus() {
         if (dimension == null) return;
         MisakaNetworkClient.send(new ChunkLeapPackets.GodViewRequestPacket(
-                dimension.identifier().toString(),
+                dimension.location().toString(),
                 (int) Math.floor(ChunkLeapGodView.focusX()),
                 (int) Math.floor(ChunkLeapGodView.focusZ()), true));
     }
@@ -1476,7 +1496,7 @@ public final class ChunkLeapScreen extends UiScreen {
         var targetX = blockXAt(lastMouseX);
         var targetZ = blockZAt(lastMouseY);
         MisakaNetworkClient.send(new ChunkLeapPackets.PlayerTeleportPacket(
-                dimension.identifier().toString(), targetX, targetZ));
+                dimension.location().toString(), targetX, targetZ));
         flash("chunk_leap.status.teleport_requested", MUTED);
     }
 
@@ -1489,10 +1509,11 @@ public final class ChunkLeapScreen extends UiScreen {
      */
     private void refreshMapCache() {
         if (dimension == null) return;
-        ChunkMapClientState.invalidateDimension(dimension.identifier().toString());
+        ChunkMapClientState.invalidateDimension(dimension.location().toString());
         viewClient.newEpoch();
         ChunkMapClientState.beginView(dimension, viewClient.epoch());
-        // Clears the raster too, so no stale pixels survive while the refetch is in flight.
+        // Clears the raster too, so no stale pixels survive
+// while the refetch is in flight.
         syncAnchor();
         flash("chunk_leap.status.refreshed", MUTED);
     }

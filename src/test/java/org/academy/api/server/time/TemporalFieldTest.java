@@ -1,7 +1,7 @@
 package org.academy.api.server.time;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TemporalFieldTest {
     private static final ResourceKey<Level> DIMENSION = ResourceKey.create(
             Registries.DIMENSION,
-            Identifier.fromNamespaceAndPath("test", "temporal_field")
+            ResourceLocation.fromNamespaceAndPath("test", "temporal_field")
     );
 
     @Test

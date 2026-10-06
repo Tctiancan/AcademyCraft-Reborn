@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.mentalout.control;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.SavedData;
@@ -17,14 +17,14 @@ import java.nio.charset.StandardCharsets;
 
 /** Durable orders; navigation handles and target claims are reconstructed after loading. */
 public final class WorkOrderData extends SavedData {
-    public record Entry(String controller, String subject, Identifier source, Identifier dimension,
+    public record Entry(String controller, String subject, ResourceLocation source, ResourceLocation dimension,
                         BlockPos minimum, BlockPos maximum, WorkSettings settings, int priority,
                         boolean paused, List<ItemStack> cargo, String orderId, long revision, boolean returning, boolean faulted) {
         public static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
                 Codec.STRING.fieldOf("controller").forGetter(Entry::controller),
                 Codec.STRING.fieldOf("subject").forGetter(Entry::subject),
-                Identifier.CODEC.fieldOf("source").forGetter(Entry::source),
-                Identifier.CODEC.fieldOf("dimension").forGetter(Entry::dimension),
+                ResourceLocation.CODEC.fieldOf("source").forGetter(Entry::source),
+                ResourceLocation.CODEC.fieldOf("dimension").forGetter(Entry::dimension),
                 BlockPos.CODEC.fieldOf("minimum").forGetter(Entry::minimum),
                 BlockPos.CODEC.fieldOf("maximum").forGetter(Entry::maximum),
                 WorkSettings.CODEC.fieldOf("settings").forGetter(Entry::settings),
@@ -49,7 +49,7 @@ public final class WorkOrderData extends SavedData {
             UUID.fromString(orderId);
             if (revision < 0) throw new IllegalArgumentException("Negative order revision");
         }
-        public Entry(String controller, String subject, Identifier source, Identifier dimension,
+        public Entry(String controller, String subject, ResourceLocation source, ResourceLocation dimension,
                      BlockPos minimum, BlockPos maximum, WorkSettings settings, int priority,
                      boolean paused, List<ItemStack> cargo) {
             this(controller, subject, source, dimension, minimum, maximum, settings, priority, paused, cargo, "", 0, false, false);

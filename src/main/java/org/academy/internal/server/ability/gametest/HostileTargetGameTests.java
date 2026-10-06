@@ -1,31 +1,21 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.*;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
 import net.neoforged.neoforge.event.entity.player.AttackEntityEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.api.server.ability.HostileTargets;
@@ -40,25 +30,64 @@ import java.util.List;
 import java.util.UUID;
 
 /** Exercises real attack events, direct skill damage declarations, target selectors and physical expiry. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class HostileTargetGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("hostile_target_test_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetRoutes(GameTestHelper helper) {
+        withActors(helper, HostileTargetGameTests::routes);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of(
-                "routes", "selectors", "automatic", "expiry", "protection", "cta_friendly_fire", "cleanup"
-        )) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("hostile_target/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("hostile_target_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 360, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetSelectors(GameTestHelper helper) {
+        withActors(helper, HostileTargetGameTests::selectors);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetAutomatic(GameTestHelper helper) {
+        withActors(helper, HostileTargetGameTests::automatic);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetExpiry(GameTestHelper helper) {
+        var attacker = player(helper, 2);
+        var other = player(helper, 8);
+        expiry(helper, attacker, other, () -> {
+            var players = helper.getLevel().getServer().getPlayerList();
+            if (players.getPlayer(attacker.getUUID()) != null) players.remove(attacker);
+            if (players.getPlayer(other.getUUID()) != null) players.remove(other);
+        });
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetProtection(GameTestHelper helper) {
+        withActors(helper, HostileTargetGameTests::protection);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetCtaFriendlyFire(GameTestHelper helper) {
+        withActors(helper, HostileTargetGameTests::ctaFriendlyFire);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 400)
+    static void hostileTargetCleanup(GameTestHelper helper) {
+        withActors(helper, HostileTargetGameTests::cleanup);
+    }
+
+    @FunctionalInterface
+    private interface ActorScenario {
+        void run(GameTestHelper helper, ServerPlayer attacker, ServerPlayer other);
+    }
+
+    private static void withActors(GameTestHelper helper, ActorScenario scenario) {
+        var attacker = player(helper, 2);
+        var other = player(helper, 8);
+        try {
+            scenario.run(helper, attacker, other);
+            helper.succeed();
+        } finally {
+            var players = helper.getLevel().getServer().getPlayerList();
+            if (players.getPlayer(attacker.getUUID()) != null) players.remove(attacker);
+            if (players.getPlayer(other.getUUID()) != null) players.remove(other);
         }
     }
 
@@ -70,7 +99,6 @@ public final class HostileTargetGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         player.setData(AttachmentTypes.PVP_ENABLED.get(), true);
         var position = helper.absoluteVec(new Vec3(x, 3, 5));
@@ -84,7 +112,7 @@ public final class HostileTargetGameTests {
     }
 
     private static LivingEntity pig(GameTestHelper helper) {
-        var target = helper.spawn(EntityTypes.PIG, 5, 3, 5);
+        var target = helper.spawn(EntityType.PIG, 5, 3, 5);
         target.setNoAi(true);
         target.setNoGravity(true);
         return target;
@@ -95,7 +123,7 @@ public final class HostileTargetGameTests {
         attacker.attack(melee);
         check(helper, HostileTargets.isMarked(attacker, melee), "Melee must mark a neutral entity");
         check(helper, !HostileTargets.isMarked(other, melee), "Marks belong only to the attacking player");
-        var arrow = helper.spawn(EntityTypes.ARROW, 5, 4, 5);
+        var arrow = helper.spawn(EntityType.ARROW, 5, 4, 5);
         var ranged = pig(helper);
         ranged.hurtServer(helper.getLevel(), attacker.damageSources().arrow(arrow, attacker), 0.5f);
         check(helper, HostileTargets.isMarked(attacker, ranged), "Owned projectiles must mark on hit");
@@ -157,7 +185,7 @@ public final class HostileTargetGameTests {
             target.hurtServer(helper.getLevel(), SkillDamageSource.of(attacker, skill), 0.1f);
             check(helper, !HostileTargets.isMarked(attacker, target), "Automatic skill must not mark: " + skill.getKey());
         }
-        var pet = helper.spawn(EntityTypes.WOLF, 5, 3, 5);
+        var pet = helper.spawn(EntityType.WOLF, 5, 3, 5);
         pet.tame(attacker);
         pet.setNoAi(true);
         pet.setNoGravity(true);
@@ -245,7 +273,7 @@ public final class HostileTargetGameTests {
     }
 
     private static void ctaFriendlyFire(GameTestHelper helper, ServerPlayer attacker, ServerPlayer other) {
-        var pet = helper.spawn(EntityTypes.WOLF, 5, 3, 5);
+        var pet = helper.spawn(EntityType.WOLF, 5, 3, 5);
         pet.tame(attacker);
         pet.setNoAi(true);
         pet.setNoGravity(true);
@@ -280,57 +308,5 @@ public final class HostileTargetGameTests {
         HostileTargets.mark(attacker, beforeLogout);
         helper.getLevel().getServer().getPlayerList().remove(attacker);
         check(helper, !HostileTargets.isMarked(attacker, beforeLogout), "Logout must clear actor marks");
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            var attacker = player(helper, 2);
-            var other = player(helper, 8);
-            Runnable finish = () -> {
-                var players = helper.getLevel().getServer().getPlayerList();
-                if (players.getPlayer(attacker.getUUID()) != null) players.remove(attacker);
-                if (players.getPlayer(other.getUUID()) != null) players.remove(other);
-            };
-            if (scenario.equals("expiry")) {
-                expiry(helper, attacker, other, finish);
-                return;
-            }
-            try {
-                switch (scenario) {
-                    case "routes" -> routes(helper, attacker, other);
-                    case "selectors" -> selectors(helper, attacker, other);
-                    case "automatic" -> automatic(helper, attacker, other);
-                    case "protection" -> protection(helper, attacker, other);
-                    case "cta_friendly_fire" -> ctaFriendlyFire(helper, attacker, other);
-                    case "cleanup" -> cleanup(helper, attacker, other);
-                    default -> throw new IllegalArgumentException(scenario);
-                }
-                helper.succeed();
-            } finally {
-                finish.run();
-            }
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Temporary hostile target regression");
-        }
     }
 }

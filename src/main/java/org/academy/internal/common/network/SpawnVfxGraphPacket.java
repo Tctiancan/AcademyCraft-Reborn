@@ -5,7 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -44,7 +44,7 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
 
     public static final StreamCodec<ByteBuf, SpawnVfxGraphPacket> CODEC = StreamCodec.of(
             (buffer, packet) -> {
-                Identifier.STREAM_CODEC.encode(buffer, packet.assetId);
+                ResourceLocation.STREAM_CODEC.encode(buffer, packet.assetId);
                 Vec3.STREAM_CODEC.encode(buffer, packet.position);
                 Vec3.STREAM_CODEC.encode(buffer, packet.direction);
                 Vec3.STREAM_CODEC.encode(buffer, packet.localXDirection);
@@ -54,7 +54,7 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
                 PARAM_CODEC.encode(buffer, packet.floatParams);
             },
             buffer -> new SpawnVfxGraphPacket(
-                    Identifier.STREAM_CODEC.decode(buffer),
+                    ResourceLocation.STREAM_CODEC.decode(buffer),
                     Vec3.STREAM_CODEC.decode(buffer),
                     Vec3.STREAM_CODEC.decode(buffer),
                     Vec3.STREAM_CODEC.decode(buffer),
@@ -67,7 +67,7 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
     private static final double BROADCAST_RANGE = 96.0;
     private static boolean clientInitialized;
 
-    private final Identifier assetId;
+    private final ResourceLocation assetId;
     private final Vec3 position;
     private final Vec3 direction;
     private final Vec3 localXDirection;
@@ -76,13 +76,13 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
     private final float lifetimeSeconds;
     private final Map<String, Float> floatParams;
 
-    SpawnVfxGraphPacket(Identifier assetId, Vec3 position, Vec3 direction, int followEntityId,
+    SpawnVfxGraphPacket(ResourceLocation assetId, Vec3 position, Vec3 direction, int followEntityId,
             float scale, float lifetimeSeconds, Map<String, Float> floatParams) {
         this(assetId, position, direction, Vec3.ZERO, followEntityId,
                 scale, lifetimeSeconds, floatParams);
     }
 
-    SpawnVfxGraphPacket(Identifier assetId, Vec3 position, Vec3 direction, Vec3 localXDirection,
+    SpawnVfxGraphPacket(ResourceLocation assetId, Vec3 position, Vec3 direction, Vec3 localXDirection,
             int followEntityId, float scale, float lifetimeSeconds, Map<String, Float> floatParams) {
         this.assetId = assetId;
         this.position = position;
@@ -100,7 +100,7 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
         MisakaNetworkClient.NETWORK_MANAGER.register(Client.class);
     }
 
-    public Identifier assetId() {
+    public ResourceLocation assetId() {
         return assetId;
     }
 
@@ -135,24 +135,24 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
     /**
      * 按距离过滤向附近玩家广播。
      */
-    public static void broadcast(ServerLevel level, Identifier assetId, Vec3 position) {
+    public static void broadcast(ServerLevel level, ResourceLocation assetId, Vec3 position) {
         broadcast(level, assetId, position, new Vec3(0, 1, 0), -1, 1f, 3f, Map.of());
     }
 
-    public static void broadcast(ServerLevel level, Identifier assetId, Vec3 position,
+    public static void broadcast(ServerLevel level, ResourceLocation assetId, Vec3 position,
             int followEntityId, float scale, Map<String, Float> floatParams) {
         broadcast(level, assetId, position, new Vec3(0, 1, 0),
                 followEntityId, scale, 3f, floatParams);
     }
 
-    public static void broadcast(ServerLevel level, Identifier assetId, Vec3 position,
+    public static void broadcast(ServerLevel level, ResourceLocation assetId, Vec3 position,
             Vec3 direction, int followEntityId, float scale, float lifetimeSeconds,
             Map<String, Float> floatParams) {
         broadcast(level, assetId, position, direction, Vec3.ZERO,
                 followEntityId, scale, lifetimeSeconds, floatParams);
     }
 
-    public static void broadcast(ServerLevel level, Identifier assetId, Vec3 position,
+    public static void broadcast(ServerLevel level, ResourceLocation assetId, Vec3 position,
             Vec3 direction, Vec3 localXDirection, int followEntityId, float scale,
             float lifetimeSeconds, Map<String, Float> floatParams) {
         var packet = new SpawnVfxGraphPacket(assetId, position, direction, localXDirection,
@@ -176,7 +176,7 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
         return observer.distanceToSqr(position.add(axis.scale(along)));
     }
 
-    public static void send(ServerPlayer observer, Identifier assetId, Vec3 position,
+    public static void send(ServerPlayer observer, ResourceLocation assetId, Vec3 position,
             Vec3 direction, float scale, float lifetimeSeconds, Map<String, Float> floatParams) {
         MisakaNetworkServer.send(observer, new SpawnVfxGraphPacket(assetId, position, direction,
                 -1, scale, lifetimeSeconds, floatParams));

@@ -373,7 +373,7 @@ public class HighSpeedElectronBeam extends RenderOnlyEntity {
                             hitBaseDamage, hitMaxHealthRatio, targetMaxHealth,
                             playerDamageMultiplier, marked, markMultiplier);
                 })
-                .onHit((target, _, hurt) -> {
+                .onHit((target, unused784, hurt) -> {
                     hitIndex.incrementAndGet();
                     if (hurt && radiationEnabled && target instanceof LivingEntity living) {
                         RadiationIntensify

@@ -1,6 +1,6 @@
 package org.academy.mixin.common;
 
-import net.minecraft.world.entity.monster.creaking.Creaking;
+import net.minecraft.world.entity.monster.Creaking;
 import org.academy.api.common.entitycontrol.ControlCapability;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 import org.spongepowered.asm.mixin.Mixin;

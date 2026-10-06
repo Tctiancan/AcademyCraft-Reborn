@@ -3,19 +3,21 @@ package org.academy.internal.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 
-public final class VectorBlastParticle extends SingleQuadParticle {
+public final class VectorBlastParticle extends TextureSheetParticle {
     private static final float BASE_ALPHA = 0.35f;
     private final SpriteSet sprites;
 
     private VectorBlastParticle(ClientLevel level, double x, double y, double z,
                                 double xSpeed, double ySpeed, double zSpeed, SpriteSet sprites) {
-        super(level, x, y, z, xSpeed, ySpeed, zSpeed, sprites.first());
+        super(level, x, y, z, xSpeed, ySpeed, zSpeed);
         this.sprites = sprites;
+        setSprite(sprites.get(random));
         lifetime = 16;
         quadSize = 1.5f;
         setSpriteFromAge(sprites);
@@ -36,12 +38,12 @@ public final class VectorBlastParticle extends SingleQuadParticle {
     }
 
     @Override
-    protected Layer getLayer() {
-        return Layer.TRANSLUCENT;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     @Override
-    protected int getLightCoords(float partialTick) {
+    protected int getLightColor(float partialTick) {
         return 0x00F000F0;
     }
 

@@ -336,7 +336,7 @@ public final class AutoCruiseBeamCannon extends Skill {
                 if (target == null) return;
                 var multiplier = AbilitySystemServer.getSystem(player)
                         .getPlayerDamageMultiplier(player.getUUID());
-                if (skill.executeContinuous(player, (_, _) -> {
+                if (skill.executeContinuous(player, (unused503, unused504) -> {
                     fire(player, target, multiplier, 1.0f, milestone);
                     if (milestone >= 3) {
                         if (target.getUUID().equals(consecutiveTarget)) consecutiveShots++;

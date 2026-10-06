@@ -28,7 +28,7 @@ import java.util.Map;
 
 /** Exercises actual skill pulses and suppression in the isolated mental-defense test environment. */
 final class MindDestructionRegression {
-    private static final net.minecraft.resources.Identifier SOURCE = AcademyCraft.academy("test_mind_destruction");
+    private static final net.minecraft.resources.ResourceLocation SOURCE = AcademyCraft.academy("test_mind_destruction");
 
     private MindDestructionRegression() {}
 
@@ -205,7 +205,7 @@ final class MindDestructionRegression {
         var preview = HealthLossGuards.protectDeath(target, 1, () -> HealthLossGuards.preview(target, 10, 0));
         helper.assertTrue(preview.value() == 1 && !preview.preventedDeath(), "Preview must not commit protection");
         var rejected = HealthLossGuards.protectDeath(target, 1, () ->
-                HealthLossGuards.commit(target, 10, 0, _ -> false));
+                HealthLossGuards.commit(target, 10, 0, unused518 -> false));
         helper.assertTrue(!rejected.preventedDeath(), "A rejected health submission must not report a prevented death");
         var nested = HealthLossGuards.protectDeath(target, 1, () -> HealthLossGuards.protectDeath(target, 2, () -> {
             target.setHealth(0);

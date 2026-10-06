@@ -11,10 +11,10 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.permissions.PermissionSet;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LeavesBlock;
@@ -37,7 +37,7 @@ import java.util.Locale;
 /** End-to-end validation for spatial random-tick pause and resume. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalRandomTickGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE =
+    private static final ResourceLocation TEST_INSTANCE_TYPE =
             AcademyCraft.academy("temporal_random_tick_function");
     private static final int RANDOM_TICK_ATTEMPTS = 4096;
 
@@ -61,7 +61,7 @@ public final class TemporalRandomTickGameTests {
         );
         var data = new TestData<>(
                 environment,
-                Identifier.withDefaultNamespace("empty"),
+                ResourceLocation.withDefaultNamespace("empty"),
                 20,
                 0,
                 true,
@@ -216,9 +216,9 @@ public final class TemporalRandomTickGameTests {
             ServerLevel level,
             Vec3 commandPosition
     ) {
-        var first = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 7);
-        var second = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 7);
-        var outsider = helper.spawn(EntityTypes.ZOMBIE, 5, 2, 7);
+        var first = helper.spawn(EntityType.ZOMBIE, 1, 2, 7);
+        var second = helper.spawn(EntityType.ZOMBIE, 3, 2, 7);
+        var outsider = helper.spawn(EntityType.ZOMBIE, 5, 2, 7);
         first.addTag("academy_tick_debug_selected");
         second.addTag("academy_tick_debug_selected");
         try {
@@ -392,3 +392,4 @@ public final class TemporalRandomTickGameTests {
         }
     }
 }
+

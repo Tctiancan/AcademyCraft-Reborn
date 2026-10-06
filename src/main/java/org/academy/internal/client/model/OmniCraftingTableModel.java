@@ -1,18 +1,17 @@
 package org.academy.internal.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.LightCoordsUtil;
 import org.academy.api.client.resources.R;
 import org.academy.internal.client.definitions.OmniCraftingTableAnimation;
 import org.academy.internal.client.renderer.blockentity.state.OmniCraftingTableRenderState;
@@ -21,7 +20,8 @@ import org.academy.internal.client.renderer.blockentity.state.OmniCraftingTableR
  * @author MapleBadd
  */
 @SuppressWarnings({"FieldCanBeLocal", "unused"})
-public class OmniCraftingTableModel extends Model<OmniCraftingTableRenderState> {
+public class OmniCraftingTableModel {
+    private final ModelPart root;
     private final ModelPart all;
     private final ModelPart craftinggrid_end;
     private final ModelPart _fluid;
@@ -37,13 +37,13 @@ public class OmniCraftingTableModel extends Model<OmniCraftingTableRenderState> 
     private final ModelPart inside;
     private final ModelPart outside;
 
-    private final KeyframeAnimation crafting;
-    private final KeyframeAnimation idle;
+    private final AnimationDefinition crafting;
+    private final AnimationDefinition idle;
 
     public OmniCraftingTableModel(ModelPart root) {
-        super(root.getChild("all"), RenderTypes::entityTranslucent);
+        this.root = root.getChild("all");
 
-        all = root.getChild("all");
+        all = this.root;
         craftinggrid_end = all.getChild("craftinggrid_end");
         _fluid = all.getChild("_fluid");
         main = all.getChild("main");
@@ -58,8 +58,8 @@ public class OmniCraftingTableModel extends Model<OmniCraftingTableRenderState> 
         inside = holographcrafting.getChild("inside");
         outside = holographcrafting.getChild("outside");
 
-        crafting = OmniCraftingTableAnimation.CRAFTING.bake(root);
-        idle = OmniCraftingTableAnimation.IDLE.bake(root);
+        crafting = OmniCraftingTableAnimation.CRAFTING;
+        idle = OmniCraftingTableAnimation.IDLE;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -146,16 +146,13 @@ public class OmniCraftingTableModel extends Model<OmniCraftingTableRenderState> 
         return LayerDefinition.create(meshdefinition, 256, 256);
     }
 
-    @Override
     public void setupAnim(OmniCraftingTableRenderState renderState) {
-        super.setupAnim(renderState);
     }
 
-    public void render(PoseStack poseStack, SubmitNodeCollector nodeCollector, int packedLight, int packedOverlay) {
-        nodeCollector.submitModelPart(main, poseStack, renderType(R.textures.model.omni_crafting_table), packedLight, packedOverlay, null);
-        var rt = RenderTypes.endGateway();
-        nodeCollector.submitModelPart(craftinggrid_end, poseStack, rt, LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
-
-        nodeCollector.submitModelPart(_fluid, poseStack, renderType(R.textures.model.omni_crafting_table), LightCoordsUtil.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, null);
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        RenderType base = RenderType.entityTranslucent(R.textures.model.omni_crafting_table);
+        main.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
+        craftinggrid_end.render(poseStack, bufferSource.getBuffer(RenderType.endGateway()), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        _fluid.render(poseStack, bufferSource.getBuffer(base), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
     }
 }

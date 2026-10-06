@@ -1,7 +1,7 @@
 package org.academy.internal.common.world.level.material;
 
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -137,7 +137,7 @@ public final class ImagPhaseItemFusion {
             ItemStack input,
             ItemStack output,
             int intervalTicks,
-            Identifier id
+            ResourceLocation id
     ) {
         public DisplayRecipe {
             input = input.copy();

@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.internal.common.ability.mentalout.control.PlayerNavigationRuntime;
 
@@ -10,7 +10,7 @@ public final class PlayerNavigationApi {
     private PlayerNavigationApi() {
     }
 
-    public static void registerAdapter(Identifier id, int priority, PlayerNavigationAdapter adapter) {
+    public static void registerAdapter(ResourceLocation id, int priority, PlayerNavigationAdapter adapter) {
         PlayerNavigationRuntime.registerAdapter(id, priority, adapter);
     }
 

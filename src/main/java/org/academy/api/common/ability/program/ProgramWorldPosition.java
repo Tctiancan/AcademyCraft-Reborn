@@ -1,13 +1,13 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 
 /**
  * A precise position whose dimension is part of its type-safe runtime value.
  */
-public record ProgramWorldPosition(Identifier dimension, double x, double y, double z) {
+public record ProgramWorldPosition(ResourceLocation dimension, double x, double y, double z) {
     public ProgramWorldPosition {
         Objects.requireNonNull(dimension, "dimension");
         requireFinite(x, "x");

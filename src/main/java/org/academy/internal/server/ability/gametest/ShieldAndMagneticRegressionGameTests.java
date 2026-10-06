@@ -1,33 +1,21 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MoverType;
-import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.attribute.PlayerAttributes;
 import org.academy.api.common.damage.SkillDamageSource;
@@ -44,23 +32,45 @@ import java.util.List;
 import java.util.UUID;
 
 /** Exercises the live damage mixins, beam resolver and server magnetic movement. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class ShieldAndMagneticRegressionGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("shield_magnetic_regression_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void shieldPaths(GameTestHelper helper) throws Exception {
+        withActors(helper, ShieldAndMagneticRegressionGameTests::shieldPaths);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("shield_paths", "beam_probe", "resistance_damage", "magnetic_flight")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("shield_magnetic/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("shield_magnetic_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 100, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void beamProbe(GameTestHelper helper) throws Exception {
+        withActors(helper, ShieldAndMagneticRegressionGameTests::beamProbe);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void resistanceDamage(GameTestHelper helper) throws Exception {
+        withActors(helper, ShieldAndMagneticRegressionGameTests::resistanceDamage);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void magneticFlight(GameTestHelper helper) throws Exception {
+        withActors(helper, (h, attacker, defender) -> magneticFlight(h, attacker));
+    }
+
+    @FunctionalInterface
+    private interface ActorScenario {
+        void run(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) throws Exception;
+    }
+
+    private static void withActors(GameTestHelper helper, ActorScenario scenario) throws Exception {
+        var attacker = player(helper, 2, 3, 5);
+        var defender = player(helper, 8, 3, 5);
+        try {
+            scenario.run(helper, attacker, defender);
+            helper.succeed();
+        } catch (ReflectiveOperationException exception) {
+            throw new IllegalStateException("Cannot exercise skill entry point", exception);
+        } finally {
+            var players = helper.getLevel().getServer().getPlayerList();
+            players.remove(attacker);
+            players.remove(defender);
         }
     }
 
@@ -72,7 +82,6 @@ public final class ShieldAndMagneticRegressionGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         helper.getLevel().getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         var position = helper.absoluteVec(new Vec3(x, y, z));
         player.snapTo(position.x, position.y, position.z, 0, 0);
@@ -92,7 +101,7 @@ public final class ShieldAndMagneticRegressionGameTests {
         for (var skill : List.of(Skills.ARC_GENERATE.get(), Skills.THUNDER_LANCE.get(),
                 Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get())) {
             var payload = LinearAttackPayload.builder(attacker, skill, SkillDamageSource.of(attacker, skill), 0.125f)
-                    .damage(_ -> 1000.0f).build();
+                    .damage(unused817 -> 1000.0f).build();
             var resolved = LinearReflectionResolver.resolve(helper.getLevel(), segment, payload);
             check(helper, resolved.isRefracted(), skill.getKeyString() + " must refract");
             check(helper, resolved.reflectionCandidate().orElseThrow().reflector() == defender,
@@ -117,11 +126,11 @@ public final class ShieldAndMagneticRegressionGameTests {
     private static void beamProbe(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender)
             throws ReflectiveOperationException {
         defender.setData(AttachmentTypes.LIGHT_SHIELD_ACTIVE.get(), true);
-        var pig = helper.spawn(EntityTypes.PIG, 5, 3, 5);
+        var pig = helper.spawn(EntityType.PIG, 5, 3, 5);
         pig.setNoAi(true);
         var before = pig.getHealth();
         var beam = new HighSpeedElectronBeam(
-                org.academy.internal.common.world.entity.EntityTypes.HIGH_SPEED_ELECTRON_BEAM.get(),
+                org.academy.internal.common.world.entity.EntityType.HIGH_SPEED_ELECTRON_BEAM.get(),
                 helper.getLevel());
         beam.configure(attacker, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get(), 2.0f, 0, 1, false, false);
         var start = attacker.getBoundingBox().getCenter();
@@ -181,50 +190,5 @@ public final class ShieldAndMagneticRegressionGameTests {
         check(helper, subject.isNoGravity(), "Flight acquires gravity");
         org.academy.api.server.ability.GravityControl.set(subject, AcademyCraft.academy("flight_test"), false);
         check(helper, !subject.isNoGravity(), "Release restores original gravity");
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            var attacker = player(helper, 2, 3, 5);
-            var defender = player(helper, 8, 3, 5);
-            try {
-                switch (scenario) {
-                    case "shield_paths" -> shieldPaths(helper, attacker, defender);
-                    case "beam_probe" -> beamProbe(helper, attacker, defender);
-                    case "resistance_damage" -> resistanceDamage(helper, attacker, defender);
-                    case "magnetic_flight" -> magneticFlight(helper, attacker);
-                    default -> throw new IllegalArgumentException(scenario);
-                }
-                helper.succeed();
-            } catch (ReflectiveOperationException exception) {
-                throw new IllegalStateException("Cannot exercise skill entry point", exception);
-            } finally {
-                var players = helper.getLevel().getServer().getPlayerList();
-                players.remove(attacker);
-                players.remove(defender);
-            }
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Shield and magnetic movement regression");
-        }
     }
 }

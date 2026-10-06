@@ -3,7 +3,7 @@ package org.academy.api.client.ability.program;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonPrimitive;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public final class ProgramNodeEditorOptions {
     private static final int MAX_OPTIONS = 512;
-    private static final Map<Identifier, Provider> PROVIDERS = new ConcurrentHashMap<>();
+    private static final Map<ResourceLocation, Provider> PROVIDERS = new ConcurrentHashMap<>();
 
     private ProgramNodeEditorOptions() {
     }
@@ -31,7 +31,7 @@ public final class ProgramNodeEditorOptions {
      *
      * @return a handle that removes this exact registration when closed
      */
-    public static Registration register(Identifier nodeType, Provider provider) {
+    public static Registration register(ResourceLocation nodeType, Provider provider) {
         Objects.requireNonNull(nodeType, "nodeType");
         Objects.requireNonNull(provider, "provider");
         if (PROVIDERS.putIfAbsent(nodeType, provider) != null) {
@@ -45,7 +45,7 @@ public final class ProgramNodeEditorOptions {
      * Returns a defensive, bounded snapshot supplied for the current client state.
      */
     public static List<Option> options(
-            Identifier nodeType,
+            ResourceLocation nodeType,
             @Nullable String field,
             @Nullable JsonElement currentValue
     ) {

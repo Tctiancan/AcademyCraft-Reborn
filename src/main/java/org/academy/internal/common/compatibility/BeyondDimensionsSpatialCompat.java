@@ -28,7 +28,7 @@ public final class BeyondDimensionsSpatialCompat {
             var storage = access.getStorage.invoke(net);
             data.transfer(id, 128, (resource, count) -> {
                 try {
-                    var key = access.itemKey.newInstance(resource.toStack());
+                    var key = access.itemKey.newInstance(resource.copy());
                     var remainder = access.insert.invoke(storage, key, count, false);
                     return count - (long) access.amount.invoke(remainder);
                 } catch (ReflectiveOperationException exception) {

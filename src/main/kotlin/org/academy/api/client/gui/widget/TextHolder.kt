@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import kotlin.math.roundToInt
 
 /**
@@ -22,7 +22,7 @@ interface TextHolder : Widget {
 
 /** 便捷：以 0..1 浮点分量设色（等价于打包成 ARGB 后赋给 [TextHolder.textColor]）。 */
 fun TextHolder.rgb(red: Float, green: Float, blue: Float): TextHolder {
-    textColor = ARGB.color(
+    textColor = FastColor.ARGB32.color(
         255,
         (red * 255f).roundToInt().coerceIn(0, 255),
         (green * 255f).roundToInt().coerceIn(0, 255),

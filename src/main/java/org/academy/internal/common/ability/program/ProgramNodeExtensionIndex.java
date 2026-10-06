@@ -12,7 +12,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.ProgramNodeEditorMetadata;
 import org.academy.api.common.ability.program.ProgramNodeExtension;
@@ -38,7 +38,7 @@ import java.util.Objects;
  * Validated, deterministic view of registry-backed program-node extensions.
  */
 public final class ProgramNodeExtensionIndex {
-    private static volatile @Nullable Map<Identifier, Snapshot> frozenSnapshots;
+    private static volatile @Nullable Map<ResourceLocation, Snapshot> frozenSnapshots;
 
     private ProgramNodeExtensionIndex() {
     }
@@ -60,10 +60,10 @@ public final class ProgramNodeExtensionIndex {
             }
         });
         if (!declarationFailures.isEmpty()) throw new IllegalStateException(String.join("; ", declarationFailures));
-        var snapshots = new LinkedHashMap<Identifier, Snapshot>();
+        var snapshots = new LinkedHashMap<ResourceLocation, Snapshot>();
         AbilityProgramDefinitions.all().stream()
                 .map(AbilityProgramDefinition::category)
-                .sorted(Comparator.comparing(Identifier::toString))
+                .sorted(Comparator.comparing(ResourceLocation::toString))
                 .forEach(category -> snapshots.put(category, build(category, candidates)));
         frozenSnapshots = Map.copyOf(snapshots);
         var extensionCount = snapshots.values().stream()
@@ -81,7 +81,7 @@ public final class ProgramNodeExtensionIndex {
         );
     }
 
-    public static Snapshot snapshot(Identifier category) {
+    public static Snapshot snapshot(ResourceLocation category) {
         Objects.requireNonNull(category, "category");
         var frozen = frozenSnapshots;
         if (frozen != null) {
@@ -91,15 +91,15 @@ public final class ProgramNodeExtensionIndex {
     }
 
     static Snapshot build(
-            Identifier category,
-            Map<Identifier, ProgramNodeType<?>> candidates
+            ResourceLocation category,
+            Map<ResourceLocation, ProgramNodeType<?>> candidates
     ) {
         Objects.requireNonNull(category, "category");
         Objects.requireNonNull(candidates, "candidates");
         var registrations = new ArrayList<Registration>();
         var failures = new ArrayList<String>();
         candidates.entrySet().stream()
-                .sorted(Map.Entry.comparingByKey(Comparator.comparing(Identifier::toString)))
+                .sorted(Map.Entry.comparingByKey(Comparator.comparing(ResourceLocation::toString)))
                 .forEach(entry -> {
                     if (!(entry.getValue() instanceof ProgramNodeExtension<?> extension)
                             || !extension.scope().allowsCategory(category)) {
@@ -117,18 +117,18 @@ public final class ProgramNodeExtensionIndex {
         return new Snapshot(category, registrations, fingerprint(category, registrations));
     }
 
-    private static Map<Identifier, ProgramNodeType<?>> registryCandidates() {
-        var result = new HashMap<Identifier, ProgramNodeType<?>>();
+    private static Map<ResourceLocation, ProgramNodeType<?>> registryCandidates() {
+        var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         Registries.PROGRAM_NODE_TYPES.keySet().stream()
-                .sorted(Comparator.comparing(Identifier::toString))
+                .sorted(Comparator.comparing(ResourceLocation::toString))
                 .forEach(id -> Registries.PROGRAM_NODE_TYPES.get(id)
                         .ifPresent(reference -> result.put(id, reference.value())));
         return Map.copyOf(result);
     }
 
     private static <C> Registration validate(
-            Identifier id,
-            Identifier category,
+            ResourceLocation id,
+            ResourceLocation category,
             ProgramNodeExtension<C> extension
     ) {
         Objects.requireNonNull(id, "id");
@@ -166,7 +166,7 @@ public final class ProgramNodeExtensionIndex {
     }
 
     private static String fingerprint(
-            Identifier category,
+            ResourceLocation category,
             Collection<Registration> registrations
     ) {
         try {
@@ -182,10 +182,10 @@ public final class ProgramNodeExtensionIndex {
                         + extension.compatibilityVersion() + "\n");
                 update(digest, extension.role() + ":" + extension.purity() + "\n");
                 extension.scope().allowedCategories().stream()
-                        .sorted(Comparator.comparing(Identifier::toString))
+                        .sorted(Comparator.comparing(ResourceLocation::toString))
                         .forEach(value -> update(digest, "category=" + value + "\n"));
                 extension.scope().requiredCapabilities().stream()
-                        .sorted(Comparator.comparing(Identifier::toString))
+                        .sorted(Comparator.comparing(ResourceLocation::toString))
                         .forEach(value -> update(digest, "capability=" + value + "\n"));
                 update(digest, canonicalJson(metadata.defaultConfiguration()) + "\n");
                 updateSchema(digest, extension, metadata);
@@ -258,7 +258,7 @@ public final class ProgramNodeExtensionIndex {
     }
 
     public record Registration(
-            Identifier id,
+            ResourceLocation id,
             ProgramNodeExtension<?> extension,
             ProgramNodeEditorMetadata editorMetadata,
             ProgramNodeExecutor<?> executor
@@ -266,7 +266,7 @@ public final class ProgramNodeExtensionIndex {
     }
 
     public record Snapshot(
-            Identifier category,
+            ResourceLocation category,
             List<Registration> registrations,
             String fingerprint
     ) {
@@ -274,14 +274,14 @@ public final class ProgramNodeExtensionIndex {
             registrations = List.copyOf(registrations);
         }
 
-        public @Nullable Registration find(Identifier id) {
+        public @Nullable Registration find(ResourceLocation id) {
             return registrations.stream()
                     .filter(registration -> registration.id().equals(id))
                     .findFirst()
                     .orElse(null);
         }
 
-        private static Snapshot empty(Identifier category) {
+        private static Snapshot empty(ResourceLocation category) {
             return new Snapshot(
                     category,
                     List.of(),

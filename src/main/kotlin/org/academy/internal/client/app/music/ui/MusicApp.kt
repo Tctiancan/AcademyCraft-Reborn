@@ -1,9 +1,9 @@
-package org.academy.internal.client.app.music.ui
+﻿package org.academy.internal.client.app.music.ui
 
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
+import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraft
 import org.academy.api.client.app.App
 import org.academy.api.client.gui.animation.EasingFunctions
@@ -54,7 +54,7 @@ object MusicApp : App {
         return L10n["app.academy.music_player.name"]
     }
 
-    override fun icon(): Identifier {
+    override fun icon(): ResourceLocation {
         return R.textures.gui.app.music.icon
     }
 
@@ -87,7 +87,7 @@ object MusicApp : App {
         private var pendingRoomEntry: SharedTrackEntry? = null
         private val viewRevisionState = UiState(0)
         private val vinyl = createVinyl()
-        private var lastVinylArtwork: Identifier? = null
+        private var lastVinylArtwork: ResourceLocation? = null
         private val playPauseIcon: ImageWidget = ImageWidget().apply {
             bindState(MusicPlayerBackend.getInstance().uiState) { setTexture(getPlayPauseIcon()) }
         }
@@ -580,7 +580,7 @@ object MusicApp : App {
         private fun buildLoggedInCard(): LinearLayoutWidget {
             val provider = OnlineMusicManager.selectedProvider
             val name = OnlineMusicManager.accountDisplayName(provider)
-            val sub = "${providerLabelText(provider)} · ${L10n["app.academy.music_player.account.logged_in"]}"
+            val sub = "${providerLabelText(provider)} 路 ${L10n["app.academy.music_player.account.logged_in"]}"
             return standaloneRow(6f) {
                 sizeMode(SizeMode.MATCH_PARENT)
                 add("avatar", AvatarWidget(provider)) {
@@ -879,7 +879,7 @@ object MusicApp : App {
         }
 
         private fun createActionButton(
-            texture: Identifier,
+            texture: ResourceLocation,
             tooltip: String,
             size: Float = 22f,
             gravity: Int = Gravity.CENTER_VERTICAL,
@@ -915,7 +915,7 @@ object MusicApp : App {
         private class AvatarWidget(private val provider: OnlineMusicManager.Provider) :
             ImageWidget(R.textures.gui.app.music.icon) {
             private var lastUrl: String? = null
-            private var lastTexture: Identifier? = null
+            private var lastTexture: ResourceLocation? = null
 
             init {
                 setSampler(FilterMode.LINEAR, false)
@@ -1128,12 +1128,12 @@ object MusicApp : App {
         val isPlaying: Boolean
             get() = MusicPlayerBackend.getInstance().isPlaying
 
-        fun getPlayPauseIcon(): Identifier {
+        fun getPlayPauseIcon(): ResourceLocation {
             return if (isPlaying) R.textures.gui.app.music.pause
             else R.textures.gui.app.music.play
         }
 
-        fun getPlaybackModeIcon(): Identifier {
+        fun getPlaybackModeIcon(): ResourceLocation {
             val musicPlayerBackend = MusicPlayerBackend.getInstance()
             return when (musicPlayerBackend.playbackMode) {
                 PlaybackMode.REPEAT_LIST -> R.textures.gui.app.music.cycle
@@ -1356,7 +1356,7 @@ object MusicApp : App {
                                     this.gravity = Gravity.CENTER_LEFT
                                 }
                                 text(
-                                    "${room.hostName()} · ${room.memberCount()}",
+                                    "${room.hostName()} 路 ${room.memberCount()}",
                                     "sub"
                                 ) {
                                     widthMode(SizeMode.MATCH_PARENT)
@@ -1902,7 +1902,7 @@ object MusicApp : App {
                     artworkUrl
                 )
             }
-            val location = source.path as? Identifier ?: return null
+            val location = source.path as? ResourceLocation ?: return null
             return SharedTrackEntry(
                 "local",
                 location.toString(),
@@ -2415,7 +2415,7 @@ object MusicApp : App {
                             if (status.sharedEnabled) L10n["app.academy.music_player.shared_account.enabled"]
                             else L10n["app.academy.music_player.shared_account.disabled"]
                         )
-                        append(" · ")
+                        append(" 路 ")
                         append(
                             if (status.hasCredential) L10n["app.academy.music_player.shared_account.configured"]
                             else L10n["app.academy.music_player.shared_account.missing"]

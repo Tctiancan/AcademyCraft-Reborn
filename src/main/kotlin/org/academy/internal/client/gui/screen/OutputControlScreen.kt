@@ -1,7 +1,6 @@
 package org.academy.internal.client.gui.screen
 
 import net.minecraft.client.Minecraft
-import net.minecraft.client.input.KeyEvent
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.command.FillRectDrawCommand
@@ -130,12 +129,12 @@ class OutputControlScreen(
         }
     }
 
-    override fun keyReleased(event: KeyEvent): Boolean {
-        if (heldInputType == InputSystem.InputType.KEYBOARD && event.key() == heldInput) {
+    override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if (heldInputType == InputSystem.InputType.KEYBOARD && keyCode == heldInput) {
             closeForRelease()
             return true
         }
-        return super.keyReleased(event)
+        return super.keyReleased(keyCode, scanCode, modifiers)
     }
 
     override fun removed() {
@@ -147,7 +146,7 @@ class OutputControlScreen(
         if (closing) return
         closing = true
         sendSettings(true)
-        Minecraft.getInstance().gui.setScreen(null)
+        Minecraft.getInstance().setScreen(null)
     }
 
     private fun createParameterRow(

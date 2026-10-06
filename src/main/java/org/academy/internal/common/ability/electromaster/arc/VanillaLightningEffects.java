@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.electromaster.arc;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LightningBolt;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
@@ -19,7 +19,7 @@ public final class VanillaLightningEffects {
         if (level == null || impact == null || !isFinite(impact)
                 || !level.hasChunkAt(BlockPos.containing(impact))) return;
 
-        var lightning = new LightningBolt(EntityTypes.LIGHTNING_BOLT, level);
+        var lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, level);
         lightning.setPos(impact.x, impact.y, impact.z);
         lightning.setCause(cause);
         // AcademyCraft applies its own skill-scaled damage after vanilla transformations.
@@ -35,3 +35,4 @@ public final class VanillaLightningEffects {
         return Double.isFinite(value.x) && Double.isFinite(value.y) && Double.isFinite(value.z);
     }
 }
+

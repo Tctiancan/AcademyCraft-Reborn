@@ -1,9 +1,9 @@
-package org.academy.internal.client.app.music.backend
+﻿package org.academy.internal.client.app.music.backend
 
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.loading.FMLPaths
 import net.neoforged.neoforge.common.NeoForge
@@ -514,7 +514,7 @@ object OnlineMusicManager {
      */
     fun toMusicInfo(entry: org.academy.internal.common.music.SharedTrackEntry): MusicInfo? {
         if (entry.provider() == "local") {
-            val location = runCatching { Identifier.parse(entry.trackId()) }.getOrNull() ?: return null
+            val location = runCatching { ResourceLocation.parse(entry.trackId()) }.getOrNull() ?: return null
             return MusicInfo(
                 R.textures.gui.app.music.icon,
                 MusicSource.fromIdentifier(location),

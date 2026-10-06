@@ -1,12 +1,12 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.event.MouseEvent
 import org.academy.api.client.gui.render.Canvas
 
-open class ParallaxImageWidget(texture: Identifier) : ImageWidget(texture) {
+open class ParallaxImageWidget(texture: ResourceLocation) : ImageWidget(texture) {
     private var parallaxFactorX: Float = 0.5f
     private var parallaxFactorY: Float = 0.5f
 
@@ -31,8 +31,10 @@ open class ParallaxImageWidget(texture: Identifier) : ImageWidget(texture) {
         val motionY: Float
         val mh = mc.mouseHandler
         val w = mc.window
-        val mouseX = mh.getScaledXPos(w)
-        val mouseY = mh.getScaledYPos(w)
+        // 1.21.1: MouseHandler 无 26.2 的 getScaledXPos/getScaledYPos; xpos()/ypos() 返回缩放前像素坐标,
+        // 乘以 guiScale 逆即 GUI 坐标, 等价 26.2 的 getScaledXPos(窗口).
+        val mouseX = (mh.xpos() / w.guiScale).toFloat()
+        val mouseY = (mh.ypos() / w.guiScale).toFloat()
 
         val deviationX = ((mouseX - anchorX) / anchorX).toFloat()
         val deviationY = ((mouseY - anchorY) / anchorY).toFloat()

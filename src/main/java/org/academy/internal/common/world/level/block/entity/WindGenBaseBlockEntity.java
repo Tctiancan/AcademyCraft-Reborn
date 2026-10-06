@@ -1,7 +1,9 @@
 package org.academy.internal.common.world.level.block.entity;
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.Container;
@@ -13,8 +15,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.wireless.WirelessUser;
@@ -180,31 +180,35 @@ public final class WindGenBaseBlockEntity extends MultiBlockEntity implements Co
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        output.putString(NBT_COMPLETENESS, completeness.name());
-        ContainerHelper.saveAllItems(output, items);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putString(NBT_COMPLETENESS, completeness.name());
+        ContainerHelper.saveAllItems(tag, items, registries);
         if (isMain()) {
-            output.putInt("energy_stored", energyStored);
+            tag.putInt("energy_stored", energyStored);
             if (connectedNodePos != null) {
-                output.putLong("connected_node_pos", connectedNodePos.asLong());
+                tag.putLong("connected_node_pos", connectedNodePos.asLong());
             }
-            output.putInt("altitude", altitude);
+            tag.putInt("altitude", altitude);
         }
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
-        completeness = Completeness.valueOf(input.getString(NBT_COMPLETENESS).orElse(Completeness.BASE_ONLY.name()));
+        ContainerHelper.loadAllItems(tag, items, registries);
+        completeness = tag.contains(NBT_COMPLETENESS, CompoundTag.TAG_STRING)
+                ? Completeness.valueOf(tag.getString(NBT_COMPLETENESS))
+                : Completeness.BASE_ONLY;
 
         if (isMain()) {
-            energyStored = input.getIntOr("energy_stored", 0);
+            energyStored = tag.contains("energy_stored", CompoundTag.TAG_INT) ? tag.getInt("energy_stored") : 0;
             connectedNodePos = null;
-            input.getLong("connected_node_pos").ifPresent(nodePos -> connectedNodePos = BlockPos.of(nodePos));
-            altitude = input.getIntOr("altitude", 0);
+            if (tag.contains("connected_node_pos", CompoundTag.TAG_LONG)) {
+                connectedNodePos = BlockPos.of(tag.getLong("connected_node_pos"));
+            }
+            altitude = tag.contains("altitude", CompoundTag.TAG_INT) ? tag.getInt("altitude") : 0;
         }
     }
 

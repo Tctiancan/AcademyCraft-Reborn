@@ -12,7 +12,6 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -131,7 +130,7 @@ public final class DarkmatterCreation extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_EDITOR, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_EDITOR,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, GLFW.GLFW_KEY_EQUAL,
-                        InputConstants.RELEASE, 0)), _ -> Client.openEditor());
+                        InputConstants.RELEASE, 0)), unused434 -> Client.openEditor());
         var defaultCastBinding = InputSystem.combo(
                 InputSystem.InputType.KEYBOARD, InputConstants.KEY_Y,
                 InputConstants.RELEASE, 0
@@ -142,7 +141,7 @@ public final class DarkmatterCreation extends Skill {
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G,
                         InputConstants.RELEASE, 0),
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_K,
-                        InputConstants.RELEASE, 0)), _ -> Client.cast());
+                        InputConstants.RELEASE, 0)), unused435 -> Client.cast());
         MisakaNetworkClient.NETWORK_MANAGER.register(ClientPackets.class);
     }
 
@@ -384,7 +383,7 @@ public final class DarkmatterCreation extends Skill {
                                                        Vec3 position,
                                                        DarkmatterCreatureBlueprint blueprint,
                                                        int slot) {
-            var creature = EntityTypes.DARKMATTER_BEETLE.get().create(level, EntitySpawnReason.MOB_SUMMONED);
+            var creature = EntityTypes.DARKMATTER_BEETLE.get().create(level);
             if (creature == null) return null;
             creature.setOwnerUUID(player.getUUID());
             creature.applyBlueprint(blueprint, slot, abilityLevel(player),

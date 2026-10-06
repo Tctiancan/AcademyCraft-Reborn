@@ -1,13 +1,13 @@
 package org.academy.internal.client.render.vfx;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.render.vfx.VfxRenderData;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public interface WorldQuadData extends VfxRenderData {
-    Identifier texture();
+    ResourceLocation texture();
 
     Vector3f corner0();
 

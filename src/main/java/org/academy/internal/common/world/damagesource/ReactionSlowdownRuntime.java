@@ -25,7 +25,7 @@ public final class ReactionSlowdownRuntime {
             throw new IllegalArgumentException("Reaction slowdown requires a living server entity");
         }
         var id = target.getUUID();
-        var state = ACTIVE.computeIfAbsent(id, _ -> new Shared(
+        var state = ACTIVE.computeIfAbsent(id, unused783 -> new Shared(
                 TemporalApi.get(target).acquireField(TemporalField.scale(
                         TemporalScope.entities(Set.of(id)),
                         Set.of(TemporalChannel.ENTITY, TemporalChannel.ACADEMY_SCHEDULER),

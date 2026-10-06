@@ -1,6 +1,6 @@
 package org.academy.api.client.gui.text.device
 
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.gui.text.font.FontRepository
 import org.academy.api.client.gui.text.glyph.RasterPathPolicy
 import org.academy.api.client.gui.text.glyph.RasterSpec

@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.electromaster.program;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.AbilityCategoryNames;
@@ -19,15 +19,15 @@ import java.util.function.Function;
  * Strongly typed Electromaster target and action schemas.
  */
 public final class ElectromasterProgramNodeCatalog implements ProgramNodeLookup {
-    public static final Identifier ELECTROMASTER =
+    public static final ResourceLocation ELECTROMASTER =
             AcademyCraft.academy(AbilityCategoryNames.ELECTROMASTER);
     public static final ElectromasterProgramNodeCatalog INSTANCE =
             new ElectromasterProgramNodeCatalog();
 
-    private final Map<Identifier, ProgramNodeType<?>> types;
+    private final Map<ResourceLocation, ProgramNodeType<?>> types;
 
     private ElectromasterProgramNodeCatalog() {
-        var result = new HashMap<Identifier, ProgramNodeType<?>>();
+        var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         put(result, ElectromasterProgramNodeIds.CASTER, unitType(
                 querySchema(), ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY,
                 categoryScope()));
@@ -50,7 +50,7 @@ public final class ElectromasterProgramNodeCatalog implements ProgramNodeLookup 
                 ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY, categoryScope()));
         put(result, ElectromasterProgramNodeIds.REDSTONE_DETECTION, dynamicType(
                 RedstoneDetectionConfiguration.CODEC,
-                _ -> redstoneDetectionSchema(),
+                unused445 -> redstoneDetectionSchema(),
                 ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY, categoryScope()));
         put(result, ElectromasterProgramNodeIds.ARC_DISCHARGE, powerType(
                 arcSchema(), ElectromasterProgramCapabilities.ARC_DISCHARGE));
@@ -69,11 +69,11 @@ public final class ElectromasterProgramNodeCatalog implements ProgramNodeLookup 
     }
 
     @Override
-    public ProgramNodeType<?> find(Identifier id) {
+    public ProgramNodeType<?> find(ResourceLocation id) {
         return types.get(id);
     }
 
-    public Map<Identifier, ProgramNodeType<?>> types() {
+    public Map<ResourceLocation, ProgramNodeType<?>> types() {
         return types;
     }
 
@@ -188,7 +188,7 @@ public final class ElectromasterProgramNodeCatalog implements ProgramNodeLookup 
 
     private static ProgramNodeType<PowerConfiguration> powerType(
             ProgramNodeSchema schema,
-            Identifier capability
+            ResourceLocation capability
     ) {
         return new FixedNodeType<>(
                 PowerConfiguration.CODEC,
@@ -228,13 +228,13 @@ public final class ElectromasterProgramNodeCatalog implements ProgramNodeLookup 
         return ProgramNodeScope.category(ELECTROMASTER);
     }
 
-    private static ProgramNodeScope capabilityScope(Identifier capability) {
+    private static ProgramNodeScope capabilityScope(ResourceLocation capability) {
         return new ProgramNodeScope(Set.of(ELECTROMASTER), Set.of(capability));
     }
 
     private static void put(
-            Map<Identifier, ProgramNodeType<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeType<?>> result,
+            ResourceLocation id,
             ProgramNodeType<?> type
     ) {
         if (result.putIfAbsent(id, type) != null) {

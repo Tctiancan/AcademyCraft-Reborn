@@ -12,7 +12,7 @@ import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ItemLike;
@@ -92,7 +92,7 @@ public final class OmniCraftingRecipeCategory
     }
 
     @Override
-    public Identifier getIdentifier(DisplayRecipe recipe) {
+    public ResourceLocation getIdentifier(DisplayRecipe recipe) {
         return recipe.id();
     }
 
@@ -113,6 +113,6 @@ public final class OmniCraftingRecipeCategory
             .map(ItemStack::new)
             .toList();
 
-    public record DisplayRecipe(Identifier id) {
+    public record DisplayRecipe(ResourceLocation id) {
     }
 }

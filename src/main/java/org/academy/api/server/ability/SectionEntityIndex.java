@@ -18,7 +18,7 @@ public final class SectionEntityIndex<T> {
         remove(id);
         locations.put(id, key);
         entities.put(id, value);
-        sections.computeIfAbsent(key, _ -> new TreeMap<>()).put(id, value);
+        sections.computeIfAbsent(key, unused177 -> new TreeMap<>()).put(id, value);
     }
 
     public void remove(int id) {

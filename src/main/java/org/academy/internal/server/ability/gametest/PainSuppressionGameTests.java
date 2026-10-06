@@ -1,21 +1,11 @@
 package org.academy.internal.server.ability.gametest;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.*;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.level.block.Rotation;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.attribute.PlayerAttributes;
 import org.academy.api.common.damage.SkillDamageSource;
@@ -26,29 +16,59 @@ import org.academy.internal.common.ability.mentalout.skills.lv4.PainSuppression;
 import org.academy.internal.common.world.damagesource.DamageTypes;
 import org.academy.internal.common.world.damagesource.SkillDamageUtil;
 
-import java.util.List;
-
 import static org.academy.internal.server.ability.gametest.HostileTargetGameTests.check;
 import static org.academy.internal.server.ability.gametest.HostileTargetGameTests.player;
 
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class PainSuppressionGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("pain_suppression_test_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void painSuppressionToggle(GameTestHelper helper) {
+        withPreparedTarget(helper, PainSuppressionGameTests::toggle);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("toggle", "damage", "direct", "insufficient_cp")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("pain_suppression/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("pain_suppression_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 80, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void painSuppressionDamage(GameTestHelper helper) {
+        withPreparedTarget(helper, PainSuppressionGameTests::damage);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void painSuppressionDirect(GameTestHelper helper) {
+        withActors(helper, PainSuppressionGameTests::direct);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void painSuppressionInsufficientCp(GameTestHelper helper) {
+        withPreparedTarget(helper, PainSuppressionGameTests::insufficientCp);
+    }
+
+    @FunctionalInterface
+    private interface TargetScenario {
+        void run(GameTestHelper helper, ServerPlayer target);
+    }
+
+    private static void withPreparedTarget(GameTestHelper helper, TargetScenario scenario) {
+        withActors(helper, (h, target, attacker) -> {
+            prepare(target);
+            scenario.run(h, target);
+        });
+    }
+
+    private static void withActors(GameTestHelper helper, ActorsScenario scenario) {
+        var target = player(helper, 2);
+        var attacker = player(helper, 8);
+        try {
+            scenario.run(helper, target, attacker);
+            helper.succeed();
+        } finally {
+            var players = helper.getLevel().getServer().getPlayerList();
+            players.remove(target);
+            players.remove(attacker);
         }
+    }
+
+    @FunctionalInterface
+    private interface ActorsScenario {
+        void run(GameTestHelper helper, ServerPlayer target, ServerPlayer attacker);
     }
 
     private static void prepare(ServerPlayer player) {
@@ -130,49 +150,5 @@ public final class PainSuppressionGameTests {
         check(helper, !Skills.PAIN_SUPPRESSION.get().isEnabled(target), "Unaffordable damage charge must disable the skill");
         near(helper, 0, target.getAttributeValue(PlayerAttributes.TRUE_RESISTANCE), "Failed payment must remove resistance immediately");
         near(helper, 1 + 40 * intensity(target), cp(target), "Failed payment must release maintenance without creating negative CP");
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            var target = player(helper, 2);
-            var attacker = player(helper, 8);
-            try {
-                prepare(target);
-                switch (scenario) {
-                    case "toggle" -> toggle(helper, target);
-                    case "damage" -> damage(helper, target);
-                    case "direct" -> direct(helper, target, attacker);
-                    case "insufficient_cp" -> insufficientCp(helper, target);
-                    default -> throw new IllegalArgumentException(scenario);
-                }
-                helper.succeed();
-            } finally {
-                var players = helper.getLevel().getServer().getPlayerList();
-                players.remove(target);
-                players.remove(attacker);
-            }
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Pain suppression final damage regression");
-        }
     }
 }

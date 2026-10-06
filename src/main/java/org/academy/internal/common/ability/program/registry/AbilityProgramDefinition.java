@@ -9,7 +9,7 @@ import org.academy.internal.common.ability.program.compile.ProgramCompiler;
 import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
 
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 
 import java.util.List;
@@ -21,8 +21,8 @@ import java.util.Set;
  * Complete compile, execution, and editor assembly for one programmable ability category.
  */
 public final class AbilityProgramDefinition {
-    private final Identifier category;
-    private final Map<Identifier, ProgramNodeType<?>> categoryNodeTypes;
+    private final ResourceLocation category;
+    private final Map<ResourceLocation, ProgramNodeType<?>> categoryNodeTypes;
     private final ProgramNodeLookup nodeLookup;
     private final ProgramExecutorLookup executors;
     private final ProgramEditorNodeCatalog editorCatalog;
@@ -30,8 +30,8 @@ public final class AbilityProgramDefinition {
     private final ProgramSpatialLimits spatialLimits;
 
     public AbilityProgramDefinition(
-            Identifier category,
-            Map<Identifier, ProgramNodeType<?>> categoryNodeTypes,
+            ResourceLocation category,
+            Map<ResourceLocation, ProgramNodeType<?>> categoryNodeTypes,
             ProgramExecutorLookup categoryExecutors,
             ProgramEditorNodeCatalog editorCatalog,
             ProgramLimits limits
@@ -47,8 +47,8 @@ public final class AbilityProgramDefinition {
     }
 
     public AbilityProgramDefinition(
-            Identifier category,
-            Map<Identifier, ProgramNodeType<?>> categoryNodeTypes,
+            ResourceLocation category,
+            Map<ResourceLocation, ProgramNodeType<?>> categoryNodeTypes,
             ProgramExecutorLookup categoryExecutors,
             ProgramEditorNodeCatalog editorCatalog,
             ProgramLimits limits,
@@ -105,11 +105,11 @@ public final class AbilityProgramDefinition {
         );
     }
 
-    public Identifier category() {
+    public ResourceLocation category() {
         return category;
     }
 
-    public Map<Identifier, ProgramNodeType<?>> categoryNodeTypes() {
+    public Map<ResourceLocation, ProgramNodeType<?>> categoryNodeTypes() {
         return categoryNodeTypes;
     }
 
@@ -140,7 +140,7 @@ public final class AbilityProgramDefinition {
         return ProgramNodeExtensionIndex.snapshot(category).fingerprint();
     }
 
-    public ProgramCompileResult compile(AbilityProgram program, Set<Identifier> capabilities) {
+    public ProgramCompileResult compile(AbilityProgram program, Set<ResourceLocation> capabilities) {
         Objects.requireNonNull(program, "program");
         if (program.schemaVersion() != AbilityProgram.CURRENT_SCHEMA_VERSION) {
             return failure(ProgramDiagnosticCode.INVALID_CONFIGURATION);
@@ -151,7 +151,7 @@ public final class AbilityProgramDefinition {
         return compile(program.graph(), capabilities);
     }
 
-    public ProgramCompileResult compile(ProgramGraph graph, Set<Identifier> capabilities) {
+    public ProgramCompileResult compile(ProgramGraph graph, Set<ResourceLocation> capabilities) {
         return ProgramCompiler.compile(
                 Objects.requireNonNull(graph, "graph"),
                 new ProgramCompileContext(category, capabilities, limits),

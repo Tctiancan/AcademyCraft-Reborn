@@ -6,7 +6,7 @@ import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
@@ -64,7 +64,8 @@ public final class DarkmatterSixWingsVfx implements Vfx {
             vertexData.flip();
             if (vertexData.hasRemaining()) {
                 // Each submitted item must own its bytes. A slice would share this scratch buffer,
-                // so sampling the next avatar (or frame) could rewrite vertices still queued for
+                // so sampling the next avatar (or frame) could rewrite vertices still queued
+// for
                 // rendering and produce apparent texture/geometry flicker.
                 var vertices = BufferUtils.createByteBuffer(vertexData.remaining())
                         .order(ByteOrder.nativeOrder());
@@ -154,7 +155,7 @@ public final class DarkmatterSixWingsVfx implements Vfx {
         };
     }
 
-    private static final class AvianWingsModel extends Model<AvatarRenderState> {
+    private static final class AvianWingsModel extends Model<PlayerRenderState> {
         private final ModelPart root;
         private final ModelPart coracoidLeft;
         private final ModelPart humerusLeft;

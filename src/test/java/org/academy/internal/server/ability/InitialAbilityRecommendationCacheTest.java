@@ -1,7 +1,7 @@
 package org.academy.internal.server.ability;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.internal.common.ability.development.AbilityDevelopmentProfiles;
 import org.junit.jupiter.api.Test;
@@ -12,8 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class InitialAbilityRecommendationCacheTest {
     private static final BlockPos DEVELOPER_POS = new BlockPos(10, 64, 10);
-    private static final Identifier OVERWORLD = Identifier.parse("minecraft:overworld");
-    private static final Identifier NETHER = Identifier.parse("minecraft:the_nether");
+    private static final ResourceLocation OVERWORLD = ResourceLocation.parse("minecraft:overworld");
+    private static final ResourceLocation NETHER = ResourceLocation.parse("minecraft:the_nether");
 
     @Test
     void consumesMatchingRecommendationOnce() {
@@ -83,8 +83,8 @@ class InitialAbilityRecommendationCacheTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
-            return Identifier.parse("academy:test");
+        public ResourceLocation getDeveloperIcon() {
+            return ResourceLocation.parse("academy:test");
         }
 
         @Override

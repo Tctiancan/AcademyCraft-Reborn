@@ -5,7 +5,7 @@ import org.academy.internal.common.ability.teleport.chunk.ChunkSwapService;
 
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -27,7 +27,7 @@ class ChunkSwapServiceValidationTest {
     private static final ResourceKey<Level> NETHER = key("minecraft:the_nether");
 
     private static ResourceKey<Level> key(String id) {
-        return ResourceKey.create(Registries.DIMENSION, Identifier.parse(id));
+        return ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse(id));
     }
 
     private static ChunkLeapSelection rectangle(ResourceKey<Level> dimension, int x, int z, int w, int h) {

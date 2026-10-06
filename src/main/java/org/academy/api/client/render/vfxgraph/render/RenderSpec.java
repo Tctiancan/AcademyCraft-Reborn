@@ -1,6 +1,6 @@
 package org.academy.api.client.render.vfxgraph.render;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.render.graph.model.GraphNode;
 import org.academy.api.client.render.vfxgraph.sim.ParticleBuffer;
 import org.academy.api.client.resources.R;
@@ -32,16 +32,16 @@ import java.util.Map;
 public record RenderSpec(
         Geometry geometry,
         Blend blend,
-        Identifier vertexShader,
-        Identifier fragmentShader,
-        @Nullable Identifier texture,
+        ResourceLocation vertexShader,
+        ResourceLocation fragmentShader,
+        @Nullable ResourceLocation texture,
         String layer,
         ArcRender arc,
         float particleBoundsScale
 ) {
     /** Existing/custom shaders remain uncullable until their output declares a conservative bound. */
-    public RenderSpec(Geometry geometry, Blend blend, Identifier vertexShader, Identifier fragmentShader,
-                      @Nullable Identifier texture, String layer, ArcRender arc) {
+    public RenderSpec(Geometry geometry, Blend blend, ResourceLocation vertexShader, ResourceLocation fragmentShader,
+                      @Nullable ResourceLocation texture, String layer, ArcRender arc) {
         this(geometry, blend, vertexShader, fragmentShader, texture, layer, arc, 0f);
     }
 
@@ -176,14 +176,14 @@ public record RenderSpec(
         }
     }
 
-    private static Identifier id(GraphNode node, String key, Identifier fallback) {
+    private static ResourceLocation id(GraphNode node, String key, ResourceLocation fallback) {
         var v = node.properties().getOrDefault(key, "").trim();
-        return v.isEmpty() ? fallback : Identifier.parse(v);
+        return v.isEmpty() ? fallback : ResourceLocation.parse(v);
     }
 
-    private static @Nullable Identifier optionalId(GraphNode node, String key) {
+    private static @Nullable ResourceLocation optionalId(GraphNode node, String key) {
         var value = node.properties().getOrDefault(key, "").trim();
-        return value.isEmpty() ? null : Identifier.parse(value);
+        return value.isEmpty() ? null : ResourceLocation.parse(value);
     }
 
     /** 该规格是否渲染指定粒子：{@code layer} 空串（全部）或与粒子层字节匹配。 */

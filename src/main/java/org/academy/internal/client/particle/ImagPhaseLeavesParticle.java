@@ -3,12 +3,13 @@ package org.academy.internal.client.particle;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.RandomSource;
 
-public final class ImagPhaseLeavesParticle extends SingleQuadParticle {
+public final class ImagPhaseLeavesParticle extends TextureSheetParticle {
     private static final int HANGING_TICKS = 40;
     private static final int FALLING_TICKS = 40;
 
@@ -22,7 +23,7 @@ public final class ImagPhaseLeavesParticle extends SingleQuadParticle {
             SpriteSet sprites,
             RandomSource random
     ) {
-        super(level, x, y, z, 0.0, 0.0, 0.0, sprites.first());
+        super(level, x, y, z, 0.0, 0.0, 0.0);
         this.sprites = sprites;
         setSize(0.1F, 0.1F);
         quadSize = 0.3F;
@@ -46,12 +47,12 @@ public final class ImagPhaseLeavesParticle extends SingleQuadParticle {
     }
 
     @Override
-    protected Layer getLayer() {
-        return Layer.OPAQUE;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_OPAQUE;
     }
 
     @Override
-    protected int getLightCoords(float partialTick) {
+    protected int getLightColor(float partialTick) {
         return 0x00F000F0;
     }
 

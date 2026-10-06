@@ -5,7 +5,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.InteractionHand;
 import org.academy.internal.common.network.PacketTypes;
@@ -103,7 +103,7 @@ public class StartLevelDevPacket extends RequestPacket<ServerGamePacketListenerI
                     var status = Status.byOrdinal(ByteBufCodecs.VAR_INT.decode(buf));
                     var message = ByteBufCodecs.STRING_UTF8.decode(buf);
                     var recommendation = ByteBufCodecs.BOOL.decode(buf)
-                            ? Identifier.tryParse(ByteBufCodecs.STRING_UTF8.decode(buf))
+                            ? ResourceLocation.tryParse(ByteBufCodecs.STRING_UTF8.decode(buf))
                             : null;
                     return new Response(status, message, recommendation);
                 }
@@ -111,13 +111,13 @@ public class StartLevelDevPacket extends RequestPacket<ServerGamePacketListenerI
 
         private final Status status;
         private final String message;
-        private final @Nullable Identifier recommendedCategory;
+        private final @Nullable ResourceLocation recommendedCategory;
 
         public Response(boolean success, String message) {
             this(success ? Status.STARTED : Status.REJECTED, message, null);
         }
 
-        public Response(Status status, String message, @Nullable Identifier recommendedCategory) {
+        public Response(Status status, String message, @Nullable ResourceLocation recommendedCategory) {
             this.status = status;
             this.message = message;
             this.recommendedCategory = recommendedCategory;
@@ -139,7 +139,7 @@ public class StartLevelDevPacket extends RequestPacket<ServerGamePacketListenerI
             return message;
         }
 
-        public @Nullable Identifier getRecommendedCategory() {
+        public @Nullable ResourceLocation getRecommendedCategory() {
             return recommendedCategory;
         }
 

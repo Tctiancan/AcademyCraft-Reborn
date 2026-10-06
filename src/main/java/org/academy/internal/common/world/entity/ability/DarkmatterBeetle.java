@@ -7,7 +7,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
@@ -18,6 +18,9 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.*;
 import net.minecraft.world.entity.ai.attributes.Attribute;
+
+import net.minecraft.nbt.CompoundTag;
+
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.AttributeSupplier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -36,8 +39,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
@@ -61,7 +62,7 @@ import java.util.*;
  * One entity type whose synchronized model branches and behavior are defined by a saved blueprint snapshot.
  */
 public final class DarkmatterBeetle extends Monster {
-    private static final Identifier PENETRATION_ID =
+    private static final ResourceLocation PENETRATION_ID =
             AcademyCraft.academy("darkmatter_creature_penetration");
     private static final int MAX_CARGO_SLOTS = 27;
     private static final EntityDataAccessor<Integer> HEAD_MODEL = SynchedEntityData.defineId(
@@ -210,13 +211,13 @@ public final class DarkmatterBeetle extends Monster {
                         || modelId(limbs, DarkmatterCreaturePartType.BodySlot.LIMBS) < 0
                         || modelId(additional, DarkmatterCreaturePartType.BodySlot.ADDITIONAL) < 0
                         || modules.stream().anyMatch(module -> {
-                    var id = Identifier.tryParse(module);
+                    var id = ResourceLocation.tryParse(module);
                     return id == null || DarkmatterCreatureRegistries.module(id).isEmpty();
                 }));
     }
 
     private static int modelId(String raw, DarkmatterCreaturePartType.BodySlot slot) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         return id == null ? -1 : DarkmatterCreatureRegistries.part(id)
                 .filter(type -> type.slot() == slot).map(DarkmatterCreaturePartType::clientModelId).orElse(-1);
     }
@@ -481,7 +482,7 @@ public final class DarkmatterBeetle extends Monster {
     private void runModules(ServerLevel level, ServerPlayer owner) {
         var multiplier = DarkmatterCreation.moduleValueMultiplier(proficiencyMilestone);
         for (var raw : modules) {
-            var id = Identifier.tryParse(raw);
+            var id = ResourceLocation.tryParse(raw);
             if (id != null) DarkmatterCreatureRegistries.module(id)
                     .ifPresent(type -> type.handler().tick(this, owner, multiplier));
         }
@@ -603,8 +604,7 @@ public final class DarkmatterBeetle extends Monster {
                 + (additional.equals(DarkmatterCreatureRegistries.ADDITIONAL_WEAPON.toString())
                 ? 0.06f * betaPower(additionalAlpha) : 0.0f));
         var projectile = EntityTypes
-                .DARKMATTER_CREATURE_PROJECTILE.get().create(
-                        level, EntitySpawnReason.MOB_SUMMONED);
+                .DARKMATTER_CREATURE_PROJECTILE.get().create(level);
         if (projectile == null) return;
         var homing = head.equals(DarkmatterCreatureRegistries.HEAD_HOMING.toString());
         var projectileSpeed = (homing ? 0.95f : 1.25f) + 0.12f * alpha;
@@ -774,62 +774,63 @@ public final class DarkmatterBeetle extends Monster {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        input.getString("academy_owner").ifPresent(value -> {
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("academy_owner", CompoundTag.TAG_STRING)) {
             try {
-                setOwnerUUID(UUID.fromString(value));
+                setOwnerUUID(UUID.fromString(tag.getString("academy_owner")));
             } catch (IllegalArgumentException ignored) {
             }
-        });
-        blueprintVersion = input.getIntOr("academy_blueprint_version", DarkmatterCreatureBlueprint.VERSION);
-        blueprintSlot = Math.clamp(input.getIntOr("academy_blueprint_slot", 0), 0, 3);
-        investment = Math.max(5, input.getIntOr("academy_investment", 5));
-        abilityLevel = Math.clamp(input.getIntOr("academy_ability_level", 1), 1, 5);
-        proficiencyMilestone = Math.clamp(input.getIntOr("academy_milestone", 0), 0, 3);
-        head = input.getString("academy_head").orElse(head);
-        torso = input.getString("academy_torso").orElse(torso);
-        limbs = input.getString("academy_limbs").orElse(limbs);
-        additional = input.getString("academy_additional").orElse(additional);
-        headAlpha = input.getIntOr("academy_head_alpha", abilityLevel * 25);
-        torsoAlpha = input.getIntOr("academy_torso_alpha", abilityLevel * 25);
-        limbsAlpha = input.getIntOr("academy_limbs_alpha", abilityLevel * 25);
-        additionalAlpha = input.getIntOr("academy_additional_alpha", abilityLevel * 25);
-        averageGammaPower = input.getIntOr("academy_gamma_power_milli", 0) / 1000.0f;
-        outputAdjustmentBypassed = input.getIntOr(
-                "academy_output_adjustment_bypassed", 0) != 0;
-        entityData.set(GAMMA_CATALYZED, input.getIntOr("academy_gamma_catalyzed", 0) != 0);
-        modules = parseModules(input.getString("academy_modules").orElse(""));
+        }
+        blueprintVersion = tag.contains("academy_blueprint_version", CompoundTag.TAG_INT) ? tag.getInt("academy_blueprint_version") : DarkmatterCreatureBlueprint.VERSION;
+        blueprintSlot = Math.clamp(tag.contains("academy_blueprint_slot", CompoundTag.TAG_INT) ? tag.getInt("academy_blueprint_slot") : 0, 0, 3);
+        investment = Math.max(5, tag.contains("academy_investment", CompoundTag.TAG_INT) ? tag.getInt("academy_investment") : 5);
+        abilityLevel = Math.clamp(tag.contains("academy_ability_level", CompoundTag.TAG_INT) ? tag.getInt("academy_ability_level") : 1, 1, 5);
+        proficiencyMilestone = Math.clamp(tag.contains("academy_milestone", CompoundTag.TAG_INT) ? tag.getInt("academy_milestone") : 0, 0, 3);
+        head = tag.contains("academy_head", CompoundTag.TAG_STRING) ? tag.getString("academy_head") : head;
+        torso = tag.contains("academy_torso", CompoundTag.TAG_STRING) ? tag.getString("academy_torso") : torso;
+        limbs = tag.contains("academy_limbs", CompoundTag.TAG_STRING) ? tag.getString("academy_limbs") : limbs;
+        additional = tag.contains("academy_additional", CompoundTag.TAG_STRING) ? tag.getString("academy_additional") : additional;
+        headAlpha = tag.contains("academy_head_alpha", CompoundTag.TAG_INT) ? tag.getInt("academy_head_alpha") : abilityLevel * 25;
+        torsoAlpha = tag.contains("academy_torso_alpha", CompoundTag.TAG_INT) ? tag.getInt("academy_torso_alpha") : abilityLevel * 25;
+        limbsAlpha = tag.contains("academy_limbs_alpha", CompoundTag.TAG_INT) ? tag.getInt("academy_limbs_alpha") : abilityLevel * 25;
+        additionalAlpha = tag.contains("academy_additional_alpha", CompoundTag.TAG_INT) ? tag.getInt("academy_additional_alpha") : abilityLevel * 25;
+        averageGammaPower = (tag.contains("academy_gamma_power_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_gamma_power_milli") : 0) / 1000.0f;
+        outputAdjustmentBypassed = (tag.contains("academy_output_adjustment_bypassed", CompoundTag.TAG_INT) ? tag.getInt("academy_output_adjustment_bypassed") : 0) != 0;
+        entityData.set(GAMMA_CATALYZED, (tag.contains("academy_gamma_catalyzed", CompoundTag.TAG_INT) ? tag.getInt("academy_gamma_catalyzed") : 0) != 0);
+        modules = parseModules(tag.contains("academy_modules", CompoundTag.TAG_STRING) ? tag.getString("academy_modules") : "");
         cargo = NonNullList.withSize(MAX_CARGO_SLOTS, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input.childOrEmpty("academy_cargo"), cargo);
+        if (tag.contains("academy_cargo")) {
+            ContainerHelper.loadAllItems(tag.getCompound("academy_cargo"), cargo, level().registryAccess());
+        }
         syncModels();
         configureNavigation();
         applyDegradedName();
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        getOwnerUUID().ifPresent(uuid -> output.putString("academy_owner", uuid.toString()));
-        output.putInt("academy_blueprint_version", blueprintVersion);
-        output.putInt("academy_blueprint_slot", blueprintSlot);
-        output.putInt("academy_investment", investment);
-        output.putInt("academy_ability_level", abilityLevel);
-        output.putInt("academy_milestone", proficiencyMilestone);
-        output.putString("academy_head", head);
-        output.putString("academy_torso", torso);
-        output.putString("academy_limbs", limbs);
-        output.putString("academy_additional", additional);
-        output.putInt("academy_head_alpha", headAlpha);
-        output.putInt("academy_torso_alpha", torsoAlpha);
-        output.putInt("academy_limbs_alpha", limbsAlpha);
-        output.putInt("academy_additional_alpha", additionalAlpha);
-        output.putInt("academy_gamma_catalyzed", gammaCatalyzed() ? 1 : 0);
-        output.putInt("academy_gamma_power_milli", Math.round(averageGammaPower * 1000));
-        output.putInt(
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        getOwnerUUID().ifPresent(uuid -> tag.putString("academy_owner", uuid.toString()));
+        tag.putInt("academy_blueprint_version", blueprintVersion);
+        tag.putInt("academy_blueprint_slot", blueprintSlot);
+        tag.putInt("academy_investment", investment);
+        tag.putInt("academy_ability_level", abilityLevel);
+        tag.putInt("academy_milestone", proficiencyMilestone);
+        tag.putString("academy_head", head);
+        tag.putString("academy_torso", torso);
+        tag.putString("academy_limbs", limbs);
+        tag.putString("academy_additional", additional);
+        tag.putInt("academy_head_alpha", headAlpha);
+        tag.putInt("academy_torso_alpha", torsoAlpha);
+        tag.putInt("academy_limbs_alpha", limbsAlpha);
+        tag.putInt("academy_additional_alpha", additionalAlpha);
+        tag.putInt("academy_gamma_catalyzed", gammaCatalyzed() ? 1 : 0);
+        tag.putInt("academy_gamma_power_milli", Math.round(averageGammaPower * 1000));
+        tag.putInt(
                 "academy_output_adjustment_bypassed", outputAdjustmentBypassed ? 1 : 0);
-        output.putString("academy_modules", String.join(";", modules));
-        ContainerHelper.saveAllItems(output.child("academy_cargo"), cargo, false);
+        tag.putString("academy_modules", String.join(";", modules));
+        ContainerHelper.saveAllItems(tag.getCompound("academy_cargo"), cargo, level().registryAccess());
     }
 
     private static List<String> parseModules(String raw) {

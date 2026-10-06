@@ -4,8 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.HumanoidArm;
 import org.academy.api.client.renderer.EffectRenderer;
 import org.academy.internal.common.attachment.AttachmentTypes;
@@ -20,7 +19,7 @@ public final class ElectromasterWeaponFirstPersonBridge implements EffectRendere
     private ElectromasterWeaponFirstPersonBridge() {
     }
 
-    private static void renderFirstPersonSweep(PoseStack poseStack, SubmitNodeCollector collector,
+    private static void renderFirstPersonSweep(PoseStack poseStack, MultiBufferSource bufferSource,
                                                int packedLight, float handSide, float progress) {
         for (var i = 0; i < FirstPersonSweepGeometry.IRON_SAND_PARTICLES; i++) {
             var point = FirstPersonSweepGeometry.ironSandPosition(handSide, progress, i);
@@ -33,18 +32,15 @@ public final class ElectromasterWeaponFirstPersonBridge implements EffectRendere
             poseStack.mulPose(Axis.ZP.rotationDegrees(-18.0f
                     + i / (float) (FirstPersonSweepGeometry.IRON_SAND_PARTICLES - 1) * 36.0f));
             poseStack.scale(scale, scale, scale);
-            submitFirstPersonSandQuad(poseStack, collector, alpha);
+            submitFirstPersonSandQuad(poseStack, bufferSource, alpha);
             poseStack.popPose();
         }
     }
 
     private static void submitFirstPersonSandQuad(PoseStack poseStack,
-                                                  SubmitNodeCollector collector, float alpha) {
-        collector.submitCustomGeometry(
-                poseStack,
-                IRON_SAND_FIRST_PERSON,
-                (pose, consumer) -> addFirstPersonQuad(consumer, pose.pose(), alpha)
-        );
+                                                  MultiBufferSource bufferSource, float alpha) {
+        var consumer = bufferSource.getBuffer(IRON_SAND_FIRST_PERSON);
+        addFirstPersonQuad(consumer, poseStack.pose(), alpha);
     }
 
     private static void addFirstPersonQuad(VertexConsumer consumer, Matrix4f matrix, float alpha) {
@@ -62,13 +58,13 @@ public final class ElectromasterWeaponFirstPersonBridge implements EffectRendere
     }
 
     @Override
-    public void render(PoseStack poseStack, SubmitNodeCollector collector, int packedLight,
-                       AvatarRenderState renderState, float yRot, float xRot) {
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+                       float yRot, float xRot) {
         // Third-person effects are rendered by ElectromasterWeaponVfx through the Vfx pipeline.
     }
 
     @Override
-    public void renderFirstPerson(PoseStack poseStack, SubmitNodeCollector collector,
+    public void renderFirstPerson(PoseStack poseStack, MultiBufferSource bufferSource,
                                   LocalPlayer player, int packedLight, float partialTick) {
         var data = player.getData(AttachmentTypes.IRON_SAND_DATA.get());
         if (!data.active()) return;
@@ -81,7 +77,7 @@ public final class ElectromasterWeaponFirstPersonBridge implements EffectRendere
             var progress = SweepAnimationTimeline.progress(
                     entry, currentTick, ElectromasterWeaponVfx.SWEEP_DURATION_TICKS);
             if (progress < 0.0f || progress >= 1.0f) continue;
-            renderFirstPersonSweep(poseStack, collector, packedLight, handSide, progress);
+            renderFirstPersonSweep(poseStack, bufferSource, packedLight, handSide, progress);
         }
     }
 

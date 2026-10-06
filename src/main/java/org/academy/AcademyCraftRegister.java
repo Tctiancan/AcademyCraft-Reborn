@@ -2,7 +2,7 @@ package org.academy;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.bus.api.IEventBus;
@@ -16,7 +16,7 @@ import net.neoforged.neoforge.event.entity.EntityAttributeModificationEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
-import net.neoforged.neoforge.transfer.energy.ItemAccessEnergyHandler;
+import net.neoforged.neoforge.energy.ComponentEnergyStorage;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.event.AbilitySystemFinalizedEvent;
 import org.academy.api.common.attribute.PlayerAttributes;
@@ -66,7 +66,7 @@ public final class AcademyCraftRegister {
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> CREATIVE_MODE_TAB =
             CREATIVE_MODE_TABS.register("all", () -> CreativeModeTab.builder()
                     .icon(() -> new ItemStack(Items.ICON))
-                    .displayItems((_, output) -> {
+                    .displayItems((unused20, output) -> {
                         for (var key : Items.ITEMS.getEntries()) {
                             var item = key.get();
                             if (!(item == Items.ICON.get())) {
@@ -136,32 +136,32 @@ public final class AcademyCraftRegister {
                 SpatialStorageCuriosCompat.register();
             }
             MentalControlApi.registerAdapter(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "warden"),
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "warden"),
                     100,
                     new WardenMentalControlAdapter()
             );
             MentalControlApi.registerAdapter(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "wither"),
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "wither"),
                     100,
                     new WitherMentalControlAdapter()
             );
             MentalControlApi.registerAdapter(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "ender_dragon"),
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "ender_dragon"),
                     100,
                     new EnderDragonMentalControlAdapter()
             );
             MentalControlApi.registerAdapter(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "vanilla_mob"),
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "vanilla_mob"),
                     Integer.MIN_VALUE,
                     new VanillaMobMentalControlAdapter()
             );
             MentalControlApi.registerAdapter(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "server_player"),
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "server_player"),
                     200,
                     new ServerPlayerMentalControlAdapter()
             );
             PlayerNavigationApi.registerAdapter(
-                    Identifier.fromNamespaceAndPath(MOD_ID, "vanilla_player"),
+                    ResourceLocation.fromNamespaceAndPath(MOD_ID, "vanilla_player"),
                     0,
                     new DefaultPlayerNavigationAdapter()
             );
@@ -177,11 +177,11 @@ public final class AcademyCraftRegister {
     }
 
     private static void onEntityAttributeModification(EntityAttributeModificationEvent event) {
-        event.add(net.minecraft.world.entity.EntityTypes.PLAYER, PlayerAttributes.MUSCLE_STRENGTH);
-        event.add(net.minecraft.world.entity.EntityTypes.PLAYER, PlayerAttributes.ENDURANCE);
-        event.add(net.minecraft.world.entity.EntityTypes.PLAYER, PlayerAttributes.DEXTERITY);
-        event.add(net.minecraft.world.entity.EntityTypes.PLAYER, PlayerAttributes.PERCEPTION);
-        event.add(net.minecraft.world.entity.EntityTypes.PLAYER, PlayerAttributes.NEURAL_ACTIVITY);
+        event.add(net.minecraft.world.entity.EntityType.PLAYER, PlayerAttributes.MUSCLE_STRENGTH);
+        event.add(net.minecraft.world.entity.EntityType.PLAYER, PlayerAttributes.ENDURANCE);
+        event.add(net.minecraft.world.entity.EntityType.PLAYER, PlayerAttributes.DEXTERITY);
+        event.add(net.minecraft.world.entity.EntityType.PLAYER, PlayerAttributes.PERCEPTION);
+        event.add(net.minecraft.world.entity.EntityType.PLAYER, PlayerAttributes.NEURAL_ACTIVITY);
         for (var type : event.getTypes()) {
             if (!event.has(type, PlayerAttributes.TRUE_RESISTANCE)) event.add(type, PlayerAttributes.TRUE_RESISTANCE);
         }
@@ -189,9 +189,9 @@ public final class AcademyCraftRegister {
 
     private static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
         event.registerItem(
-                Capabilities.Energy.ITEM,
-                (_, access) -> new ItemAccessEnergyHandler(
-                        access,
+                Capabilities.EnergyStorage.ITEM,
+                (stack, access) -> new ComponentEnergyStorage(
+                        stack,
                         ItemDataComponents.ENERGY.get(),
                         AbilityControlTabletItem.ENERGY_CAPACITY,
                         AbilityControlTabletItem.ENERGY_CAPACITY,

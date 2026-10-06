@@ -1,6 +1,6 @@
 package org.academy.api.common.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.junit.jupiter.api.Test;
 
@@ -47,7 +47,7 @@ class SkillProficiencyLevelTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
+        public ResourceLocation getDeveloperIcon() {
             return AcademyCraft.academy("test/proficiency");
         }
 

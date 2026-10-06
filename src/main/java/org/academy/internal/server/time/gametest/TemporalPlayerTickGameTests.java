@@ -14,11 +14,11 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.stats.Stats;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -54,7 +54,7 @@ import java.util.UUID;
 /** End-to-end pause, slowdown, acceleration and rollback coverage for players. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalPlayerTickGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE = AcademyCraft.academy(
+    private static final ResourceLocation TEST_INSTANCE_TYPE = AcademyCraft.academy(
             "temporal_player_tick_function"
     );
 
@@ -78,7 +78,7 @@ public final class TemporalPlayerTickGameTests {
         );
         var data = new TestData<>(
                 environment,
-                Identifier.withDefaultNamespace("empty"),
+                ResourceLocation.withDefaultNamespace("empty"),
                 620,
                 0,
                 true,
@@ -248,7 +248,7 @@ public final class TemporalPlayerTickGameTests {
                 helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick),
                         "Extra cooldown expiry must preserve a longer existing cooldown");
             }));
-            var monster = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 5);
+            var monster = helper.spawn(EntityType.ZOMBIE, 3, 2, 5);
             monster.setNoAi(true);
             monster.setItemSlot(EquipmentSlot.HEAD,
                     new ItemStack(Items.DIAMOND_HELMET));
@@ -460,3 +460,4 @@ public final class TemporalPlayerTickGameTests {
         }
     }
 }
+

@@ -46,7 +46,7 @@ public final class VectorContinuousInterceptionLeases {
     ) {
         var remaining = Math.max(0.0f, prepaidDamage - firstHitDamage);
         if (!(remaining > 0.0f) || !Float.isFinite(remaining)) return;
-        LEASES.computeIfAbsent(defender.getUUID(), _ -> new HashMap<>())
+        LEASES.computeIfAbsent(defender.getUUID(), unused243 -> new HashMap<>())
                 .put(leaseKey, new Lease(
                         kind,
                         defender.level().getGameTime() + LEASE_TICKS,

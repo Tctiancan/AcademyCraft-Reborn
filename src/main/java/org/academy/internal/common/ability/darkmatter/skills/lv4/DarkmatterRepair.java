@@ -202,7 +202,8 @@ public final class DarkmatterRepair extends Skill {
                     .filter(effect -> effect.getEffect().value().getCategory() == MobEffectCategory.HARMFUL)
                     .findFirst().orElse(null);
             // Structural absorption is a result of a successful equipment repair, not an
-            // independent source of work that may consume MP forever.
+            // independent source of work that may consume MP
+// forever.
             var hasAlphaWork = phase.alpha() > 0.0f && !damagedEquipment.isEmpty();
             var hasBetaWork = phase.beta() > 0.0f && harmful != null;
             if (!hasAlphaWork && !hasBetaWork && missingHealth <= 0.0f) return false;
@@ -213,7 +214,7 @@ public final class DarkmatterRepair extends Skill {
                 return false;
             }
             var productive = new boolean[1];
-            var executed = skill.executeContinuous(player, _ -> 0.0f, (context, _) -> {
+            var executed = skill.executeContinuous(player, unused436 -> 0.0f, (context, unused437) -> {
                 var outputMultiplier = 1.0f;
                 if (phase.gamma() > 0.0f) {
                     outputMultiplier *= DarkmatterSixWings.Server.gammaMagnitudeMultiplier(player);
@@ -259,7 +260,8 @@ public final class DarkmatterRepair extends Skill {
                     return;
                 }
                 // Charge once per productive pulse after the work actually landed: idle ticks and
-                // rejected heal/repair attempts must not drain MP, and repairing equipment while
+                // rejected heal/repair attempts must not drain MP, and repairing equipment
+// while
                 // also restoring health still costs a single payment.
                 if (!system.getDarkmatterResourceManager().consume(
                         player, cost, skill, skill.getIterationTicks(player))) {

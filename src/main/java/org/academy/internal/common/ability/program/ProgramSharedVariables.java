@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.ProgramValue;
 import org.academy.api.common.ability.program.ProgramValueType;
@@ -20,14 +20,14 @@ public final class ProgramSharedVariables {
     private ProgramSharedVariables() {
     }
 
-    public static Identifier category(ServerPlayer player) {
+    public static ResourceLocation category(ServerPlayer player) {
         var category = AbilitySystemServer.getSystem(player)
                 .getPlayerAbilityCategory(player.getUUID());
         if (category == null) throw new IllegalStateException("Program owner has no ability category");
         return category.getKey();
     }
 
-    public static Optional<ProgramValue<?>> read(ServerPlayer player, Identifier category, String name) {
+    public static Optional<ProgramValue<?>> read(ServerPlayer player, ResourceLocation category, String name) {
         validateName(name);
         var saved = data(player).getProgramSharedVariables(category.toString()).get(name);
         if (saved == null) return Optional.empty();
@@ -38,11 +38,11 @@ public final class ProgramSharedVariables {
         }
     }
 
-    public static Map<String, SavedValue> snapshot(ServerPlayer player, Identifier category) {
+    public static Map<String, SavedValue> snapshot(ServerPlayer player, ResourceLocation category) {
         return data(player).getProgramSharedVariables(category.toString());
     }
 
-    public static void write(ServerPlayer player, Identifier category, String name, ProgramValue<?> value) {
+    public static void write(ServerPlayer player, ResourceLocation category, String name, ProgramValue<?> value) {
         validateName(name);
         var saved = encode(value);
         var data = data(player);
@@ -57,16 +57,16 @@ public final class ProgramSharedVariables {
         encode(value);
     }
 
-    public static void restore(ServerPlayer player, Identifier category, String name, SavedValue value) {
+    public static void restore(ServerPlayer player, ResourceLocation category, String name, SavedValue value) {
         data(player).setProgramSharedVariable(category.toString(), name, value);
     }
 
-    public static void remove(ServerPlayer player, Identifier category, String name) {
+    public static void remove(ServerPlayer player, ResourceLocation category, String name) {
         validateName(name);
         data(player).removeProgramSharedVariable(category.toString(), name);
     }
 
-    public static void clear(ServerPlayer player, Identifier category) {
+    public static void clear(ServerPlayer player, ResourceLocation category) {
         data(player).clearProgramSharedVariables(category.toString());
     }
 
@@ -126,7 +126,7 @@ public final class ProgramSharedVariables {
                 || saved.value().codePointCount(0, saved.value().length()) > MAX_VALUE_LENGTH) {
             throw new IllegalArgumentException("Invalid saved shared variable");
         }
-        var id = Identifier.parse(saved.type());
+        var id = ResourceLocation.parse(saved.type());
         var value = saved.value();
         if (id.equals(ProgramValueTypes.BOOLEAN.id())) {
             if (!value.equals("true") && !value.equals("false")) throw new IllegalArgumentException();

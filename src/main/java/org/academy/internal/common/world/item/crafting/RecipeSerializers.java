@@ -15,9 +15,9 @@ public final class RecipeSerializers {
             DeferredRegister.create(Registries.RECIPE_SERIALIZER, MOD_ID);
     static final StreamCodec<RegistryFriendlyByteBuf, DarkmatterDuplicationRecipe>
             DARKMATTER_DUPLICATION_STREAM_CODEC = StreamCodec.of(
-            (_, _) -> {
+            (unused788, unused789) -> {
             },
-            _ -> new DarkmatterDuplicationRecipe()
+            unused790 -> new DarkmatterDuplicationRecipe()
     );
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DarkmatterDuplicationRecipe>>
@@ -29,9 +29,9 @@ public final class RecipeSerializers {
 
     static final StreamCodec<RegistryFriendlyByteBuf, DarkmatterCoatingRecipe>
             DARKMATTER_COATING_STREAM_CODEC = StreamCodec.of(
-            (_, _) -> {
+            (unused791, unused792) -> {
             },
-            _ -> new DarkmatterCoatingRecipe());
+            unused793 -> new DarkmatterCoatingRecipe());
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DarkmatterCoatingRecipe>>
             DARKMATTER_COATING = RECIPE_SERIALIZERS.register("darkmatter_coating", () ->

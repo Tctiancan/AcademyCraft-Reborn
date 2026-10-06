@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.electromaster.skills.lv4;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -8,12 +8,12 @@ import static org.junit.jupiter.api.Assertions.*;
 class RailgunTest {
     @Test
     void vanillaFallbackAcceptsIronAmmunitionTiers() {
-        assertTrue(Railgun.isVanillaAmmoId(Identifier.withDefaultNamespace("iron_ingot")));
-        assertTrue(Railgun.isVanillaAmmoId(Identifier.withDefaultNamespace("iron_block")));
-        assertTrue(Railgun.isVanillaAmmoId(Identifier.withDefaultNamespace("anvil")));
-        assertTrue(Railgun.isVanillaAmmoId(Identifier.withDefaultNamespace("chipped_anvil")));
-        assertTrue(Railgun.isVanillaAmmoId(Identifier.withDefaultNamespace("damaged_anvil")));
-        assertFalse(Railgun.isVanillaAmmoId(Identifier.withDefaultNamespace("stick")));
+        assertTrue(Railgun.isVanillaAmmoId(ResourceLocation.withDefaultNamespace("iron_ingot")));
+        assertTrue(Railgun.isVanillaAmmoId(ResourceLocation.withDefaultNamespace("iron_block")));
+        assertTrue(Railgun.isVanillaAmmoId(ResourceLocation.withDefaultNamespace("anvil")));
+        assertTrue(Railgun.isVanillaAmmoId(ResourceLocation.withDefaultNamespace("chipped_anvil")));
+        assertTrue(Railgun.isVanillaAmmoId(ResourceLocation.withDefaultNamespace("damaged_anvil")));
+        assertFalse(Railgun.isVanillaAmmoId(ResourceLocation.withDefaultNamespace("stick")));
     }
 
     @Test

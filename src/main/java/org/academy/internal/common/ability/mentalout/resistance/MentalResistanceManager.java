@@ -88,7 +88,7 @@ public final class MentalResistanceManager {
         var subjectLevel = normalizedAbilityLevel(
                 AbilitySystemServer.getSystem(subject).getPlayerLevel(subject.getUUID()));
         var now = subject.level().getGameTime();
-        var challenge = CHALLENGES.computeIfAbsent(subject.getUUID(), _ -> new Challenge(subject));
+        var challenge = CHALLENGES.computeIfAbsent(subject.getUUID(), unused530 -> new Challenge(subject));
         challenge.exposures.put(controller.getUUID(), new Exposure(
                 controller.getUUID(), controllerLevel, takeover, now));
         challenge.refresh(subjectLevel, now);

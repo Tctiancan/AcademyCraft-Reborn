@@ -1,23 +1,13 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -25,14 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.ChestBlockEntity;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.ProgramBlockPosition;
 import org.academy.api.common.ability.program.ProgramDirection;
@@ -58,24 +44,41 @@ import java.util.Optional;
 import java.util.UUID;
 
 /** World-level regressions for harvesting, teleport collection and target queries. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class SkillRepairGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("skill_repair_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void miningHeld(GameTestHelper helper) {
+        verify(helper, "mining_held");
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("mining_held", "mining_program", "mining_silk", "teleport_air", "container_full", "container_collect", "block_normals")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("skill_repair/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("skill_repair_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 80, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
-        }
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void miningProgram(GameTestHelper helper) {
+        verify(helper, "mining_program");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void miningSilk(GameTestHelper helper) {
+        verify(helper, "mining_silk");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void teleportAir(GameTestHelper helper) {
+        verify(helper, "teleport_air");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void containerFull(GameTestHelper helper) {
+        verify(helper, "container_full");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void containerCollect(GameTestHelper helper) {
+        verify(helper, "container_collect");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void blockNormals(GameTestHelper helper) {
+        verify(helper, "block_normals");
     }
 
     private static void verify(GameTestHelper helper, String scenario) {
@@ -260,34 +263,6 @@ public final class SkillRepairGameTests {
             var normal = runtime.blockNormalFromView(player, 4);
             helper.assertTrue(normal.equals(Optional.of(new ProgramDirection(-1, 0, 0))),
                     runtime.getClass().getSimpleName() + " view normal " + normal + " eye " + player.getEyePosition() + " look " + player.getViewVector(1.0f));
-        }
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper, scenario);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Skill repair regression");
         }
     }
 }

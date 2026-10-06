@@ -1,8 +1,8 @@
 package org.academy.mixin.client;
 
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.Hud;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.util.Mth;
 import org.academy.api.client.hud.terminal.TerminalHud;
 import org.academy.internal.client.ability.mentalout.ControlledPlayerHudRenderer;
@@ -14,18 +14,18 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(Hud.class)
+@Mixin(Gui.class)
 public abstract class MixinHud {
-    @Inject(method = "extractCrosshair", at = @At("HEAD"), cancellable = true)
-    private void extractCrosshair(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
+    @Inject(method = "renderCrosshair", at = @At("HEAD"), cancellable = true)
+    private void extractCrosshair(GuiGraphics graphics, DeltaTracker deltaTracker, CallbackInfo ci) {
         if (TerminalHud.Companion.isActive()
                 || MentalIntrusionClientState.isActive() && !PlayerControlClientState.isController()
                 || PlayerControlClientState.isSubject()) ci.cancel();
     }
 
-    @Inject(method = "extractHotbar", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "renderHotbar", at = @At("HEAD"), cancellable = true)
     private void academy$replaceControlledHotbar(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             DeltaTracker deltaTracker,
             CallbackInfo ci
     ) {
@@ -34,13 +34,13 @@ public abstract class MixinHud {
     }
 
     @Inject(method = {
-            "extractContextualInfoBarBackground",
-            "extractExperienceLevel",
-            "extractContextualInfoBar",
-            "maybeExtractSelectedItemName"
+            "maybeRenderExperienceBar",
+            "renderExperienceLevel",
+            "maybeRenderJumpMeter",
+            "maybeRenderSelectedItemName"
     }, at = @At("HEAD"), cancellable = true)
     private void academy$replaceControlledStatus(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             DeltaTracker deltaTracker,
             CallbackInfo ci
     ) {
@@ -48,18 +48,23 @@ public abstract class MixinHud {
                 && PlayerControlClientState.targetViewState() != null) ci.cancel();
     }
 
-    @Inject(method = "extractPlayerHealth", at = @At("HEAD"), cancellable = true)
+    @Inject(method = {
+            "renderHealthLevel",
+            "renderArmorLevel",
+            "renderFoodLevel",
+            "renderAirLevel"
+    }, at = @At("HEAD"), cancellable = true)
     private void academy$replaceControlledPlayerHealth(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             CallbackInfo ci
     ) {
         if (PlayerControlClientState.isController()
                 && PlayerControlClientState.targetViewState() != null) ci.cancel();
     }
 
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
+    @Inject(method = "render", at = @At("TAIL"))
     private void academy$extractMentalPerceptionOverlay(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             DeltaTracker deltaTracker,
             CallbackInfo ci
     ) {
@@ -71,7 +76,7 @@ public abstract class MixinHud {
                 && !MentalResistanceClientState.isActive()) return;
         var width = graphics.guiWidth();
         var height = graphics.guiHeight();
-        var pulse = (int) (36 + (Mth.sin(System.nanoTime() * 0.000000003) + 1.0) * 22);
+        var pulse = (int) (36 + (Mth.sin((float) (System.nanoTime() * 0.000000003)) + 1.0) * 22);
         var color = (pulse << 24) | (MentalIntrusionClientState.hasFilters() ? 0xB45CE8 : 0x53C7E8);
         graphics.fill(0, 0, width, 3, color);
         graphics.fill(0, height - 3, width, height, color);

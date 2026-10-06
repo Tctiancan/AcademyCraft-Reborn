@@ -5,7 +5,7 @@ import java.util.IdentityHashMap;
 import java.util.Map;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
@@ -28,16 +28,16 @@ import org.slf4j.Logger;
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class PlasmaVfxClient {
     private static final Logger LOGGER = AcademyCraft.getLogger();
-    private static final Identifier CHARGE_ASSET = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation CHARGE_ASSET = ResourceLocation.fromNamespaceAndPath(
             AcademyCraft.MOD_ID, "vfxgraph/plasma_cannon_charge"
     );
-    private static final Identifier FOCUS_ASSET = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation FOCUS_ASSET = ResourceLocation.fromNamespaceAndPath(
             AcademyCraft.MOD_ID, "vfxgraph/plasma_cannon_focus"
     );
-    private static final Identifier PROJECTILE_ASSET = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation PROJECTILE_ASSET = ResourceLocation.fromNamespaceAndPath(
             AcademyCraft.MOD_ID, "vfxgraph/plasma_cannon_projectile"
     );
-    private static final Identifier IMPACT_ASSET = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation IMPACT_ASSET = ResourceLocation.fromNamespaceAndPath(
             AcademyCraft.MOD_ID, "vfxgraph/plasma_cannon_impact"
     );
     private static final float FOCUS_START = PlasmaChargeVisuals.FOCUS_START;

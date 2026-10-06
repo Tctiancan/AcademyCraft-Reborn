@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.common.ability.mentalout.control.GroupControlRuntime;
@@ -14,7 +14,7 @@ public final class GroupControlApi {
     private GroupControlApi() {
     }
 
-    public static void registerAdapter(Identifier id, int priority, GroupControlAdapter adapter) {
+    public static void registerAdapter(ResourceLocation id, int priority, GroupControlAdapter adapter) {
         GroupControlRuntime.registerAdapter(id, priority, adapter);
     }
 
@@ -44,14 +44,14 @@ public final class GroupControlApi {
 
     public static void cancelByControllerAndSource(
             UUID controllerId,
-            Identifier source
+            ResourceLocation source
     ) {
         GroupControlRuntime.cancelByControllerAndSource(controllerId, source);
     }
 
     public static void cancelSubjects(
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             Set<UUID> subjectIds
     ) {
         GroupControlRuntime.cancelSubjects(controllerId, source, subjectIds);

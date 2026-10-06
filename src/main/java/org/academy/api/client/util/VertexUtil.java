@@ -70,10 +70,10 @@ public final class VertexUtil {
                 var angle1d = i * angleStepd;
                 var angle2d = (i + 1) * angleStepd;
 
-                var x1d = radius * Mth.cos(angle1d);
-                var z1d = radius * Mth.sin(angle1d);
-                var x2d = radius * Mth.cos(angle2d);
-                var z2d = radius * Mth.sin(angle2d);
+                var x1d = radius * Mth.cos((float) angle1d);
+                var z1d = radius * Mth.sin((float) angle1d);
+                var x2d = radius * Mth.cos((float) angle2d);
+                var z2d = radius * Mth.sin((float) angle2d);
 
                 var u1f = (float) i / faces;
                 var u2f = (float) (i + 1) / faces;
@@ -81,8 +81,8 @@ public final class VertexUtil {
                 var vTopf = 1.0f;
 
                 var midAngled = (angle1d + angle2d) / 2.0d;
-                var faceNormalXd = Mth.cos(midAngled);
-                var faceNormalZd = Mth.sin(midAngled);
+                var faceNormalXd = Mth.cos((float) midAngled);
+                var faceNormalZd = Mth.sin((float) midAngled);
 
                 var nx = faceNormalXd;
                 var nz = faceNormalZd;
@@ -103,10 +103,10 @@ public final class VertexUtil {
                     var angle1d = i * angleStepd;
                     var angle2d = (i + 1) * angleStepd;
 
-                    var x1d = radius * Mth.cos(angle1d);
-                    var z1d = radius * Mth.sin(angle1d);
-                    var x2d = radius * Mth.cos(angle2d);
-                    var z2d = radius * Mth.sin(angle2d);
+                    var x1d = radius * Mth.cos((float) angle1d);
+                    var z1d = radius * Mth.sin((float) angle1d);
+                    var x2d = radius * Mth.cos((float) angle2d);
+                    var z2d = radius * Mth.sin((float) angle2d);
 
                     var u1f = (float) (x1d / (2.0d * radius) + 0.5d);
                     var v1f = (float) (z1d / (2.0d * radius) + 0.5d);
@@ -128,10 +128,10 @@ public final class VertexUtil {
                     var angle1d = i * angleStepd;
                     var angle2d = (i + 1) * angleStepd;
 
-                    var x1d = radius * Mth.cos(angle1d);
-                    var z1d = radius * Mth.sin(angle1d);
-                    var x2d = radius * Mth.cos(angle2d);
-                    var z2d = radius * Mth.sin(angle2d);
+                    var x1d = radius * Mth.cos((float) angle1d);
+                    var z1d = radius * Mth.sin((float) angle1d);
+                    var x2d = radius * Mth.cos((float) angle2d);
+                    var z2d = radius * Mth.sin((float) angle2d);
 
                     var u1f = (float) (x1d / (2.0d * radius) + 0.5d);
                     var v1f = (float) (z1d / (2.0d * radius) + 0.5d);
@@ -173,15 +173,15 @@ public final class VertexUtil {
                 var angle1d = i * angleStepd;
                 var angle2d = (i + 1) * angleStepd;
 
-                var x1d = radius * Mth.cos(angle1d);
-                var z1d = radius * Mth.sin(angle1d);
-                var x2d = radius * Mth.cos(angle2d);
-                var z2d = radius * Mth.sin(angle2d);
+                var x1d = radius * Mth.cos((float) angle1d);
+                var z1d = radius * Mth.sin((float) angle1d);
+                var x2d = radius * Mth.cos((float) angle2d);
+                var z2d = radius * Mth.sin((float) angle2d);
 
-                var nx1f = Mth.cos(angle1d);
-                var nz1f = Mth.sin(angle1d);
-                var nx2f = Mth.cos(angle2d);
-                var nz2f = Mth.sin(angle2d);
+                var nx1f = Mth.cos((float) angle1d);
+                var nz1f = Mth.sin((float) angle1d);
+                var nx2f = Mth.cos((float) angle2d);
+                var nz2f = Mth.sin((float) angle2d);
 
                 var x1f = x1d;
                 var z1f = z1d;

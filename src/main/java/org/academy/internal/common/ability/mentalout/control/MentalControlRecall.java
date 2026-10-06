@@ -26,7 +26,7 @@ public final class MentalControlRecall {
 
     static void suppressUntilExit(UUID controllerId, UUID subjectId) {
         if (controllerId == null || subjectId == null) return;
-        SUPPRESSED_UNTIL_EXIT.computeIfAbsent(controllerId, _ -> new HashSet<>()).add(subjectId);
+        SUPPRESSED_UNTIL_EXIT.computeIfAbsent(controllerId, unused507 -> new HashSet<>()).add(subjectId);
     }
 
     public static void allow(ServerPlayer controller, Mob subject) {

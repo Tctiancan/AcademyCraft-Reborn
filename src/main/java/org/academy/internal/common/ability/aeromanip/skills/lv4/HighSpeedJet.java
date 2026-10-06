@@ -151,8 +151,8 @@ public final class HighSpeedJet extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 Client.KEY_NAME_PLACE,
                 placementBinding,
-                _ -> Client.startPlacement(),
-                _ -> Client.finishPlacement());
+                unused373 -> Client.startPlacement(),
+                unused374 -> Client.finishPlacement());
         var defaultActivationBinding = InputSystem.combo(
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_H,
@@ -166,7 +166,7 @@ public final class HighSpeedJet extends Skill {
         InputSystem.addKeyBinding(
                 Client.KEY_NAME_ACTIVATE,
                 activationBinding,
-                _ -> Client.activate(false));
+                unused375 -> Client.activate(false));
         var defaultStructureLaunchBinding = defaultStructureLaunchBinding();
         var structureLaunchBinding = Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_LAUNCH_STRUCTURE,
@@ -174,7 +174,7 @@ public final class HighSpeedJet extends Skill {
         InputSystem.addKeyBinding(
                 Client.KEY_NAME_LAUNCH_STRUCTURE,
                 structureLaunchBinding,
-                _ -> Client.activate(true));
+                unused376 -> Client.activate(true));
     }
 
     @Override
@@ -396,9 +396,9 @@ public final class HighSpeedJet extends Skill {
                             player, SkillNames.HIGH_SPEED_JET)));
             return skill.executeActiveWithResource(
                     player,
-                    _ -> activationCpCost(count),
-                    _ -> activationAirCost(count),
-                    (_, _) -> resolvedNozzles.forEach(nozzle -> nozzle.activate(duration)));
+                    unused377 -> activationCpCost(count),
+                    unused378 -> activationAirCost(count),
+                    (unused379, unused380) -> resolvedNozzles.forEach(nozzle -> nozzle.activate(duration)));
         }
 
         public static HighSpeedJetNozzle placeTemporaryBlockNozzle(
@@ -453,10 +453,10 @@ public final class HighSpeedJet extends Skill {
             var skill = Skills.HIGH_SPEED_JET.get();
             var activated = skill.executeActiveWithResource(
                     player,
-                    _ -> activationCpCost(nozzles.size())
+                    unused381 -> activationCpCost(nozzles.size())
                             * costMultiplier,
-                    _ -> activationAirCost(nozzles.size()),
-                    (_, _) -> nozzles.forEach(nozzle -> nozzle.activate(durationTicks)));
+                    unused382 -> activationAirCost(nozzles.size()),
+                    (unused383, unused384) -> nozzles.forEach(nozzle -> nozzle.activate(durationTicks)));
             if (!activated) throw new IllegalStateException("Jet activation was rejected");
             return nozzles;
         }
@@ -474,9 +474,9 @@ public final class HighSpeedJet extends Skill {
             if (!skill.isEnabled(player)) return false;
             return skill.executeActiveWithResource(
                     player,
-                    _ -> cpCost,
-                    _ -> airCost,
-                    (_, _) -> action.run()
+                    unused385 -> cpCost,
+                    unused386 -> airCost,
+                    (unused387, unused388) -> action.run()
             );
         }
 
@@ -517,9 +517,9 @@ public final class HighSpeedJet extends Skill {
             var skill = Skills.HIGH_SPEED_JET.get();
             var executed = skill.executeActiveWithResource(
                     player,
-                    _ -> 18.0f * costMultiplier,
-                    _ -> 12.0f,
-                    (_, _) -> {
+                    unused389 -> 18.0f * costMultiplier,
+                    unused390 -> 12.0f,
+                    (unused391, unused392) -> {
                         var nozzle = new HighSpeedJetNozzle(
                                 EntityTypes.HIGH_SPEED_JET_NOZZLE.get(), level);
                         if (target instanceof BlockPlacement block) {

@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.mentalout.control;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -34,7 +34,7 @@ import java.util.UUID;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class ImpressionRidingManager {
-    private static final Identifier SOURCE = AcademyCraft.academy("impression_riding");
+    private static final ResourceLocation SOURCE = AcademyCraft.academy("impression_riding");
     private static final int CONTROL_PRIORITY = 275;
     private static final int RELEASE_SHIFT_TIMEOUT_TICKS = 40;
     private static final double MAX_PENDING_DISTANCE_SQUARED = 36.0;

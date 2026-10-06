@@ -1,10 +1,10 @@
 package org.academy.api.client.gui.drawable
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.texture.GpuTextureViewSource
@@ -15,11 +15,11 @@ import org.academy.api.client.gui.widget.Widget
 open class TextureDrawable : Drawable {
     private val textureSource: TextureSource?
 
-    var sampler: GpuSampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
+    var sampler: GpuSampler = org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST)
 
     var tintColor: Int = -0x1
 
-    constructor(textureLocation: Identifier?) {
+    constructor(textureLocation: ResourceLocation?) {
         textureSource = textureLocation?.let { IdentifierTextureSource(it) }
     }
 

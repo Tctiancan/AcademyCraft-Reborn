@@ -1,6 +1,5 @@
 package org.academy.internal.client.render.vfx;
 
-import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -70,20 +69,11 @@ public final class GlowCircleVfx implements Vfx {
         private final PoseStack poseStack = new PoseStack();
 
         @Override
-        public void init(GpuDevice device) {}
+        public void init() {}
 
         @Override
         public void render(VfxRenderContext context, List<? extends Data> data) {
-            var camera = context.cameraPos();
-            for (var ring : data) {
-                if (!GlowCircleRenderer.isVisibleForCurrentCamera(ring.ownerEntityId())) continue;
-                var position = ring.position();
-                poseStack.pushPose();
-                poseStack.translate(position.x - camera.x, position.y - camera.y, position.z - camera.z);
-                GlowCircleRenderer.renderRing(
-                        poseStack, ring.radius(), ring.xRot(), ring.yRot());
-                poseStack.popPose();
-            }
+            // C-stun: 1.21.1 不渲染光环特效 (世界级 VFX)。
         }
     }
 }

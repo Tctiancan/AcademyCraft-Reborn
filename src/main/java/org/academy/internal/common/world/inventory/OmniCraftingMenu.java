@@ -83,7 +83,7 @@ public final class OmniCraftingMenu extends AbstractContainerMenu {
 
     @Override
     public void slotsChanged(Container container) {
-        access.execute((level, _) -> {
+        access.execute((level, unused785) -> {
             if (level instanceof ServerLevel serverLevel && owner instanceof ServerPlayer player) {
                 updateCraftingResult(serverLevel, player);
             }
@@ -176,7 +176,7 @@ public final class OmniCraftingMenu extends AbstractContainerMenu {
     @Override
     public void removed(Player player) {
         super.removed(player);
-        access.execute((_, _) -> clearContainer(player, craftSlots));
+        access.execute((unused786, unused787) -> clearContainer(player, craftSlots));
     }
 
     @Override

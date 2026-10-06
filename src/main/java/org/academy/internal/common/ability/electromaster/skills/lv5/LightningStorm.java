@@ -196,7 +196,7 @@ public class LightningStorm extends Skill {
             var center = player.pick(milestone >= 2 ? 60.0 : 50.0, 1.0f, false).getLocation();
             if (!player.level().hasChunkAt(BlockPos.containing(center))) return;
             skill.executeActive(player,
-                    (context, _) -> AbilitySystemServer.registerContext(new Context(player, center, context.milestone())));
+                    (context, unused480) -> AbilitySystemServer.registerContext(new Context(player, center, context.milestone())));
         }
     }
 

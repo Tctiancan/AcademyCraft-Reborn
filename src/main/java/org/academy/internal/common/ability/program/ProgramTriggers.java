@@ -6,7 +6,7 @@ import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds
 
 
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -126,7 +126,7 @@ public final class ProgramTriggers {
     public static boolean matchesHealth(
             AbilityProgram program,
             ServerPlayer player,
-            Identifier category,
+            ResourceLocation category,
             int slot
     ) {
         var entry = triggerEntry(program);
@@ -166,7 +166,7 @@ public final class ProgramTriggers {
         return null;
     }
 
-    private static Type type(Identifier id) {
+    private static Type type(ResourceLocation id) {
         if (id.equals(CommonProgramNodeIds.TRIGGER_HURT)) return Type.HURT;
         if (id.equals(CommonProgramNodeIds.TRIGGER_LOOP)) return Type.LOOP;
         if (id.equals(CommonProgramNodeIds.TRIGGER_MELEE)) return Type.MELEE;
@@ -188,6 +188,6 @@ public final class ProgramTriggers {
     public record LoopToggle(AbilityProgram program, boolean enabled) {
     }
 
-    private record HealthLatchKey(UUID playerId, Identifier category, int slot) {
+    private record HealthLatchKey(UUID playerId, ResourceLocation category, int slot) {
     }
 }

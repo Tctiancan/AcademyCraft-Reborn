@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.aeromanip.program;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramBlockPosition;
 import org.academy.api.common.ability.program.ProgramDirection;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -336,7 +336,7 @@ class AeromanipProgramExecutionBridgeTest {
 
     private static ProgramGraph.Node node(
             int id,
-            Identifier type,
+            ResourceLocation type,
             JsonObject configuration
     ) {
         var nodeType = AbilityProgramDefinitions.require(
@@ -347,7 +347,7 @@ class AeromanipProgramExecutionBridgeTest {
 
     private static ProgramGraph.Node powerNode(
             int id,
-            Identifier type,
+            ResourceLocation type,
             int power
     ) {
         var configuration = new JsonObject();
@@ -493,9 +493,9 @@ class AeromanipProgramExecutionBridgeTest {
         public Optional<ProgramWorldPosition> positionOf(Object entityReference) {
             return switch (String.valueOf(entityReference)) {
                 case "first" -> Optional.of(new ProgramWorldPosition(
-                        Identifier.parse("minecraft:overworld"), 0.0, 64.0, 0.0));
+                        ResourceLocation.parse("minecraft:overworld"), 0.0, 64.0, 0.0));
                 case "second" -> Optional.of(new ProgramWorldPosition(
-                        Identifier.parse("minecraft:overworld"), 2.0, 64.0, 0.0));
+                        ResourceLocation.parse("minecraft:overworld"), 2.0, 64.0, 0.0));
                 default -> Optional.empty();
             };
         }

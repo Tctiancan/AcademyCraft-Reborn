@@ -83,7 +83,7 @@ public final class ResolveService {
 
         var future = CompletableFuture.supplyAsync(() -> doResolve(providerApi, trackId, credential),
                         AcademyCraft.executorService)
-                .whenComplete((_, _) -> IN_FLIGHT.remove(key));
+                .whenComplete((unused828, unused829) -> IN_FLIGHT.remove(key));
         IN_FLIGHT.put(key, future);
         return future;
     }

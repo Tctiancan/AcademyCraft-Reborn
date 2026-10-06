@@ -10,7 +10,7 @@ public final class VfxFrameData implements VfxSink {
     @Override
     public <T extends VfxRenderData> void push(T data) {
         Objects.requireNonNull(data, "data");
-        buckets.computeIfAbsent(data.getClass(), _ -> new ArrayList<>()).add(data);
+        buckets.computeIfAbsent(data.getClass(), unused133 -> new ArrayList<>()).add(data);
     }
 
     @SuppressWarnings("unchecked")

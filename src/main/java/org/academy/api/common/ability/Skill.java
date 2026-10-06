@@ -6,13 +6,13 @@ import com.mojang.serialization.DataResult;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.damagesource.DamageType;
 import org.academy.api.common.damage.AbilityDamageProfile;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -56,7 +56,7 @@ public abstract class Skill {
     public static final boolean STACK_LIMITS_ENABLED = false;
     public static final Codec<Skill> CODEC =
             Codec.INT.xmap(Registries.SKILLS::byIdOrThrow, Registries.SKILLS::getId);
-    public static final Codec<Skill> ID_CODEC = Identifier.CODEC.flatXmap(
+    public static final Codec<Skill> ID_CODEC = ResourceLocation.CODEC.flatXmap(
             id -> Registries.SKILLS.get(id)
                     .map(holder -> DataResult.success(holder.value()))
                     .orElseGet(() -> DataResult.error(() -> "Unknown skill " + id)),
@@ -72,7 +72,7 @@ public abstract class Skill {
     private final @Nullable ResourceKey<AbilityCategory> categoryKey;
     private final Set<ResourceKey<Skill>> dependencyKeys;
     private final Set<ResourceKey<Skill>> optionalDependencyKeys;
-    private final Identifier dataTypeId;
+    private final ResourceLocation dataTypeId;
     private final Class<? extends SkillData> dataClass;
     private final int displayOrder;
     private final @Nullable ResourceKey<DamageType> damageType;
@@ -105,7 +105,7 @@ public abstract class Skill {
     private final float cpCost;
     private final SkillProficiencyProfile proficiencyProfile;
     private final boolean explicitProficiencyProfile;
-    private final Identifier icon;
+    private final ResourceLocation icon;
     private final List<DevCondition> devConditions;
     @Nullable
     private String cachedKeyString;
@@ -577,11 +577,11 @@ public abstract class Skill {
         return energyCostToLearn;
     }
 
-    public Identifier getIcon() {
+    public ResourceLocation getIcon() {
         return icon;
     }
 
-    public Identifier getKey() {
+    public ResourceLocation getKey() {
         var key = Registries.SKILLS.getKey(this);
         if (key == null) {
             throw new IllegalStateException("This skill has not been registered: " + this);
@@ -813,8 +813,8 @@ public abstract class Skill {
         private @Nullable SkillStateType<?> stateType;
         private DataFactory dataFactory = CommonSkillData::new;
         private Class<? extends SkillData> dataClass = CommonSkillData.class;
-        private Identifier dataTypeId = CommonSkillData.ID;
-        private Identifier icon = R.textures.gui.icon.close;
+        private ResourceLocation dataTypeId = CommonSkillData.ID;
+        private ResourceLocation icon = R.textures.gui.icon.close;
 
         private Builder(AbilityCategory category) {
             this.category = Objects.requireNonNull(category);
@@ -927,7 +927,7 @@ public abstract class Skill {
         }
 
         public <T extends SkillData> Builder withCustomData(
-                Identifier typeId,
+                ResourceLocation typeId,
                 Class<T> clazz,
                 DataFactory factory
         ) {
@@ -938,11 +938,11 @@ public abstract class Skill {
             return this;
         }
 
-        public void setIcon(Identifier icon) {
+        public void setIcon(ResourceLocation icon) {
             this.icon = Objects.requireNonNull(icon);
         }
 
-        public Builder icon(Identifier icon) {
+        public Builder icon(ResourceLocation icon) {
             setIcon(icon);
             return this;
         }

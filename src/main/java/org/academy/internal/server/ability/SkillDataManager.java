@@ -1,6 +1,6 @@
 package org.academy.internal.server.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.*;
@@ -26,11 +26,11 @@ public class SkillDataManager implements AbilitySubsystem {
     private final PlayerDataManager playerDataManager;
     private final Map<UUID, Map<String, SkillActivity>> pendingActivities = new ConcurrentHashMap<>();
 
-    private BiConsumer<UUID, Integer> onSkillLevelUp = (_, _) -> {
+    private BiConsumer<UUID, Integer> onSkillLevelUp = (unused802, unused803) -> {
     };
     private Consumer<UUID> onSkillSetChanged = uuid -> {
     };
-    private BiConsumer<UUID, Float> onProficiencyGain = (_, _) -> {
+    private BiConsumer<UUID, Float> onProficiencyGain = (unused804, unused805) -> {
     };
 
     public SkillDataManager(PlayerDataManager playerDataManager, SyncManager syncManager) {
@@ -67,7 +67,7 @@ public class SkillDataManager implements AbilitySubsystem {
     }
 
     private static SkillScope resolveSkillScope(String skillId) {
-        var identifier = Identifier.tryParse(skillId);
+        var identifier = ResourceLocation.tryParse(skillId);
         if (identifier == null) return null;
         return Registries.SKILLS.get(identifier)
                 .map(reference -> reference.value().getScope())
@@ -100,9 +100,9 @@ public class SkillDataManager implements AbilitySubsystem {
         var crossedThreshold = false;
 
         for (var entry : playerData.getSkillDataMap().entrySet()) {
-            var id = Identifier.tryParse(entry.getKey());
+            var id = ResourceLocation.tryParse(entry.getKey());
             if (id == null) continue;
-            var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
+            var skill = Registries.SKILLS.get(id);
             if (skill == null) continue;
             var data = entry.getValue();
             if (!data.isEnabled() || overload || !LearningHelper.isSkillAvailableForCategory(category, skill)) continue;
@@ -161,9 +161,9 @@ public class SkillDataManager implements AbilitySubsystem {
     }
 
     public int getSkillLevel(UUID uuid, String skillKey) {
-        var id = Identifier.tryParse(skillKey);
+        var id = ResourceLocation.tryParse(skillKey);
         if (id == null) return 0;
-        var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
+        var skill = Registries.SKILLS.get(id);
         if (skill == null) return 0;
         var result = new int[]{0};
         query(uuid, skillKey, data -> result[0] = skill.getLevelForProficiency(data.getProficiency()));
@@ -216,7 +216,7 @@ public class SkillDataManager implements AbilitySubsystem {
 
     public void reportSkillActivity(UUID uuid, Skill skill, SkillActivity activity) {
         if (uuid == null || skill == null || activity == null) return;
-        pendingActivities.computeIfAbsent(uuid, _ -> new ConcurrentHashMap<>())
+        pendingActivities.computeIfAbsent(uuid, unused806 -> new ConcurrentHashMap<>())
                 .merge(skill.getKeyString(), activity, SkillDataManager::strongestActivity);
     }
 
@@ -241,7 +241,7 @@ public class SkillDataManager implements AbilitySubsystem {
         var playerData = playerDataManager.getData(uuid);
         if (playerData == null) return;
 
-        Registries.SKILLS.get(Identifier.parse(skillKey)).ifPresent(skillReference -> {
+        Registries.SKILLS.get(ResourceLocation.parse(skillKey)).ifPresent(skillReference -> {
             var skillData = playerData.getMutableSkillDataMap().putIfAbsent(
                     skillKey,
                     skillReference.value().createData()
@@ -258,7 +258,7 @@ public class SkillDataManager implements AbilitySubsystem {
     }
 
     public void removeSkill(UUID uuid, String skillKey) {
-        var skillId = Identifier.tryParse(skillKey);
+        var skillId = ResourceLocation.tryParse(skillKey);
         var skill = skillId == null ? null : Registries.SKILLS.get(skillId)
                 .map(reference -> reference.value())
                 .orElse(null);
@@ -340,7 +340,7 @@ public class SkillDataManager implements AbilitySubsystem {
     }
 
     public void toggleSkill(UUID uuid, String skillId) {
-        var id = Identifier.tryParse(skillId);
+        var id = ResourceLocation.tryParse(skillId);
         var skill = id == null ? null : Registries.SKILLS.get(id)
                 .map(reference -> reference.value())
                 .orElse(null);
@@ -388,9 +388,9 @@ public class SkillDataManager implements AbilitySubsystem {
             String skillId,
             SkillData data
     ) {
-        var id = Identifier.tryParse(skillId);
+        var id = ResourceLocation.tryParse(skillId);
         if (id == null) return false;
-        var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
+        var skill = Registries.SKILLS.get(id);
         if (skill == null) return false;
 
         if (!data.isActivationProtectedFor(skill.getClass())) {

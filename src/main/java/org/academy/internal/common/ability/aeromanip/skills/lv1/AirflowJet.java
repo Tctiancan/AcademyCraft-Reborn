@@ -161,8 +161,8 @@ public final class AirflowJet extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 Client.KEY_NAME_CAST,
                 configuredBinding,
-                _ -> Client.start(),
-                _ -> Client.stop()
+                unused303 -> Client.start(),
+                unused304 -> Client.stop()
         );
     }
 
@@ -266,7 +266,7 @@ public final class AirflowJet extends Skill {
                 return;
             }
             if (PROPULSION.containsKey(player)) {
-                BUFFERED_INPUTS.computeIfPresent(player, (_, input) ->
+                BUFFERED_INPUTS.computeIfPresent(player, (unused305, input) ->
                         input.release(player.level().getGameTime()));
             }
         }
@@ -338,19 +338,19 @@ public final class AirflowJet extends Skill {
             switch (tier) {
                 case INSTANT -> skill.executeActiveWithResource(
                         player,
-                        _ -> cpCost(player, INSTANT_CP_COST),
-                        _ -> INSTANT_AIR_COST,
-                        (_, _) -> castInstant(player, skill));
+                        unused306 -> cpCost(player, INSTANT_CP_COST),
+                        unused307 -> INSTANT_AIR_COST,
+                        (unused308, unused309) -> castInstant(player, skill));
                 case HALF -> skill.executeActiveWithResource(
                         player,
-                        _ -> cpCost(player, HALF_CP_COST),
-                        _ -> HALF_AIR_COST,
-                        (_, _) -> castHalf(player, skill));
+                        unused310 -> cpCost(player, HALF_CP_COST),
+                        unused311 -> HALF_AIR_COST,
+                        (unused312, unused313) -> castHalf(player, skill));
                 case FULL -> skill.executeActiveWithResource(
                         player,
-                        _ -> cpCost(player, FULL_CP_COST),
-                        _ -> FULL_AIR_COST,
-                        (_, _) -> castFull(player, skill));
+                        unused314 -> cpCost(player, FULL_CP_COST),
+                        unused315 -> FULL_AIR_COST,
+                        (unused316, unused317) -> castFull(player, skill));
             }
         }
 

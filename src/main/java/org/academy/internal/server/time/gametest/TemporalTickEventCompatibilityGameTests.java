@@ -10,10 +10,10 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -40,7 +40,7 @@ import java.util.UUID;
 /** End-to-end validation for NeoForge tick-event interoperability. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalTickEventCompatibilityGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE = AcademyCraft.academy(
+    private static final ResourceLocation TEST_INSTANCE_TYPE = AcademyCraft.academy(
             "temporal_tick_event_compatibility_function"
     );
 
@@ -64,7 +64,7 @@ public final class TemporalTickEventCompatibilityGameTests {
         );
         var data = new TestData<>(
                 environment,
-                Identifier.withDefaultNamespace("empty"),
+                ResourceLocation.withDefaultNamespace("empty"),
                 60,
                 0,
                 true,
@@ -82,7 +82,7 @@ public final class TemporalTickEventCompatibilityGameTests {
     }
 
     private static void runCompatibilityTest(GameTestHelper helper) {
-        var target = helper.spawn(EntityTypes.ARMOR_STAND, 1, 2, 1);
+        var target = helper.spawn(EntityType.ARMOR_STAND, 1, 2, 1);
         new CompatibilitySession(helper, target).start();
     }
 
@@ -299,3 +299,4 @@ public final class TemporalTickEventCompatibilityGameTests {
         }
     }
 }
+

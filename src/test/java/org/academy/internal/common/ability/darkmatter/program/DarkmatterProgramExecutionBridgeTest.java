@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.darkmatter.program;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramBlockPosition;
 import org.academy.api.common.ability.program.ProgramDirection;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -201,7 +201,7 @@ class DarkmatterProgramExecutionBridgeTest {
 
     private static ProgramGraph.Node node(
             int id,
-            Identifier type,
+            ResourceLocation type,
             JsonObject configuration
     ) {
         var nodeType = AbilityProgramDefinitions.require(
@@ -212,7 +212,7 @@ class DarkmatterProgramExecutionBridgeTest {
 
     private static ProgramGraph.Node powerNode(
             int id,
-            Identifier type,
+            ResourceLocation type,
             int power
     ) {
         var configuration = new JsonObject();

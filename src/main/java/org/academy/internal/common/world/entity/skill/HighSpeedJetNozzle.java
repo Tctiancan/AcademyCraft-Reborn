@@ -2,6 +2,7 @@ package org.academy.internal.common.world.entity.skill;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -14,8 +15,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.structure.BlockStructure;
@@ -421,22 +420,25 @@ public final class HighSpeedJetNozzle extends Entity {
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        input.getString("academy_owner").ifPresent(value -> ownerUuid = parseUuid(value));
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        if (tag.contains("academy_owner", CompoundTag.TAG_STRING)) {
+            ownerUuid = parseUuid(tag.getString("academy_owner"));
+        }
         supportPos = new BlockPos(
-                input.getIntOr("academy_support_x", 0),
-                input.getIntOr("academy_support_y", 0),
-                input.getIntOr("academy_support_z", 0));
-        supportEntityUuid = input.getString("academy_support_entity")
-                .map(HighSpeedJetNozzle::parseUuid)
-                .orElse(null);
-        if (input.getBooleanOr("academy_has_structure_support", false)) {
+                tag.contains("academy_support_x", CompoundTag.TAG_INT) ? tag.getInt("academy_support_x") : 0,
+                tag.contains("academy_support_y", CompoundTag.TAG_INT) ? tag.getInt("academy_support_y") : 0,
+                tag.contains("academy_support_z", CompoundTag.TAG_INT) ? tag.getInt("academy_support_z") : 0);
+        supportEntityUuid = tag.contains("academy_support_entity", CompoundTag.TAG_STRING)
+                ? parseUuid(tag.getString("academy_support_entity"))
+                : null;
+        if (tag.getBoolean("academy_has_structure_support")) {
             structureSupportOffset = new BlockPos(
-                    input.getIntOr("academy_structure_support_x", 0),
-                    input.getIntOr("academy_structure_support_y", 0),
-                    input.getIntOr("academy_structure_support_z", 0));
-            structureSupportFace = Direction.from3DDataValue(input.getIntOr(
-                    "academy_structure_support_face", Direction.UP.get3DDataValue()));
+                    tag.contains("academy_structure_support_x", CompoundTag.TAG_INT) ? tag.getInt("academy_structure_support_x") : 0,
+                    tag.contains("academy_structure_support_y", CompoundTag.TAG_INT) ? tag.getInt("academy_structure_support_y") : 0,
+                    tag.contains("academy_structure_support_z", CompoundTag.TAG_INT) ? tag.getInt("academy_structure_support_z") : 0);
+            structureSupportFace = Direction.from3DDataValue(tag.contains(
+                    "academy_structure_support_face", CompoundTag.TAG_INT) ? tag.getInt(
+                    "academy_structure_support_face") : Direction.UP.get3DDataValue());
         } else {
             structureSupportOffset = null;
             structureSupportFace = null;
@@ -445,38 +447,38 @@ public final class HighSpeedJetNozzle extends Entity {
         entityData.set(OWNER_UUID, ownerUuid == null ? "" : ownerUuid.toString());
         entityData.set(SUPPORT_POS, supportPos);
         entityData.set(FACE, Direction.from3DDataValue(
-                input.getIntOr("academy_face", Direction.UP.get3DDataValue())).get3DDataValue());
+                tag.contains("academy_face", CompoundTag.TAG_INT) ? tag.getInt("academy_face") : Direction.UP.get3DDataValue()).get3DDataValue());
         entityData.set(ACTIVE_TICKS, Math.max(0,
-                input.getIntOr("academy_active_ticks", 0)));
-        setYRot(input.getFloatOr("academy_direction_yaw", face().toYRot()));
-        setXRot(input.getFloatOr("academy_direction_pitch",
-                face() == Direction.UP ? -90.0f : face() == Direction.DOWN ? 90.0f : 0.0f));
+                tag.contains("academy_active_ticks", CompoundTag.TAG_INT) ? tag.getInt("academy_active_ticks") : 0));
+        setYRot(tag.contains("academy_direction_yaw", CompoundTag.TAG_FLOAT) ? tag.getFloat("academy_direction_yaw") : face().toYRot());
+        setXRot(tag.contains("academy_direction_pitch", CompoundTag.TAG_FLOAT) ? tag.getFloat("academy_direction_pitch") :
+                face() == Direction.UP ? -90.0f : face() == Direction.DOWN ? 90.0f : 0.0f);
         if (supportEntityUuid == null || supportEntity() != null) {
             snapToSurface();
         }
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        if (ownerUuid != null) output.putString("academy_owner", ownerUuid.toString());
-        output.putInt("academy_support_x", supportPos.getX());
-        output.putInt("academy_support_y", supportPos.getY());
-        output.putInt("academy_support_z", supportPos.getZ());
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        if (ownerUuid != null) tag.putString("academy_owner", ownerUuid.toString());
+        tag.putInt("academy_support_x", supportPos.getX());
+        tag.putInt("academy_support_y", supportPos.getY());
+        tag.putInt("academy_support_z", supportPos.getZ());
         if (supportEntityUuid != null) {
-            output.putString("academy_support_entity", supportEntityUuid.toString());
+            tag.putString("academy_support_entity", supportEntityUuid.toString());
         }
         if (structureSupportOffset != null && structureSupportFace != null) {
-            output.putBoolean("academy_has_structure_support", true);
-            output.putInt("academy_structure_support_x", structureSupportOffset.getX());
-            output.putInt("academy_structure_support_y", structureSupportOffset.getY());
-            output.putInt("academy_structure_support_z", structureSupportOffset.getZ());
-            output.putInt("academy_structure_support_face",
+            tag.putBoolean("academy_has_structure_support", true);
+            tag.putInt("academy_structure_support_x", structureSupportOffset.getX());
+            tag.putInt("academy_structure_support_y", structureSupportOffset.getY());
+            tag.putInt("academy_structure_support_z", structureSupportOffset.getZ());
+            tag.putInt("academy_structure_support_face",
                     structureSupportFace.get3DDataValue());
         }
-        output.putInt("academy_face", face().get3DDataValue());
-        output.putInt("academy_active_ticks", activeTicks());
-        output.putFloat("academy_direction_yaw", getYRot());
-        output.putFloat("academy_direction_pitch", getXRot());
+        tag.putInt("academy_face", face().get3DDataValue());
+        tag.putInt("academy_active_ticks", activeTicks());
+        tag.putFloat("academy_direction_yaw", getYRot());
+        tag.putFloat("academy_direction_pitch", getXRot());
     }
 
     private static UUID parseUuid(String value) {

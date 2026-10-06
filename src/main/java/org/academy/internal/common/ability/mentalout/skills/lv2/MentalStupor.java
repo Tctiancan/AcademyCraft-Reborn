@@ -65,7 +65,7 @@ public final class MentalStupor extends Skill {
                         InputConstants.PRESS,
                         0
                 )
-        ), _ -> Client.use());
+        ), unused534 -> Client.use());
     }
 
     @Override

@@ -1,8 +1,8 @@
-package org.academy.internal.client.app.music.backend
+﻿package org.academy.internal.client.app.music.backend
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.sounds.SoundEngineExecutor
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ClientPauseChangeEvent
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent
@@ -167,9 +167,9 @@ class MusicPlayerBackend private constructor() {
 
     private fun parseMusicEntry(name: String, data: MusicData, sourceDescription: String): Optional<MusicInfo> {
         try {
-            val iconLocation = Identifier.parse(data.icon)
+            val iconLocation = ResourceLocation.parse(data.icon)
             val source = createMusicSource(data.sourceType, data.source)
-            val externalId = (source.path as? Identifier)?.toString() ?: ""
+            val externalId = (source.path as? ResourceLocation)?.toString() ?: ""
             return Optional.of(
                 MusicInfo(
                     iconLocation,
@@ -198,7 +198,7 @@ class MusicPlayerBackend private constructor() {
 
     private fun createMusicSource(type: String, path: String): MusicSource {
         if (type.equals("RESOURCE_LOCATION", ignoreCase = true)) {
-            return MusicSource.fromIdentifier(Identifier.parse(path))
+            return MusicSource.fromIdentifier(ResourceLocation.parse(path))
         }
         if (type.equals("PATH", ignoreCase = true)) return MusicSource.fromAbsolutePath(path)
         throw IllegalArgumentException("Invalid source_type: $type")

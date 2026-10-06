@@ -1,7 +1,7 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.graph.model.GraphNode;
@@ -24,7 +24,7 @@ class VfxGraphManagerTest {
     @Test
     void renewedNovaCastsReuseGraphsAndBuffersAndExpireAfterAStall() {
         var manager = VfxGraphManager.INSTANCE;
-        var id = Identifier.fromNamespaceAndPath("academy", "vfxgraph/lightning_nova");
+        var id = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/lightning_nova");
         var casts = new ActiveEffect[20];
         for (int pulse = 0; pulse < 50; pulse++) {
             for (int cast = 0; cast < casts.length; cast++) {
@@ -53,7 +53,7 @@ class VfxGraphManagerTest {
         assertEquals(1, manager.effectCount());
     }
 
-    private static final Identifier ASSET = Identifier.fromNamespaceAndPath("academy", "vfxgraph/test_burst");
+    private static final ResourceLocation ASSET = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/test_burst");
 
     private JsonGraphCodec codec;
 
@@ -74,7 +74,7 @@ class VfxGraphManagerTest {
     @Test
     void firstSpawnLazilyLoadsPackagedDischargeContainer() {
         var manager = VfxGraphManager.INSTANCE;
-        var id = Identifier.fromNamespaceAndPath("academy", "vfxgraph/sky_strike_thunderclap");
+        var id = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/sky_strike_thunderclap");
         var effect = manager.spawn(id, new Vector3f());
         effect.bind("time", () -> Value.of(0.3f));
         manager.tick(1f / 60);
@@ -112,7 +112,7 @@ class VfxGraphManagerTest {
     @Test
     void spawnUnknownAssetThrows() {
         assertThrows(IllegalArgumentException.class,
-                () -> VfxGraphManager.INSTANCE.spawn(Identifier.fromNamespaceAndPath("academy", "vfxgraph/nope"),
+                () -> VfxGraphManager.INSTANCE.spawn(ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/nope"),
                         new Vector3f()));
     }
 
@@ -169,7 +169,7 @@ class VfxGraphManagerTest {
                         new GraphNode("out", "vfx.output_quad", Map.of(), List.of(), 0f, 0f)
                 ),
                 List.of(), List.of(), List.of("out"));
-        var assetId = Identifier.fromNamespaceAndPath("academy", "vfxgraph/capped");
+        var assetId = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/capped");
         VfxGraphManager.INSTANCE.registerAsset(assetId, codec.encode(capGraph));
         VfxGraphManager.INSTANCE.budget().setMaxParticlesPerEffect(5);
 
@@ -212,7 +212,7 @@ class VfxGraphManagerTest {
                 List.of(),
                 List.of("bO"));
 
-        var containerAsset = Identifier.fromNamespaceAndPath("academy", "vfxgraph/test_container");
+        var containerAsset = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/test_container");
         var json = new JsonVfxGraphCodec(new SimpleNodeRegistry()).encode(system);
         VfxGraphManager.INSTANCE.registerAsset(containerAsset, json);
 

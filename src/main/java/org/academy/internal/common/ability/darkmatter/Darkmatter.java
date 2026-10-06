@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.darkmatter;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.AbilityResourceSpec;
@@ -16,7 +16,7 @@ public final class Darkmatter extends AbilityCategory {
     }
 
     @Override
-    public Identifier getDeveloperIcon() {
+    public ResourceLocation getDeveloperIcon() {
         return R.textures.ICON_DARKMATTER;
     }
 

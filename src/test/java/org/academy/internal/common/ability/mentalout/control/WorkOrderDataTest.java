@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.mentalout.control;
 
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.entitycontrol.WorkSettings;
 import org.junit.jupiter.api.Test;
 import java.util.*;
@@ -10,8 +10,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class WorkOrderDataTest {
     private WorkOrderData.Entry entry(UUID owner, UUID worker) {
-        return new WorkOrderData.Entry(owner.toString(), worker.toString(), Identifier.parse("academy:test"),
-                Identifier.parse("minecraft:overworld"), BlockPos.ZERO, BlockPos.ZERO, WorkSettings.defaults(), 100, false, List.of());
+        return new WorkOrderData.Entry(owner.toString(), worker.toString(), ResourceLocation.parse("academy:test"),
+                ResourceLocation.parse("minecraft:overworld"), BlockPos.ZERO, BlockPos.ZERO, WorkSettings.defaults(), 100, false, List.of());
     }
     @Test void legacyAssignmentsMigrateToTheSameStableOrderAcrossWorkers() {
         var owner = UUID.randomUUID();

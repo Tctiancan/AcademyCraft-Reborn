@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.EntityType;
 
@@ -15,6 +15,6 @@ public final class MentalControlTags {
     }
 
     private static TagKey<EntityType<?>> tag(String path) {
-        return TagKey.create(Registries.ENTITY_TYPE, Identifier.fromNamespaceAndPath("academy", path));
+        return TagKey.create(Registries.ENTITY_TYPE, ResourceLocation.fromNamespaceAndPath("academy", path));
     }
 }

@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.precision;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -43,7 +43,7 @@ import java.util.stream.IntStream;
 public final class PrecisionOperationRuntime {
     public static final int PRIORITY = 200;
     private static final float UNLOCKED_DYNAMIC_COST_MULTIPLIER = 0.9f;
-    private static final Identifier CONTROL_SOURCE = AcademyCraft.academy("precision_operation");
+    private static final ResourceLocation CONTROL_SOURCE = AcademyCraft.academy("precision_operation");
     private static final int SLOT_COUNT = AbilityProgramManager.SLOT_COUNT;
     private static final double MAX_ACTION_RANGE = AbilityProgramSpatialRanges.forCategory(
             PrecisionProgramNodeCatalog.MENTALOUT).actionRange();
@@ -94,7 +94,7 @@ public final class PrecisionOperationRuntime {
         if (!Float.isFinite(costMultiplier) || costMultiplier <= 0.0f) {
             return ExecutionResult.failed(PrecisionGraph.Diagnostic.ACTION_FAILED);
         }
-        var slots = ACTIVE.computeIfAbsent(player.getUUID(), _ -> new ActiveContext[SLOT_COUNT]);
+        var slots = ACTIVE.computeIfAbsent(player.getUUID(), unused525 -> new ActiveContext[SLOT_COUNT]);
         var previous = slots[slot];
         if (AbilitySystemServer.getSystem(player).getPlayerLevel(player.getUUID()) < 5) {
             return ExecutionResult.failed(PrecisionGraph.Diagnostic.SKILL_UNAVAILABLE);
@@ -135,7 +135,7 @@ public final class PrecisionOperationRuntime {
                     PrecisionGraph.MAX_NODES * PrecisionGraph.MAX_NODES + 1,
                     now + 1L,
                     ServerProgramExecution.MAX_LIFETIME_TICKS,
-                    (_, termination) -> {
+                    (unused526, termination) -> {
                         if (termination.kind()
                                 != ProgramSessionScheduler.TerminationKind.COMPLETED) return;
                         completeNativeExecution(
@@ -211,7 +211,8 @@ public final class PrecisionOperationRuntime {
         PrecisionGraph.NodeKind applyingKind = null;
         try {
             // A repeated cast refreshes this slot. Every action has its own completion condition,
-            // so clicking the skill is never interpreted as a manual off switch.
+            // so clicking the skill is never interpreted as a manual off
+// switch.
             slots[slot] = null;
             if (previous != null) previous.close(player);
             var committed = transaction.commit();
@@ -449,7 +450,7 @@ public final class PrecisionOperationRuntime {
             throw exception;
         }
         if (subjectHandles.isEmpty() && fixedCost <= 0.0f && intrusionSession == null) return null;
-        subjectCosts.replaceAll((_, cost) -> cost * costMultiplier);
+        subjectCosts.replaceAll((unused527, cost) -> cost * costMultiplier);
         fixedCost *= costMultiplier;
         return new ActiveAction(
                 action.nodeId,
@@ -1808,7 +1809,7 @@ public final class PrecisionOperationRuntime {
                     expiresAt,
                     List.of(directive)
             ));
-            subjectHandles.computeIfAbsent(subject.getUUID(), _ -> new ArrayList<>()).add(handle);
+            subjectHandles.computeIfAbsent(subject.getUUID(), unused528 -> new ArrayList<>()).add(handle);
             subjectCosts.merge(subject.getUUID(), actionCost(player, subject, kind), Float::sum);
         }
     }
@@ -1865,7 +1866,7 @@ public final class PrecisionOperationRuntime {
         }
     }
 
-    private record ResolvedPosition(Identifier dimension, Vec3 value) {
+    private record ResolvedPosition(ResourceLocation dimension, Vec3 value) {
     }
 
     private static void applyPerception(
@@ -1892,7 +1893,7 @@ public final class PrecisionOperationRuntime {
                     PRIORITY,
                     expiresAt
             );
-            subjectHandles.computeIfAbsent(observer.getUUID(), _ -> new ArrayList<>()).add(handle);
+            subjectHandles.computeIfAbsent(observer.getUUID(), unused529 -> new ArrayList<>()).add(handle);
             subjectCosts.merge(observer.getUUID(), cost, Float::sum);
         }
     }

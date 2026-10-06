@@ -30,7 +30,7 @@ class TutorialScreen private constructor() : UiScreen(Component.translatable("sc
     companion object {
         @JvmStatic
         fun open() {
-            Minecraft.getInstance().gui.setScreen(TutorialScreen())
+            Minecraft.getInstance().setScreen(TutorialScreen())
         }
     }
 }

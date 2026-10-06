@@ -12,13 +12,13 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.tags.TagKey;
 import net.minecraft.tags.TagLoader;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -45,8 +45,8 @@ import java.util.UUID;
 /** Runs in an isolated environment, restoring the registry tags and clock in finally. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MentalDefenseGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("mental_defense_function");
-    private static final Identifier SOURCE = AcademyCraft.academy("test_mental_defense");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("mental_defense_function");
+    private static final ResourceLocation SOURCE = AcademyCraft.academy("test_mental_defense");
     private static boolean feedbackRegistered;
 
     @SubscribeEvent
@@ -58,7 +58,7 @@ public final class MentalDefenseGameTests {
     private static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
         event.registerTest(AcademyCraft.academy("mental_defense"), new Instance(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 40, 0, true,
+                environment, ResourceLocation.withDefaultNamespace("empty"), 40, 0, true,
                 Rotation.NONE, false, 1, 1, false, 16)));
     }
 
@@ -92,10 +92,10 @@ public final class MentalDefenseGameTests {
         registry.listTags().forEach(tag -> originalTags.put(tag.key(), tag.stream().toList()));
         var testTags = new HashMap<>(originalTags);
         testTags.put(MentalControlTags.IMMUNE, List.of(
-                EntityTypes.COW.builtInRegistryHolder(), EntityTypes.PIG.builtInRegistryHolder(),
-                EntityTypes.CHICKEN.builtInRegistryHolder()));
+                EntityType.COW.builtInRegistryHolder(), EntityType.PIG.builtInRegistryHolder(),
+                EntityType.CHICKEN.builtInRegistryHolder()));
         testTags.put(MentalControlTags.RESISTANCE, List.of(
-                EntityTypes.SHEEP.builtInRegistryHolder(), EntityTypes.PLAYER.builtInRegistryHolder()));
+                EntityType.SHEEP.builtInRegistryHolder(), EntityType.PLAYER.builtInRegistryHolder()));
         var feedback = new ArrayList<Component>();
         var players = new ArrayList<ServerPlayer>();
         var entities = new ArrayList<LivingEntity>();
@@ -112,19 +112,19 @@ public final class MentalDefenseGameTests {
             system.setPlayerMaxCP(controller.getUUID(), 10000);
             system.setPlayerAvailableCP(controller.getUUID(), 10000);
 
-            var cow = helper.spawn(EntityTypes.COW, new BlockPos(2, 2, 2));
-            var pig = helper.spawn(EntityTypes.PIG, new BlockPos(3, 2, 2));
-            var chicken = helper.spawn(EntityTypes.CHICKEN, new BlockPos(4, 2, 2));
-            var sheep = helper.spawn(EntityTypes.SHEEP, new BlockPos(5, 2, 2));
-            var rosterOnly = helper.spawn(EntityTypes.SHEEP, new BlockPos(6, 2, 2));
-            var plain = helper.spawn(EntityTypes.RABBIT, new BlockPos(7, 2, 2));
+            var cow = helper.spawn(EntityType.COW, new BlockPos(2, 2, 2));
+            var pig = helper.spawn(EntityType.PIG, new BlockPos(3, 2, 2));
+            var chicken = helper.spawn(EntityType.CHICKEN, new BlockPos(4, 2, 2));
+            var sheep = helper.spawn(EntityType.SHEEP, new BlockPos(5, 2, 2));
+            var rosterOnly = helper.spawn(EntityType.SHEEP, new BlockPos(6, 2, 2));
+            var plain = helper.spawn(EntityType.RABBIT, new BlockPos(7, 2, 2));
             entities.addAll(List.of(cow, pig, chicken, sheep, rosterOnly, plain));
             if (!feedbackRegistered) {
-                MentalControlFeedbackApi.registerImmuneFeedback(Identifier.withDefaultNamespace("cow"),
-                        (_, subject) -> subject.getCustomName() == null ? null
+                MentalControlFeedbackApi.registerImmuneFeedback(ResourceLocation.withDefaultNamespace("cow"),
+                        (unused513, subject) -> subject.getCustomName() == null ? null
                                 : Component.literal("immune:" + subject.getCustomName().getString()));
-                MentalControlFeedbackApi.registerImmuneFeedback(Identifier.withDefaultNamespace("pig"),
-                        (_, _) -> { throw new IllegalStateException("Expected feedback fallback test"); });
+                MentalControlFeedbackApi.registerImmuneFeedback(ResourceLocation.withDefaultNamespace("pig"),
+                        (unused514, unused515) -> { throw new IllegalStateException("Expected feedback fallback test"); });
                 feedbackRegistered = true;
             }
             cow.setCustomName(Component.literal("first"));
@@ -141,7 +141,7 @@ public final class MentalDefenseGameTests {
             helper.assertTrue(MentalControlFeedbackApi.immuneFeedback(controller, pig).equals(fallback), "Exception fallback");
             helper.assertTrue(MentalControlFeedbackApi.immuneFeedback(controller, chicken).equals(fallback), "Missing fallback");
             try {
-                MentalControlFeedbackApi.registerImmuneFeedback(Identifier.withDefaultNamespace("cow"), (_, _) -> fallback);
+                MentalControlFeedbackApi.registerImmuneFeedback(ResourceLocation.withDefaultNamespace("cow"), (unused516, unused517) -> fallback);
                 throw new AssertionError("Duplicate registration must fail");
             } catch (IllegalArgumentException expected) {
                 // The original provider must not be replaced.
@@ -233,3 +233,4 @@ public final class MentalDefenseGameTests {
         }
     }
 }
+

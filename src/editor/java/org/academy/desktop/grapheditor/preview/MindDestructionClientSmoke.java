@@ -33,7 +33,7 @@ import java.util.function.Consumer;
 /** Opt-in packet, server-tick and client health-sync smoke test in the isolated ability test world. */
 @EventBusSubscriber(modid = "academy", value = Dist.CLIENT)
 public final class MindDestructionClientSmoke {
-    private static final net.minecraft.resources.Identifier SOURCE = AcademyCraft.academy("mind_destruction_smoke");
+    private static final net.minecraft.resources.ResourceLocation SOURCE = AcademyCraft.academy("mind_destruction_smoke");
     private static boolean opened, configured, finished;
     private static volatile boolean ready, passed;
     private static volatile Throwable failure;

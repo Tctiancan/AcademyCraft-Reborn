@@ -232,7 +232,8 @@ public final class ChunkTicketLeaseManager {
                     }
                 }
             }
-            // Remove first so a panned-away view frees chunks for the new one in the same budget.
+            // Remove first so a panned-away view frees chunks
+// for the new one in the same budget.
             for (var posLong : List.copyOf(lease.held)) {
                 if (removals <= 0) break;
                 if (desired.contains(posLong)) continue;
@@ -246,7 +247,8 @@ public final class ChunkTicketLeaseManager {
                 acquireTicket(lease.level, ChunkPos.unpack(posLong), 0);
                 additions--;
             }
-            // Cancelled and fully drained: forget the entry.
+            // Cancelled and fully drained:
+// forget the entry.
             if (lease.region == null && lease.held.isEmpty()) {
                 iterator.remove();
             }

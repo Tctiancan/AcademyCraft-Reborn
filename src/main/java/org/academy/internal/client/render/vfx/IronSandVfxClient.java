@@ -35,8 +35,8 @@ public final class IronSandVfxClient {
         for (var player : level.players()) {
             if (!player.isAlive() || player.isRemoved()) continue;
             var state = player.getData(AttachmentTypes.IRON_SAND_DATA.get());
-            if (state.defense()) RINGS.computeIfAbsent(player.getId(), _ -> attached("defense", player, false));
-            if (state.cloudRadius() > 0) CLOUDS.computeIfAbsent(player.getId(), _ -> attached("cloud", player, true));
+            if (state.defense()) RINGS.computeIfAbsent(player.getId(), unused215 -> attached("defense", player, false));
+            if (state.cloudRadius() > 0) CLOUDS.computeIfAbsent(player.getId(), unused216 -> attached("cloud", player, true));
         }
     }
 

@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.entitycontrol.*;
 
@@ -16,7 +16,7 @@ public final class PlayerNavigationRuntime {
     private PlayerNavigationRuntime() {
     }
 
-    public static void registerAdapter(Identifier id, int priority, PlayerNavigationAdapter adapter) {
+    public static void registerAdapter(ResourceLocation id, int priority, PlayerNavigationAdapter adapter) {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(adapter, "adapter");
         synchronized (LOCK) {
@@ -68,6 +68,6 @@ public final class PlayerNavigationRuntime {
         return granted;
     }
 
-    private record Registration(Identifier id, int priority, PlayerNavigationAdapter adapter) {
+    private record Registration(ResourceLocation id, int priority, PlayerNavigationAdapter adapter) {
     }
 }

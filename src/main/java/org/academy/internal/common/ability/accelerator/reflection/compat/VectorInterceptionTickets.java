@@ -23,7 +23,7 @@ public final class VectorInterceptionTickets {
 
     public static void commit(ServerPlayer defender, long fingerprint) {
         var gameTime = defender.level().getGameTime();
-        var bucket = TICKETS.compute(defender.getUUID(), (_, current) ->
+        var bucket = TICKETS.compute(defender.getUUID(), (unused246, current) ->
                 current == null || current.gameTime != gameTime
                         ? new Ticket(gameTime, new HashSet<>())
                         : current

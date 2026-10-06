@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -19,7 +19,7 @@ public final class MentalControlApi {
         return MentalControlRuntime.apply(request);
     }
 
-    public static void registerAdapter(Identifier id, int priority, MentalControlAdapter adapter) {
+    public static void registerAdapter(ResourceLocation id, int priority, MentalControlAdapter adapter) {
         MentalControlRuntime.registerAdapter(id, priority, adapter);
     }
 
@@ -117,7 +117,7 @@ public final class MentalControlApi {
     public static void releaseByControllerSourceAndSubject(
             MinecraftServer server,
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             UUID subjectId
     ) {
         MentalControlRuntime.releaseByControllerSourceAndSubject(server, controllerId, source, subjectId);

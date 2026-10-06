@@ -34,8 +34,8 @@ class RadarChartWidget : AbstractWidget() {
             val ratio = (PropsClientState.get(factor) / PropsMath.MAX_TOTAL).coerceIn(0.0, 1.0).toFloat()
             val angle = -Mth.PI / 2.0 + index * Mth.TWO_PI / AbilityFactor.entries.size
             Point(
-                center.x + Mth.cos(angle) * radius * ratio,
-                center.y + Mth.sin(angle) * radius * ratio
+                center.x + Mth.cos(angle.toFloat()) * radius * ratio,
+                center.y + Mth.sin(angle.toFloat()) * radius * ratio
             )
         }
         drawPolygon(context, values, 0.32f, 0.9f, 1f, 0.95f, 1.15f)
@@ -45,8 +45,8 @@ class RadarChartWidget : AbstractWidget() {
         AbilityFactor.entries.indices.map { index ->
             val angle = -Mth.PI / 2.0 + index * Mth.TWO_PI / AbilityFactor.entries.size
             Point(
-                center.x + Mth.cos(angle) * radius,
-                center.y + Mth.sin(angle) * radius
+                center.x + Mth.cos(angle.toFloat()) * radius,
+                center.y + Mth.sin(angle.toFloat()) * radius
             )
         }
 

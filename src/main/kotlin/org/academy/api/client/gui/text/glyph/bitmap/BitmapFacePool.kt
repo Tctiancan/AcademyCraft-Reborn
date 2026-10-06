@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.glyph.bitmap
+﻿package org.academy.api.client.gui.text.glyph.bitmap
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.text.font.FontFace
 import org.academy.api.client.gui.text.font.FontRepository
 import org.lwjgl.util.freetype.FT_Face
@@ -9,8 +9,8 @@ import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.locks.ReentrantLock
 
 object BitmapFacePool {
-    private val faces = ConcurrentHashMap<Identifier, FT_Face>()
-    private val locks = ConcurrentHashMap<Identifier, ReentrantLock>()
+    private val faces = ConcurrentHashMap<ResourceLocation, FT_Face>()
+    private val locks = ConcurrentHashMap<ResourceLocation, ReentrantLock>()
 
     fun face(font: FontFace): FT_Face =
         faces.computeIfAbsent(font.descriptor.identifier) { FontRepository.newFace(it) }

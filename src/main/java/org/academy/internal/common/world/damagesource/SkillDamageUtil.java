@@ -1,7 +1,7 @@
 package org.academy.internal.common.world.damagesource;
 
 import org.academy.api.common.damage.DamageComposition;
-import net.minecraft.advancements.triggers.CriteriaTriggers;
+import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -90,7 +90,8 @@ public final class SkillDamageUtil {
     private static boolean canApplyDirectDamage(ServerLevel level, LivingEntity target,
                                                 DamageSource source, float amount) {
         // hurtServer normally rejects corpses before actuallyHurt. Our HEAD route bypasses
-        // that check, including when a multipart entity forwards another hit to its dead parent.
+        // that check, including when a multipart entity
+// forwards another hit to its dead parent.
         return level != null && target != null && source != null && target.level() == level
                 && amount > 0.0f && Float.isFinite(amount) && !target.isRemoved() && target.isAlive()
                 && !((LivingEntityDamageInvoker) target).academy$isDead()

@@ -1,8 +1,8 @@
 package org.academy;
 
 import com.google.gson.*;
-import net.minecraft.resources.Identifier;
-import net.minecraft.util.Util;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.Util;
 import org.academy.api.common.gson.TypeHandler;
 import org.academy.api.common.util.UncheckedUtil;
 import org.slf4j.Logger;
@@ -33,11 +33,11 @@ public final class AcademyCraftConfig {
         HANDLER_MAP.put(configKey, handler);
     }
 
-    public static void registerTypeHandler(Identifier configKey, TypeHandler<?> handler) {
+    public static void registerTypeHandler(ResourceLocation configKey, TypeHandler<?> handler) {
         registerTypeHandler(Util.makeDescriptionId("config", configKey), handler);
     }
 
-    public boolean hasTypeHandler(Identifier configKey) {
+    public boolean hasTypeHandler(ResourceLocation configKey) {
         return HANDLER_MAP.containsKey(Util.makeDescriptionId("config", configKey));
     }
 
@@ -83,7 +83,7 @@ public final class AcademyCraftConfig {
         return handler.getAdapter(GSON).toJsonTree(instance);
     }
 
-    public <T> T getConfig(Identifier configKey) {
+    public <T> T getConfig(ResourceLocation configKey) {
         return getConfig(Util.makeDescriptionId("config", configKey));
     }
 
@@ -113,7 +113,7 @@ public final class AcademyCraftConfig {
         return configInstance;
     }
 
-    public void setConfig(Identifier configKey, Object configInstance) {
+    public void setConfig(ResourceLocation configKey, Object configInstance) {
         setConfig(Util.makeDescriptionId("config", configKey), configInstance);
     }
 

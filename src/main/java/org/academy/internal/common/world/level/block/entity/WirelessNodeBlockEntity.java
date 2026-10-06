@@ -17,8 +17,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.academy.AcademyCraft;
 import org.academy.api.common.wireless.WirelessNode;
 import org.academy.api.common.wireless.WirelessUser;
@@ -208,29 +206,31 @@ public final class WirelessNodeBlockEntity extends BlockEntity implements Wirele
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        ContainerHelper.saveAllItems(output, items);
-        output.putInt("energy_stored", energyStored);
-        output.putInt("connected_users_count", connectedUsersCount);
-        output.putInt("max_connected_users", maxConnectedUsers);
-        output.putInt("radius", radius);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        ContainerHelper.saveAllItems(tag, items, registries);
+        tag.putInt("energy_stored", energyStored);
+        tag.putInt("connected_users_count", connectedUsersCount);
+        tag.putInt("max_connected_users", maxConnectedUsers);
+        tag.putInt("radius", radius);
         if (connectedNodePos != null) {
-            output.putLong("connected_node_pos", connectedNodePos.asLong());
+            tag.putLong("connected_node_pos", connectedNodePos.asLong());
         }
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(input, items);
-        energyStored = Mth.clamp(input.getIntOr("energy_stored", 0), 0, getMaxEnergyStorage());
-        connectedUsersCount = Math.max(0, input.getIntOr("connected_users_count", 0));
-        maxConnectedUsers = Math.max(0, input.getIntOr("max_connected_users", 0));
-        radius = Math.max(0, input.getIntOr("radius", 0));
+        ContainerHelper.loadAllItems(tag, items, registries);
+        energyStored = Mth.clamp(tag.contains("energy_stored", CompoundTag.TAG_INT) ? tag.getInt("energy_stored") : 0, 0, getMaxEnergyStorage());
+        connectedUsersCount = Math.max(0, tag.contains("connected_users_count", CompoundTag.TAG_INT) ? tag.getInt("connected_users_count") : 0);
+        maxConnectedUsers = Math.max(0, tag.contains("max_connected_users", CompoundTag.TAG_INT) ? tag.getInt("max_connected_users") : 0);
+        radius = Math.max(0, tag.contains("radius", CompoundTag.TAG_INT) ? tag.getInt("radius") : 0);
         connectedNodePos = null;
-        input.getLong("connected_node_pos").ifPresent(nodePos -> connectedNodePos = BlockPos.of(nodePos));
+        if (tag.contains("connected_node_pos", CompoundTag.TAG_LONG)) {
+            connectedNodePos = BlockPos.of(tag.getLong("connected_node_pos"));
+        }
         cachedConfig = null;
     }
 

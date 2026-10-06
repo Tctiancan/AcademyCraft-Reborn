@@ -90,7 +90,7 @@ public final class StormWing extends Skill {
                         GLFW_RELEASE,
                         GLFW_MOD_ALT
                 )
-        ), _ -> Client.toggle());
+        ), unused266 -> Client.toggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.STORM_WING.get(), () -> {
             var player = Minecraft.getInstance().player;
             return player != null && player.getData(AttachmentTypes.ACTIVATED_STORM_WING.get());
@@ -212,7 +212,8 @@ public final class StormWing extends Skill {
                 player.syncData(type);
             }
             if (!active) {
-                // This path runs for every player tick. Never clear fall distance here.
+                // This path runs
+// for every player tick. Never clear fall distance here.
                 WingFlightRuntime.clear(player, Skills.STORM_WING.get());
                     if (wasActive) WingFlightPose.sync(player, WingFlightPose.Pose.IDLE);
             }
@@ -243,7 +244,7 @@ public final class StormWing extends Skill {
 
         private static void tickTurbulence(ServerPlayer player, long now, boolean boosting) {
             var skill = Skills.STORM_WING.get();
-            var trails = TRAILS.computeIfAbsent(player.getUUID(), _ -> new ArrayDeque<>());
+            var trails = TRAILS.computeIfAbsent(player.getUUID(), unused267 -> new ArrayDeque<>());
             trails.removeIf(point -> point.expiresAt() <= now);
             if (boosting && skill.hasProficiencyMilestone(player, 3) && player.tickCount % 2 == 0) {
                 trails.addLast(new TrailPoint(player.position(), player.getLookAngle(), now + 40));

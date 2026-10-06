@@ -8,7 +8,7 @@ import mezz.jei.api.registration.IRecipeCatalystRegistration;
 import mezz.jei.api.registration.IRecipeCategoryRegistration;
 import mezz.jei.api.registration.IRecipeRegistration;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.client.gui.screen.OmniCraftingTableScreen;
 import org.academy.internal.client.gui.screen.SolarGenScreen;
@@ -22,7 +22,7 @@ import java.util.List;
 @JeiPlugin
 public final class JEIPlugin implements IModPlugin {
     @Override
-    public Identifier getPluginUid() {
+    public ResourceLocation getPluginUid() {
         return AcademyCraft.academy("jei_plugin");
     }
 

@@ -54,7 +54,7 @@ public final class SurvivalDefenseRuntime {
 
         var leaseId = NEXT_LEASE_ID.incrementAndGet();
         var contribution = new Contribution(leaseId, profile, owner);
-        var entry = ENTRIES.compute(entity.getUUID(), (_, current) -> {
+        var entry = ENTRIES.compute(entity.getUUID(), (unused827, current) -> {
             var result = current == null ? new Entry(entity) : current;
             synchronized (result) {
                 var previous = result.entity.get();

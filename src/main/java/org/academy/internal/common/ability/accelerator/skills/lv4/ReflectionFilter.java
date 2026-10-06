@@ -8,7 +8,7 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.effect.MobEffectCategory;
@@ -148,7 +148,7 @@ public final class ReflectionFilter extends Skill {
     @Nullable
     private static String normalizeEffectId(String raw) {
         if (raw.isBlank()) return null;
-        var id = Identifier.tryParse(raw.strip());
+        var id = ResourceLocation.tryParse(raw.strip());
         if (id == null || !BuiltInRegistries.MOB_EFFECT.keySet().contains(id)) return null;
         return id.toString();
     }
@@ -200,7 +200,7 @@ public final class ReflectionFilter extends Skill {
                 Client.KEY_NAME_OPEN, defaultOpenKey(), legacyDefaultOpenKey());
         AcademyCraftClient.Config.INSTANCE.setConfig(key, Client.CONFIG);
         AcademyCraftClient.Config.INSTANCE.save();
-        InputSystem.addKeyBinding(Client.KEY_NAME_OPEN, openKey, _ -> Client.open());
+        InputSystem.addKeyBinding(Client.KEY_NAME_OPEN, openKey, unused265 -> Client.open());
         MisakaNetworkClient.NETWORK_MANAGER.register(Client.class);
     }
 
@@ -245,7 +245,7 @@ public final class ReflectionFilter extends Skill {
     }
 
     public static final class Data extends SkillData {
-        public static final Identifier ID = AcademyCraft.academy("reflection_filter");
+        public static final ResourceLocation ID = AcademyCraft.academy("reflection_filter");
         private String mode = Mode.REFLECT_ALL.name();
         private List<String> whitelist = new ArrayList<>();
         private List<String> blacklist = new ArrayList<>();
@@ -303,7 +303,7 @@ public final class ReflectionFilter extends Skill {
         }
 
         @Override
-        public Identifier getType() {
+        public ResourceLocation getType() {
             return ID;
         }
     }

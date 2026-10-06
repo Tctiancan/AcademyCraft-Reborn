@@ -2,7 +2,7 @@ package org.academy.api.client.ability.program;
 
 import com.google.gson.JsonPrimitive;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ProgramNodeEditorOptionsTest {
     @Test
     void registrationSuppliesLiteralPlayerSpecificChoicesAndCanBeRemoved() {
-        var node = Identifier.fromNamespaceAndPath("test", "learned_method");
+        var node = ResourceLocation.fromNamespaceAndPath("test", "learned_method");
         try (var registration = ProgramNodeEditorOptions.register(node, (field, current) ->
                 field.equals("binding")
                         ? List.of(new ProgramNodeEditorOptions.Option(

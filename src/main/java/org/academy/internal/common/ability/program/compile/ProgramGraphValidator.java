@@ -260,7 +260,7 @@ public final class ProgramGraphValidator {
 
         var outgoing = new HashMap<Integer, List<Integer>>();
         for (var edge : flowEdges) {
-            outgoing.computeIfAbsent(edge.edge.from().nodeId(), _ -> new ArrayList<>())
+            outgoing.computeIfAbsent(edge.edge.from().nodeId(), unused718 -> new ArrayList<>())
                     .add(edge.edge.to().nodeId());
         }
         var reachable = new HashSet<Integer>();
@@ -290,9 +290,9 @@ public final class ProgramGraphValidator {
         nodes.keySet().forEach(id -> indegree.put(id, 0));
         for (var edge : edges) {
             if (edge.flow()) continue;
-            outgoing.computeIfAbsent(edge.edge.from().nodeId(), _ -> new ArrayList<>())
+            outgoing.computeIfAbsent(edge.edge.from().nodeId(), unused719 -> new ArrayList<>())
                     .add(edge.edge.to().nodeId());
-            indegree.computeIfPresent(edge.edge.to().nodeId(), (_, value) -> value + 1);
+            indegree.computeIfPresent(edge.edge.to().nodeId(), (unused720, value) -> value + 1);
         }
         var pending = new PriorityQueue<Integer>();
         indegree.forEach((id, degree) -> {
@@ -303,7 +303,7 @@ public final class ProgramGraphValidator {
             var current = pending.remove();
             visited.add(current);
             for (var target : outgoing.getOrDefault(current, List.of())) {
-                var next = indegree.computeIfPresent(target, (_, degree) -> degree - 1);
+                var next = indegree.computeIfPresent(target, (unused721, degree) -> degree - 1);
                 if (next != null && next == 0) pending.add(target);
             }
         }

@@ -1,6 +1,5 @@
 package org.academy.api.client.render.vfx;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
@@ -12,7 +11,7 @@ public record VfxCamera(
         Matrix4f projectionMatrix,
         Matrix4f viewRotationMatrix,
         float fov,
-        @Nullable GpuBufferSlice projectionUniform
+        @Nullable Object projectionUniform
 ) {
     public VfxCamera(
             Vector3f pos,

@@ -1,24 +1,14 @@
 package org.academy.internal.server.ability.gametest;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.SlabType;
@@ -26,36 +16,34 @@ import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.FluidState;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.AirMobility;
 import org.academy.api.server.world.WaterSuppression;
 
-import java.util.List;
 import java.util.UUID;
 
 /** Runtime checks for block restoration, fluid mixins and movement priority. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class AeromanipRegressionGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("aeromanip_regression_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void aeromanipWaterOverlap(GameTestHelper helper) {
+        overlap(helper);
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("water_overlap", "water_flow", "water_reload", "movement_priority")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("aeromanip/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("aeromanip_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 80, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
-        }
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void aeromanipWaterFlow(GameTestHelper helper) {
+        flow(helper);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void aeromanipWaterReload(GameTestHelper helper) {
+        reload(helper);
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void aeromanipMovementPriority(GameTestHelper helper) {
+        movement(helper);
     }
 
     private static void overlap(GameTestHelper helper) {
@@ -137,7 +125,7 @@ public final class AeromanipRegressionGameTests {
     }
 
     private static void movement(GameTestHelper helper) {
-        var entity = helper.spawn(EntityTypes.ARMOR_STAND, 3, 4, 3);
+        var entity = helper.spawn(EntityType.ARMOR_STAND, 3, 4, 3);
         entity.setOnGround(false);
         entity.setDeltaMovement(1.5, -0.9, -0.75);
         AirMobility.setSupport(entity, AirMobility.HOVER, entity.getY());
@@ -149,39 +137,5 @@ public final class AeromanipRegressionGameTests {
         AirMobility.applySupport(entity);
         helper.assertTrue(entity.getDeltaMovement().y == -2.0, Component.literal("Slow fall must not brake active propulsion"));
         helper.succeed();
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            switch (scenario) {
-                case "water_overlap" -> overlap(helper);
-                case "water_flow" -> flow(helper);
-                case "water_reload" -> reload(helper);
-                case "movement_priority" -> movement(helper);
-                default -> throw new IllegalArgumentException(scenario);
-            }
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Aeromanipulation regression");
-        }
     }
 }

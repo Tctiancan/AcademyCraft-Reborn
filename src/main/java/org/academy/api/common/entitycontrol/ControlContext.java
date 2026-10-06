@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +13,7 @@ public record ControlContext(
         UUID leaseId,
         ServerPlayer controller,
         LivingEntity subject,
-        Identifier source,
+        ResourceLocation source,
         UUID scopeId,
         int priority,
         long expiresAt
@@ -32,7 +32,7 @@ public record ControlContext(
             UUID leaseId,
             ServerPlayer controller,
             LivingEntity subject,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             long expiresAt
     ) {

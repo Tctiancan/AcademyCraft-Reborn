@@ -88,8 +88,10 @@ public final class ProgramVm {
                     .flatMap(ProgramExecutionFrame::invocation)
                     .map(ProgramInvocationContext::runTrace).orElse(null);
             while (true) {
-                // Existing graphs sometimes wire the end of a foreach body back explicitly.
-                // Treat that edge as the structured return instead of retaining a stale frame.
+                // Existing graphs sometimes wire the end of a
+// foreach body back explicitly.
+                // Treat that edge as the structured
+// return instead of retaining a stale frame.
                 while (!returnNodes.isEmpty() && returnNodes.peek() == currentNodeId) {
                     returnNodes.pop();
                 }

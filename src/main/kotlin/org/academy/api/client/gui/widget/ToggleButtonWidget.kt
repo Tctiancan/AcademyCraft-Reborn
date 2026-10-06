@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import org.academy.api.client.gui.animation.EasingFunctions
 import org.academy.api.client.gui.animation.ValueAnimator
 import org.academy.api.client.gui.command.FillRectDrawCommand
@@ -46,13 +46,13 @@ open class ToggleButtonWidget : AbstractWidget() {
         val track = if (isChecked) checkedTrackColor else trackColor
         val thumb = if (isChecked) checkedThumbColor else thumbColor
 
-        val trackAlpha = ARGB.alpha(track) / 255.0f
+        val trackAlpha = FastColor.ARGB32.alpha(track) / 255.0f
         context.submit(
             FillRectDrawCommand(
                 width, height,
-                ARGB.red(track) / 255.0f,
-                ARGB.green(track) / 255.0f,
-                ARGB.blue(track) / 255.0f,
+                FastColor.ARGB32.red(track) / 255.0f,
+                FastColor.ARGB32.green(track) / 255.0f,
+                FastColor.ARGB32.blue(track) / 255.0f,
                 trackAlpha * context.accumulatedAlpha
             )
         )
@@ -66,10 +66,10 @@ open class ToggleButtonWidget : AbstractWidget() {
             context.submit(
                 FillRectDrawCommand(
                     thumbSize, thumbSize,
-                    ARGB.red(thumb) / 255.0f,
-                    ARGB.green(thumb) / 255.0f,
-                    ARGB.blue(thumb) / 255.0f,
-                    ARGB.alpha(thumb) / 255.0f * context.accumulatedAlpha
+                    FastColor.ARGB32.red(thumb) / 255.0f,
+                    FastColor.ARGB32.green(thumb) / 255.0f,
+                    FastColor.ARGB32.blue(thumb) / 255.0f,
+                    FastColor.ARGB32.alpha(thumb) / 255.0f * context.accumulatedAlpha
                 )
             )
         }

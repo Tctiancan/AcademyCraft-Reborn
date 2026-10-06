@@ -271,9 +271,9 @@ public final class VfxSystemSimulator {
         for (var edge : system.dataEdges()) {
             var to = edge.to();
             if (operatorById.containsKey(to.nodeId())) {
-                operatorInputs.computeIfAbsent(to.nodeId(), _ -> new LinkedHashMap<>()).put(to.portId(), edge.from());
+                operatorInputs.computeIfAbsent(to.nodeId(), unused146 -> new LinkedHashMap<>()).put(to.portId(), edge.from());
             } else {
-                blockPortInputs.computeIfAbsent(to.nodeId(), _ -> new LinkedHashMap<>()).put(to.portId(), edge.from());
+                blockPortInputs.computeIfAbsent(to.nodeId(), unused147 -> new LinkedHashMap<>()).put(to.portId(), edge.from());
             }
         }
 
@@ -314,14 +314,14 @@ public final class VfxSystemSimulator {
         for (var edge : system.flowEdges()) {
             var fromCtx = contextsById.get(edge.fromContextId());
             if (fromCtx != null && fromCtx.type() == VfxContextType.SPAWN) {
-                initUpstreamSpawns.computeIfAbsent(edge.toContextId(), _ -> new ArrayList<>()).add(edge.fromContextId());
+                initUpstreamSpawns.computeIfAbsent(edge.toContextId(), unused148 -> new ArrayList<>()).add(edge.fromContextId());
             }
         }
 
         // 块级 flow（M28b）：init 块 → 其上游 spawn 块（精确批次配对）
         for (var edge : system.blockFlows()) {
             hasBlockFlows = true;
-            initUpstreamSpawnBlocks.computeIfAbsent(edge.toBlockId(), _ -> new ArrayList<>())
+            initUpstreamSpawnBlocks.computeIfAbsent(edge.toBlockId(), unused149 -> new ArrayList<>())
                     .add(edge.fromBlockId());
         }
 

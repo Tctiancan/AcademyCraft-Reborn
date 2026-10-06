@@ -6,7 +6,7 @@ import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -59,7 +59,7 @@ public final class ElectromagneticShield extends Skill {
     static final float BASE_COOLING = 10.0f;
     static final float BASE_COOLING_CP_COST = 20.0f;
     private static final int COOLING_INTERVAL_TICKS = 20;
-    private static final Identifier TRUE_RESISTANCE_MODIFIER_ID =
+    private static final ResourceLocation TRUE_RESISTANCE_MODIFIER_ID =
             AcademyCraft.academy("electromagnetic_shield_true_resistance");
 
     public ElectromagneticShield() {
@@ -100,7 +100,8 @@ public final class ElectromagneticShield extends Skill {
 
     @Override
     public void initClient() {
-        // Retired registration retained for old saves and packet decoding.
+        // Retired registration retained
+// for old saves and packet decoding.
     }
 
     @Override

@@ -1,14 +1,12 @@
 package org.academy.internal.client.model;
 
-import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.academy.internal.client.definitions.WindGenBaseAnimation;
 import org.academy.internal.client.renderer.blockentity.state.WindGenBaseRenderState;
 
@@ -16,15 +14,16 @@ import org.academy.internal.client.renderer.blockentity.state.WindGenBaseRenderS
  * @author MapleBadd
  */
 @SuppressWarnings({"unused", "SpellCheckingInspection"})
-public class WindGenBaseModel extends Model<WindGenBaseRenderState> {
+public class WindGenBaseModel {
     public static final WindGenBaseModel MODEL = new WindGenBaseModel(createBodyLayer().bakeRoot());
-    private final KeyframeAnimation setup;
-    private final KeyframeAnimation shut;
+    private final ModelPart root;
+    private final AnimationDefinition setup;
+    private final AnimationDefinition shut;
 
     public WindGenBaseModel(ModelPart root) {
-        super(root, RenderTypes::entityCutoutCull);
-        setup = WindGenBaseAnimation.SETUP.bake(root);
-        shut = WindGenBaseAnimation.SHUT.bake(root);
+        this.root = root;
+        setup = WindGenBaseAnimation.SETUP;
+        shut = WindGenBaseAnimation.SHUT;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -70,10 +69,8 @@ public class WindGenBaseModel extends Model<WindGenBaseRenderState> {
         return LayerDefinition.create(meshdefinition, 128, 128);
     }
 
-    @Override
     public void setupAnim(WindGenBaseRenderState renderState) {
-        super.setupAnim(renderState);
-        setup.apply(renderState.setupState, renderState.ageInTicks);
-        shut.apply(renderState.shutdownState, renderState.ageInTicks);
+        KeyframeAnimationApplier.animateState(setup, renderState.setupState, renderState.ageInTicks, root);
+        KeyframeAnimationApplier.animateState(shut, renderState.shutdownState, renderState.ageInTicks, root);
     }
 }

@@ -1,13 +1,13 @@
 package org.academy.api.client.gui.dsl
 
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuSampler
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.animation.TimeInterpolator
 import org.academy.api.client.gui.widget.*
 import java.util.function.Consumer
 
-fun ImageWidget.texture(id: Identifier?): ImageWidget {
+fun ImageWidget.texture(id: ResourceLocation?): ImageWidget {
     setTexture(id)
     return this
 }

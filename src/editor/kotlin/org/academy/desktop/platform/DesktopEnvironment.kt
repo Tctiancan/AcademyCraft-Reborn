@@ -1,7 +1,7 @@
-package org.academy.desktop.platform
+﻿package org.academy.desktop.platform
 
 import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.texture.IdentifierTextureSource
 import org.academy.api.client.gui.texture.TextureSource
@@ -85,12 +85,12 @@ class DesktopEnvironment(
         return javaClass.getResourceAsStream("/assets/$namespace/$path")
     }
 
-    override fun loadTexture(identifier: Identifier): GpuTextureView {
+    override fun loadTexture(identifier: ResourceLocation): GpuTextureView {
         val input = openResource(identifier.namespace, identifier.path)
         return DesktopTextures.load(identifier, input)
     }
 
-    override fun createDynamicTextureSource(identifier: Identifier, bytes: ByteArray): TextureSource {
+    override fun createDynamicTextureSource(identifier: ResourceLocation, bytes: ByteArray): TextureSource {
         DesktopTextures.register(identifier, bytes)
         return IdentifierTextureSource(identifier, this)
     }

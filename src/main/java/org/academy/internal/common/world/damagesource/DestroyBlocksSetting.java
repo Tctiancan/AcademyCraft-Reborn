@@ -139,7 +139,8 @@ public final class DestroyBlocksSetting {
 
     public static void setSkillDestroyBlocksEnabled(Player player, Skill skill, boolean enabled) {
         if (player == null || !supportsSkillBlockDestruction(skill)) return;
-        // The server gate wins: a client may turn its own switch off, never on past the gate.
+        // The server gate wins: a client may turn its own
+// switch off, never on past the gate.
         if (enabled && !isSkillBlockDestructionAvailable(player, skill)) return;
         var settings = new HashMap<>(player.getData(AttachmentTypes.SKILL_DESTROY_BLOCKS_ENABLED.get()));
         if (enabled) settings.remove(skill.getKeyString());
@@ -183,7 +184,7 @@ public final class DestroyBlocksSetting {
             if (legacyData.contains(TAG_KEY_DESTROY_BLOCKS)) {
                 setDestroyBlocksEnabled(
                         player,
-                        legacyData.getBoolean(TAG_KEY_DESTROY_BLOCKS).orElse(true)
+                        legacyData.getBoolean(TAG_KEY_DESTROY_BLOCKS)
                 );
                 legacyData.remove(TAG_KEY_DESTROY_BLOCKS);
             } else {

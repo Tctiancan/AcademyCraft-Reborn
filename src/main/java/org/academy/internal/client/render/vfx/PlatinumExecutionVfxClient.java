@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.Vec3;
@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 public final class PlatinumExecutionVfxClient {
     private static final Logger LOGGER = AcademyCraft.getLogger();
     public static final int DURATION_TICKS = 40;
-    private static final Identifier EXECUTION_ASSET = AcademyCraft.academy("vfxgraph/platinum_execution");
+    private static final ResourceLocation EXECUTION_ASSET = AcademyCraft.academy("vfxgraph/platinum_execution");
     private static final Map<UUID, ExecutionEffect> ACTIVE = new LinkedHashMap<>();
     private static final RandomSource RANDOM = RandomSource.create();
 
@@ -136,7 +136,7 @@ public final class PlatinumExecutionVfxClient {
             var minecraft = Minecraft.getInstance();
             var level = minecraft.level;
             if (level == null) return 1f;
-            float partialTick = minecraft.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+            float partialTick = minecraft.getTimer().getGameTimeDeltaPartialTick(false);
             return Mth.clamp(
                     (float) ((level.getGameTime() + partialTick - startTick) / durationTicks),
                     0f,

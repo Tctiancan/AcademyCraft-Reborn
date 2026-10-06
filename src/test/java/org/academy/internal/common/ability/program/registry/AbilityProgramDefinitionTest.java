@@ -5,7 +5,7 @@ import org.academy.internal.common.ability.program.migration.PrecisionProgramAli
 
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
@@ -114,7 +114,7 @@ class AbilityProgramDefinitionTest {
                 .map(AbilityProgramDefinition::category)
                 .collect(Collectors.toSet()));
 
-        var entryIds = new HashSet<Identifier>();
+        var entryIds = new HashSet<ResourceLocation>();
         for (var category : expected) {
             var definition = AbilityProgramDefinitions.require(category);
             var entries = definition.categoryNodeTypes().entrySet().stream()

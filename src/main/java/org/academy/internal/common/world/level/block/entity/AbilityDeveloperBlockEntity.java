@@ -6,9 +6,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.wireless.WirelessNode;
@@ -207,23 +207,25 @@ public final class AbilityDeveloperBlockEntity extends MultiBlockEntity implemen
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (isMain()) {
-            output.putInt("energy_stored", energyStored);
+            tag.putInt("energy_stored", energyStored);
             if (connectedNodePos != null) {
-                output.putLong("connected_node_pos", connectedNodePos.asLong());
+                tag.putLong("connected_node_pos", connectedNodePos.asLong());
             }
         }
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         if (isMain()) {
-            energyStored = Mth.clamp(input.getIntOr("energy_stored", 0), 0, getMaxEnergyStorage());
+            energyStored = Mth.clamp(tag.contains("energy_stored", CompoundTag.TAG_INT) ? tag.getInt("energy_stored") : 0, 0, getMaxEnergyStorage());
             connectedNodePos = null;
-            input.getLong("connected_node_pos").ifPresent(nodePos -> connectedNodePos = BlockPos.of(nodePos));
+            if (tag.contains("connected_node_pos", CompoundTag.TAG_LONG)) {
+                connectedNodePos = BlockPos.of(tag.getLong("connected_node_pos"));
+            }
         } else {
             connectedNodePos = null;
             if (level != null && mainPos != null && level.isClientSide()) {
@@ -259,7 +261,8 @@ public final class AbilityDeveloperBlockEntity extends MultiBlockEntity implemen
         energyUpdates.flush(this, energyStored);
         ticks++;
         if (!isMain() || connectedNodePos == null) return;
-        // An unloaded or still-loading node remains a valid connection. Never wait for its chunk.
+        // An unloaded or still-loading node remains a valid connection. Never wait
+// for its chunk.
         var chunk = level.getChunkSource().getChunkNow(connectedNodePos.getX() >> 4, connectedNodePos.getZ() >> 4);
         if (chunk != null && !(chunk.getBlockEntity(connectedNodePos) instanceof WirelessNode)) {
             setConnectedNodePosition(null);

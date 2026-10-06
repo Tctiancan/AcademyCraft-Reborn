@@ -1,4 +1,4 @@
-package org.academy.api.client.gui.imgui
+﻿package org.academy.api.client.gui.imgui
 
 import com.mojang.blaze3d.pipeline.RenderTarget
 import imgui.ImGui
@@ -9,7 +9,7 @@ import imgui.type.ImBoolean
 import imgui.type.ImInt
 import imgui.type.ImString
 import net.minecraft.network.chat.Component
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
@@ -557,15 +557,15 @@ object ImGuiUIDebugger {
 
     private fun colorToFloat4(color: Int): FloatArray {
         return floatArrayOf(
-            ARGB.red(color) / 255f,
-            ARGB.green(color) / 255f,
-            ARGB.blue(color) / 255f,
-            ARGB.alpha(color) / 255f
+            FastColor.ARGB32.red(color) / 255f,
+            FastColor.ARGB32.green(color) / 255f,
+            FastColor.ARGB32.blue(color) / 255f,
+            FastColor.ARGB32.alpha(color) / 255f
         )
     }
 
     private fun float4ToColor(color: FloatArray): Int {
-        return ARGB.color(
+        return FastColor.ARGB32.color(
             (color[3] * 255).toInt(),
             (color[0] * 255).toInt(),
             (color[1] * 255).toInt(),

@@ -33,7 +33,7 @@ public final class AeromanipFieldManager {
             AirflowField field,
             FieldTicker ticker
     ) {
-        activate(player, skill, field, ticker, (_, _, _) -> {
+        activate(player, skill, field, ticker, (unused291, unused292, unused293) -> {
         });
     }
 
@@ -69,7 +69,7 @@ public final class AeromanipFieldManager {
     ) {
         var previous = PERSONAL.get(player);
         if (previous != null) previous.end();
-        var context = new FieldContext(player, skill, field, ticker, (_, _, _) -> {
+        var context = new FieldContext(player, skill, field, ticker, (unused294, unused295, unused296) -> {
         }, PERSONAL);
         PERSONAL.put(player, context);
         AbilitySystemServer.registerContext(context);

@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.program.compile;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
@@ -17,14 +17,14 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProgramGraphValidatorTest {
-    private static final Identifier MENTALOUT = AcademyCraft.academy("mentalout");
-    private static final Identifier MELTDOWNER = AcademyCraft.academy("meltdowner");
-    private static final Identifier CONTROL = AcademyCraft.academy("program_capability/mental_control");
-    private static final Identifier ENTRY = AcademyCraft.academy("program_node/on_cast");
-    private static final Identifier ACTION = AcademyCraft.academy("program_node/test_action");
-    private static final Identifier LOOP = AcademyCraft.academy("program_node/test_loop");
-    private static final Identifier INTEGER_PIPE = AcademyCraft.academy("program_node/integer_pipe");
-    private static final Identifier BOOLEAN_VALUE = AcademyCraft.academy("program_node/boolean_value");
+    private static final ResourceLocation MENTALOUT = AcademyCraft.academy("mentalout");
+    private static final ResourceLocation MELTDOWNER = AcademyCraft.academy("meltdowner");
+    private static final ResourceLocation CONTROL = AcademyCraft.academy("program_capability/mental_control");
+    private static final ResourceLocation ENTRY = AcademyCraft.academy("program_node/on_cast");
+    private static final ResourceLocation ACTION = AcademyCraft.academy("program_node/test_action");
+    private static final ResourceLocation LOOP = AcademyCraft.academy("program_node/test_loop");
+    private static final ResourceLocation INTEGER_PIPE = AcademyCraft.academy("program_node/integer_pipe");
+    private static final ResourceLocation BOOLEAN_VALUE = AcademyCraft.academy("program_node/boolean_value");
 
     @Test
     void acceptsCategoryAuthorizedProgram() {
@@ -138,8 +138,8 @@ class ProgramGraphValidatorTest {
         assertHas(result.diagnostics(), ProgramDiagnosticCode.MISSING_INPUT);
     }
 
-    private static Map<Identifier, ProgramNodeType<?>> baseTypes() {
-        var types = new HashMap<Identifier, ProgramNodeType<?>>();
+    private static Map<ResourceLocation, ProgramNodeType<?>> baseTypes() {
+        var types = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         types.put(ENTRY, type(
                 ProgramNodeRole.ENTRY,
                 ProgramNodeScope.COMMON,
@@ -226,7 +226,7 @@ class ProgramGraphValidatorTest {
         };
     }
 
-    private static ProgramGraph.Node node(int id, Identifier type) {
+    private static ProgramGraph.Node node(int id, ResourceLocation type) {
         return new ProgramGraph.Node(id, type, 1, new JsonObject());
     }
 
@@ -239,9 +239,9 @@ class ProgramGraphValidatorTest {
 
     private static ProgramValidationResult validate(
             ProgramGraph graph,
-            Map<Identifier, ProgramNodeType<?>> types,
-            Identifier category,
-            Set<Identifier> capabilities
+            Map<ResourceLocation, ProgramNodeType<?>> types,
+            ResourceLocation category,
+            Set<ResourceLocation> capabilities
     ) {
         return ProgramGraphValidator.validate(
                 graph,

@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -9,7 +9,7 @@ public record ControlEvaluation(
         ControlCapability capability,
         ControlSupport support,
         ControlRejectionReason reason,
-        Optional<Identifier> adapterId,
+        Optional<ResourceLocation> adapterId,
         int adapterPriority
 ) {
     public ControlEvaluation {

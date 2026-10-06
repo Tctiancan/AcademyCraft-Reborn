@@ -102,7 +102,7 @@ public final class DefaultGraphValidator implements GraphValidator {
     private void checkCycles(Graph graph, Map<String, GraphNode> nodesById, List<GraphIssue> issues) {
         Map<String, List<String>> adjacency = new HashMap<>();
         for (var edge : graph.edges()) {
-            adjacency.computeIfAbsent(edge.from().nodeId(), _ -> new ArrayList<>()).add(edge.to().nodeId());
+            adjacency.computeIfAbsent(edge.from().nodeId(), unused29 -> new ArrayList<>()).add(edge.to().nodeId());
         }
 
         Set<String> visiting = new HashSet<>();

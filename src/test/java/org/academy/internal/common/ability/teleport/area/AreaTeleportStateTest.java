@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.teleport.area;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.AfterEach;
@@ -15,9 +15,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class AreaTeleportStateTest {
     private final UUID player = UUID.randomUUID();
     private final ResourceKey<Level> dimensionA = ResourceKey.create(
-            Registries.DIMENSION, Identifier.fromNamespaceAndPath("test", "a"));
+            Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath("test", "a"));
     private final ResourceKey<Level> dimensionB = ResourceKey.create(
-            Registries.DIMENSION, Identifier.fromNamespaceAndPath("test", "b"));
+            Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath("test", "b"));
 
     @AfterEach
     void clearState() {

@@ -6,7 +6,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -76,7 +76,7 @@ public final class DarkmatterDisassemble extends Skill {
     static final double RANGE = 32.0;
     static final float BASE_DAMAGE = 4.0f;
     static final int CP_COST = 20;
-    private static final Identifier ARMOR_PENETRATION_ID =
+    private static final ResourceLocation ARMOR_PENETRATION_ID =
             AcademyCraft.academy("darkmatter_disassemble_penetration");
 
     public DarkmatterDisassemble() {
@@ -252,7 +252,7 @@ public final class DarkmatterDisassemble extends Skill {
             var level = player.level();
             var destroyed = new boolean[1];
             var skill = Skills.DARKMATTER_DISASSEMBLE.get();
-            var executed = skill.executeActive(player, _ -> baseCost, (context, _) -> {
+            var executed = skill.executeActive(player, unused416 -> baseCost, (context, unused417) -> {
                 if (!canProgramDestroyBlock(player, position, maximumRange)) return;
                 var phase = DarkmatterPhase.weights(player);
                 destroyed[0] = destroyWithPhaseDrops(
@@ -340,7 +340,7 @@ public final class DarkmatterDisassemble extends Skill {
             }
             var attacked = new boolean[1];
             var skill = Skills.DARKMATTER_DISASSEMBLE.get();
-            return skill.executeActive(player, _ -> baseCost, (context, actualCost) -> {
+            return skill.executeActive(player, unused418 -> baseCost, (context, actualCost) -> {
                 if (!canProgramAttack(player, target, maximumRange)) return;
                 attacked[0] = true;
                 var system = AbilitySystemServer.getSystem(player);
@@ -456,7 +456,7 @@ public final class DarkmatterDisassemble extends Skill {
                 return false;
             }
             var state = level.getBlockState(pos);
-            var event = new BreakBlockEvent(level, pos.immutable(), state, player);
+            var event = new BlockEvent.BreakEvent(level, pos.immutable(), state, player);
             NeoForge.EVENT_BUS.post(event);
             return !event.isCanceled();
         }

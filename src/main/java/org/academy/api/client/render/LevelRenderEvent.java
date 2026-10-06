@@ -57,7 +57,7 @@ public class LevelRenderEvent extends Event {
         submitNodeCollector.submitCustomGeometry(
                 poseStack,
                 renderType,
-                (_, vertexConsumer) -> renderer.accept(snapshot, vertexConsumer)
+                (unused26, vertexConsumer) -> renderer.accept(snapshot, vertexConsumer)
         );
     }
 

@@ -1,18 +1,19 @@
 package org.academy.internal.client.particle;
 
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.particle.Particle;
 import net.minecraft.client.particle.ParticleProvider;
-import net.minecraft.client.particle.SingleQuadParticle;
+import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.client.particle.SpriteSet;
-import net.minecraft.client.renderer.state.level.QuadParticleRenderState;
+import net.minecraft.client.particle.TextureSheetParticle;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import org.joml.Quaternionf;
 
-public final class BloodSprayParticle extends SingleQuadParticle {
+public final class BloodSprayParticle extends TextureSheetParticle {
     private static final int MIN_LIFETIME = 50;
     private static final int RANDOM_LIFETIME = 21;
     private static final int FADE_TICKS = 20;
@@ -23,7 +24,8 @@ public final class BloodSprayParticle extends SingleQuadParticle {
     private BloodSprayParticle(ClientLevel level, double x, double y, double z,
                                double normalX, double normalY, double normalZ,
                                SpriteSet sprites, RandomSource random) {
-        super(level, x, y, z, 0.0, 0.0, 0.0, sprites.get(random));
+        super(level, x, y, z, 0.0, 0.0, 0.0);
+        setSprite(sprites.get(random));
         // Surface stains must stay pinned; clear the random initial velocity added by the base
         // constructor or they drift away from the block face before fading out.
         setParticleSpeed(0.0, 0.0, 0.0);
@@ -53,12 +55,12 @@ public final class BloodSprayParticle extends SingleQuadParticle {
     }
 
     @Override
-    public void extract(QuadParticleRenderState renderState, Camera camera, float partialTick) {
+    public void render(VertexConsumer buffer, Camera camera, float partialTick) {
         var rotation = new Quaternionf(surfaceRotation);
         if (roll != 0.0f) {
             rotation.rotateZ(Mth.lerp(partialTick, oRoll, roll));
         }
-        extractRotatedQuad(renderState, camera, rotation, partialTick);
+        renderRotatedQuad(buffer, camera, rotation, partialTick);
     }
 
     @Override
@@ -70,8 +72,8 @@ public final class BloodSprayParticle extends SingleQuadParticle {
     }
 
     @Override
-    protected Layer getLayer() {
-        return Layer.TRANSLUCENT;
+    public ParticleRenderType getRenderType() {
+        return ParticleRenderType.PARTICLE_SHEET_TRANSLUCENT;
     }
 
     public static final class Provider implements ParticleProvider<SimpleParticleType> {

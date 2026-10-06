@@ -1,7 +1,7 @@
 package org.academy.mixin.common;
 
 import net.minecraft.advancements.Advancement;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.ServerAdvancementManager;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -21,7 +21,7 @@ public abstract class MixinServerAdvancementManager {
             at = @At("TAIL")
     )
     private void alignAbilityAdvancementBranches(
-            Map<Identifier, Advancement> advancements,
+            Map<ResourceLocation, Advancement> advancements,
             ResourceManager resourceManager,
             ProfilerFiller profiler,
             CallbackInfo ci

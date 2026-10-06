@@ -1,8 +1,8 @@
 package org.academy.api.client.gui.command
 
-import com.mojang.blaze3d.pipeline.RenderPipeline
 import com.mojang.blaze3d.vertex.PoseStack
 import org.academy.api.client.gui.render.VertexWriter
+import org.academy.api.client.render.RenderPipeline
 import org.academy.api.client.render.TextureBinding
 import org.academy.api.client.render.UniformPayload
 

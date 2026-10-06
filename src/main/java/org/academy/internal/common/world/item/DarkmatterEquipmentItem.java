@@ -23,11 +23,6 @@ public class DarkmatterEquipmentItem extends Item implements DarkmatterShapedIte
     }
 
     @Override
-    public boolean isCombineRepairable(ItemStack stack) {
-        return false;
-    }
-
-    @Override
     public float getXpRepairRatio(ItemStack stack) {
         return 0.0f;
     }

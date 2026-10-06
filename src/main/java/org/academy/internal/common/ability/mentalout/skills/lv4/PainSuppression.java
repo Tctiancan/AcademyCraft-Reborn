@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.mentalout.skills.lv4;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.LivingEntity;
@@ -54,7 +54,7 @@ public final class PainSuppression extends Skill {
     public static final float MAX_DAMAGE_CP = 20.0f;
     public static final float NODE_X = 112.0f;
     public static final float NODE_Y = 110.0f;
-    private static final Identifier RESISTANCE_ID = AcademyCraft.academy("pain_suppression_true_resistance");
+    private static final ResourceLocation RESISTANCE_ID = AcademyCraft.academy("pain_suppression_true_resistance");
 
     public PainSuppression() {
         super(Builder.of(AbilityCategories.MENTALOUT.get())
@@ -80,7 +80,7 @@ public final class PainSuppression extends Skill {
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(getKey());
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE, InputSystem.combo(InputSystem.InputType.KEYBOARD,
-                        InputConstants.KEY_J, InputConstants.RELEASE, InputConstants.MOD_ALT)), _ -> Client.toggle());
+                        InputConstants.KEY_J, InputConstants.RELEASE, InputConstants.MOD_ALT)), unused542 -> Client.toggle());
     }
 
     @Override

@@ -18,7 +18,7 @@ import org.academy.internal.common.ability.program.ProgramVmContext;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
@@ -70,10 +70,10 @@ import java.util.function.Predicate;
 public final class CommonProgramExecutors implements ProgramExecutorLookup {
     public static final CommonProgramExecutors INSTANCE = new CommonProgramExecutors();
 
-    private final Map<Identifier, ProgramNodeExecutor<?>> executors;
+    private final Map<ResourceLocation, ProgramNodeExecutor<?>> executors;
 
     private CommonProgramExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
         registerConstants(result);
         registerScalarLogic(result);
         registerTextOperations(result);
@@ -92,45 +92,45 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     @Override
-    public @Nullable ProgramNodeExecutor<?> find(Identifier nodeType) {
+    public @Nullable ProgramNodeExecutor<?> find(ResourceLocation nodeType) {
         return executors.get(nodeType);
     }
 
-    public Map<Identifier, ProgramNodeExecutor<?>> executors() {
+    public Map<ResourceLocation, ProgramNodeExecutor<?>> executors() {
         return executors;
     }
 
-    private static void registerConstants(Map<Identifier, ProgramNodeExecutor<?>> result) {
+    private static void registerConstants(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
         put(result, CommonProgramNodeIds.SCALAR_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.ScalarConfiguration configuration,
-                 ProgramInputView _) -> data(
+                (ProgramVmContext unused546, CommonProgramNodeCatalog.ScalarConfiguration configuration,
+                 ProgramInputView unused547) -> data(
                         "value",
                         configuration.kind().type(),
                         configuration.parsedValue()
                 ));
         put(result, CommonProgramNodeIds.BOOLEAN_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.BooleanConfiguration configuration,
-                 ProgramInputView _) -> data("value", ProgramValueTypes.BOOLEAN, configuration.value()));
+                (ProgramVmContext unused548, CommonProgramNodeCatalog.BooleanConfiguration configuration,
+                 ProgramInputView unused549) -> data("value", ProgramValueTypes.BOOLEAN, configuration.value()));
         put(result, CommonProgramNodeIds.INTEGER_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.IntegerConfiguration configuration,
-                 ProgramInputView _) -> data("value", ProgramValueTypes.INTEGER, configuration.value()));
+                (ProgramVmContext unused550, CommonProgramNodeCatalog.IntegerConfiguration configuration,
+                 ProgramInputView unused551) -> data("value", ProgramValueTypes.INTEGER, configuration.value()));
         put(result, CommonProgramNodeIds.BIG_INTEGER_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.BigIntegerConfiguration configuration,
-                 ProgramInputView _) -> data("value", ProgramValueTypes.BIG_INTEGER, configuration.value()));
+                (ProgramVmContext unused552, CommonProgramNodeCatalog.BigIntegerConfiguration configuration,
+                 ProgramInputView unused553) -> data("value", ProgramValueTypes.BIG_INTEGER, configuration.value()));
         put(result, CommonProgramNodeIds.FLOAT_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.FloatConfiguration configuration,
-                 ProgramInputView _) -> data("value", ProgramValueTypes.FLOAT, configuration.value()));
+                (ProgramVmContext unused554, CommonProgramNodeCatalog.FloatConfiguration configuration,
+                 ProgramInputView unused555) -> data("value", ProgramValueTypes.FLOAT, configuration.value()));
         put(result, CommonProgramNodeIds.TEXT_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.TextConfiguration configuration,
-                 ProgramInputView _) -> data("value", ProgramValueTypes.TEXT, configuration.value()));
+                (ProgramVmContext unused556, CommonProgramNodeCatalog.TextConfiguration configuration,
+                 ProgramInputView unused557) -> data("value", ProgramValueTypes.TEXT, configuration.value()));
         put(result, CommonProgramNodeIds.TAG_CONSTANT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.TagConfiguration configuration,
-                 ProgramInputView _) -> data("value", ProgramValueTypes.TAG, configuration.value()));
+                (ProgramVmContext unused558, CommonProgramNodeCatalog.TagConfiguration configuration,
+                 ProgramInputView unused559) -> data("value", ProgramValueTypes.TAG, configuration.value()));
     }
 
-    private static void registerTextOperations(Map<Identifier, ProgramNodeExecutor<?>> result) {
+    private static void registerTextOperations(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
         put(result, CommonProgramNodeIds.TEXT_SPLIT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.TextSplitConfiguration configuration,
+                (ProgramVmContext unused560, CommonProgramNodeCatalog.TextSplitConfiguration configuration,
                  ProgramInputView inputs) -> {
                     var text = (String) raw(inputs, "text", ProgramValueTypes.TEXT);
                     var index = optionalInteger(inputs, "fragment_index", configuration.fragmentIndex());
@@ -200,19 +200,19 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                 Math.toDegrees(Math.atan2(-direction.y(), Math.hypot(direction.x(), direction.z()))));
     }
 
-    private static void registerScalarLogic(Map<Identifier, ProgramNodeExecutor<?>> result) {
+    private static void registerScalarLogic(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
         put(result, CommonProgramNodeIds.NUMERIC_ARITHMETIC,
-                (ProgramVmContext _,
+                (ProgramVmContext unused561,
                  CommonProgramNodeCatalog.NumericArithmeticConfiguration configuration,
                  ProgramInputView inputs) -> numericArithmetic(inputs, configuration));
         put(result, CommonProgramNodeIds.NUMERIC_CONVERT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.NumericConversionConfiguration configuration,
+                (ProgramVmContext unused562, CommonProgramNodeCatalog.NumericConversionConfiguration configuration,
                  ProgramInputView inputs) -> data("result", configuration.target().type(),
                         ProgramNumericMath.convert(
                                 (Number) inputs.requireCompatible("value", configuration.source().type()).value(),
                                 configuration.target().type())));
         put(result, CommonProgramNodeIds.NUMERIC_COMPARE,
-                (ProgramVmContext _,
+                (ProgramVmContext unused563,
                  CommonProgramNodeCatalog.NumericComparisonConfiguration configuration,
                  ProgramInputView inputs) -> data(
                         "result",
@@ -220,7 +220,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         configuration.operator().test(compareNumeric(inputs, configuration.kind()))
                 ));
         put(result, CommonProgramNodeIds.TEXT_COMPARE,
-                (ProgramVmContext _, CommonProgramNodeCatalog.TextComparisonConfiguration configuration,
+                (ProgramVmContext unused564, CommonProgramNodeCatalog.TextComparisonConfiguration configuration,
                  ProgramInputView inputs) -> {
                     var left = (String) raw(inputs, "left", ProgramValueTypes.TEXT);
                     var right = (String) raw(inputs, "right", ProgramValueTypes.TEXT);
@@ -270,7 +270,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         floatComparison(result, CommonProgramNodeIds.FLOAT_GREATER, value -> value > 0);
         floatComparison(result, CommonProgramNodeIds.FLOAT_GREATER_EQUAL, value -> value >= 0);
 
-        put(result, CommonProgramNodeIds.BOOLEAN_NOT, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.BOOLEAN_NOT, (unused565, unused566, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 !booleanValue(inputs, "value")
@@ -279,7 +279,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         booleanBinary(result, CommonProgramNodeIds.BOOLEAN_OR, (left, right) -> left || right);
         booleanBinary(result, CommonProgramNodeIds.BOOLEAN_XOR, (left, right) -> left ^ right);
         put(result, CommonProgramNodeIds.SELECT_VALUE,
-                (ProgramVmContext _,
+                (ProgramVmContext unused567,
                  CommonProgramNodeCatalog.ValueTypeConfiguration configuration,
                  ProgramInputView inputs) -> data(
                         "value",
@@ -295,17 +295,17 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void registerControlAndState(
-            Map<Identifier, ProgramNodeExecutor<?>> result
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result
     ) {
-        put(result, CommonProgramNodeIds.BRANCH, (_, _, inputs) -> ProgramNodeStep.next(
+        put(result, CommonProgramNodeIds.BRANCH, (unused568, unused569, inputs) -> ProgramNodeStep.next(
                 Boolean.toString(booleanValue(inputs, "condition"))
         ));
         put(result, CommonProgramNodeIds.BREAK_LOOP,
-                (_, _, _) -> ProgramNodeStep.breakLoop());
+                (unused570, unused571, unused572) -> ProgramNodeStep.breakLoop());
         put(result, CommonProgramNodeIds.CONTINUE_LOOP,
-                (_, _, _) -> ProgramNodeStep.continueLoop());
-        put(result, CommonProgramNodeIds.STOP, (_, _, _) -> ProgramNodeStep.stop());
-        put(result, CommonProgramNodeIds.WAIT, (_, _, inputs) -> {
+                (unused573, unused574, unused575) -> ProgramNodeStep.continueLoop());
+        put(result, CommonProgramNodeIds.STOP, (unused576, unused577, unused578) -> ProgramNodeStep.stop());
+        put(result, CommonProgramNodeIds.WAIT, (unused579, unused580, inputs) -> {
             var ticks = integer(inputs, "ticks");
             if (ticks < 1 || ticks > 72_000) {
                 throw new IllegalArgumentException("Wait duration must be between 1 and 72000 ticks");
@@ -315,7 +315,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         put(result, CommonProgramNodeIds.VARIABLE_GET,
                 (ProgramVmContext context,
                  CommonProgramNodeCatalog.VariableConfiguration configuration,
-                 ProgramInputView _) -> {
+                 ProgramInputView unused581) -> {
                     var value = context.variable(configuration.name()).orElseThrow(() ->
                             new IllegalStateException("Program variable is not initialized"));
                     return data("value", coerce(value, configuration.type()));
@@ -333,7 +333,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         put(result, CommonProgramNodeIds.SHARED_VARIABLE_GET,
                 (ProgramVmContext context,
                  CommonProgramNodeCatalog.SharedVariableConfiguration configuration,
-                 ProgramInputView _) -> {
+                 ProgramInputView unused582) -> {
                     var player = serverPlayer(context);
                     var category = ProgramSharedVariables.category(player);
                     var overlay = sharedOverlay(context, category);
@@ -369,7 +369,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         put(result, CommonProgramNodeIds.SHARED_VARIABLE_CLEAR,
                 (ProgramVmContext context,
                  CommonProgramNodeCatalog.SharedVariableNameConfiguration configuration,
-                 ProgramInputView _) -> {
+                 ProgramInputView unused583) -> {
                     var player = serverPlayer(context);
                     var category = ProgramSharedVariables.category(player);
                     var frame = context.attachment(ProgramExecutionFrame.class).orElseThrow();
@@ -384,7 +384,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     return ProgramNodeStep.next("flow");
                 });
         put(result, CommonProgramNodeIds.SHARED_VARIABLE_CLEAR_ALL,
-                (ProgramVmContext context, Object _, ProgramInputView _) -> {
+                (ProgramVmContext context, Object unused584, ProgramInputView unused585) -> {
                     var player = serverPlayer(context);
                     var category = ProgramSharedVariables.category(player);
                     var frame = context.attachment(ProgramExecutionFrame.class).orElseThrow();
@@ -415,7 +415,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                             message != null);
                 });
         put(result, CommonProgramNodeIds.CHAT_TRIGGER_MESSAGE,
-                (ProgramVmContext context, Object _, ProgramInputView _) -> {
+                (ProgramVmContext context, Object unused586, ProgramInputView unused587) -> {
                     var message = context.attachment(ProgramExecutionFrame.class)
                             .flatMap(ProgramExecutionFrame::invocation)
                             .flatMap(ProgramInvocationContext::chatMessage);
@@ -452,7 +452,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void registerTriggerEntries(
-            Map<Identifier, ProgramNodeExecutor<?>> result
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result
     ) {
         for (var id : List.of(
                 CommonProgramNodeIds.TRIGGER_HURT,
@@ -462,15 +462,15 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                 CommonProgramNodeIds.TRIGGER_HEALTH_THRESHOLD,
                 CommonProgramNodeIds.TRIGGER_CHAT
         )) {
-            put(result, id, (_, _, _) -> ProgramNodeStep.next("flow"));
+            put(result, id, (unused588, unused589, unused590) -> ProgramNodeStep.next("flow"));
         }
     }
 
-    private static void registerSpatial(Map<Identifier, ProgramNodeExecutor<?>> result) {
+    private static void registerSpatial(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
         put(result, CommonProgramNodeIds.WORLD_POSITION_CONSTANT,
-                (ProgramVmContext _,
+                (ProgramVmContext unused591,
                  CommonProgramNodeCatalog.WorldPositionConfiguration configuration,
-                 ProgramInputView _) -> data(
+                 ProgramInputView unused592) -> data(
                         "position",
                         ProgramValueTypes.WORLD_POSITION,
                         new ProgramWorldPosition(
@@ -481,7 +481,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         )
                 ));
         put(result, CommonProgramNodeIds.WORLD_POSITION_CONSTRUCT,
-                (ProgramVmContext _,
+                (ProgramVmContext unused593,
                  CommonProgramNodeCatalog.DimensionConfiguration configuration,
                  ProgramInputView inputs) -> data(
                         "position",
@@ -493,7 +493,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                                 floatValue(inputs, "z")
                         )
                 ));
-        put(result, CommonProgramNodeIds.WORLD_POSITION_COMPONENTS, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.WORLD_POSITION_COMPONENTS, (unused594, unused595, inputs) -> {
             var position = worldPosition(inputs, "position");
             return ProgramNodeStep.data(Map.of(
                     "x", value(ProgramValueTypes.FLOAT, position.x()),
@@ -501,7 +501,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     "z", value(ProgramValueTypes.FLOAT, position.z())
             ));
         });
-        put(result, CommonProgramNodeIds.WORLD_POSITION_OFFSET, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.WORLD_POSITION_OFFSET, (unused596, unused597, inputs) -> data(
                 "position",
                 ProgramValueTypes.WORLD_POSITION,
                 worldPosition(inputs, "position").offset(
@@ -509,12 +509,12 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         floatValue(inputs, "distance")
                 )
         ));
-        put(result, CommonProgramNodeIds.WORLD_POSITION_DISTANCE, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.WORLD_POSITION_DISTANCE, (unused598, unused599, inputs) -> data(
                 "result",
                 ProgramValueTypes.FLOAT,
                 worldPosition(inputs, "left").distanceTo(worldPosition(inputs, "right"))
         ));
-        put(result, CommonProgramNodeIds.WORLD_POSITION_SAME_DIMENSION, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.WORLD_POSITION_SAME_DIMENSION, (unused600, unused601, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 worldPosition(inputs, "left").dimension().equals(
@@ -523,9 +523,9 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         ));
 
         put(result, CommonProgramNodeIds.BLOCK_POSITION_CONSTANT,
-                (ProgramVmContext _,
+                (ProgramVmContext unused602,
                  CommonProgramNodeCatalog.BlockPositionConfiguration configuration,
-                 ProgramInputView _) -> data(
+                 ProgramInputView unused603) -> data(
                         "position",
                         ProgramValueTypes.BLOCK_POSITION,
                         new ProgramBlockPosition(
@@ -536,7 +536,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         )
                 ));
         put(result, CommonProgramNodeIds.BLOCK_POSITION_CONSTRUCT,
-                (ProgramVmContext _,
+                (ProgramVmContext unused604,
                  CommonProgramNodeCatalog.DimensionConfiguration configuration,
                  ProgramInputView inputs) -> data(
                         "position",
@@ -548,7 +548,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                                 integer(inputs, "z")
                         )
                 ));
-        put(result, CommonProgramNodeIds.BLOCK_POSITION_COMPONENTS, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.BLOCK_POSITION_COMPONENTS, (unused605, unused606, inputs) -> {
             var position = blockPosition(inputs, "position");
             return ProgramNodeStep.data(Map.of(
                     "x", value(ProgramValueTypes.INTEGER, position.x()),
@@ -556,26 +556,26 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     "z", value(ProgramValueTypes.INTEGER, position.z())
             ));
         });
-        put(result, CommonProgramNodeIds.POSITION_TO_BLOCK, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.POSITION_TO_BLOCK, (unused607, unused608, inputs) -> data(
                 "block",
                 ProgramValueTypes.BLOCK_POSITION,
                 ProgramBlockPosition.containing(worldPosition(inputs, "position"))
         ));
-        put(result, CommonProgramNodeIds.BLOCK_TO_CENTER, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.BLOCK_TO_CENTER, (unused609, unused610, inputs) -> data(
                 "position",
                 ProgramValueTypes.WORLD_POSITION,
                 blockPosition(inputs, "block").center()
         ));
 
         put(result, CommonProgramNodeIds.DIRECTION_CONSTANT,
-                (ProgramVmContext _,
+                (ProgramVmContext unused611,
                  CommonProgramNodeCatalog.DirectionConfiguration configuration,
-                 ProgramInputView _) -> data(
+                 ProgramInputView unused612) -> data(
                         "direction",
                         ProgramValueTypes.DIRECTION,
                         new ProgramDirection(configuration.x(), configuration.y(), configuration.z())
                 ));
-        put(result, CommonProgramNodeIds.DIRECTION_CONSTRUCT, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.DIRECTION_CONSTRUCT, (unused613, unused614, inputs) -> data(
                 "direction",
                 ProgramValueTypes.DIRECTION,
                 new ProgramDirection(
@@ -584,7 +584,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         floatValue(inputs, "z")
                 )
         ));
-        put(result, CommonProgramNodeIds.DIRECTION_COMPONENTS, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.DIRECTION_COMPONENTS, (unused615, unused616, inputs) -> {
             var direction = direction(inputs, "direction");
             return ProgramNodeStep.data(Map.of(
                     "x", value(ProgramValueTypes.FLOAT, direction.x()),
@@ -592,7 +592,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     "z", value(ProgramValueTypes.FLOAT, direction.z())
             ));
         });
-        put(result, CommonProgramNodeIds.DIRECTION_BETWEEN, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.DIRECTION_BETWEEN, (unused617, unused618, inputs) -> data(
                 "direction",
                 ProgramValueTypes.DIRECTION,
                 ProgramDirection.between(
@@ -600,17 +600,17 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         worldPosition(inputs, "to")
                 )
         ));
-        put(result, CommonProgramNodeIds.DIRECTION_OPPOSITE, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.DIRECTION_OPPOSITE, (unused619, unused620, inputs) -> data(
                 "direction",
                 ProgramValueTypes.DIRECTION,
                 direction(inputs, "direction").opposite()
         ));
-        put(result, CommonProgramNodeIds.DIRECTION_DOT, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.DIRECTION_DOT, (unused621, unused622, inputs) -> data(
                 "result",
                 ProgramValueTypes.FLOAT,
                 direction(inputs, "left").dot(direction(inputs, "right"))
         ));
-        put(result, CommonProgramNodeIds.VECTOR_CONSTRUCT, (_, _, inputs) -> data(
+        put(result, CommonProgramNodeIds.VECTOR_CONSTRUCT, (unused623, unused624, inputs) -> data(
                 "vector",
                 ProgramValueTypes.VECTOR,
                 new ProgramVector(
@@ -619,7 +619,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         floatValue(inputs, "z")
                 )
         ));
-        put(result, CommonProgramNodeIds.VECTOR_COMPONENTS, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.VECTOR_COMPONENTS, (unused625, unused626, inputs) -> {
             var vector = (ProgramVector) raw(inputs, "value", ProgramValueTypes.VECTOR);
             return ProgramNodeStep.data(Map.of(
                     "x", value(ProgramValueTypes.FLOAT, vector.x()),
@@ -628,34 +628,34 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
             ));
         });
         put(result, CommonProgramNodeIds.VEC3_OPERATION,
-                (ProgramVmContext _, CommonProgramNodeCatalog.Vec3OperationConfiguration configuration,
+                (ProgramVmContext unused627, CommonProgramNodeCatalog.Vec3OperationConfiguration configuration,
                  ProgramInputView inputs) -> vec3Operation(inputs, configuration));
     }
 
-    private static void registerQueries(Map<Identifier, ProgramNodeExecutor<?>> result) {
-        put(result, CommonProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static void registerQueries(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
+        put(result, CommonProgramNodeIds.CASTER, (context, unused628, unused629) -> data(
                 "entity",
                 ProgramValueTypes.ENTITY_REFERENCE,
                 resolver(context).caster()
         ));
-        put(result, CommonProgramNodeIds.DAMAGE_ATTACKER, (context, _, _) ->
+        put(result, CommonProgramNodeIds.DAMAGE_ATTACKER, (context, unused630, unused631) ->
                 damageAttacker(context)
                         .map(entity -> data(
                                 "entity",
                                 ProgramValueTypes.ENTITY_REFERENCE,
                                 entity
                         )).orElseGet(CommonProgramExecutors::emptyData));
-        put(result, CommonProgramNodeIds.DAMAGE_AMOUNT, (context, _, _) ->
+        put(result, CommonProgramNodeIds.DAMAGE_AMOUNT, (context, unused632, unused633) ->
                 damageAmount(context)
                         .stream()
                         .mapToObj(amount -> data(
                                 "amount", ProgramValueTypes.FLOAT, amount))
                         .findFirst()
                         .orElseGet(CommonProgramExecutors::emptyData));
-        put(result, CommonProgramNodeIds.GAME_TIME, (context, _, _) -> data(
+        put(result, CommonProgramNodeIds.GAME_TIME, (context, unused634, unused635) -> data(
                 "time", ProgramValueTypes.BIG_INTEGER, BigInteger.valueOf(context.gameTime())
         ));
-        put(result, CommonProgramNodeIds.LOOP_INDEX, (context, _, _) -> data(
+        put(result, CommonProgramNodeIds.LOOP_INDEX, (context, unused636, unused637) -> data(
                 "loop_index",
                 ProgramValueTypes.BIG_INTEGER,
                 BigInteger.valueOf(context.attachment(ProgramExecutionFrame.class)
@@ -663,7 +663,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         .map(ProgramInvocationContext::loopIndex)
                         .orElse(0L))
         ));
-        put(result, CommonProgramNodeIds.MELEE_TARGET, (context, _, _) ->
+        put(result, CommonProgramNodeIds.MELEE_TARGET, (context, unused638, unused639) ->
                 meleeTarget(context)
                         .map(entity -> data(
                                 "entity", ProgramValueTypes.ENTITY_REFERENCE, entity))
@@ -671,7 +671,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         put(result, CommonProgramNodeIds.LOOK_TARGET,
                 (ProgramVmContext context,
                  CommonProgramNodeCatalog.LookTargetConfiguration configuration,
-                 ProgramInputView _) -> switch (configuration.targetType()) {
+                 ProgramInputView unused640) -> switch (configuration.targetType()) {
                     case ENTITY -> resolver(context).lookTarget()
                             .map(entity -> data(
                                     "entity",
@@ -697,7 +697,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                                 ProgramValueTypes.WORLD_POSITION,
                                 position
                         )).orElseGet(CommonProgramExecutors::emptyData));
-        put(result, CommonProgramNodeIds.ENTITY_LOOK_DIRECTION, (context, _, inputs) ->
+        put(result, CommonProgramNodeIds.ENTITY_LOOK_DIRECTION, (context, unused641, inputs) ->
                 resolver(context).lookDirectionOf(raw(
                         inputs,
                         "entity",
@@ -707,7 +707,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         ProgramValueTypes.DIRECTION,
                         direction
                 )).orElseGet(CommonProgramExecutors::emptyData));
-        put(result, CommonProgramNodeIds.ENTITY_MOVEMENT_DIRECTION, (context, _, inputs) ->
+        put(result, CommonProgramNodeIds.ENTITY_MOVEMENT_DIRECTION, (context, unused642, inputs) ->
                 resolver(context).movementDirectionOf(raw(
                         inputs,
                         "entity",
@@ -717,7 +717,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         ProgramValueTypes.DIRECTION,
                         direction
                 )).orElseGet(CommonProgramExecutors::emptyData));
-        put(result, CommonProgramNodeIds.ENTITY_MOTION, (context, _, inputs) ->
+        put(result, CommonProgramNodeIds.ENTITY_MOTION, (context, unused643, inputs) ->
                 resolver(context).motionOf(raw(
                         inputs,
                         "entity",
@@ -726,7 +726,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         "vector", value(ProgramValueTypes.VECTOR, motion),
                         "speed", value(ProgramValueTypes.FLOAT, motion.length())
                 ))).orElseGet(CommonProgramExecutors::emptyData));
-        put(result, CommonProgramNodeIds.ENTITY_HEIGHT, (context, _, inputs) ->
+        put(result, CommonProgramNodeIds.ENTITY_HEIGHT, (context, unused644, inputs) ->
                 resolver(context).heightOf(raw(
                                 inputs,
                                 "entity",
@@ -750,7 +750,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         .findFirst()
                         .orElseGet(CommonProgramExecutors::emptyData);
                 });
-        put(result, CommonProgramNodeIds.ENTITIES_AROUND, (context, _, inputs) -> {
+        put(result, CommonProgramNodeIds.ENTITIES_AROUND, (context, unused645, inputs) -> {
             var radius = nonNegative(floatValue(inputs, "radius"), "radius");
             var entities = resolver(context).entitiesAround(worldPosition(inputs, "center"), radius);
             return data(
@@ -759,7 +759,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     canonical(Objects.requireNonNull(entities, "Resolved entity set"))
             );
         });
-        put(result, CommonProgramNodeIds.RAYCAST_BLOCK, (context, _, inputs) -> {
+        put(result, CommonProgramNodeIds.RAYCAST_BLOCK, (context, unused646, inputs) -> {
             var range = nonNegative(floatValue(inputs, "range"), "range");
             return resolver(context).raycastBlock(
                             worldPosition(inputs, "origin"),
@@ -768,7 +768,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     ).map(block -> data("block", ProgramValueTypes.BLOCK_POSITION, block))
                     .orElseGet(CommonProgramExecutors::emptyData);
         });
-        put(result, CommonProgramNodeIds.RAYCAST_ENTITY, (context, _, inputs) -> {
+        put(result, CommonProgramNodeIds.RAYCAST_ENTITY, (context, unused647, inputs) -> {
             var range = nonNegative(floatValue(inputs, "range"), "range");
             return resolver(context).raycastEntity(
                             worldPosition(inputs, "origin"),
@@ -796,23 +796,23 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                                     "normal", ProgramValueTypes.DIRECTION, value))
                             .orElseGet(CommonProgramExecutors::emptyData);
                 });
-        put(result, CommonProgramNodeIds.BLOCK_VOLUME, (_, _, inputs) -> blockVolume(inputs));
+        put(result, CommonProgramNodeIds.BLOCK_VOLUME, (unused648, unused649, inputs) -> blockVolume(inputs));
     }
 
-    private static void registerEquality(Map<Identifier, ProgramNodeExecutor<?>> result) {
+    private static void registerEquality(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
         equality(result, CommonProgramNodeIds.ENTITY_EQUAL, ProgramValueTypes.ENTITY_REFERENCE);
         equality(result, CommonProgramNodeIds.WORLD_POSITION_EQUAL, ProgramValueTypes.WORLD_POSITION);
         equality(result, CommonProgramNodeIds.BLOCK_POSITION_EQUAL, ProgramValueTypes.BLOCK_POSITION);
         equality(result, CommonProgramNodeIds.DIRECTION_EQUAL, ProgramValueTypes.DIRECTION);
     }
 
-    private static void registerFilters(Map<Identifier, ProgramNodeExecutor<?>> result) {
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_ALIVE, (_, _, inputs) -> filterEntities(
+    private static void registerFilters(Map<ResourceLocation, ProgramNodeExecutor<?>> result) {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_ALIVE, (unused650, unused651, inputs) -> filterEntities(
                 inputs,
                 entity -> !(entity instanceof Entity value)
                         || value.isAlive() && !value.isRemoved()
         ));
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_DISTANCE, (context, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_DISTANCE, (context, unused652, inputs) -> {
             var center = worldPosition(inputs, "center");
             var radius = nonNegative(floatValue(inputs, "radius"), "radius");
             return filterEntities(inputs, entity -> resolver(context).positionOf(entity)
@@ -820,13 +820,13 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     .map(position -> position.distanceTo(center) <= radius)
                     .orElse(false));
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_ALLIED_TO, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_ALLIED_TO, (unused653, unused654, inputs) -> {
             var reference = raw(inputs, "reference", ProgramValueTypes.ENTITY_REFERENCE);
             return filterEntities(inputs, entity -> entity instanceof Entity value
                     && reference instanceof Entity target
                     && DarkmatterTargeting.areAllied(value, target));
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_HOSTILE_TO, (context, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_HOSTILE_TO, (context, unused655, inputs) -> {
             var reference = raw(inputs, "reference", ProgramValueTypes.ENTITY_REFERENCE);
             var damageAttacker = AbilityProgramTriggerRuntime
                     .currentDamageAttacker(reference).orElse(null);
@@ -834,48 +834,48 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     && reference instanceof LivingEntity target
                     && isHostileTo(value, target, damageAttacker));
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_TARGETED_BY, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_TARGETED_BY, (unused656, unused657, inputs) -> {
             var target = raw(inputs, "target", ProgramValueTypes.ENTITY_REFERENCE);
             return filterEntities(inputs, entity -> entity instanceof Mob mob
                     && mob.getTarget() == target);
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_LAST_DAMAGED_BY, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_LAST_DAMAGED_BY, (unused658, unused659, inputs) -> {
             var attacker = raw(inputs, "attacker", ProgramValueTypes.ENTITY_REFERENCE);
             return filterEntities(inputs, entity -> entity instanceof LivingEntity living
                     && living.getLastHurtByMob() == attacker);
         });
         put(result, CommonProgramNodeIds.FILTER_ENTITY_TYPE,
-                (ProgramVmContext _, CommonProgramNodeCatalog.EntityKindConfiguration configuration,
+                (ProgramVmContext unused660, CommonProgramNodeCatalog.EntityKindConfiguration configuration,
                  ProgramInputView inputs) -> filterEntities(
                         inputs,
                         entity -> matchesEntityKind(entity, configuration.type())
                 ));
         put(result, CommonProgramNodeIds.FILTER_ENTITY_EXACT,
-                (ProgramVmContext _, CommonProgramNodeCatalog.ExactFilterConfiguration configuration,
+                (ProgramVmContext unused661, CommonProgramNodeCatalog.ExactFilterConfiguration configuration,
                  ProgramInputView inputs) -> filterEntities(
                         inputs, entity -> matchesEntitySelector(entity, configuration.values())));
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_HEALTH_AT_LEAST, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_HEALTH_AT_LEAST, (unused662, unused663, inputs) -> {
             var percent = healthPercentThreshold(inputs);
             return filterEntities(inputs, entity -> healthPercent(entity) >= percent);
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_HEALTH_AT_MOST, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_HEALTH_AT_MOST, (unused664, unused665, inputs) -> {
             var percent = healthPercentThreshold(inputs);
             return filterEntities(inputs, entity -> healthPercent(entity) <= percent);
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_MAX_HEALTH_AT_LEAST, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_MAX_HEALTH_AT_LEAST, (unused666, unused667, inputs) -> {
             var health = nonNegative(floatValue(inputs, "health"), "health");
             return filterEntities(inputs, entity -> entity instanceof LivingEntity living
                     && living.getMaxHealth() >= health);
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_MAX_HEALTH_AT_MOST, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_MAX_HEALTH_AT_MOST, (unused668, unused669, inputs) -> {
             var health = nonNegative(floatValue(inputs, "health"), "health");
             return filterEntities(inputs, entity -> entity instanceof LivingEntity living
                     && living.getMaxHealth() <= health);
         });
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_HAS_TARGET, (_, _, inputs) ->
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_HAS_TARGET, (unused670, unused671, inputs) ->
                 filterEntities(inputs, entity -> entity instanceof Mob mob
                         && mob.getTarget() != null));
-        put(result, CommonProgramNodeIds.FILTER_ENTITY_VISIBLE_FROM, (_, _, inputs) -> {
+        put(result, CommonProgramNodeIds.FILTER_ENTITY_VISIBLE_FROM, (unused672, unused673, inputs) -> {
             var observer = raw(inputs, "observer", ProgramValueTypes.ENTITY_REFERENCE);
             return filterEntities(inputs, entity -> observer instanceof LivingEntity living
                     && entity instanceof Entity target
@@ -935,11 +935,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void registerRandomCollectionValues(
-            Map<Identifier, ProgramNodeExecutor<?>> result
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result
     ) {
         randomCollectionValue(result, CommonProgramNodeIds.RANDOM_ENTITY,
                 CommonProgramNodeCatalog.CollectionDomain.ENTITY, "entities", "entity");
-        put(result, CommonProgramNodeIds.NEAREST_ENTITY_TO_POSITION, (context, _, inputs) -> {
+        put(result, CommonProgramNodeIds.NEAREST_ENTITY_TO_POSITION, (context, unused674, inputs) -> {
             var origin = worldPosition(inputs, "position");
             Object nearest = null;
             var nearestDistance = Double.POSITIVE_INFINITY;
@@ -966,13 +966,13 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void randomCollectionValue(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             CommonProgramNodeCatalog.CollectionDomain domain,
             String input,
             String output
     ) {
-        put(result, id, (_, _, inputs) -> {
+        put(result, id, (unused675, unused676, inputs) -> {
             var values = collection(inputs, input, domain);
             if (values.isEmpty()) return emptyData();
             return data(output, domain.elementType(),
@@ -981,11 +981,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void registerAdvancedValues(
-            Map<Identifier, ProgramNodeExecutor<?>> result
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result
     ) {
         put(result, CommonProgramNodeIds.RANDOM_NUMBER,
                 (ProgramVmContext context, CommonProgramNodeCatalog.RandomNumberConfiguration configuration,
-                 ProgramInputView _) -> data(
+                 ProgramInputView unused677) -> data(
                         "value", configuration.kind().type(), nodeRandomNumber(context, configuration)));
         put(result, CommonProgramNodeIds.SORT_POINTS_BY_DISTANCE,
                 (ProgramVmContext context,
@@ -1103,7 +1103,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     private static ProgramNodeStep vectorResult(
             CommonProgramNodeCatalog.Vec3Kind kind,
             ProgramVector result,
-            @Nullable Identifier dimension
+            @Nullable ResourceLocation dimension
     ) {
         return switch (kind) {
             case VECTOR -> data("result", ProgramValueTypes.VECTOR, result);
@@ -1118,7 +1118,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         };
     }
 
-    private static @Nullable Identifier worldDimension(
+    private static @Nullable ResourceLocation worldDimension(
             ProgramInputView inputs,
             String port,
             CommonProgramNodeCatalog.Vec3Kind kind
@@ -1127,7 +1127,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                 ? worldPosition(inputs, port).dimension() : null;
     }
 
-    private static @Nullable Identifier sharedWorldDimension(
+    private static @Nullable ResourceLocation sharedWorldDimension(
             ProgramInputView inputs,
             CommonProgramNodeCatalog.Vec3Kind kind
     ) {
@@ -1143,7 +1143,8 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     private static Object nodeRandomNumber(
             ProgramVmContext context, CommonProgramNodeCatalog.RandomNumberConfiguration configuration
     ) {
-        // Fan-out reads reuse this node's draw for the invocation. Different node IDs never share it.
+        // Fan-out reads reuse this node's draw
+// for the invocation. Different node IDs never share it.
         var key = "random_number:" + context.nodeId();
         var cached = context.executorState(key).orElse(null);
         if (cached != null) return cached;
@@ -1207,13 +1208,13 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         var typeId = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
         for (var selector : selectors) {
             if (selector.startsWith("#")) {
-                var id = Identifier.tryParse(selector.substring(1));
+                var id = ResourceLocation.tryParse(selector.substring(1));
                 if (id != null && BuiltInRegistries.ENTITY_TYPE
                         .wrapAsHolder(entity.getType())
                         .is(TagKey.create(Registries.ENTITY_TYPE, id))) return true;
                 continue;
             }
-            var id = Identifier.tryParse(selector);
+            var id = ResourceLocation.tryParse(selector);
             if (id != null && id.equals(typeId)) return true;
             if (selector.equals(entity.getName().getString())) return true;
         }
@@ -1232,11 +1233,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         var blockId = BuiltInRegistries.BLOCK.getKey(state.getBlock());
         for (var selector : selectors) {
             if (selector.startsWith("#")) {
-                var id = Identifier.tryParse(selector.substring(1));
+                var id = ResourceLocation.tryParse(selector.substring(1));
                 if (id != null && state.is(TagKey.create(Registries.BLOCK, id))) return true;
                 continue;
             }
-            var id = Identifier.tryParse(selector);
+            var id = ResourceLocation.tryParse(selector);
             if (id != null && id.equals(blockId)) return true;
             if (selector.equals(state.getBlock().getName().getString())) return true;
         }
@@ -1259,11 +1260,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void registerCollection(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
             CommonProgramNodeCatalog.CollectionDomain domain
     ) {
         put(result, domain.id("empty"),
-                (ProgramVmContext _,
+                (ProgramVmContext unused678,
                  CommonProgramNodeCatalog.CollectionBuilderConfiguration configuration,
                  ProgramInputView inputs) -> {
                     var values = new ArrayList<Object>(configuration.inputs());
@@ -1272,32 +1273,32 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                     }
                     return data("values", domain.collectionType(), canonical(values));
                 });
-        put(result, domain.id("singleton"), (_, _, inputs) -> data(
+        put(result, domain.id("singleton"), (unused679, unused680, inputs) -> data(
                 "values",
                 domain.collectionType(),
                 List.of(raw(inputs, "value", domain.elementType()))
         ));
-        put(result, domain.id("union"), (_, _, inputs) -> {
+        put(result, domain.id("union"), (unused681, unused682, inputs) -> {
             var values = new LinkedHashSet<>();
             values.addAll(collection(inputs, "left", domain));
             values.addAll(collection(inputs, "right", domain));
             return data("values", domain.collectionType(), List.copyOf(values));
         });
-        put(result, domain.id("intersection"), (_, _, inputs) -> {
+        put(result, domain.id("intersection"), (unused683, unused684, inputs) -> {
             var right = new HashSet<>(collection(inputs, "right", domain));
             var values = collection(inputs, "left", domain).stream()
                     .filter(right::contains)
                     .toList();
             return data("values", domain.collectionType(), canonical(values));
         });
-        put(result, domain.id("difference"), (_, _, inputs) -> {
+        put(result, domain.id("difference"), (unused685, unused686, inputs) -> {
             var right = new HashSet<>(collection(inputs, "right", domain));
             var values = collection(inputs, "left", domain).stream()
                     .filter(value -> !right.contains(value))
                     .toList();
             return data("values", domain.collectionType(), canonical(values));
         });
-        put(result, domain.id("contains"), (_, _, inputs) -> data(
+        put(result, domain.id("contains"), (unused687, unused688, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 collection(inputs, "values", domain).contains(raw(
@@ -1306,12 +1307,12 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
                         domain.elementType()
                 ))
         ));
-        put(result, domain.id("size"), (_, _, inputs) -> data(
+        put(result, domain.id("size"), (unused689, unused690, inputs) -> data(
                 "size",
                 ProgramValueTypes.INTEGER,
                 collection(inputs, "values", domain).size()
         ));
-        put(result, domain.id("get"), (_, _, inputs) -> {
+        put(result, domain.id("get"), (unused691, unused692, inputs) -> {
             var values = collection(inputs, "values", domain);
             var index = integer(inputs, "index") - 1;
             if (index < 0 || index >= values.size()) {
@@ -1319,7 +1320,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
             }
             return data("value", domain.elementType(), values.get(index));
         });
-        put(result, domain.id("foreach"), (context, _, inputs) -> {
+        put(result, domain.id("foreach"), (context, unused693, inputs) -> {
             var key = ProgramVmContext.structuredLoopStateKey(context.nodeId());
             var state = context.executorState(key)
                     .map(IterationState.class::cast)
@@ -1342,11 +1343,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void integerBinary(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             IntBinaryOperator operation
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused694, unused695, inputs) -> data(
                 "result",
                 ProgramValueTypes.INTEGER,
                 operation.applyAsInt(integer(inputs, "left"), integer(inputs, "right"))
@@ -1354,11 +1355,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void integerComparison(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             IntPredicate predicate
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused696, unused697, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 predicate.test(Integer.compare(integer(inputs, "left"), integer(inputs, "right")))
@@ -1366,11 +1367,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void bigIntegerBinary(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             BiFunction<BigInteger, BigInteger, BigInteger> operation
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused698, unused699, inputs) -> data(
                 "result",
                 ProgramValueTypes.BIG_INTEGER,
                 operation.apply(bigInteger(inputs, "left"), bigInteger(inputs, "right"))
@@ -1378,11 +1379,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void bigIntegerComparison(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             IntPredicate predicate
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused700, unused701, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 predicate.test(bigInteger(inputs, "left").compareTo(bigInteger(inputs, "right")))
@@ -1390,11 +1391,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void floatBinary(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             DoubleBinaryOperator operation
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused702, unused703, inputs) -> data(
                 "result",
                 ProgramValueTypes.FLOAT,
                 finite(operation.applyAsDouble(
@@ -1405,11 +1406,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void floatComparison(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             IntPredicate predicate
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused704, unused705, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 predicate.test(Double.compare(
@@ -1420,11 +1421,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void booleanBinary(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             BooleanBinaryOperator operation
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused706, unused707, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 operation.apply(
@@ -1435,11 +1436,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static void equality(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramValueType type
     ) {
-        put(result, id, (_, _, inputs) -> data(
+        put(result, id, (unused708, unused709, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 Objects.equals(raw(inputs, "left", type), raw(inputs, "right", type))
@@ -1459,7 +1460,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
         throw new IllegalStateException("Program chat and shared state require a server player");
     }
 
-    private static SharedOverlay sharedOverlay(ProgramVmContext context, Identifier category) {
+    private static SharedOverlay sharedOverlay(ProgramVmContext context, ResourceLocation category) {
         var existing = context.executorState("shared_variables").orElse(null);
         if (existing instanceof SharedOverlay overlay) {
             if (!overlay.category.equals(category)) {
@@ -1489,11 +1490,11 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static final class SharedOverlay {
-        private final Identifier category;
+        private final ResourceLocation category;
         private final Map<String, Optional<ProgramValue<?>>> values = new HashMap<>();
         private boolean cleared;
 
-        private SharedOverlay(Identifier category) {
+        private SharedOverlay(ResourceLocation category) {
             this.category = category;
         }
 
@@ -1747,8 +1748,8 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {

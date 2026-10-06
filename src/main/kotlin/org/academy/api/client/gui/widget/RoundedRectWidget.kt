@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import org.academy.api.client.gui.command.RoundedRectDrawCommand
 import org.academy.api.client.gui.command.RoundedRectGradient
 import org.academy.api.client.gui.render.Canvas
@@ -147,10 +147,10 @@ open class RoundedRectWidget(
     companion object {
         fun argbToVec4(color: Int, alphaScale: Float): Vector4f {
             return Vector4f(
-                ARGB.red(color) / 255.0f,
-                ARGB.green(color) / 255.0f,
-                ARGB.blue(color) / 255.0f,
-                ARGB.alpha(color) / 255.0f * alphaScale
+                FastColor.ARGB32.red(color) / 255.0f,
+                FastColor.ARGB32.green(color) / 255.0f,
+                FastColor.ARGB32.blue(color) / 255.0f,
+                FastColor.ARGB32.alpha(color) / 255.0f * alphaScale
             )
         }
     }

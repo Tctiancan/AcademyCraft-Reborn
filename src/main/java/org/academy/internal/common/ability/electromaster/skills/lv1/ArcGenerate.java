@@ -142,7 +142,7 @@ public final class ArcGenerate extends Skill {
 
         public static boolean tryAutomatedAttack(ServerPlayer player) {
             var level = player.level();
-            return Skills.ARC_GENERATE.get().executeActive(player, (context, _) -> {
+            return Skills.ARC_GENERATE.get().executeActive(player, (context, unused447) -> {
                 var yawRad = (float) Math.toRadians(-player.getVisualRotationYInDegrees());
                 var eyePos = player.getEyePosition();
 
@@ -174,7 +174,7 @@ public final class ArcGenerate extends Skill {
                                 src,
                                 radius
                         )
-                        .damage(_ -> damage)
+                        .damage(unused448 -> damage)
                         .targetFilter(ElectromasterArcTargeting::canDamageAlongArc)
                         .build();
                 var resolved = LinearReflectionResolver.resolve(

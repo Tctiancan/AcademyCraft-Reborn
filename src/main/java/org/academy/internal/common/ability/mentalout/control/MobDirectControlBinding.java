@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
@@ -9,8 +9,8 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.navigation.FlyingPathNavigation;
-import net.minecraft.world.entity.animal.allay.Allay;
-import net.minecraft.world.entity.animal.equine.AbstractHorse;
+import net.minecraft.world.entity.animal.Allay;
+import net.minecraft.world.entity.animal.AbstractHorse;
 import net.minecraft.world.entity.monster.RangedAttackMob;
 import net.minecraft.world.entity.monster.Vex;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
@@ -28,7 +28,7 @@ import org.academy.internal.common.ability.mentalout.control.PlayerControlSessio
  * Applies controller input to a Mob without trusting a client-provided attack target.
  */
 final class MobDirectControlBinding implements ControlBinding {
-    private static final Identifier HORSE_SPRINT_SPEED_ID =
+    private static final ResourceLocation HORSE_SPRINT_SPEED_ID =
             AcademyCraft.academy("mental_control_horse_sprint");
     private static final double HORSE_SPRINT_SPEED_BONUS = 0.30;
     private final Mob mob;

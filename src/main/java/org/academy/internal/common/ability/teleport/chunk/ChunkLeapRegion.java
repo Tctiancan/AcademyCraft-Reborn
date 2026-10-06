@@ -5,7 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -29,7 +29,7 @@ public record ChunkLeapRegion(ResourceKey<Level> dimension, int minChunkX, int m
                 ByteBufCodecs.VAR_INT.encode(buf, region.height);
             },
             buf -> {
-                var id = Identifier.tryParse(ByteBufCodecs.STRING_UTF8.decode(buf));
+                var id = ResourceLocation.tryParse(ByteBufCodecs.STRING_UTF8.decode(buf));
                 var dimension = id == null ? Level.OVERWORLD : ResourceKey.create(Registries.DIMENSION, id);
                 return new ChunkLeapRegion(
                         dimension,

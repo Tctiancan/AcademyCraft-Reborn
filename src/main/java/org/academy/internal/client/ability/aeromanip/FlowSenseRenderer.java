@@ -83,7 +83,7 @@ public final class FlowSenseRenderer implements AutoCloseable {
             }
         }
         bytes.clear(); drawn = 0;
-        float partial = mc.getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        float partial = mc.getTimer().getGameTimeDeltaPartialTick(false);
         var matrix = new Matrix4f(projection).mul(view);
         var clip = new Vector4f();
         for (var marker : cache.markers()) {
@@ -92,7 +92,8 @@ public final class FlowSenseRenderer implements AutoCloseable {
             double x, y, z;
             if (entity != null) {
                 // Life/skill eligibility is authoritative in the observation. Avoid invoking the
-                // full health/defense hook chain for every observed entity on every rendered frame.
+                // full health/defense hook chain
+// for every observed entity on every rendered frame.
                 if (!entity.getUUID().equals(marker.sample.uuid()) || entity.isRemoved()) continue;
                 if (entity.distanceToSqr(mc.player) > cache.range() * cache.range()) continue;
                 var position = entity.getPosition(partial);

@@ -1,7 +1,7 @@
-package org.academy.api.client.gui.util
+﻿package org.academy.api.client.gui.util
 
 import net.minecraft.core.BlockPos
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.drawable.StateListDrawable
 import org.academy.api.client.gui.drawable.TextureDrawable
 import org.academy.api.client.gui.dsl.*
@@ -165,7 +165,7 @@ private fun updateAvailableNodesList(
         })
 }
 
-private fun WidgetContainer.iconButton(name: String, icon: Identifier, action: () -> Unit) {
+private fun WidgetContainer.iconButton(name: String, icon: ResourceLocation, action: () -> Unit) {
     button(name) {
         lp {
             gravity(Gravity.CENTER)
@@ -179,7 +179,7 @@ private fun WidgetContainer.iconButton(name: String, icon: Identifier, action: (
     }
 }
 
-private fun iconStateList(icon: Identifier): StateListDrawable {
+private fun iconStateList(icon: ResourceLocation): StateListDrawable {
     val defaultDrawable = TextureDrawable(icon)
     defaultDrawable.tintColor = 0xFFE6E6E6.toInt()
 

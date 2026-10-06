@@ -1,11 +1,13 @@
-package org.academy.api.client.gui.text
+﻿package org.academy.api.client.gui.text
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.resources.PreparableReloadListener
+import net.minecraft.server.packs.resources.ResourceManager
+import net.minecraft.util.profiling.ProfilerFiller
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.text.atlas.GlyphSignal
 import org.academy.api.client.gui.text.font.AwtFaceCache
@@ -20,28 +22,29 @@ import java.util.concurrent.Executor
 
 private val LOGGER = AcademyCraft.getLogger()
 
-@EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 object TextReloadListener : PreparableReloadListener {
     @SubscribeEvent
-    fun onAddReloadListener(event: AddClientReloadListenersEvent) {
-        event.addListener(AcademyCraft.academy("font_loader"), this)
+    fun onAddReloadListener(event: RegisterClientReloadListenersEvent) {
+        event.registerReloadListener(this)
         LOGGER.info("[TextReloadListener] registered as '{}'", AcademyCraft.academy("font_loader"))
     }
 
     override fun reload(
-        currentReload: PreparableReloadListener.SharedState,
-        taskExecutor: Executor,
         preparationBarrier: PreparableReloadListener.PreparationBarrier,
-        reloadExecutor: Executor
+        resourceManager: ResourceManager,
+        preparationsProfiler: ProfilerFiller,
+        reloadProfiler: ProfilerFiller,
+        backgroundExecutor: Executor,
+        gameExecutor: Executor
     ): CompletableFuture<Void> {
-        val manager = currentReload.resourceManager()
-        val resources = manager.listResources("fonts") { FontRepository.isFont(it) }.keys
+        val resources = resourceManager.listResources("fonts") { FontRepository.isFont(it) }.keys
         LOGGER.info(
             "[TextReloadListener] reload start: discovered {} font resource(s) {}; fontsReady(before)={}",
             resources.size, resources, FontRepository.isFontsReady()
         )
 
-        val futures = resources.map { loadFont(it, taskExecutor) }.toTypedArray()
+        val futures = resources.map { loadFont(it, backgroundExecutor) }.toTypedArray()
         val all = CompletableFuture.allOf(*futures)
         all.whenComplete { _, error ->
             if (error != null) {
@@ -67,7 +70,7 @@ object TextReloadListener : PreparableReloadListener {
         }
     }
 
-    private fun loadFont(resource: Identifier, taskExecutor: Executor): CompletableFuture<Void> =
+    private fun loadFont(resource: ResourceLocation, taskExecutor: Executor): CompletableFuture<Void> =
         CompletableFuture.runAsync({
             try {
                 LOGGER.info("[TextReloadListener] loading font face '{}'", resource)

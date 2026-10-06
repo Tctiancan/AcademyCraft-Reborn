@@ -2,7 +2,7 @@ package org.academy.api.client.render.shader.pipeline;
 
 import com.mojang.blaze3d.shaders.ShaderSource;
 import com.mojang.blaze3d.shaders.ShaderType;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
@@ -21,15 +21,15 @@ public final class DynamicShaderSource implements ShaderSource {
     /**
      * 注册源码，返回其唯一 Identifier（内容哈希，相同源码去重）。
      */
-    public Identifier register(String source) {
+    public ResourceLocation register(String source) {
         var path = "graph/" + sha256(source);
         sources.put(path, source);
-        return Identifier.fromNamespaceAndPath("academy", path);
+        return ResourceLocation.fromNamespaceAndPath("academy", path);
     }
 
     @Override
     @Nullable
-    public String get(Identifier id, ShaderType type) {
+    public String get(ResourceLocation id, ShaderType type) {
         return sources.get(id.getPath());
     }
 

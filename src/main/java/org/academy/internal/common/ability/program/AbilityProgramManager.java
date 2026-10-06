@@ -13,7 +13,7 @@ import io.netty.handler.codec.EncoderException;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.Mth;
@@ -70,7 +70,7 @@ public final class AbilityProgramManager {
     private static final Map<UUID, Long> LAST_EXECUTION_SEQUENCE = new HashMap<>();
     private static final Map<LoopExecutionKey, Long> LOOP_EXECUTION_COUNTS = new HashMap<>();
     private static final Map<LoopExecutionKey, Long> LAST_TRACE_TICK = new HashMap<>();
-    private static final Map<Identifier, CategoryExecutionAdapter> EXECUTION_ADAPTERS = Map.of(
+    private static final Map<ResourceLocation, CategoryExecutionAdapter> EXECUTION_ADAPTERS = Map.of(
             AcceleratorProgramNodeCatalog.ACCELERATOR,
             AbilityProgramManager::executeAccelerator,
             AeromanipProgramNodeCatalog.AEROMANIP,
@@ -97,14 +97,14 @@ public final class AbilityProgramManager {
         MisakaNetworkServer.NETWORK_MANAGER.register(Server.class);
     }
 
-    public static boolean isSupportedCategory(@Nullable Identifier category) {
+    public static boolean isSupportedCategory(@Nullable ResourceLocation category) {
         return category != null
                 && !category.equals(AcademyCraft.academy(AbilityCategoryNames.LEVEL0))
                 && AbilityProgramDefinitions.find(category) != null;
     }
 
     static boolean compatibleExtensionFingerprint(
-            Identifier category,
+            ResourceLocation category,
             @Nullable String remoteFingerprint
     ) {
         var definition = AbilityProgramDefinitions.find(category);
@@ -112,7 +112,7 @@ public final class AbilityProgramManager {
                 && definition.extensionFingerprint().equals(remoteFingerprint);
     }
 
-    static boolean validBook(Identifier category, @Nullable ProgramBook book) {
+    static boolean validBook(ResourceLocation category, @Nullable ProgramBook book) {
         if (book == null
                 || book.schemaVersion() != ProgramBook.CURRENT_SCHEMA_VERSION
                 || book.slots().size() != SLOT_COUNT) {
@@ -123,7 +123,7 @@ public final class AbilityProgramManager {
                 && slot.program().category().equals(category));
     }
 
-    static ProgramBook decodeStoredBook(Identifier category, @Nullable String encoded) {
+    static ProgramBook decodeStoredBook(ResourceLocation category, @Nullable String encoded) {
         if (encoded == null || encoded.isBlank() || encoded.length() > MAX_BOOK_BASE64_LENGTH) {
             return ProgramBook.empty(SLOT_COUNT);
         }
@@ -150,11 +150,11 @@ public final class AbilityProgramManager {
         return Base64.getEncoder().encodeToString(ProgramBookCodec.encode(book));
     }
 
-    static Set<Identifier> learnedCapabilities(Player playerData) {
+    static Set<ResourceLocation> learnedCapabilities(Player playerData) {
         if (playerData == null) return Set.of();
-        var capabilities = new HashSet<Identifier>();
+        var capabilities = new HashSet<ResourceLocation>();
         for (var skillId : playerData.getSkillDataMap().keySet()) {
-            var parsed = Identifier.tryParse(skillId);
+            var parsed = ResourceLocation.tryParse(skillId);
             if (parsed != null) capabilities.add(parsed);
         }
         return Set.copyOf(capabilities);
@@ -239,7 +239,7 @@ public final class AbilityProgramManager {
     }
 
     private static void sendRunTrace(
-            ServerPlayer player, Identifier category, int slot, long revision,
+            ServerPlayer player, ResourceLocation category, int slot, long revision,
             ProgramInvocationContext invocation, ProgramVmResult result
     ) {
         MisakaNetworkServer.send(player, new ResultPacket(category.toString(), slot,
@@ -270,7 +270,7 @@ public final class AbilityProgramManager {
         }
     }
 
-    private static ProgramBook book(Player playerData, Identifier category, UUID ownerId) {
+    private static ProgramBook book(Player playerData, ResourceLocation category, UUID ownerId) {
         var current = decodeStoredBook(
                 category, playerData.getAbilityProgramBook(category.toString()));
         if (!category.equals(PrecisionProgramNodeCatalog.MENTALOUT)) {
@@ -307,13 +307,13 @@ public final class AbilityProgramManager {
         return book.revision() == 0L && book.slots().stream().allMatch(ProgramBook.Slot::empty);
     }
 
-    private static void store(Player playerData, Identifier category, ProgramBook book) {
+    private static void store(Player playerData, ResourceLocation category, ProgramBook book) {
         playerData.setAbilityProgramBook(category.toString(), encodeStoredBook(book));
     }
 
-    private static @Nullable Identifier parseCategory(String raw) {
+    private static @Nullable ResourceLocation parseCategory(String raw) {
         if (raw == null || raw.isBlank() || raw.length() > MAX_CATEGORY_LENGTH) return null;
-        return Identifier.tryParse(raw);
+        return ResourceLocation.tryParse(raw);
     }
 
     private static void requireAddonThread(ServerPlayer player, int slot) {
@@ -391,7 +391,7 @@ public final class AbilityProgramManager {
                 status, result.nodeId, result.vmDiagnostic.name(), List.of());
     }
 
-    private static boolean ownsCategory(ServerPlayer player, Identifier category) {
+    private static boolean ownsCategory(ServerPlayer player, ResourceLocation category) {
         var current = AbilitySystemServer.getSystem(player)
                 .getPlayerAbilityCategory(player.getUUID());
         return current != null && current.getKey().equals(category);
@@ -409,7 +409,7 @@ public final class AbilityProgramManager {
         return true;
     }
 
-    private static void sync(ServerPlayer player, Identifier category, ProgramBook book) {
+    private static void sync(ServerPlayer player, ResourceLocation category, ProgramBook book) {
         MisakaNetworkServer.send(player, new SyncPacket(
                 category.toString(),
                 AbilityProgramDefinitions.require(category).extensionFingerprint(),
@@ -478,7 +478,7 @@ public final class AbilityProgramManager {
         );
     }
 
-    private static CategoryExecutionAdapter executionAdapter(Identifier category) {
+    private static CategoryExecutionAdapter executionAdapter(ResourceLocation category) {
         var builtin = EXECUTION_ADAPTERS.get(category);
         if (builtin != null) return builtin;
         return AbilityProgramDefinitions.find(category) == null ? null : (program, player, costMultiplier, slot, invocation) -> {
@@ -605,7 +605,7 @@ public final class AbilityProgramManager {
     }
 
     static void reportDeferredFailure(
-            ServerPlayer player, Identifier category, ProgramInvocationContext invocation,
+            ServerPlayer player, ResourceLocation category, ProgramInvocationContext invocation,
             int nodeId, ProgramVmDiagnostic diagnostic
     ) {
         if (player.connection == null || invocation.trigger().isPresent()) return;
@@ -1169,7 +1169,7 @@ public final class AbilityProgramManager {
                 ByteBufCodecs.STRING_UTF8.map(RequestPacket::new, packet -> packet.category);
         private final String category;
 
-        public RequestPacket(Identifier category) {
+        public RequestPacket(ResourceLocation category) {
             this(Objects.requireNonNull(category, "category").toString());
         }
 
@@ -1205,7 +1205,7 @@ public final class AbilityProgramManager {
         private final long expectedRevision;
         private final byte[] book;
 
-        public ImportPacket(Identifier category, long expectedRevision, byte[] book) {
+        public ImportPacket(ResourceLocation category, long expectedRevision, byte[] book) {
             this(Objects.requireNonNull(category, "category").toString(), expectedRevision, book);
         }
 
@@ -1255,7 +1255,7 @@ public final class AbilityProgramManager {
         private final byte[] program;
 
         public SavePacket(
-                Identifier category,
+                ResourceLocation category,
                 int slot,
                 long expectedRevision,
                 byte[] program
@@ -1311,7 +1311,7 @@ public final class AbilityProgramManager {
         private final int slot;
         private final long sequence;
 
-        public ExecutePacket(Identifier category, int slot, long sequence) {
+        public ExecutePacket(ResourceLocation category, int slot, long sequence) {
             this(Objects.requireNonNull(category, "category").toString(), slot, sequence);
         }
 
@@ -1398,7 +1398,7 @@ public final class AbilityProgramManager {
         }
 
         private static String fingerprintFor(@Nullable String rawCategory) {
-            var category = rawCategory == null ? null : Identifier.tryParse(rawCategory);
+            var category = rawCategory == null ? null : ResourceLocation.tryParse(rawCategory);
             var definition = category == null ? null : AbilityProgramDefinitions.find(category);
             return definition == null ? "" : definition.extensionFingerprint();
         }
@@ -1566,7 +1566,7 @@ public final class AbilityProgramManager {
 
     private record LoopExecutionKey(
             UUID ownerId,
-            Identifier category,
+            ResourceLocation category,
             int slot,
             UUID programId
     ) {

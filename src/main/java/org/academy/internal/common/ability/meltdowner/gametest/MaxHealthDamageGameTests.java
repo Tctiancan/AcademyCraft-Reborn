@@ -13,10 +13,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Rotation;
@@ -39,7 +39,7 @@ import java.util.UUID;
 /** Verify the actual projectile pipeline, not only the skill's formula helper. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MaxHealthDamageGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("max_health_damage_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("max_health_damage_function");
 
     private MaxHealthDamageGameTests() {
     }
@@ -53,7 +53,7 @@ public final class MaxHealthDamageGameTests {
     private static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(AcademyCraft.academy("max_health_damage"),
                 new TestEnvironmentDefinition.AllOf(List.of()));
-        var data = new TestData<>(environment, Identifier.withDefaultNamespace("empty"),
+        var data = new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
                 40, 0, true, Rotation.NONE, false, 1, 1, false, 16);
         event.registerTest(AcademyCraft.academy("max_health_damage_beam"), new DamageTest(data));
     }
@@ -68,7 +68,7 @@ public final class MaxHealthDamageGameTests {
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
         player.setGameMode(GameType.SURVIVAL);
         var beam = new HighSpeedElectronBeam(
-                org.academy.internal.common.world.entity.EntityTypes.HIGH_SPEED_ELECTRON_BEAM.get(), level);
+                org.academy.internal.common.world.entity.EntityType.HIGH_SPEED_ELECTRON_BEAM.get(), level);
         try {
             var system = AbilitySystemServer.getSystem(player);
             system.setPlayerAbilityCategory(player.getUUID(),
@@ -78,7 +78,7 @@ public final class MaxHealthDamageGameTests {
             if (!Skills.DISINTEGRATE.get().isEnabled(player)) Skills.DISINTEGRATE.get().toggle(player);
             helper.assertTrue(Skills.DISINTEGRATE.get().isEnabled(player),
                     "Test caster must have Disintegrate enabled before launching its beam");
-            var target = helper.spawn(EntityTypes.COW, 3, 2, 5);
+            var target = helper.spawn(EntityType.COW, 3, 2, 5);
             target.setNoAi(true);
             target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000.0);
             target.setHealth(1000.0f);
@@ -129,3 +129,4 @@ public final class MaxHealthDamageGameTests {
         }
     }
 }
+

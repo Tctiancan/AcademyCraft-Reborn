@@ -423,7 +423,7 @@ public final class ServerElectromasterProgramRuntime implements ElectromasterPro
     }
 
     private Map<String, Entity> controlled() {
-        return CONTROLLED.computeIfAbsent(player.getUUID(), _ -> new HashMap<>());
+        return CONTROLLED.computeIfAbsent(player.getUUID(), unused446 -> new HashMap<>());
     }
 
     private static String entityKey(Entity entity) {

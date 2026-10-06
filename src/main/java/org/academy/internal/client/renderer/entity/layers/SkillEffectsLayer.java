@@ -1,20 +1,22 @@
 package org.academy.internal.client.renderer.entity.layers;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.model.player.PlayerModel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.model.PlayerModel;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
 import org.academy.api.client.renderer.RendererManager;
 
-public class SkillEffectsLayer extends RenderLayer<AvatarRenderState, PlayerModel> {
-    public SkillEffectsLayer(RenderLayerParent<AvatarRenderState, PlayerModel> renderer) {
+public class SkillEffectsLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
+    public SkillEffectsLayer(RenderLayerParent<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> renderer) {
         super(renderer);
     }
 
     @Override
-    public void submit(PoseStack poseStack, SubmitNodeCollector submitNodeCollector, int packedLight, AvatarRenderState renderState, float yRot, float xRot) {
-        RendererManager.renderEffect(poseStack, submitNodeCollector, packedLight, renderState, yRot, xRot);
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
+                       AbstractClientPlayer player, float limbSwing, float limbSwingAmount,
+                       float partialTick, float ageInTicks, float netHeadYaw, float headPitch) {
+        RendererManager.renderEffect(poseStack, bufferSource, packedLight, netHeadYaw, headPitch);
     }
 }

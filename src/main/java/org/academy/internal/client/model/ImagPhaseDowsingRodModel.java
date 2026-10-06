@@ -1,22 +1,20 @@
 package org.academy.internal.client.model;
 
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import org.academy.internal.client.renderer.special.ImagPhaseDowsingRodRenderState;
 
-public final class ImagPhaseDowsingRodModel extends Model<ImagPhaseDowsingRodRenderState> {
+public final class ImagPhaseDowsingRodModel {
     public static final ImagPhaseDowsingRodModel MODEL = new ImagPhaseDowsingRodModel(
             createBodyLayer().bakeRoot()
     );
+    private final ModelPart root;
 
     private ImagPhaseDowsingRodModel(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        this.root = root;
     }
 
     public static LayerDefinition createBodyLayer() {

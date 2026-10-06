@@ -12,7 +12,7 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.EntityArgument;
-import net.minecraft.commands.arguments.IdentifierArgument;
+import net.minecraft.commands.arguments.ResourceLocationArgument;
 import net.minecraft.commands.arguments.coordinates.Coordinates;
 import net.minecraft.commands.arguments.coordinates.Vec3Argument;
 import net.minecraft.commands.arguments.selector.EntitySelector;
@@ -20,7 +20,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
@@ -85,7 +85,7 @@ final class TemporalTickDebugCommands {
                                 .executes(TemporalTickDebugCommands::inspectTargets)))
                 .then(LiteralArgumentBuilder.<CommandSourceStack>literal("position")
                         .then(RequiredArgumentBuilder
-                                .<CommandSourceStack, Identifier>argument(
+                                .<CommandSourceStack, ResourceLocation>argument(
                                         "dimension",
                                         IdentifierArgument.id()
                                 )
@@ -173,7 +173,7 @@ final class TemporalTickDebugCommands {
     private static LiteralArgumentBuilder<CommandSourceStack> addDimensionField() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("dimension")
                 .then(RequiredArgumentBuilder
-                        .<CommandSourceStack, Identifier>argument(
+                        .<CommandSourceStack, ResourceLocation>argument(
                                 "dimension",
                                 IdentifierArgument.id()
                         )
@@ -185,7 +185,7 @@ final class TemporalTickDebugCommands {
     private static LiteralArgumentBuilder<CommandSourceStack> addSphereField() {
         return LiteralArgumentBuilder.<CommandSourceStack>literal("sphere")
                 .then(RequiredArgumentBuilder
-                        .<CommandSourceStack, Identifier>argument(
+                        .<CommandSourceStack, ResourceLocation>argument(
                                 "dimension",
                                 IdentifierArgument.id()
                         )
@@ -501,7 +501,7 @@ final class TemporalTickDebugCommands {
 
     private static int help(CommandContext<CommandSourceStack> context) {
         var message = """
-                §e[AC Tick Debug Commands]§r
+                搂e[AC Tick Debug Commands]搂r
                 inspect entities <selector>
                 inspect position <dimension> <x y z>
                 field add entities <selector> <scale> [pause_source]
@@ -542,7 +542,7 @@ final class TemporalTickDebugCommands {
                 BlockPos.containing(source.getPosition()),
                 source.getEntity()
         );
-        var text = new StringBuilder("§e[AC Tick Controls]§r\n");
+        var text = new StringBuilder("搂e[AC Tick Controls]搂r\n");
         var count = 0;
         if (includeFields) {
             text.append("Fields:\n");
@@ -578,7 +578,7 @@ final class TemporalTickDebugCommands {
     static String format(TemporalTickDiagnostics snapshot) {
         var vanilla = snapshot.vanilla();
         var text = new StringBuilder()
-                .append("§e[AC Tick Debug]§r ")
+                .append("搂e[AC Tick Debug]搂r ")
                 .append(snapshot.dimension())
                 .append(" @ ")
                 .append(formatPosition(snapshot.position()))
@@ -586,7 +586,7 @@ final class TemporalTickDebugCommands {
                 .append(" clock=").append(snapshot.clockTime())
                 .append(" heartbeat=").append(snapshot.heartbeat())
                 .append(" runtime=")
-                .append(snapshot.runtimeStopped() ? "§cstopped§r" : "§arunning§r")
+                .append(snapshot.runtimeStopped() ? "搂cstopped搂r" : "搂arunning搂r")
                 .append('\n')
                 .append("Vanilla: rate=")
                 .append(String.format(Locale.ROOT, "%.2f", vanilla.tickRate()))
@@ -613,7 +613,7 @@ final class TemporalTickDebugCommands {
         text.append("):\n");
         for (var channel : snapshot.channels()) {
             text.append("  ")
-                    .append(channel.integrated() ? "§aactive§r " : "§8planned§r ")
+                    .append(channel.integrated() ? "搂aactive搂r " : "搂8planned搂r ")
                     .append(channel.channel()).append(' ')
                     .append(formatScale(channel.levelScale())).append('/')
                     .append(formatScale(channel.localScale()));
@@ -655,7 +655,7 @@ final class TemporalTickDebugCommands {
             TemporalTickDiagnostics.FieldState field
     ) {
         text.append("  ")
-                .append(field.matchesPosition() ? "§bmatch§r " : "§8outside§r ")
+                .append(field.matchesPosition() ? "搂bmatch搂r " : "搂8outside搂r ")
                 .append(field.debugControlled() ? "debug " : "owned ")
                 .append(field.id()).append(' ')
                 .append(formatScale(field.scale()))
@@ -689,7 +689,7 @@ final class TemporalTickDebugCommands {
     private static ServerLevel dimensionLevel(
             CommandContext<CommandSourceStack> context
     ) throws CommandSyntaxException {
-        var identifier = IdentifierArgument.getId(context, "dimension");
+        var identifier = ResourceLocationArgument.getId(context, "dimension");
         var level = context.getSource().getServer().getLevel(
                 ResourceKey.create(Registries.DIMENSION, identifier)
         );
@@ -835,7 +835,7 @@ final class TemporalTickDebugCommands {
     }
 
     private static String formatScale(double scale) {
-        if (scale == 0.0D) return "§cPAUSED§r";
+        if (scale == 0.0D) return "搂cPAUSED搂r";
         return String.format(Locale.ROOT, "%.3fx", scale);
     }
 

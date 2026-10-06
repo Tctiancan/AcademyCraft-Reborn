@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.program;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.ProgramExecutionContext;
 import org.academy.api.common.ability.program.ProgramInputView;
@@ -26,20 +26,20 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ProgramNodeExtensionIndexTest {
-    private static final Identifier CATEGORY = AcademyCraft.academy("accelerator");
-    private static final Identifier FIRST = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation CATEGORY = AcademyCraft.academy("accelerator");
+    private static final ResourceLocation FIRST = ResourceLocation.fromNamespaceAndPath(
             "extension_fixture", "program/query/first");
-    private static final Identifier SECOND = Identifier.fromNamespaceAndPath(
+    private static final ResourceLocation SECOND = ResourceLocation.fromNamespaceAndPath(
             "extension_fixture", "program/query/second");
 
     @Test
     void buildsDeterministicValidatedSnapshotIndependentOfCandidateOrder() {
         var first = new FixtureExtension("first");
         var second = new FixtureExtension("second");
-        var forward = new LinkedHashMap<Identifier, ProgramNodeType<?>>();
+        var forward = new LinkedHashMap<ResourceLocation, ProgramNodeType<?>>();
         forward.put(FIRST, first);
         forward.put(SECOND, second);
-        var reverse = new LinkedHashMap<Identifier, ProgramNodeType<?>>();
+        var reverse = new LinkedHashMap<ResourceLocation, ProgramNodeType<?>>();
         reverse.put(SECOND, second);
         reverse.put(FIRST, first);
 

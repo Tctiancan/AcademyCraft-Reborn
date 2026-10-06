@@ -50,7 +50,7 @@ public final class WorldLineOverlayPass {
         WORLD_QUEUE.add(new OverlayInstance(
                 poseSnapshot,
                 renderType,
-                (_, vertexConsumer) -> renderer.accept(matrixSnapshot, vertexConsumer)
+                (unused223, vertexConsumer) -> renderer.accept(matrixSnapshot, vertexConsumer)
         ));
     }
 

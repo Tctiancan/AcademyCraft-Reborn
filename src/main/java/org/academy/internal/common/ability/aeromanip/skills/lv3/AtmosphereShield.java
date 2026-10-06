@@ -6,7 +6,7 @@ import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundEvents;
@@ -63,9 +63,9 @@ import java.util.WeakHashMap;
 
 public final class AtmosphereShield extends Skill {
     private static final float[] REDUCTION = {0.20f, 0.28f, 0.35f};
-    private static final Identifier ATTACK_KNOCKBACK_MODIFIER_ID =
+    private static final ResourceLocation ATTACK_KNOCKBACK_MODIFIER_ID =
             AcademyCraft.academy("atmosphere_shield_attack_knockback");
-    private static final Identifier TRUE_RESISTANCE_MODIFIER_ID =
+    private static final ResourceLocation TRUE_RESISTANCE_MODIFIER_ID =
             AcademyCraft.academy("atmosphere_shield_true_resistance");
     private static final Map<UUID, StoppedProjectile> STOPPED_PROJECTILES = new HashMap<>();
 
@@ -102,7 +102,7 @@ public final class AtmosphereShield extends Skill {
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_N,
                         InputConstants.RELEASE, InputConstants.MOD_ALT));
-        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, _ -> Client.toggle());
+        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused347 -> Client.toggle());
     }
 
     @Override
@@ -401,7 +401,7 @@ public final class AtmosphereShield extends Skill {
 
         private static void syncModifier(
                 AttributeInstance attribute,
-                Identifier id,
+                ResourceLocation id,
                 double amount,
                 boolean enabled
         ) {

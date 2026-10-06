@@ -149,7 +149,7 @@ public final class AreaTeleportStart {
                                        BlockPos pos, BlockState state) {
             var restricted = player.blockActionRestricted(level, pos, player.gameMode.getGameModeForPlayer())
                     || state.getBlock() instanceof GameMasterBlock && !player.canUseGameMasterBlocks();
-            var event = new BreakBlockEvent(level, pos.immutable(), state, player);
+            var event = new BlockEvent.BreakEvent(level, pos.immutable(), state, player);
             event.setCanceled(restricted);
             NeoForge.EVENT_BUS.post(event);
             return !event.isCanceled();

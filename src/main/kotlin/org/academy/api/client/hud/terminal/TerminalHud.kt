@@ -1,21 +1,15 @@
 package org.academy.api.client.hud.terminal
 
-import com.mojang.blaze3d.GpuFormat
-import com.mojang.blaze3d.PrimitiveTopology
-import com.mojang.blaze3d.buffers.GpuBufferSlice
-import com.mojang.blaze3d.buffers.Std140Builder
-import com.mojang.blaze3d.buffers.Std140SizeCalculator
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.platform.Window
-import com.mojang.blaze3d.resource.RenderTargetDescriptor
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuTextureView
+import org.academy.api.client.render.DynamicUniform
+import org.academy.api.client.render.Std140Builder
+import org.academy.api.client.render.Std140SizeCalculator
 import net.minecraft.client.Minecraft
-import net.minecraft.client.input.CharacterEvent
-import net.minecraft.client.input.PreeditEvent
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
 import net.minecraft.util.Mth
+import org.academy.api.client.input.CharacterEvent
+import org.academy.api.client.input.PreeditEvent
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ScreenEvent
 import net.neoforged.neoforge.common.NeoForge
@@ -182,11 +176,11 @@ class TerminalHud private constructor() {
             val height = w.guiScaledHeight
             xPos = width / 2.0
             yPos = height / 2.0
-            GLFW.glfwSetCursorPos(w.handle(), w.width / 2.0, w.height / 2.0)
+            GLFW.glfwSetCursorPos(w.window, w.width / 2.0, w.height / 2.0)
             startXPos = m.xpos
             startYPos = m.ypos
             context.get().requestLayout()
-        } else GLFW.glfwSetCursorPos(w.handle(), startXPos, startYPos)
+        } else GLFW.glfwSetCursorPos(w.window, startXPos, startYPos)
     }
 
     @MainThread
@@ -216,51 +210,13 @@ class TerminalHud private constructor() {
     ) {
         if (!isActive) return
 
-        val desc = RenderTargetDescriptor(
-            width, height,
-            true, Vector4f(0f), GpuFormat.RGBA8_UNORM
-        )
-        val terminalTarget = Render.Buffers.getResourcePool().acquire(desc)
-
-        try {
-            uiContext.upload(terminalTarget, false)
-
-            val terminalView = terminalTarget.getColorTextureView() ?: return
-
-            val mc = Minecraft.getInstance()
-            val window = mc.window
-
-            val aspectRatio = window.width.toFloat() / window.height
-            val fovY = MathUtil.calculateVerticalFov(80.0, aspectRatio.toDouble()).toFloat()
-
-            val viewMatrix = calculateViewMatrix(window, fovY)
-            val dynamicTransformsSlice: GpuBufferSlice = createDynamicTransformsSlice(viewMatrix)
-            val projectionUBSlice: GpuBufferSlice = createProjectionUboSlice(fovY, aspectRatio)
-
-            val commandEncoder = RenderSystem.getDevice().createCommandEncoder()
-
-            commandEncoder.createRenderPass(
-                { "Blit Pass to $color $depth" },
-                color, Optional.empty(), depth, OptionalDouble.empty()
-            ).use { renderPass ->
-                renderPass.setPipeline(Render.RenderPipelines.IMAGE_STENCIL_PREMULTIPLIED_ALPHA)
-                renderPass.bindTexture(
-                    "Sampler0",
-                    terminalView,
-                    RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
-                )
-                renderPass.setUniform("Projection", projectionUBSlice)
-                renderPass.setUniform("DynamicTransforms", dynamicTransformsSlice)
-
-                renderPass.setVertexBuffer(0, Render.Buffers.getInstance().fsQuadUvColorVBSDC.slice())
-                val sequentialBuffer = RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS)
-                renderPass.setIndexBuffer(sequentialBuffer.getBuffer(6), sequentialBuffer.type())
-                renderPass.drawIndexed(6, 1, 0, 0, 0)
-            }
-            drewStencil.set(true)
-        } finally {
-            Render.Buffers.getResourcePool().release(desc, terminalTarget)
-        }
+        // C-stun: 1.21.1 首版略去终端 HUD 的离线合成与 3D 变换 GPU 渲染.
+        // 原实现依赖 26.2 专属 API (RenderTargetDescriptor / GpuFormat /
+        // Render.Buffers.getResourcePool / RenderSystem.getDevice().createCommandEncoder /
+        // RenderSystem.getSequentialBuffer 等), 在 1.21.1 均已被移除或重构.
+        // 保留方法签名以维持既有调用方兼容, 待后续迁移到 1.21.1 即时渲染时再落地.
+        @Suppress("UNUSED_PARAMETER")
+        Unit
     }
 
     private fun calculateViewMatrix(window: Window, fovY: Float): Matrix4f {
@@ -324,7 +280,7 @@ class TerminalHud private constructor() {
             }
 
             GLFW.glfwSetCursorPos(
-                Minecraft.getInstance().window.handle(),
+                Minecraft.getInstance().window.window,
                 Mth.clamp(event.xpos, 0.0, window.width.toDouble()),
                 Mth.clamp(event.ypos, 0.0, window.height.toDouble())
             )
@@ -348,7 +304,7 @@ class TerminalHud private constructor() {
             }
             if (event.action == InputConstants.PRESS) pendingToggle = null
         }
-        if (isActive && Minecraft.getInstance().gui.screen() == null) {
+        if (isActive && Minecraft.getInstance().screen == null) {
             if (InputSystem.matchesKeyBinding(
                     KEY_NAME_TOGGLE,
                     InputSystem.InputType.MOUSE,
@@ -433,11 +389,6 @@ class TerminalHud private constructor() {
             return
         }
         if (event.action == InputConstants.PRESS) {
-            val vanillaEvent = net.minecraft.client.input.KeyEvent(
-                event.key,
-                event.scanCode,
-                event.modifiers
-            )
             if (event.key == InputConstants.KEY_ESCAPE) {
                 val routed = KeyEvent(
                     EventType.KEY_PRESSED,
@@ -454,7 +405,7 @@ class TerminalHud private constructor() {
                 event.setCanceled(true)
                 return
             }
-            if (Minecraft.getInstance().options.keyInventory.matches(vanillaEvent)) {
+            if (Minecraft.getInstance().options.keyInventory.matches(event.key, event.scanCode)) {
                 toggleActive()
                 event.setCanceled(true)
                 return
@@ -831,21 +782,6 @@ class TerminalHud private constructor() {
             val terminal = INSTANCE
             terminal.config.blurRadius = value.coerceIn(0f, 20f)
             AcademyCraftClient.Config.INSTANCE.save()
-        }
-
-        private fun createDynamicTransformsSlice(viewMatrix: Matrix4f): GpuBufferSlice {
-            return RenderSystem.getDynamicUniforms()
-                .writeTransform(
-                    viewMatrix,
-                    Vector4f(1.0f, 1.0f, 1.0f, 1.0f),
-                    Vector3f(),
-                    Matrix4f()
-                )
-        }
-
-        private fun createProjectionUboSlice(fovY: Float, aspectRatio: Float): GpuBufferSlice {
-            val projectionMatrix = Matrix4f().perspective(fovY, aspectRatio, 1.0f, 1000.0f)
-            return Render.Buffers.getInstance().getProjectionUB(projectionMatrix).slice()
         }
     }
 }

@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.drawable
+﻿package org.academy.api.client.gui.drawable
 
-import net.minecraft.util.ARGB
+import net.minecraft.util.FastColor
 import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.widget.Widget
 
@@ -27,7 +27,7 @@ internal inline fun drawPaddedContent(
     val contentHeight = widget.height - lp.paddingTop - lp.paddingBottom
     if (contentWidth <= 0 || contentHeight <= 0) return
 
-    val alpha = (ARGB.alpha(tintColor) / 255.0f) * widget.getAbsoluteAlpha()
+    val alpha = (FastColor.ARGB32.alpha(tintColor) / 255.0f) * widget.getAbsoluteAlpha()
     if (alpha <= 0) return
 
     context.pose().pushPose()
@@ -36,9 +36,9 @@ internal inline fun drawPaddedContent(
         context,
         contentWidth,
         contentHeight,
-        ARGB.red(tintColor) / 255.0f,
-        ARGB.green(tintColor) / 255.0f,
-        ARGB.blue(tintColor) / 255.0f,
+        FastColor.ARGB32.red(tintColor) / 255.0f,
+        FastColor.ARGB32.green(tintColor) / 255.0f,
+        FastColor.ARGB32.blue(tintColor) / 255.0f,
         alpha
     )
     context.pose().popPose()

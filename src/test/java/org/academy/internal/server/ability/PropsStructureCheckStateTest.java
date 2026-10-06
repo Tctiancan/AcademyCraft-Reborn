@@ -1,13 +1,13 @@
 package org.academy.internal.server.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class PropsStructureCheckStateTest {
-    private static final Identifier OVERWORLD = Identifier.withDefaultNamespace("overworld");
-    private static final Identifier NETHER = Identifier.withDefaultNamespace("the_nether");
+    private static final ResourceLocation OVERWORLD = ResourceLocation.withDefaultNamespace("overworld");
+    private static final ResourceLocation NETHER = ResourceLocation.withDefaultNamespace("the_nether");
 
     @Test
     void idlePlayersDoNotRepeatTheSameScanEverySecond() {

@@ -3,6 +3,7 @@ package org.academy.internal.common.world.entity.structure;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -12,8 +13,6 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.MoverType;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -574,19 +573,21 @@ public final class BlockStructureEntity extends Entity
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        structure = BlockStructureSnapshot.load(input.childOrEmpty("academy_structure"));
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        var structureTag = tag.getCompound("academy_structure");
+        structure = BlockStructureSnapshot.load(structureTag, level().registryAccess());
         collisionGeometry = BlockStructureCollisionGeometry.create(structure);
         entityData.set(STRUCTURE, structure);
-        entityData.set(RESTORE_WHEN_SETTLED,
-                input.getBooleanOr("academy_restore_when_settled", false));
+        entityData.set(RESTORE_WHEN_SETTLED, tag.getBoolean("academy_restore_when_settled"));
         refreshStructureBounds();
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        structure.save(output.child("academy_structure"));
-        output.putBoolean("academy_restore_when_settled",
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        var structureTag = new CompoundTag();
+        structure.save(structureTag, level().registryAccess());
+        tag.put("academy_structure", structureTag);
+        tag.putBoolean("academy_restore_when_settled",
                 entityData.get(RESTORE_WHEN_SETTLED));
     }
 

@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 public final class MentalControlRuntime {
-    static final Identifier IMPRESSION_GUARD_SOURCE = AcademyCraft.academy("impression_guard_target");
+    static final ResourceLocation IMPRESSION_GUARD_SOURCE = AcademyCraft.academy("impression_guard_target");
     static final int IMPRESSION_GUARD_PRIORITY = Integer.MIN_VALUE;
     static final long IMPRESSION_GUARD_DURATION_TICKS = 100L;
     static final long RETALIATION_DURATION_TICKS = 100L;
@@ -158,7 +158,7 @@ public final class MentalControlRuntime {
         return handle;
     }
 
-    public static void registerAdapter(Identifier id, int priority, MentalControlAdapter adapter) {
+    public static void registerAdapter(ResourceLocation id, int priority, MentalControlAdapter adapter) {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(adapter, "adapter");
         synchronized (ADAPTER_LOCK) {
@@ -1068,7 +1068,7 @@ public final class MentalControlRuntime {
     public static void releaseByControllerSourceAndSubject(
             MinecraftServer server,
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             UUID subjectId
     ) {
         Objects.requireNonNull(server, "server");
@@ -1571,7 +1571,7 @@ public final class MentalControlRuntime {
         }
     }
 
-    record AdapterRegistration(Identifier id, int priority, MentalControlAdapter adapter) {
+    record AdapterRegistration(ResourceLocation id, int priority, MentalControlAdapter adapter) {
     }
 
     record CapabilityCandidate(
@@ -1600,7 +1600,7 @@ public final class MentalControlRuntime {
     }
 
     private record AdapterSelection(
-            Identifier id,
+            ResourceLocation id,
             int priority,
             ControlSupport support,
             MentalControlAdapter adapter
@@ -1833,12 +1833,12 @@ public final class MentalControlRuntime {
     record LeaseInput(
             UUID controllerId,
             UUID subjectId,
-            Identifier source,
+            ResourceLocation source,
             UUID scopeId,
             int priority,
             long expiresAt,
-            Identifier controllerDimension,
-            Identifier subjectDimension,
+            ResourceLocation controllerDimension,
+            ResourceLocation subjectDimension,
             EnumMap<ControlDomain, ControlDirective> directives,
             Map<ControlCapability, AdapterSelection> selections,
             @Nullable UUID guardianRelationLeaseId
@@ -1857,12 +1857,12 @@ public final class MentalControlRuntime {
         LeaseInput(
                 UUID controllerId,
                 UUID subjectId,
-                Identifier source,
+                ResourceLocation source,
                 UUID scopeId,
                 int priority,
                 long expiresAt,
-                Identifier controllerDimension,
-                Identifier subjectDimension,
+                ResourceLocation controllerDimension,
+                ResourceLocation subjectDimension,
                 EnumMap<ControlDomain, ControlDirective> directives
         ) {
             this(
@@ -1883,11 +1883,11 @@ public final class MentalControlRuntime {
         LeaseInput(
                 UUID controllerId,
                 UUID subjectId,
-                Identifier source,
+                ResourceLocation source,
                 int priority,
                 long expiresAt,
-                Identifier controllerDimension,
-                Identifier subjectDimension,
+                ResourceLocation controllerDimension,
+                ResourceLocation subjectDimension,
                 EnumMap<ControlDomain, ControlDirective> directives
         ) {
             this(
@@ -1908,11 +1908,11 @@ public final class MentalControlRuntime {
         LeaseInput(
                 UUID controllerId,
                 UUID subjectId,
-                Identifier source,
+                ResourceLocation source,
                 int priority,
                 long expiresAt,
-                Identifier controllerDimension,
-                Identifier subjectDimension,
+                ResourceLocation controllerDimension,
+                ResourceLocation subjectDimension,
                 EnumMap<ControlDomain, ControlDirective> directives,
                 @Nullable UUID guardianRelationLeaseId
         ) {
@@ -1936,10 +1936,10 @@ public final class MentalControlRuntime {
             UUID id,
             UUID controllerId,
             UUID subjectId,
-            Identifier source,
+            ResourceLocation source,
             UUID scopeId,
-            Identifier controllerDimension,
-            Identifier subjectDimension,
+            ResourceLocation controllerDimension,
+            ResourceLocation subjectDimension,
             Set<UUID> referencedTargets,
             @Nullable UUID guardianRelationLeaseId
     ) {
@@ -2137,7 +2137,7 @@ public final class MentalControlRuntime {
 
         synchronized RemovalResult removeByControllerSourceSubject(
                 UUID controllerId,
-                Identifier source,
+                ResourceLocation source,
                 UUID subjectId
         ) {
             var ids = leases.values().stream()
@@ -2273,7 +2273,8 @@ public final class MentalControlRuntime {
 
         private void detach(DomainLease lease, RemovalResult replacement) {
             // A same-controller/source/scope command replaces its prior request as one unit.
-            // This prevents a permanent multi-domain lease from surviving forever with only a
+            // This prevents a permanent multi-domain lease from surviving
+// forever with only a
             // subset of its requested domains after one domain has been refreshed.
             removeInto(lease.leaseId(), replacement);
         }
@@ -2356,7 +2357,7 @@ public final class MentalControlRuntime {
     private record EffectiveDirective(
             UUID leaseId,
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             UUID scopeId,
             int priority,
             long expiresAt,
@@ -2396,7 +2397,7 @@ public final class MentalControlRuntime {
     private record DomainLease(
             UUID leaseId,
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             UUID scopeId,
             int priority,
             long sequence,
@@ -2405,7 +2406,7 @@ public final class MentalControlRuntime {
     ) {
     }
 
-    private record ReplacementKey(UUID controllerId, Identifier source, UUID scopeId) {
+    private record ReplacementKey(UUID controllerId, ResourceLocation source, UUID scopeId) {
     }
 
     private record ExpiryEntry(long expiresAt, long sequence, UUID leaseId)

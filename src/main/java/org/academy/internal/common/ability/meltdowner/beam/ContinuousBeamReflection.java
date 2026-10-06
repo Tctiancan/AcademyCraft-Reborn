@@ -28,7 +28,8 @@ public final class ContinuousBeamReflection {
         // participate in continuous beams just like they do in one-shot linear attacks.
         var candidate = LinearReflectionResolver.findCandidate(level, segment, payload);
         // Preserve the paid Vector Reflection lease when its CP has fallen below the threshold
-        // required to start a new reflection.
+        // required to start a
+// new reflection.
         if (candidate.isEmpty() && leasedReflectorId != null) {
             candidate = LinearReflectionResolver.findCandidate(
                     level,

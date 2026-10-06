@@ -1,6 +1,6 @@
 package org.academy.api.common.registries;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.academy.api.common.ability.AbilityCategory;
@@ -18,7 +18,7 @@ public final class AcademyRegistrations {
     private boolean bound;
 
     private AcademyRegistrations(String modId) {
-        Identifier.fromNamespaceAndPath(Objects.requireNonNull(modId), "content");
+        ResourceLocation.fromNamespaceAndPath(Objects.requireNonNull(modId), "content");
         categories = DeferredRegister.create(Registries.Keys.ABILITY_CATEGORIES, modId);
         skills = DeferredRegister.create(Registries.Keys.SKILLS, modId);
         damageProfiles = DeferredRegister.create(Registries.Keys.DAMAGE_PROFILES, modId);

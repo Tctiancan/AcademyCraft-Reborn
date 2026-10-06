@@ -1,7 +1,7 @@
-package org.academy.api.client.gui.text.glyph.msdf
+﻿package org.academy.api.client.gui.text.glyph.msdf
 
 import lovely.cane.jmsdfgen.*
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.text.atlas.AtlasPage
@@ -17,14 +17,14 @@ import java.util.concurrent.Executor
 import java.util.concurrent.locks.ReentrantLock
 
 class MsdfAtlas(
-    private val fontId: Identifier,
+    private val fontId: ResourceLocation,
     private val pageSize: Int,
     private val glyphSize: Int,
     private val pxRange: Float,
     private val padding: Int,
     private val executor: Executor
 ) {
-    constructor(fontId: Identifier, pageSize: Int, glyphSize: Int, pxRange: Float, executor: Executor) :
+    constructor(fontId: ResourceLocation, pageSize: Int, glyphSize: Int, pxRange: Float, executor: Executor) :
             this(fontId, pageSize, glyphSize, pxRange, 1, executor)
 
     private val pages = ArrayList<AtlasPage>()

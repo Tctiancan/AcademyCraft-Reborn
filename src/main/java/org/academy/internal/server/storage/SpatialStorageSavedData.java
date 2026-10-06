@@ -1,14 +1,16 @@
 package org.academy.internal.server.storage;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mojang.datafixers.util.Pair;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
+import net.minecraft.nbt.Tag;
+import net.minecraft.resources.RegistryOps;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
-import net.neoforged.neoforge.transfer.item.ItemResource;
 import org.academy.AcademyCraft;
 
 import java.util.ArrayList;
@@ -23,58 +25,71 @@ import java.util.function.ToLongBiFunction;
 
 /** Contents belong to the world, and survive transfers of the physical unit between players. */
 public final class SpatialStorageSavedData extends SavedData {
-    private record Entry(ItemResource resource, long count) {
-        private static final Codec<Entry> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                ItemResource.CODEC.fieldOf("resource").forGetter(Entry::resource),
-                Codec.LONG.validate(value -> value > 0 ? DataResult.success(value)
-                        : DataResult.error(() -> "Storage count must be positive")).fieldOf("count").forGetter(Entry::count)
-        ).apply(instance, Entry::new));
-    }
-
-    private record Unit(UUID id, List<Entry> entries) {
-        private static final Codec<Unit> CODEC = RecordCodecBuilder.create(instance -> instance.group(
-                UUIDUtil.CODEC.fieldOf("id").forGetter(Unit::id),
-                Entry.CODEC.listOf().fieldOf("items").forGetter(Unit::entries)
-        ).apply(instance, Unit::new));
-    }
-
-    public static final Codec<SpatialStorageSavedData> CODEC = Unit.CODEC.listOf().xmap(
-            SpatialStorageSavedData::new, SpatialStorageSavedData::units);
-    public static final SavedDataType<SpatialStorageSavedData> TYPE = new SavedDataType<>(
-            AcademyCraft.academy("spatial_storage"), SpatialStorageSavedData::new, CODEC);
-    private final Map<UUID, LinkedHashMap<ItemResource, Long>> contents = new LinkedHashMap<>();
+    private static final SavedData.Factory<SpatialStorageSavedData> FACTORY = new SavedData.Factory<>(
+            SpatialStorageSavedData::new, SpatialStorageSavedData::load, null);
+    private final Map<UUID, LinkedHashMap<ItemStack, Long>> contents = new LinkedHashMap<>();
     private final Set<UUID> transferring = new HashSet<>();
 
     public SpatialStorageSavedData() {
     }
 
-    private SpatialStorageSavedData(List<Unit> units) {
-        for (var unit : units) {
-            var items = new LinkedHashMap<ItemResource, Long>();
-            for (var entry : unit.entries()) items.merge(entry.resource(), entry.count(), Math::addExact);
-            contents.put(unit.id(), items);
-        }
-    }
-
     public static SpatialStorageSavedData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return server.overworld().getDataStorage().computeIfAbsent(
+                FACTORY, AcademyCraft.academy("spatial_storage").toString());
     }
 
-    private List<Unit> units() {
-        return contents.entrySet().stream().map(unit -> new Unit(unit.getKey(),
-                unit.getValue().entrySet().stream().map(e -> new Entry(e.getKey(), e.getValue())).toList()))
-                .toList();
+    public static SpatialStorageSavedData load(CompoundTag tag, HolderLookup.Provider registries) {
+        var data = new SpatialStorageSavedData();
+        var ops = RegistryOps.create(NbtOps.INSTANCE, registries);
+        var contentsTag = tag.getList("contents", Tag.TAG_COMPOUND);
+        for (var unitTagRaw : contentsTag) {
+            var unitTag = (CompoundTag) unitTagRaw;
+            var id = unitTag.getUUID("id");
+            var items = new LinkedHashMap<ItemStack, Long>();
+            var entriesTag = unitTag.getList("items", Tag.TAG_COMPOUND);
+            for (var entryTagRaw : entriesTag) {
+                var entryTag = (CompoundTag) entryTagRaw;
+                var resource = ItemStack.OPTIONAL_CODEC.decode(ops, entryTag.get("resource"))
+                        .result().map(Pair::getFirst).orElse(ItemStack.EMPTY);
+                long count = entryTag.getLong("count");
+                if (!resource.isEmpty() && count > 0) items.merge(resource, count, Math::addExact);
+            }
+            if (!items.isEmpty()) data.contents.put(id, items);
+        }
+        return data;
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        var ops = RegistryOps.create(NbtOps.INSTANCE, registries);
+        var contentsTag = new ListTag();
+        for (var unit : contents.entrySet()) {
+            var unitTag = new CompoundTag();
+            unitTag.putUUID("id", unit.getKey());
+            var entriesTag = new ListTag();
+            for (var entry : unit.getValue().entrySet()) {
+                var entryTag = new CompoundTag();
+                ItemStack.OPTIONAL_CODEC.encodeStart(ops, entry.getKey())
+                        .result().ifPresent(resource -> entryTag.put("resource", resource));
+                entryTag.putLong("count", entry.getValue());
+                entriesTag.add(entryTag);
+            }
+            unitTag.put("items", entriesTag);
+            contentsTag.add(unitTag);
+        }
+        tag.put("contents", contentsTag);
+        return tag;
     }
 
     public void store(UUID id, ItemStack stack) {
         if (stack.isEmpty()) return;
         contents.computeIfAbsent(id, ignored -> new LinkedHashMap<>())
-                .merge(ItemResource.of(stack), (long) stack.getCount(), Math::addExact);
+                .merge(stack.copyWithCount(1), (long) stack.getCount(), Math::addExact);
         setDirty();
     }
 
     /** Consume a single matching item, used when a harvesting effect replants its crop. */
-    public boolean consumeOne(UUID id, Predicate<ItemResource> predicate) {
+    public boolean consumeOne(UUID id, Predicate<ItemStack> predicate) {
         var items = contents.get(id);
         if (items == null || transferring.contains(id)) return false;
         var iterator = items.entrySet().iterator();
@@ -98,7 +113,7 @@ public final class SpatialStorageSavedData extends SavedData {
     }
 
     /** The destination returns the accepted amount; refused contents stay in this unit. */
-    public long transfer(UUID id, int maxTypes, ToLongBiFunction<ItemResource, Long> destination) {
+    public long transfer(UUID id, int maxTypes, ToLongBiFunction<ItemStack, Long> destination) {
         var items = contents.get(id);
         if (items == null || !transferring.add(id)) return 0;
         long total = 0;

@@ -8,8 +8,6 @@ import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.academy.api.common.ability.darkmatter.DarkmatterBlockProfile;
 
 /**
@@ -32,21 +30,21 @@ public final class DarkmatterBlockEntity extends BlockEntity {
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
-        output.putInt("hardness_milli", Math.round(profile.hardness() * 1_000.0f));
-        output.putInt("explosion_resistance_milli",
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
+        tag.putInt("hardness_milli", Math.round(profile.hardness() * 1_000.0f));
+        tag.putInt("explosion_resistance_milli",
                 Math.round(profile.explosionResistance() * 1_000.0f));
-        output.putBoolean("gravity", profile.gravity());
+        tag.putBoolean("gravity", profile.gravity());
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         profile = new DarkmatterBlockProfile(
-                input.getIntOr("hardness_milli", 5_000) / 1_000.0f,
-                input.getIntOr("explosion_resistance_milli", 30_000) / 1_000.0f,
-                input.getBooleanOr("gravity", false));
+                (tag.contains("hardness_milli", CompoundTag.TAG_INT) ? tag.getInt("hardness_milli") : 5_000) / 1_000.0f,
+                (tag.contains("explosion_resistance_milli", CompoundTag.TAG_INT) ? tag.getInt("explosion_resistance_milli") : 30_000) / 1_000.0f,
+                tag.contains("gravity", CompoundTag.TAG_BYTE) ? tag.getBoolean("gravity") : false);
     }
 
     @Override

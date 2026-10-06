@@ -1,9 +1,9 @@
-package org.academy.internal.client.app.music.data
+﻿package org.academy.internal.client.app.music.data
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 
 data class MusicInfo(
-    val icon: Identifier,
+    val icon: ResourceLocation,
     val source: MusicSource,
     val name: String,
     val subtitle: String,

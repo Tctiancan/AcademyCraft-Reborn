@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.teleport.chunk;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -141,7 +141,7 @@ public record ChunkLeapSelection(ResourceKey<Level> dimension, int originChunkX,
     }
 
     public static ResourceKey<Level> dimensionKey(String id) {
-        var parsed = Identifier.tryParse(id);
+        var parsed = ResourceLocation.tryParse(id);
         return parsed == null ? Level.OVERWORLD : ResourceKey.create(Registries.DIMENSION, parsed);
     }
 }

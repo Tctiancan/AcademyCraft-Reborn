@@ -70,7 +70,8 @@ public final class ChunkLeapGodView {
         altitude = DEFAULT_HEIGHT;
         pitch = DEFAULT_PITCH;
         active = true;
-        // Hide the HUD for the duration, the same way F1 does, so the terrain is not covered by bars.
+        // Hide the HUD
+// for the duration, the same way F1 does, so the terrain is not covered by bars.
         var hud = Minecraft.getInstance().gui.hud;
         hudWasHidden = hud.isHidden();
         if (!hudWasHidden) hud.toggle();
@@ -91,7 +92,8 @@ public final class ChunkLeapGodView {
 
     public static void leave() {
         active = false;
-        // Give the HUD flag back exactly as it was found, including if the player had it hidden already.
+        // Give the HUD flag back exactly as it was found, including
+// if the player had it hidden already.
         var hud = Minecraft.getInstance().gui.hud;
         if (hud.isHidden() != hudWasHidden) hud.toggle();
     }

@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.internal.common.ability.development.AbilityDevelopmentProfiles;
@@ -11,7 +11,7 @@ public final class Mentalout extends AbilityCategory {
     }
 
     @Override
-    public Identifier getDeveloperIcon() {
+    public ResourceLocation getDeveloperIcon() {
         return R.textures.ability.mentalout.icon;
     }
 

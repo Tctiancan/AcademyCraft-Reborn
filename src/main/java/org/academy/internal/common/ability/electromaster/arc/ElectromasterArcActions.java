@@ -18,7 +18,7 @@ public final class ElectromasterArcActions {
     public static boolean strikeChain(ServerLevel level, ServerPlayer attacker, SkillDamageSource source,
                                       LivingEntity origin, LivingEntity target, float damage) {
         var payload = LinearAttackPayload.builder(attacker, source.getSkill(), source.withElectricalChargePoints(1), 0.125f)
-                .damage(_ -> damage)
+                .damage(unused438 -> damage)
                 .targetFilter(entity -> entity instanceof LivingEntity && entity != origin)
                 .outboundTargetFilter(entity -> !TeamRelations.areAllied(attacker, entity))
                 .build();

@@ -83,9 +83,9 @@ public final class PneumaticGrasp extends Skill {
         AcademyCraftConfig.registerTypeHandler(key, Client.Config.Action.INSTANCE);
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(key);
         InputSystem.addKeyBinding(Client.KEY_NAME_START, Client.CONFIG.getKeyBinding(Client.KEY_NAME_START,
-                InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, 0)), _ -> Client.start());
+                InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, 0)), unused336 -> Client.start());
         InputSystem.addKeyBinding(Client.KEY_NAME_STOP, Client.CONFIG.getKeyBinding(Client.KEY_NAME_STOP,
-                InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.RELEASE, 0)), _ -> Client.stop());
+                InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.RELEASE, 0)), unused337 -> Client.stop());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(AbilityCategories.AEROMANIP.get(),
                 new AbilitySystemClient.SkillInfo(Skills.PNEUMATIC_GRASP.get(), List.of(FlowSense.Client.SKILL_INFO),
                         R.textures.pneumatic_grasp_icon, 75, 72));
@@ -223,11 +223,11 @@ public final class PneumaticGrasp extends Skill {
                 activeTicks++;
                 if (activeTicks % 10 == 0 && !skill.executeContinuousWithResource(
                         player,
-                        _ -> 10.0f,
-                        _ -> Math.max(0.0f, AeromanipConfig.skillFloat(
+                        unused338 -> 10.0f,
+                        unused339 -> Math.max(0.0f, AeromanipConfig.skillFloat(
                                 player, SkillNames.PNEUMATIC_GRASP,
                                 "compressedAirPerInterval", 2.0f)),
-                        (_, _) -> { },
+                        (unused340, unused341) -> { },
                         true)) {
                     end();
                     return;
@@ -236,9 +236,9 @@ public final class PneumaticGrasp extends Skill {
                         && living.onGround() && activeTicks % 5 == 0
                         && !skill.executeContinuousWithResource(
                         player,
-                        _ -> 5.0f,
-                        _ -> 2.0f,
-                        (_, _) -> { },
+                        unused342 -> 5.0f,
+                        unused343 -> 2.0f,
+                        (unused344, unused345) -> { },
                         true)) {
                     end();
                     return;

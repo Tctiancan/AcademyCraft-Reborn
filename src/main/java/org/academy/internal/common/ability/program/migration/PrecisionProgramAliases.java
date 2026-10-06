@@ -6,7 +6,7 @@ import org.academy.internal.common.ability.program.registry.PrecisionProgramNode
 
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramBook;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -23,11 +23,11 @@ import java.util.Map;
  */
 public final class PrecisionProgramAliases {
     private static final Map<PrecisionGraph.NodeKind, Alias> BY_KIND;
-    private static final Map<Identifier, Alias> BY_CANONICAL_TYPE;
+    private static final Map<ResourceLocation, Alias> BY_CANONICAL_TYPE;
 
     static {
         var byKind = new EnumMap<PrecisionGraph.NodeKind, Alias>(PrecisionGraph.NodeKind.class);
-        var byCanonical = new HashMap<Identifier, Alias>();
+        var byCanonical = new HashMap<ResourceLocation, Alias>();
         register(byKind, byCanonical, new Alias(
                 PrecisionGraph.NodeKind.ENTITY_TO_SET,
                 CommonProgramNodeIds.collection("entity", "singleton"),
@@ -69,7 +69,7 @@ public final class PrecisionProgramAliases {
         return BY_KIND.get(kind);
     }
 
-    public static @Nullable Alias canonical(Identifier type) {
+    public static @Nullable Alias canonical(ResourceLocation type) {
         return BY_CANONICAL_TYPE.get(type);
     }
 
@@ -143,7 +143,7 @@ public final class PrecisionProgramAliases {
 
     private static void register(
             Map<PrecisionGraph.NodeKind, Alias> byKind,
-            Map<Identifier, Alias> byCanonical,
+            Map<ResourceLocation, Alias> byCanonical,
             Alias alias
     ) {
         if (byKind.putIfAbsent(alias.legacyKind(), alias) != null
@@ -154,7 +154,7 @@ public final class PrecisionProgramAliases {
 
     public record Alias(
             PrecisionGraph.NodeKind legacyKind,
-            Identifier canonicalType,
+            ResourceLocation canonicalType,
             Map<String, String> inputPorts,
             Map<String, String> outputPorts
     ) {

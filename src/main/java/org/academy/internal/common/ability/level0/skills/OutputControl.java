@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.util.Mth;
@@ -56,9 +56,9 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public final class OutputControl extends Skill {
-    private static final Identifier MOVEMENT_SCALE_ID =
+    private static final ResourceLocation MOVEMENT_SCALE_ID =
             AcademyCraft.academy("output_control.movement_speed");
-    private static final Identifier JUMP_SCALE_ID =
+    private static final ResourceLocation JUMP_SCALE_ID =
             AcademyCraft.academy("output_control.jump_height");
     private static final float DEFAULT_VALUE = 1.0f;
     private static final double SPRINT_SPEED_MULTIPLIER = 1.3;
@@ -269,7 +269,7 @@ public final class OutputControl extends Skill {
 
     private static void syncPositiveBonusScale(
             AttributeInstance attribute,
-            Identifier modifierId,
+            ResourceLocation modifierId,
             float factor,
             double baseline
     ) {

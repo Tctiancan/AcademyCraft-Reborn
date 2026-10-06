@@ -1,11 +1,8 @@
 package org.academy.internal.client.ability.mentalout
 
 import com.mojang.blaze3d.platform.InputConstants
-import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.EditBox
-import net.minecraft.client.input.CharacterEvent
-import net.minecraft.client.input.KeyEvent
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.network.chat.Component
 import org.academy.api.client.gui.screen.UiScreen
 import org.academy.api.client.gui.widget.Widget
@@ -198,11 +195,30 @@ class PrecisionOperationScreen(
         }
     }
 
-    override fun extractBackground(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        super.extractBackground(graphics, mouseX, mouseY, a)
+    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+        syncLayout()
+        renderOverlays(guiGraphics)
+        renderTopBar(guiGraphics, mouseX, mouseY)
+        renderCanvas(guiGraphics, mouseX, mouseY)
+        renderDrawerOverlays(guiGraphics)
+        renderRails(guiGraphics, mouseX, mouseY)
+        if (paletteVisible()) renderPalette(guiGraphics, mouseX, mouseY)
+        if (search!!.visible) search!!.render(guiGraphics, mouseX, mouseY, partialTick)
+        if (inspectorVisible()) renderInspector(guiGraphics, mouseX, mouseY)
+        syncParameterInput()
+        if (parameterInput!!.visible) {
+            renderInput(
+                guiGraphics, parameterInput!!.x, parameterInput!!.y,
+                parameterInput!!.width, parameterInput!!.isFocused
+            )
+            parameterInput!!.render(guiGraphics, mouseX, mouseY, partialTick)
+        }
+        renderStatus(guiGraphics)
+        renderQuickInsert(guiGraphics, mouseX, mouseY)
+        super.render(guiGraphics, mouseX, mouseY, partialTick)
     }
 
-    private fun renderOverlays(graphics: GuiGraphicsExtractor) {
+    private fun renderOverlays(graphics: GuiGraphics) {
         graphics.fill(panelX, panelY, panelX + panelW, panelY + panelH, PANEL_BACKGROUND)
         renderInstrumentFrame(graphics, panelX, panelY, panelW, panelH)
         graphics.fill(panelX + 7, panelY + TOP_H, panelX + panelW - 7, panelY + TOP_H + 1, DIVIDER)
@@ -217,7 +233,7 @@ class PrecisionOperationScreen(
         }
     }
 
-    private fun renderDrawerOverlays(graphics: GuiGraphicsExtractor) {
+    private fun renderDrawerOverlays(graphics: GuiGraphics) {
         if (compactLeft && leftDrawerOpen) {
             renderSection(graphics, paletteX(), canvasY, paletteWidth(), canvasH)
         }
@@ -226,30 +242,7 @@ class PrecisionOperationScreen(
         }
     }
 
-    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        super.extractRenderState(graphics, mouseX, mouseY, a)
-        syncLayout()
-        renderOverlays(graphics)
-        renderTopBar(graphics, mouseX, mouseY)
-        renderCanvas(graphics, mouseX, mouseY)
-        renderDrawerOverlays(graphics)
-        renderRails(graphics, mouseX, mouseY)
-        if (paletteVisible()) renderPalette(graphics, mouseX, mouseY)
-        if (search!!.visible) search!!.extractRenderState(graphics, mouseX, mouseY, a)
-        if (inspectorVisible()) renderInspector(graphics, mouseX, mouseY)
-        syncParameterInput()
-        if (parameterInput!!.visible) {
-            renderInput(
-                graphics, parameterInput!!.x, parameterInput!!.y,
-                parameterInput!!.width, parameterInput!!.isFocused
-            )
-            parameterInput!!.extractRenderState(graphics, mouseX, mouseY, a)
-        }
-        renderStatus(graphics)
-        renderQuickInsert(graphics, mouseX, mouseY)
-    }
-
-    private fun renderTopBar(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderTopBar(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         var x = panelX + 4
         if (panelW >= 620) {
             smallText(graphics, title.string, panelX + 12, panelY + 6, TEXT, 84)
@@ -274,7 +267,8 @@ class PrecisionOperationScreen(
                     TOOL_SIZE.toDouble()
                 )
             ) {
-                graphics.setTooltipForNextFrame(
+                graphics.renderTooltip(
+                    font,
                     Component.translatable("screen.academy.precision_operation." + TOOL_LABELS[index]),
                     mouseX, mouseY
                 )
@@ -283,7 +277,7 @@ class PrecisionOperationScreen(
         }
     }
 
-    private fun renderRails(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderRails(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         if (compactLeft) {
             button(
                 graphics, leftX + 1, canvasY + 2, 16, 16, Component.literal("N"),
@@ -298,7 +292,7 @@ class PrecisionOperationScreen(
         }
     }
 
-    private fun renderPalette(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderPalette(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val x = paletteX()
         val w = paletteWidth()
         smallText(
@@ -322,7 +316,7 @@ class PrecisionOperationScreen(
                     12.0
                 )
             ) {
-                graphics.setTooltipForNextFrame(Component.translatable(groupKey(group)), mouseX, mouseY)
+                graphics.renderTooltip(font, Component.translatable(groupKey(group)), mouseX, mouseY)
             }
         }
         renderInput(graphics, search!!.x, search!!.y, search!!.width, search!!.isFocused)
@@ -351,7 +345,7 @@ class PrecisionOperationScreen(
             smallText(graphics, groupGlyph(kind.group()), x + 8, y + 3, categoryColor(kind.category()), 8)
             smallText(graphics, nodeLabel(kind).string, x + 17, y + 3, TEXT, w - 22)
             if (hover) {
-                graphics.setComponentTooltipForNextFrame(
+                graphics.renderComponentTooltip(
                     font, listOf(
                         nodeLabel(kind),
                         Component.translatable(nodeDescriptionKey(kind)).withColor(DIM)
@@ -370,16 +364,16 @@ class PrecisionOperationScreen(
         }
     }
 
-    private fun renderCanvas(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderCanvas(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         graphics.enableScissor(canvasX, canvasY, canvasX + canvasW, canvasY + canvasH)
         renderCanvasGrid(graphics)
         val pose = graphics.pose()
-        pose.pushMatrix()
-        pose.translate((canvasX + panX).toFloat(), (canvasY + panY).toFloat())
-        pose.scale(zoom.toFloat(), zoom.toFloat())
+        pose.pushPose()
+        pose.translate((canvasX + panX).toFloat(), (canvasY + panY).toFloat(), 0.0f)
+        pose.scale(zoom.toFloat(), zoom.toFloat(), 1.0f)
         for (edge in graph.edges()) renderEdge(graphics, edge)
         for (node in graph.nodes()) renderNode(graphics, node, mouseX, mouseY)
-        pose.popMatrix()
+        pose.popPose()
         renderConnectionPreview(graphics, mouseX, mouseY)
         renderPortTooltip(graphics, mouseX, mouseY)
         graphics.disableScissor()
@@ -389,7 +383,7 @@ class PrecisionOperationScreen(
         )
     }
 
-    private fun renderEdge(graphics: GuiGraphicsExtractor, edge: PrecisionGraph.Edge) {
+    private fun renderEdge(graphics: GuiGraphics, edge: PrecisionGraph.Edge) {
         val from = node(edge.fromNode())
         val to = node(edge.toNode())
         if (from == null || to == null) return
@@ -401,7 +395,7 @@ class PrecisionOperationScreen(
         orthogonalLine(graphics, x1, y1, x2, y2, portColor(type))
     }
 
-    private fun renderNode(graphics: GuiGraphicsExtractor, node: PrecisionGraph.Node, mouseX: Int, mouseY: Int) {
+    private fun renderNode(graphics: GuiGraphics, node: PrecisionGraph.Node, mouseX: Int, mouseY: Int) {
         val x = (node.x()).roundToInt()
         val y = (node.y()).roundToInt()
         val h = nodeHeight(node)
@@ -456,11 +450,11 @@ class PrecisionOperationScreen(
                 val shown = if (diagnostic != PrecisionGraph.Diagnostic.OK) diagnostic else validation.diagnostic()
                 lines.add(Component.translatable(shown.translationKey()).withColor(ERROR))
             }
-            graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY)
+            graphics.renderComponentTooltip(font, lines, mouseX, mouseY)
         }
     }
 
-    private fun renderConnectionPreview(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderConnectionPreview(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val current = connection ?: return
         val anchor = endpointScreen(current.endpoint)
         val target =
@@ -472,10 +466,10 @@ class PrecisionOperationScreen(
         orthogonalLine(graphics, anchor.x, anchor.y, endX, endY, color)
     }
 
-    private fun renderPortTooltip(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderPortTooltip(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val endpoint = endpointAt(mouseX.toDouble(), mouseY.toDouble()) ?: return
         if (endpoint.type != PrecisionGraph.PortType.FLOW) return
-        graphics.setComponentTooltipForNextFrame(
+        graphics.renderComponentTooltip(
             font, listOf(
                 flowPortLabel(endpoint),
                 Component.translatable("screen.academy.precision_operation.flow_open_chain_hint").withColor(DIM)
@@ -483,7 +477,7 @@ class PrecisionOperationScreen(
         )
     }
 
-    private fun renderInspector(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderInspector(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val x = inspectorX()
         val w = inspectorWidth()
         smallText(
@@ -522,7 +516,7 @@ class PrecisionOperationScreen(
     }
 
     private fun renderParameterEditor(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         node: PrecisionGraph.Node,
         x: Int,
         y: Int,
@@ -558,7 +552,7 @@ class PrecisionOperationScreen(
         }
     }
 
-    private fun renderStatus(graphics: GuiGraphicsExtractor) {
+    private fun renderStatus(graphics: GuiGraphics) {
         val validation = graph.validate()
         val shown = if (System.currentTimeMillis() < transientUntil) transientDiagnostic
         else if (diagnostic != PrecisionGraph.Diagnostic.OK) diagnostic else validation.diagnostic()
@@ -582,7 +576,7 @@ class PrecisionOperationScreen(
         return intArrayOf(rows, w, h, x, y)
     }
 
-    private fun renderQuickInsert(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderQuickInsert(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val current = quickInsert ?: return
         val bounds = quickInsertBounds(current)
         val rows = bounds[0]
@@ -613,24 +607,23 @@ class PrecisionOperationScreen(
         other: EditBox?,
         x: Double,
         y: Double,
-        e: MouseButtonEvent,
-        isDoubleClick: Boolean
+        button: Int
     ): Boolean {
         if (input == null || !input.visible) return false
         if (!inside(x, y, input.x.toDouble(), input.y.toDouble(), input.width.toDouble(), 15.0)) return false
         other?.isFocused = false
         input.isFocused = true
-        input.mouseClicked(e, isDoubleClick)
+        input.mouseClicked(x, y, button)
         return true
     }
 
-    override fun mouseClicked(e: MouseButtonEvent, isDoubleClick: Boolean): Boolean {
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         syncLayout()
-        val x = e.x()
-        val y = e.y()
-        if (e.button() == 0) {
-            if (focusInput(search, parameterInput, x, y, e, isDoubleClick)) return true
-            if (focusInput(parameterInput, search, x, y, e, isDoubleClick)) return true
+        val x = mouseX
+        val y = mouseY
+        if (button == 0) {
+            if (focusInput(search, parameterInput, x, y, button)) return true
+            if (focusInput(parameterInput, search, x, y, button)) return true
             search?.isFocused = false
             parameterInput?.isFocused = false
             if (handleQuickInsertClick(x, y) || handleTopBarClick(x, y) || handleRailClick(x, y)
@@ -650,21 +643,21 @@ class PrecisionOperationScreen(
             }
             if (handleCanvasClick(x, y)) return true
         }
-        if ((e.button() == 1 || e.button() == 2)
+        if ((button == 1 || button == 2)
             && inside(x, y, canvasX.toDouble(), canvasY.toDouble(), canvasW.toDouble(), canvasH.toDouble())
         ) {
             val endpoint = endpointAt(x, y)
-            if (e.button() == 1 && endpoint != null) {
+            if (button == 1 && endpoint != null) {
                 disconnect(endpoint)
             } else {
                 panning = true
             }
             return true
         }
-        return super.mouseClicked(e, isDoubleClick)
+        return super.mouseClicked(mouseX, mouseY, button)
     }
 
-    override fun mouseDragged(e: MouseButtonEvent, mouseX: Double, mouseY: Double): Boolean {
+    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, dragX: Double, dragY: Double): Boolean {
         if (connection != null) return true
         val dragging = draggingNode
         if (dragging != null) {
@@ -672,29 +665,29 @@ class PrecisionOperationScreen(
             if (selected != null) replaceNode(
                 PrecisionGraph.Node(
                     selected.id(), selected.kind(), selected.parameter(),
-                    selected.x() + mouseX / zoom, selected.y() + mouseY / zoom
+                    selected.x() + dragX / zoom, selected.y() + dragY / zoom
                 ), false
             )
             return true
         }
         if (panning) {
-            panX += mouseX
-            panY += mouseY
+            panX += dragX
+            panY += dragY
             return true
         }
-        return super.mouseDragged(e, mouseX, mouseY)
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY)
     }
 
-    override fun mouseReleased(e: MouseButtonEvent): Boolean {
-        if (connection != null && e.button() == 0) {
-            finishConnection(e.x(), e.y())
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        if (connection != null && button == 0) {
+            finishConnection(mouseX, mouseY)
             draggingNode = null
             return true
         }
         if (draggingNode != null) changed()
         draggingNode = null
         panning = false
-        return super.mouseReleased(e)
+        return super.mouseReleased(mouseX, mouseY, button)
     }
 
     override fun mouseScrolled(mouseX: Double, mouseY: Double, scrollX: Double, scrollY: Double): Boolean {
@@ -717,68 +710,68 @@ class PrecisionOperationScreen(
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
-    override fun keyPressed(e: KeyEvent): Boolean {
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         if (search != null && search!!.isFocused) {
-            search!!.keyPressed(e)
+            search!!.keyPressed(keyCode, scanCode, modifiers)
             return true
         }
         if (parameterInput != null && parameterInput!!.isFocused) {
-            parameterInput!!.keyPressed(e)
+            parameterInput!!.keyPressed(keyCode, scanCode, modifiers)
             return true
         }
-        if (e.key() == InputConstants.KEY_SPACE) {
+        if (keyCode == InputConstants.KEY_SPACE) {
             spaceDown = true
             return true
         }
-        if (e.key() == InputConstants.KEY_ESCAPE && (connection != null || quickInsert != null)) {
+        if (keyCode == InputConstants.KEY_ESCAPE && (connection != null || quickInsert != null)) {
             connection = null
             quickInsert = null
             return true
         }
-        if (e.key() == InputConstants.KEY_DELETE) {
+        if (keyCode == InputConstants.KEY_DELETE) {
             deleteSelected()
             return true
         }
-        if ((e.modifiers() and InputConstants.MOD_CONTROL) != 0) {
-            if (e.key() == InputConstants.KEY_C) {
+        if ((modifiers and InputConstants.MOD_CONTROL) != 0) {
+            if (keyCode == InputConstants.KEY_C) {
                 copySelected()
                 return true
             }
-            if (e.key() == InputConstants.KEY_Z) {
+            if (keyCode == InputConstants.KEY_Z) {
                 undo()
                 return true
             }
-            if (e.key() == InputConstants.KEY_Y) {
+            if (keyCode == InputConstants.KEY_Y) {
                 redo()
                 return true
             }
-            if (e.key() == InputConstants.KEY_S) {
+            if (keyCode == InputConstants.KEY_S) {
                 save()
                 return true
             }
         }
-        return super.keyPressed(e)
+        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
-    override fun charTyped(e: CharacterEvent): Boolean {
+    override fun charTyped(codePoint: Char, modifiers: Int): Boolean {
         if (search != null && search!!.isFocused) {
-            search!!.charTyped(e)
+            search!!.charTyped(codePoint, modifiers)
             return true
         }
         if (parameterInput != null && parameterInput!!.isFocused) {
-            parameterInput!!.charTyped(e)
+            parameterInput!!.charTyped(codePoint, modifiers)
             return true
         }
-        return super.charTyped(e)
+        return super.charTyped(codePoint, modifiers)
     }
 
-    override fun keyReleased(e: KeyEvent): Boolean {
-        if (e.key() == InputConstants.KEY_SPACE) {
+    override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if (keyCode == InputConstants.KEY_SPACE) {
             spaceDown = false
             panning = false
             return true
         }
-        return super.keyReleased(e)
+        return super.keyReleased(keyCode, scanCode, modifiers)
     }
 
     override fun onClose() {
@@ -1640,7 +1633,7 @@ class PrecisionOperationScreen(
     }
 
     private fun smallText(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         value: String,
         x: Int,
         y: Int,
@@ -1649,15 +1642,15 @@ class PrecisionOperationScreen(
     ) {
         val clipped = font.plainSubstrByWidth(value, maxOf(1, (maxWidth / SMALL_TEXT_SCALE).toInt()))
         val pose = graphics.pose()
-        pose.pushMatrix()
-        pose.translate(x.toFloat(), y.toFloat())
-        pose.scale(SMALL_TEXT_SCALE, SMALL_TEXT_SCALE)
-        graphics.text(font, clipped, 0, 0, color, false)
-        pose.popMatrix()
+        pose.pushPose()
+        pose.translate(x.toFloat(), y.toFloat(), 0.0f)
+        pose.scale(SMALL_TEXT_SCALE, SMALL_TEXT_SCALE, 1.0f)
+        graphics.drawString(font, clipped, 0, 0, color, false)
+        pose.popPose()
     }
 
     private fun smallWrappedText(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         value: Component,
         x: Int,
         y: Int,
@@ -1665,18 +1658,18 @@ class PrecisionOperationScreen(
     ): Int {
         val lines = font.split(value, maxOf(1, (maxWidth / SMALL_TEXT_SCALE).toInt()))
         val pose = graphics.pose()
-        pose.pushMatrix()
-        pose.translate(x.toFloat(), y.toFloat())
-        pose.scale(SMALL_TEXT_SCALE, SMALL_TEXT_SCALE)
+        pose.pushPose()
+        pose.translate(x.toFloat(), y.toFloat(), 0.0f)
+        pose.scale(SMALL_TEXT_SCALE, SMALL_TEXT_SCALE, 1.0f)
         for (index in lines.indices) {
-            graphics.text(font, lines[index], 0, index * 9, DIM, false)
+            graphics.drawString(font, lines[index], 0, index * 9, DIM, false)
         }
-        pose.popMatrix()
+        pose.popPose()
         return ceil(lines.size * 9.0 * SMALL_TEXT_SCALE).toInt()
     }
 
     private fun button(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         x: Int,
         y: Int,
         width: Int,
@@ -1699,7 +1692,7 @@ class PrecisionOperationScreen(
         if (small) {
             smallText(graphics, label.string, x + 3, y + 5, TEXT, width - 6)
         } else {
-            graphics.centeredText(
+            graphics.drawCenteredString(
                 font, font.plainSubstrByWidth(label.string, width - 3),
                 x + width / 2, y + maxOf(1, (height - 8) / 2), TEXT
             )
@@ -1707,7 +1700,7 @@ class PrecisionOperationScreen(
     }
 
     private fun iconButton(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         x: Int,
         y: Int,
         glyph: String,
@@ -1727,7 +1720,7 @@ class PrecisionOperationScreen(
         smallText(graphics, glyph, x + 4, y + 4, if (disabled) DISABLED else if (hover) TEXT else DIM, 8)
     }
 
-    private fun renderCanvasGrid(graphics: GuiGraphicsExtractor) {
+    private fun renderCanvasGrid(graphics: GuiGraphics) {
         val firstColumn = floor(screenToGraphX(canvasX.toDouble()) / 16.0).toInt()
         val lastColumn = ceil(screenToGraphX((canvasX + canvasW).toDouble()) / 16.0).toInt()
         for (column in firstColumn..lastColumn) {
@@ -1885,7 +1878,7 @@ class PrecisionOperationScreen(
         }
 
         private fun renderPort(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             centerX: Int,
             centerY: Int,
             color: Int,
@@ -1902,7 +1895,7 @@ class PrecisionOperationScreen(
         private fun outputOffsetY(port: Int): Int = NODE_HEADER_H + 4 + port * PORT_ROW_H
 
         private fun renderInstrumentFrame(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             width: Int,
@@ -1917,7 +1910,7 @@ class PrecisionOperationScreen(
         }
 
         private fun renderSection(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             width: Int,
@@ -1929,7 +1922,7 @@ class PrecisionOperationScreen(
         }
 
         private fun renderInput(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             width: Int,
@@ -1941,7 +1934,7 @@ class PrecisionOperationScreen(
         }
 
         private fun renderControl(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             width: Int,
@@ -1965,7 +1958,7 @@ class PrecisionOperationScreen(
         }
 
         private fun orthogonalLine(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x1: Int,
             y1: Int,
             x2: Int,
@@ -1978,11 +1971,11 @@ class PrecisionOperationScreen(
             line(graphics, mid, y2, x2, y2, color)
         }
 
-        private fun line(graphics: GuiGraphicsExtractor, x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {
+        private fun line(graphics: GuiGraphics, x1: Int, y1: Int, x2: Int, y2: Int, color: Int) {
             graphics.fill(minOf(x1, x2), minOf(y1, y2), maxOf(x1, x2) + 1, maxOf(y1, y2) + 1, color)
         }
 
-        private fun border(graphics: GuiGraphicsExtractor, x: Int, y: Int, width: Int, height: Int, color: Int) {
+        private fun border(graphics: GuiGraphics, x: Int, y: Int, width: Int, height: Int, color: Int) {
             graphics.fill(x, y, x + width, y + 1, color)
             graphics.fill(x, y + height - 1, x + width, y + height, color)
             graphics.fill(x, y, x + 1, y + height, color)

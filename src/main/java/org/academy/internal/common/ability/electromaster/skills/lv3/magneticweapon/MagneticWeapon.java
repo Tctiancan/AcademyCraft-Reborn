@@ -84,7 +84,7 @@ public class MagneticWeapon extends Skill {
         InputSystem.addKeyBinding(Client.KEY, Client.CONFIG.getKeyBinding(Client.KEY,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G,
                                 InputConstants.PRESS, 0)),
-                _ -> Client.onToggle());
+                unused460 -> Client.onToggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.MAGNETIC_WEAPON.get(), Client::isActive);
         ElectromasterWeaponVfxClient.register();
     }
@@ -164,7 +164,8 @@ public class MagneticWeapon extends Skill {
             if (data != null && data.isEnabled()) {
                 system.toggleSkill(player.getUUID(), skill.getKeyString());
             }
-            // Release even if the runtime flag and context became desynchronized. Mutual switches
+            // Release even
+// if the runtime flag and context became desynchronized. Mutual switches
             // must be able to reuse the old lease in the same server tick.
             system.releaseMaintenanceOccupation(player.getUUID(), skill.getKeyString());
             clearData(player);

@@ -5,6 +5,7 @@ import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.joml.Matrix4f
+import org.joml.Quaternionf
 import org.joml.Quaternionfc
 import java.util.*
 import kotlin.math.max
@@ -181,16 +182,18 @@ class Canvas {
     }
 
     inner class PoseStack2D {
+        // 1.21.1: PoseStack.Pose 不含 translate/scale/mulPose (26.2 才把它们移到 Pose 上),
+        // 因此直接借道底层 PoseStack 对栈顶位姿做变换.
         fun translate(x: Float, y: Float) {
-            last().translate(x, y, 0f)
+            pose.translate(x, y, 0f)
         }
 
         fun scale(x: Float, y: Float) {
-            last().scale(x, y, 1f)
+            pose.scale(x, y, 1f)
         }
 
         fun mulPose(by: Quaternionfc) {
-            last().rotate(by)
+            pose.mulPose(Quaternionf(by))
         }
 
         fun pushPose() {

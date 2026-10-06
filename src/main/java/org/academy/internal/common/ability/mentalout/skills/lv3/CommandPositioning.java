@@ -5,7 +5,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.LivingEntity;
@@ -86,7 +86,7 @@ public final class CommandPositioning extends Skill {
                         InputConstants.PRESS,
                         0
                 )
-        ), _ -> Client.use());
+        ), unused536 -> Client.use());
     }
 
     @Override
@@ -95,7 +95,7 @@ public final class CommandPositioning extends Skill {
     }
 
     private boolean executeCommand(ServerPlayer player, float cost, Runnable action) {
-        return executeActive(player, _ -> cost, (_, _) -> action.run());
+        return executeActive(player, unused537 -> cost, (unused538, unused539) -> action.run());
     }
 
     /**
@@ -107,7 +107,7 @@ public final class CommandPositioning extends Skill {
             ServerPlayer player,
             Collection<? extends LivingEntity> requestedSubjects,
             ControlDestination destination,
-            Identifier source,
+            ResourceLocation source,
             int priority,
             boolean formationEnabled
     ) {

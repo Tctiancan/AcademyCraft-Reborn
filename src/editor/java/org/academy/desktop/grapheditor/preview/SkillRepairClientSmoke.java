@@ -158,7 +158,7 @@ public final class SkillRepairClientSmoke {
         if (ticks == 590) server(player -> {
             relation = org.academy.api.common.entitycontrol.MentalControlApi.apply(
                     org.academy.api.common.entitycontrol.ControlRequest.permanent(player, subject,
-                            net.minecraft.resources.Identifier.parse("academy:skill_repair_probe"), 100,
+                            net.minecraft.resources.ResourceLocation.parse("academy:skill_repair_probe"), 100,
                             new org.academy.api.common.entitycontrol.ControlDirective.ImpressionAlliance()));
             player.teleportTo(player.level(), subject.getX(), subject.getY(), subject.getZ() - 1, Set.of(), 0, 0, false);
             var result = org.academy.internal.common.ability.mentalout.control.ImpressionRidingManager.requestMount(player, subject);

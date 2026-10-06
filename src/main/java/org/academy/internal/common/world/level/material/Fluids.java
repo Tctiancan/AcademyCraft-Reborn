@@ -20,7 +20,6 @@ public final class Fluids {
                             .descriptionId("fluid.academy.imag_phase")
                             .canSwim(true)
                             .canPushEntity(true)
-                            .isWaterLike(true)
             ));
     public static final DeferredHolder<Fluid, ImagPhaseFluid.Source> IMAG_PHASE =
             FLUIDS.register("imag_phase", ImagPhaseFluid.Source::new);

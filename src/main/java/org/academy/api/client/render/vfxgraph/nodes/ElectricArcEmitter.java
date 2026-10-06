@@ -166,7 +166,8 @@ public final class ElectricArcEmitter {
                             width * (0.16f + surge * 0.52f) * (1 - u * 0.92f), 0);
                 }
                 emit(ctx, path, group, random + tail + 50, alpha * 0.86f, "electricity");
-                // Thin forks inherit their root from the parent filament instead of radiating from the hand.
+                // Thin
+// forks inherit their root from the parent filament instead of radiating from the hand.
                 branch.clearPoints();
                 for (int i = 0; i <= 6; i++) {
                     float u = i / 6f;

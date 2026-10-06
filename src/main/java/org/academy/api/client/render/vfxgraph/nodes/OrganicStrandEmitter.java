@@ -53,7 +53,8 @@ public final class OrganicStrandEmitter {
                         r = liveRadius * (0.85f + wave * 0.13f + 0.06f * (float) Math.sin(u * 37f + phase)) * (1f - age * 0.25f);
                         y = height * (u * 0.65f + 0.35f * strand / count);
                     } else {
-                        // Short curling wisps form a porous cloud, expanding as the target breaks apart.
+                        // Short curling wisps
+// form a porous cloud, expanding as the target breaks apart.
                         r = liveRadius * (0.5f + 0.5f * (float) Math.sin(phase * 3f + u * 2f))
                                 * (0.8f + age * 0.8f);
                         y = height * 0.5f + (float) Math.sin(phase + u * 4f) * height * 0.55f;

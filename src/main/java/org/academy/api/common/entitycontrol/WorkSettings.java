@@ -5,7 +5,7 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -27,18 +27,18 @@ public record WorkSettings(Mode mode, boolean repeat, boolean harvest, boolean r
                            Optional<BlockPos> input, Optional<BlockPos> output, MiningReach miningReach) {
     private static final Map<WorkSettings, CompiledFilters> COMPILED = new WeakHashMap<>();
     private static final class CompiledFilters {
-        final List<Identifier> ids = new ArrayList<>();
+        final List<ResourceLocation> ids = new ArrayList<>();
         final List<TagKey<Block>> blocks = new ArrayList<>();
         final List<TagKey<Item>> items = new ArrayList<>();
         final List<TagKey<EntityType<?>>> entities = new ArrayList<>();
         CompiledFilters(List<String> filters) {
             for (var filter : filters) {
                 if (filter.startsWith("#")) {
-                    var id = Identifier.parse(filter.substring(1));
+                    var id = ResourceLocation.parse(filter.substring(1));
                     blocks.add(TagKey.create(Registries.BLOCK, id));
                     items.add(TagKey.create(Registries.ITEM, id));
                     entities.add(TagKey.create(Registries.ENTITY_TYPE, id));
-                } else ids.add(Identifier.parse(filter));
+                } else ids.add(ResourceLocation.parse(filter));
             }
         }
     }
@@ -82,7 +82,7 @@ public record WorkSettings(Mode mode, boolean repeat, boolean harvest, boolean r
         if (filters.size() > 32) throw new IllegalArgumentException("Too many filters");
         for (var filter : filters) {
             var id = filter.startsWith("#") ? filter.substring(1) : filter;
-            if (filter.length() > 128 || Identifier.tryParse(id) == null) {
+            if (filter.length() > 128 || ResourceLocation.tryParse(id) == null) {
                 throw new IllegalArgumentException("Invalid block filter: " + filter);
             }
         }

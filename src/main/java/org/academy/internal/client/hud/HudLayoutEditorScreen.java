@@ -2,9 +2,8 @@ package org.academy.internal.client.hud;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.input.MouseButtonEvent;
 import net.minecraft.network.chat.Component;
 import org.academy.api.client.hud.HudManager;
 import org.jetbrains.annotations.Nullable;
@@ -45,7 +44,7 @@ public final class HudLayoutEditorScreen extends Screen {
         return mouseX >= x && mouseX <= x + width && mouseY >= y && mouseY <= y + height;
     }
 
-    private static void border(GuiGraphicsExtractor graphics, int x, int y, int width, int height, int color) {
+    private static void border(GuiGraphics graphics, int x, int y, int width, int height, int color) {
         var safeWidth = Math.max(1, width);
         var safeHeight = Math.max(1, height);
         graphics.fill(x, y, x + safeWidth, y + 1, color);
@@ -60,14 +59,22 @@ public final class HudLayoutEditorScreen extends Screen {
     }
 
     @Override
-    public void extractBackground(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        extractBackground(graphics, mouseX, mouseY, partialTick);
+        extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fill(0, 0, width, height, DIM);
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY, float partialTick) {
-        graphics.centeredText(font, title, width / 2, 8, TEXT);
-        graphics.centeredText(font, Component.translatable("hud.academy.layout.hint"), width / 2, 20, TEXT_DIM);
+    public void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        graphics.drawCenteredString(font, title.getString(), width / 2, 8, TEXT);
+        graphics.drawCenteredString(font,
+                Component.translatable("hud.academy.layout.hint").getString(), width / 2, 20, TEXT_DIM);
 
         var minecraft = Minecraft.getInstance();
         var hiddenLabel = Component.translatable("hud.academy.layout.hidden").getString();
@@ -85,7 +92,8 @@ public final class HudLayoutEditorScreen extends Screen {
             var label = Component.translatable(region.getNameKey()).getString()
                     + "  " + Math.round(region.getScaleXY() * 100.0f)
                     + "%" + (hidden ? "  " + hiddenLabel : "");
-            graphics.text(font, label, x0 + 2, Math.max(0, y0 + 2), hidden ? TEXT_DIM : (active ? BOX_ACTIVE : TEXT), true);
+            graphics.drawString(font, label, x0 + 2, Math.max(0, y0 + 2),
+                    hidden ? TEXT_DIM : (active ? BOX_ACTIVE : TEXT), true);
         }
 
         var buttonY = height - BUTTON_HEIGHT - 8;
@@ -96,10 +104,8 @@ public final class HudLayoutEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        var mouseX = event.x();
-        var mouseY = event.y();
-        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
             var buttonY = height - BUTTON_HEIGHT - 8;
             var resetX = width / 2 - BUTTON_WIDTH - BUTTON_GAP / 2;
             var doneX = width / 2 + BUTTON_GAP / 2;
@@ -117,12 +123,12 @@ public final class HudLayoutEditorScreen extends Screen {
         var region = regionAt(mouseX, mouseY);
         if (region == null) return true;
 
-        if (event.button() == InputConstants.MOUSE_BUTTON_RIGHT) {
+        if (button == InputConstants.MOUSE_BUTTON_RIGHT) {
             region.toggleHidden();
             saveAndRebuild();
             return true;
         }
-        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT) {
             grabbed = region;
             grabStartX = mouseX;
             grabStartY = mouseY;
@@ -134,24 +140,24 @@ public final class HudLayoutEditorScreen extends Screen {
     }
 
     @Override
-    public boolean mouseDragged(MouseButtonEvent event, double dragX, double dragY) {
-        if (event.button() == InputConstants.MOUSE_BUTTON_LEFT && grabbed != null) {
-            var deltaX = (float) (event.x() - grabStartX);
-            var deltaY = (float) (event.y() - grabStartY);
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double dragX, double dragY) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && grabbed != null) {
+            var deltaX = (float) (mouseX - grabStartX);
+            var deltaY = (float) (mouseY - grabStartY);
             grabbed.setTranslate(initialTranslateX + deltaX, initialTranslateY + deltaY, Minecraft.getInstance());
             return true;
         }
-        return super.mouseDragged(event, dragX, dragY);
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY);
     }
 
     @Override
-    public boolean mouseReleased(MouseButtonEvent event) {
-        if (event.button() == 0 && grabbed != null) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        if (button == 0 && grabbed != null) {
             saveAndRebuild();
             grabbed = null;
             return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -187,12 +193,12 @@ public final class HudLayoutEditorScreen extends Screen {
     }
 
     private void drawButton(
-            GuiGraphicsExtractor graphics, int x, int y, Component label, int mouseX, int mouseY
+            GuiGraphics graphics, int x, int y, Component label, int mouseX, int mouseY
     ) {
         var hovered = inside(mouseX, mouseY, x, y, BUTTON_WIDTH, BUTTON_HEIGHT);
         graphics.fill(x, y, x + BUTTON_WIDTH, y + BUTTON_HEIGHT, hovered ? 0x40FFFFFF : 0x20FFFFFF);
         border(graphics, x, y, BUTTON_WIDTH, BUTTON_HEIGHT, hovered ? BOX_ACTIVE : BOX);
-        graphics.centeredText(font, label, x + BUTTON_WIDTH / 2, y + 6, TEXT);
+        graphics.drawCenteredString(font, label.getString(), x + BUTTON_WIDTH / 2, y + 6, TEXT);
     }
 
     private static List<HudLayout.Region> editableRegions() {

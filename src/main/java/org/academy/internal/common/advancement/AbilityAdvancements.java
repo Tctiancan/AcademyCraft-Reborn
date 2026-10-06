@@ -1,6 +1,6 @@
 package org.academy.internal.common.advancement;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.AbilityCategory;
@@ -11,15 +11,15 @@ import java.util.List;
 
 public final class AbilityAdvancements {
     public static final String CRITERION = "achieved";
-    public static final Identifier ROOT = AcademyCraft.academy("ability/root");
-    public static final Identifier ACCELERATOR = AcademyCraft.academy("ability/accelerator");
-    public static final Identifier DARKMATTER = AcademyCraft.academy("ability/darkmatter");
-    public static final Identifier TELEPORT = AcademyCraft.academy("ability/teleport");
-    public static final Identifier MELTDOWNER = AcademyCraft.academy("ability/meltdowner");
-    public static final Identifier MENTALOUT = AcademyCraft.academy("ability/mentalout");
-    public static final Identifier AEROMANIP = AcademyCraft.academy("ability/aeromanip");
-    public static final Identifier ELECTROMASTER = AcademyCraft.academy("ability/electromaster");
-    public static final List<Identifier> BRANCHES = List.of(
+    public static final ResourceLocation ROOT = AcademyCraft.academy("ability/root");
+    public static final ResourceLocation ACCELERATOR = AcademyCraft.academy("ability/accelerator");
+    public static final ResourceLocation DARKMATTER = AcademyCraft.academy("ability/darkmatter");
+    public static final ResourceLocation TELEPORT = AcademyCraft.academy("ability/teleport");
+    public static final ResourceLocation MELTDOWNER = AcademyCraft.academy("ability/meltdowner");
+    public static final ResourceLocation MENTALOUT = AcademyCraft.academy("ability/mentalout");
+    public static final ResourceLocation AEROMANIP = AcademyCraft.academy("ability/aeromanip");
+    public static final ResourceLocation ELECTROMASTER = AcademyCraft.academy("ability/electromaster");
+    public static final List<ResourceLocation> BRANCHES = List.of(
             ACCELERATOR,
             DARKMATTER,
             TELEPORT,
@@ -75,7 +75,7 @@ public final class AbilityAdvancements {
         }
     }
 
-    private static void setThresholdBranch(ServerPlayer player, Identifier branch, boolean achieved) {
+    private static void setThresholdBranch(ServerPlayer player, ResourceLocation branch, boolean achieved) {
         if (achieved) {
             completeExclusively(player, branch);
         } else {
@@ -83,7 +83,7 @@ public final class AbilityAdvancements {
         }
     }
 
-    private static void completeExclusively(ServerPlayer player, Identifier selected) {
+    private static void completeExclusively(ServerPlayer player, ResourceLocation selected) {
         for (var branch : BRANCHES) {
             if (!branch.equals(selected)) {
                 setCompleted(player, branch, false);
@@ -96,7 +96,7 @@ public final class AbilityAdvancements {
         return AcademyCraft.academy(skillName).toString();
     }
 
-    private static void setCompleted(ServerPlayer player, Identifier id, boolean completed) {
+    private static void setCompleted(ServerPlayer player, ResourceLocation id, boolean completed) {
         var advancement = player.level().getServer().getAdvancements().get(id);
         if (advancement == null) return;
 

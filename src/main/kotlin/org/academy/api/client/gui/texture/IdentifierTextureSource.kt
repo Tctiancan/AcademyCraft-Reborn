@@ -1,8 +1,8 @@
-package org.academy.api.client.gui.texture
+﻿package org.academy.api.client.gui.texture
 
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
+import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.environment.UiEnvironment
 
@@ -13,12 +13,12 @@ import org.academy.api.client.gui.environment.UiEnvironment
  * 自动经 [UiEnvironment.loadTexture] 重解析 —— 天然解决"同 key 重注册后持旧 view"的问题.
  */
 class IdentifierTextureSource(
-    private val identifier: Identifier,
+    private val identifier: ResourceLocation,
     private val environment: UiEnvironment = UiEnvironment.get()
 ) : TextureSource {
     private var cachedView: GpuTextureView? = null
 
-    fun getIdentifier(): Identifier = identifier
+    fun getIdentifier(): ResourceLocation = identifier
 
     override fun getTextureView(): GpuTextureView? {
         val current = cachedView
@@ -42,7 +42,7 @@ class IdentifierTextureSource(
 }
 
 /** 静态图片 (资源文件) 源. */
-fun fromFile(identifier: Identifier): TextureSource = IdentifierTextureSource(identifier)
+fun fromFile(identifier: ResourceLocation): TextureSource = IdentifierTextureSource(identifier)
 
 /** 动态纹理 (texture manager 中已注册的 key) 源. */
-fun fromKey(identifier: Identifier): TextureSource = IdentifierTextureSource(identifier)
+fun fromKey(identifier: ResourceLocation): TextureSource = IdentifierTextureSource(identifier)

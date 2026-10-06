@@ -3,6 +3,7 @@ package org.academy.internal.common.world.entity.projectile;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
@@ -12,12 +13,10 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.CustomModelData;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import net.minecraft.world.phys.Vec3;
@@ -241,38 +240,42 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        input.getString("academy_hook_owner").ifPresent(value -> hookOwnerUuid = parseUuid(value));
-        input.getString("academy_attached_entity").ifPresent(value -> attachedEntityUuid = parseUuid(value));
-        launchOrder = input.getLongOr("academy_launch_order", 0L);
-        entityData.set(ATTACHMENT_TYPE, input.getByteOr("academy_attachment_type", FLYING));
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.contains("academy_hook_owner", CompoundTag.TAG_STRING)) {
+            hookOwnerUuid = parseUuid(tag.getString("academy_hook_owner"));
+        }
+        if (tag.contains("academy_attached_entity", CompoundTag.TAG_STRING)) {
+            attachedEntityUuid = parseUuid(tag.getString("academy_attached_entity"));
+        }
+        launchOrder = tag.contains("academy_launch_order", CompoundTag.TAG_LONG) ? tag.getLong("academy_launch_order") : 0L;
+        entityData.set(ATTACHMENT_TYPE, tag.contains("academy_attachment_type", CompoundTag.TAG_BYTE) ? tag.getByte("academy_attachment_type") : FLYING);
         entityData.set(ATTACHED_BLOCK, new BlockPos(
-                input.getIntOr("academy_block_x", 0),
-                input.getIntOr("academy_block_y", 0),
-                input.getIntOr("academy_block_z", 0)));
-        entityData.set(ATTACHED_FACE, input.getByteOr("academy_attached_face", (byte) 0));
-        entityData.set(ATTACHMENT_X, input.getIntOr("academy_attachment_x_milli", 0) / 1_000.0f);
-        entityData.set(ATTACHMENT_Y, input.getIntOr("academy_attachment_y_milli", 0) / 1_000.0f);
-        entityData.set(ATTACHMENT_Z, input.getIntOr("academy_attachment_z_milli", 0) / 1_000.0f);
+                tag.contains("academy_block_x", CompoundTag.TAG_INT) ? tag.getInt("academy_block_x") : 0,
+                tag.contains("academy_block_y", CompoundTag.TAG_INT) ? tag.getInt("academy_block_y") : 0,
+                tag.contains("academy_block_z", CompoundTag.TAG_INT) ? tag.getInt("academy_block_z") : 0));
+        entityData.set(ATTACHED_FACE, tag.contains("academy_attached_face", CompoundTag.TAG_BYTE) ? tag.getByte("academy_attached_face") : (byte) 0);
+        entityData.set(ATTACHMENT_X, (tag.contains("academy_attachment_x_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_attachment_x_milli") : 0) / 1_000.0f);
+        entityData.set(ATTACHMENT_Y, (tag.contains("academy_attachment_y_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_attachment_y_milli") : 0) / 1_000.0f);
+        entityData.set(ATTACHMENT_Z, (tag.contains("academy_attachment_z_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_attachment_z_milli") : 0) / 1_000.0f);
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        if (hookOwnerUuid != null) output.putString("academy_hook_owner", hookOwnerUuid.toString());
-        if (attachedEntityUuid != null) output.putString("academy_attached_entity", attachedEntityUuid.toString());
-        output.putLong("academy_launch_order", launchOrder);
-        output.putByte("academy_attachment_type", entityData.get(ATTACHMENT_TYPE));
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (hookOwnerUuid != null) tag.putString("academy_hook_owner", hookOwnerUuid.toString());
+        if (attachedEntityUuid != null) tag.putString("academy_attached_entity", attachedEntityUuid.toString());
+        tag.putLong("academy_launch_order", launchOrder);
+        tag.putByte("academy_attachment_type", entityData.get(ATTACHMENT_TYPE));
         var blockPos = attachedBlockPos();
-        output.putInt("academy_block_x", blockPos.getX());
-        output.putInt("academy_block_y", blockPos.getY());
-        output.putInt("academy_block_z", blockPos.getZ());
-        output.putByte("academy_attached_face", entityData.get(ATTACHED_FACE));
+        tag.putInt("academy_block_x", blockPos.getX());
+        tag.putInt("academy_block_y", blockPos.getY());
+        tag.putInt("academy_block_z", blockPos.getZ());
+        tag.putByte("academy_attached_face", entityData.get(ATTACHED_FACE));
         var offset = attachmentOffset();
-        output.putInt("academy_attachment_x_milli", (int) Math.round(offset.x * 1_000.0));
-        output.putInt("academy_attachment_y_milli", (int) Math.round(offset.y * 1_000.0));
-        output.putInt("academy_attachment_z_milli", (int) Math.round(offset.z * 1_000.0));
+        tag.putInt("academy_attachment_x_milli", (int) Math.round(offset.x * 1_000.0));
+        tag.putInt("academy_attachment_y_milli", (int) Math.round(offset.y * 1_000.0));
+        tag.putInt("academy_attachment_z_milli", (int) Math.round(offset.z * 1_000.0));
     }
 
     private static @Nullable UUID parseUuid(String value) {

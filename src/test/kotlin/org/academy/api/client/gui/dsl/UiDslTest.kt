@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.dsl
+﻿package org.academy.api.client.gui.dsl
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.MeasureSpec
 import org.academy.api.client.gui.layout.Orientation
@@ -226,7 +226,7 @@ class UiDslTest {
     fun `sprite sheet builder attaches a configured frame widget`() {
         val root = FrameLayoutWidget()
         val sheet = root.spriteSheet(
-            Identifier.parse("academy:test_sheet"),
+            ResourceLocation.parse("academy:test_sheet"),
             Orientation.VERTICAL,
             20, 40,
             20, 20,

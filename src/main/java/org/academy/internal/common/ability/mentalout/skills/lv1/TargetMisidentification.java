@@ -69,7 +69,7 @@ public final class TargetMisidentification extends Skill {
                         InputConstants.PRESS,
                         InputConstants.MOD_ALT
                 )
-        ), _ -> Client.use());
+        ), unused533 -> Client.use());
     }
 
     @Override

@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.mentalout.control;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -23,7 +23,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.animal.Animal;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.neoforge.common.IShearable;
 import org.academy.api.server.ability.AbilityBlockDrops;
@@ -56,9 +56,9 @@ public final class GroupControlRuntime {
     private static final Map<TaskKey, DefaultTask> TASKS = new HashMap<>();
     private static final FairWorkQueue<DefaultTask> READY = new FairWorkQueue<>();
     private static final Map<UUID, DefaultTask> SCOPES = new HashMap<>();
-    private record WorkGroupKey(UUID controller, Identifier source, String orderId) {}
+    private record WorkGroupKey(UUID controller, ResourceLocation source, String orderId) {}
     private static final Map<WorkGroupKey, SharedWorkPlan> WORK_GROUPS = new HashMap<>();
-    private static final Map<Identifier, Map<Long, Set<SharedWorkPlan>>> WORK_CHUNKS = new HashMap<>();
+    private static final Map<ResourceLocation, Map<Long, Set<SharedWorkPlan>>> WORK_CHUNKS = new HashMap<>();
     private static final class ReturnCursor { int slot, visited; }
     private static final Map<String, ReturnCursor> RETURNS = new HashMap<>();
     private static boolean defaultRegistered;
@@ -87,7 +87,7 @@ public final class GroupControlRuntime {
     private static long chunkKey(int x, int z) { return ((long) x << 32) ^ (z & 0xffffffffL); }
 
     public static synchronized void registerAdapter(
-            Identifier id,
+            ResourceLocation id,
             int priority,
             GroupControlAdapter adapter
     ) {
@@ -139,7 +139,7 @@ public final class GroupControlRuntime {
         return new GroupControlResult(applied, unsupported, failed, handles);
     }
 
-    public static synchronized void cancelByControllerAndSource(UUID controllerId, Identifier source) {
+    public static synchronized void cancelByControllerAndSource(UUID controllerId, ResourceLocation source) {
         for (var task : List.copyOf(TASKS.values())) {
             if (task.controllerId.equals(controllerId) && task.source.equals(source)) task.close();
         }
@@ -164,7 +164,7 @@ public final class GroupControlRuntime {
 
     public static synchronized void cancelSubjects(
             UUID controllerId,
-            Identifier source,
+            ResourceLocation source,
             Set<UUID> subjectIds
     ) {
         if (subjectIds == null || subjectIds.isEmpty()) return;
@@ -425,7 +425,7 @@ public final class GroupControlRuntime {
     private static final class DefaultTask implements GroupControlHandle {
         private final TaskKey key;
         private final UUID controllerId;
-        private final Identifier source;
+        private final ResourceLocation source;
         private final LivingEntity subject;
         private final GroupControlCommand command;
         private final WorkSettings settings;
@@ -1099,7 +1099,7 @@ public final class GroupControlRuntime {
                     level, pos, controller.gameMode.getGameModeForPlayer())
                     || state.getBlock() instanceof GameMasterBlock
                     && !controller.canUseGameMasterBlocks()) return false;
-            var event = new BreakBlockEvent(level, pos.immutable(), state, controller);
+            var event = new BlockEvent.BreakEvent(level, pos.immutable(), state, controller);
             NeoForge.EVENT_BUS.post(event);
             return !event.isCanceled();
         }
@@ -1188,7 +1188,8 @@ public final class GroupControlRuntime {
             var server = ((ServerLevel) subject.level()).getServer();
             var data = WorkOrderData.get(server);
             var returning = orderSnapshot().asReturning();
-            // Publish the cargo's new owner before deleting the active assignment.
+            // Publish the cargo's
+// new owner before deleting the active assignment.
             data.put(returning);
             removeOrder();
             bufferedDrops.clear();
@@ -1620,10 +1621,10 @@ public final class GroupControlRuntime {
         }
     }
 
-    private record TaskKey(UUID controllerId, Identifier source, UUID subjectId) {
+    private record TaskKey(UUID controllerId, ResourceLocation source, UUID subjectId) {
     }
 
-    private record AdapterEntry(Identifier id, int priority, GroupControlAdapter adapter) {
+    private record AdapterEntry(ResourceLocation id, int priority, GroupControlAdapter adapter) {
     }
 
     private static final class SharedWorkPlan {

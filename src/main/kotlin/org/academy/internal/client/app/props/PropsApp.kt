@@ -1,8 +1,8 @@
 package org.academy.internal.client.app.props
 
-import com.mojang.blaze3d.textures.FilterMode
+import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.app.App
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.Orientation
@@ -23,7 +23,7 @@ object PropsApp : App {
 
     override fun name(): String = tr("app.academy.props.name")
 
-    override fun icon(): Identifier = PropsIcon.LOCATION
+    override fun icon(): ResourceLocation = PropsIcon.LOCATION
 
     private class Context : WidgetContext {
         private var displayedStarted = PropsClientState.isStarted()

@@ -1,32 +1,32 @@
-package org.academy.desktop.platform
+﻿package org.academy.desktop.platform
 
 import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.GpuTexture
 import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.lwjgl.system.MemoryUtil
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
 
 object DesktopTextures {
-    private val textures = ConcurrentHashMap<Identifier, GpuTexture>()
+    private val textures = ConcurrentHashMap<ResourceLocation, GpuTexture>()
 
-    private val dynamicTextures = ConcurrentHashMap<Identifier, GpuTexture>()
+    private val dynamicTextures = ConcurrentHashMap<ResourceLocation, GpuTexture>()
 
     private val missing: GpuTextureView by lazy {
         RenderSystem.getDevice().createTextureView(createSolid(1, 1, 0xFF000000.toInt()))
     }
 
-    fun register(identifier: Identifier, bytes: ByteArray) {
+    fun register(identifier: ResourceLocation, bytes: ByteArray) {
         val texture = NativeImage.read(ByteArrayInputStream(bytes)).use { upload(it) }
         dynamicTextures[identifier]?.close()
         dynamicTextures[identifier] = texture
     }
 
-    fun load(identifier: Identifier, input: InputStream?): GpuTextureView {
+    fun load(identifier: ResourceLocation, input: InputStream?): GpuTextureView {
         dynamicTextures[identifier]?.let { return RenderSystem.getDevice().createTextureView(it) }
         if (input == null) return missing
         val texture = textures.computeIfAbsent(identifier) {

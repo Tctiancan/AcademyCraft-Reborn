@@ -12,7 +12,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.level.block.Rotation;
@@ -32,14 +32,14 @@ import java.util.UUID;
 /** Live server motion regression: packet aggregation must preserve every former directional push. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class WingFlightNetworkGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("wing_network_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("wing_network_function");
     @SubscribeEvent private static void registerType(RegisterEvent event) {
         event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
     }
     @SubscribeEvent private static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(AcademyCraft.academy("wing_network"), new TestEnvironmentDefinition.AllOf(List.of()));
         event.registerTest(AcademyCraft.academy("wing_network_motion"), new Instance(new TestData<>(environment,
-                Identifier.withDefaultNamespace("empty"), 100, 0, true, Rotation.NONE, false, 1, 1, false, 16), "motion"));
+                ResourceLocation.withDefaultNamespace("empty"), 100, 0, true, Rotation.NONE, false, 1, 1, false, 16), "motion"));
     }
     private static void runMotion(GameTestHelper helper) {
         var profile = new GameProfile(UUID.randomUUID(), "wing-network");

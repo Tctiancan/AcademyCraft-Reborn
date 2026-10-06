@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.darkmatter;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jspecify.annotations.Nullable;
 
 import java.util.Objects;
@@ -9,7 +9,7 @@ import java.util.Objects;
  * Public descriptor for a body part that can participate in a dark-matter creature blueprint.
  */
 public record DarkmatterCreaturePartType(
-        Identifier id,
+        ResourceLocation id,
         BodySlot slot,
         int clientModelId,
         @Nullable StatProcessor statProcessor
@@ -41,7 +41,7 @@ public record DarkmatterCreaturePartType(
 
     @FunctionalInterface
     public interface StatProcessor {
-        StatProcessor NONE = (_, _, _) -> {
+        StatProcessor NONE = (unused154, unused155, unused156) -> {
         };
 
         void apply(MutableStats stats, float alphaPower, float betaPower);

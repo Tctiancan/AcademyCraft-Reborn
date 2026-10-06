@@ -1,16 +1,16 @@
 package org.academy.internal.common.skilldata;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 
 public class CommonSkillData extends SkillData {
-    public static final Identifier ID = AcademyCraft.academy("common");
+    public static final ResourceLocation ID = AcademyCraft.academy("common");
 
     public CommonSkillData() {
     }
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 }

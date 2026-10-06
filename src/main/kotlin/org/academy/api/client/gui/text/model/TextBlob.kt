@@ -1,9 +1,9 @@
-package org.academy.api.client.gui.text.model
+﻿package org.academy.api.client.gui.text.model
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 
 class GlyphRun(
-    val fontId: Identifier,
+    val fontId: ResourceLocation,
     val glyphIndices: IntArray,
     val positionsX: FloatArray,
     val advances: FloatArray,

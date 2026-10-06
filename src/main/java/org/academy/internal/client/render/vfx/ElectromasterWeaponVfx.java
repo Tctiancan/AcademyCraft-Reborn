@@ -151,7 +151,8 @@ public final class ElectromasterWeaponVfx implements Vfx {
     }
 
     private static void renderCloud(VfxSink sink, Matrix4f root, float time, float radius) {
-        // Several revolving chains make the occupied volume readable while leaving sight gaps.
+        // Several revolving chains make the occupied volume readable
+// while leaving sight gaps.
         for (var band = 0; band < 6; band++) {
             var ringRadius = radius * (0.28f + band * 0.14f);
             for (var segment = 0; segment < 24; segment++) {

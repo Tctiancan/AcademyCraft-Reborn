@@ -1,11 +1,11 @@
 package org.academy.internal.client.gui.screen;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.gui.drawable.ColorDrawable;
 import org.academy.api.client.gui.drawable.StateListDrawable;
 import org.academy.api.client.gui.layout.Gravity;
@@ -210,14 +210,23 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     @Override
-    public void extractRenderState(GuiGraphicsExtractor graphics, int mouseX, int mouseY,
+    public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+        super.render(graphics, mouseX, mouseY, partialTick);
+        // The creature preview and module hover tooltip are drawn in extractRenderState; UiScreen.render
+        // does not dispatch that hook itself, so it is invoked here (mirroring ChunkLeapScreen) to keep
+        // them visible above the widget tree (ScreenDispatcher draws widgets on ScreenEvent.Render.Post).
+        extractRenderState(graphics, mouseX, mouseY, partialTick);
+    }
+
+    @Override
+    public void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY,
                                    float partialTick) {
         super.extractRenderState(graphics, mouseX, mouseY, partialTick);
         extractCreaturePreview(graphics, mouseX, mouseY);
         extractModuleTooltip(graphics, mouseX, mouseY);
     }
 
-    private void extractCreaturePreview(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void extractCreaturePreview(GuiGraphics graphics, int mouseX, int mouseY) {
         if (compact || tab == Tab.MODULES || tab == Tab.SUMMONED
                 || Minecraft.getInstance().level == null) return;
         if (previewEntity == null || previewEntity.level() != Minecraft.getInstance().level) {
@@ -226,20 +235,20 @@ public final class DarkmatterCreationScreen extends UiScreen {
             previewEntity.setId(Integer.MIN_VALUE + 1);
         }
         previewEntity.applyBlueprint(editing, selectedSlot, snapshot.abilityLevel, 0, false);
-        InventoryScreen.extractEntityInInventoryFollowsMouse(graphics,
+        InventoryScreen.renderEntityInInventoryFollowsMouse(graphics,
                 panelX + panelWidth - 184, panelY + 66,
                 panelX + panelWidth - 18, panelY + panelHeight - 42,
                 62, 0.0f, mouseX, mouseY, previewEntity);
     }
 
-    private void extractModuleTooltip(GuiGraphicsExtractor graphics, int mouseX, int mouseY) {
+    private void extractModuleTooltip(GuiGraphics graphics, int mouseX, int mouseY) {
         if (tab != Tab.MODULES) return;
         for (var target : moduleHoverTargets) {
             if (mouseX < panelX + target.x || mouseX >= panelX + target.x + target.width
                     || mouseY < panelY + target.y || mouseY >= panelY + target.y + target.height) {
                 continue;
             }
-            graphics.setComponentTooltipForNextFrame(font, List.of(
+            graphics.renderComponentTooltip(font, List.of(
                     Component.literal(moduleName(target.module)),
                     Component.literal(moduleDescription(target.module)).withColor(0xFF9AA4AA)
             ), mouseX, mouseY);
@@ -253,7 +262,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
         nameBox.setText(editing.name());
         nameBox.setHint(tr("screen.academy.darkmatter_creation.name"));
         nameBox.setClearWhenEnter(false);
-        nameBox.setWhenEnter(_ -> commitName());
+        nameBox.setWhenEnter(unused202 -> commitName());
         nameBox.setOnFocusLost(this::commitName);
         nameBox.setBackground(new ColorDrawable(CONTROL));
         nameBox.setLayoutParams(new FrameLayoutWidget.LayoutParams()
@@ -456,7 +465,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
         background.addState(Widget.PRESSED, new ColorDrawable(danger ? 0xD0783038 : CONTROL_ACTIVE));
         button.setBackground(background);
         button.setSelected(selected);
-        button.setOnClickListener(_ -> action.run());
+        button.setOnClickListener(unused203 -> action.run());
         var rail = new FillWidget(selected ? ACCENT : 0x55FFFFFF);
         rail.setLayoutParams(new FrameLayoutWidget.LayoutParams()
                 .size(selected ? 2 : 1, Math.max(1, height - 6))
@@ -508,7 +517,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     private static String partName(String raw) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null) return shortId(raw);
         return DarkmatterCreatureRegistries.part(id)
                 .map(type -> localizedOrFallback(type.translationKey(), shortId(raw)))
@@ -516,7 +525,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     private static String partDescription(String raw) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null) return tr("screen.academy.darkmatter_creation.missing_part", shortId(raw));
         return DarkmatterCreatureRegistries.part(id)
                 .map(type -> localizedOrFallback(type.descriptionTranslationKey(),
@@ -525,7 +534,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     private static String moduleName(String raw) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null) return shortId(raw);
         return DarkmatterCreatureRegistries.module(id)
                 .map(type -> localizedOrFallback(type.translationKey(), shortId(raw)))
@@ -533,7 +542,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     private static String moduleDescription(String raw) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null) return tr("screen.academy.darkmatter_creation.missing_part", shortId(raw));
         return DarkmatterCreatureRegistries.module(id)
                 .map(type -> localizedOrFallback(type.descriptionTranslationKey(),
@@ -542,7 +551,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     private static int moduleCost(String raw) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         return id == null ? 0 : DarkmatterCreatureRegistries.module(id)
                 .map(type -> type.budgetCost()).orElse(0);
     }
@@ -553,7 +562,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     }
 
     private static String dimensionName(String raw) {
-        var id = Identifier.tryParse(raw);
+        var id = ResourceLocation.tryParse(raw);
         if (id == null) return raw;
         return localizedOrFallback("dimension." + id.getNamespace() + "." + id.getPath(), raw);
     }

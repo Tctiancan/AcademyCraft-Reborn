@@ -86,7 +86,7 @@ public final class FlowSense extends Skill {
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_M,
                         InputConstants.RELEASE, InputConstants.MOD_ALT));
-        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, _ -> Client.toggle());
+        InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused335 -> Client.toggle());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),
                 new AbilitySystemClient.SkillInfo(

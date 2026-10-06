@@ -2,7 +2,7 @@ package org.academy.mixin.client;
 
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.extract.LevelExtractor;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.client.ability.mentalout.MentalIntrusionClientState;
@@ -36,7 +36,7 @@ public abstract class MixinLevelExtractor {
         }
         // Vanilla additionally requires the entity's chunk section to be compiled and
         // visible. A fast player can outrun that compilation and blink every other frame.
-        if (entity instanceof Avatar avatar && WingFlightPose.hasActiveFlightPose(avatar)) {
+        if (entity instanceof Player avatar && WingFlightPose.hasActiveFlightPose(avatar)) {
             cir.setReturnValue(true);
         }
     }

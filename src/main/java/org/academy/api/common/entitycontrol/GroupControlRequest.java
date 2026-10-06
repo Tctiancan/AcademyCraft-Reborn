@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -10,7 +10,7 @@ import java.util.Objects;
 /** Server-authoritative request for applying one high-level order to several living entities. */
 public record GroupControlRequest(
         ServerPlayer controller,
-        Identifier source,
+        ResourceLocation source,
         List<LivingEntity> subjects,
         GroupControlCommand command,
         int priority,
@@ -18,7 +18,7 @@ public record GroupControlRequest(
 ) {
     public GroupControlRequest(
             ServerPlayer controller,
-            Identifier source,
+            ResourceLocation source,
             List<LivingEntity> subjects,
             GroupControlCommand command,
             int priority

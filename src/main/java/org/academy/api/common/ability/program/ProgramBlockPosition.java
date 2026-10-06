@@ -1,13 +1,13 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 
 /**
  * An integral block position whose dimension cannot be lost through an implicit conversion.
  */
-public record ProgramBlockPosition(Identifier dimension, int x, int y, int z) {
+public record ProgramBlockPosition(ResourceLocation dimension, int x, int y, int z) {
     public ProgramBlockPosition {
         Objects.requireNonNull(dimension, "dimension");
     }

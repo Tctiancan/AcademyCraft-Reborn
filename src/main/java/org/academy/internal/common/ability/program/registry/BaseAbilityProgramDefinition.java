@@ -6,7 +6,7 @@ import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatal
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 
 import java.util.List;
@@ -21,7 +21,7 @@ public final class BaseAbilityProgramDefinition {
     private BaseAbilityProgramDefinition() {
     }
 
-    public static AbilityProgramDefinition create(Identifier category) {
+    public static AbilityProgramDefinition create(ResourceLocation category) {
         Objects.requireNonNull(category, "category");
         var entryId = entryId(category);
         var entryType = entryType(category);
@@ -40,21 +40,21 @@ public final class BaseAbilityProgramDefinition {
         return new AbilityProgramDefinition(
                 category,
                 Map.of(entryId, entryType),
-                _ -> null,
+                unused726 -> null,
                 editor,
                 ProgramLimits.DEFAULT
         );
     }
 
-    public static Identifier entryId(Identifier category) {
+    public static ResourceLocation entryId(ResourceLocation category) {
         Objects.requireNonNull(category, "category");
-        return Identifier.fromNamespaceAndPath(
+        return ResourceLocation.fromNamespaceAndPath(
                 category.getNamespace(),
                 "program/" + category.getPath() + "/entry/on_cast"
         );
     }
 
-    public static ProgramNodeType<?> entryType(Identifier category) {
+    public static ProgramNodeType<?> entryType(ResourceLocation category) {
         return new EntryNodeType(Objects.requireNonNull(category, "category"));
     }
 
@@ -62,7 +62,7 @@ public final class BaseAbilityProgramDefinition {
         INSTANCE
     }
 
-    private record EntryNodeType(Identifier category)
+    private record EntryNodeType(ResourceLocation category)
             implements ProgramNodeType<EmptyConfiguration> {
         private EntryNodeType {
             Objects.requireNonNull(category, "category");

@@ -2,18 +2,18 @@ package org.academy.internal.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.api.client.render.Render;
 import org.academy.api.client.render.post.PostEffect;
-import org.academy.internal.client.renderer.entity.state.KineticShockwaveRenderState;
 import org.academy.internal.common.world.entity.skill.KineticShockwave;
 
 public final class KineticShockwaveRenderer
-        extends EntityRenderer<KineticShockwave, KineticShockwaveRenderState> {
+        extends EntityRenderer<KineticShockwave> {
     public KineticShockwaveRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
@@ -33,12 +33,6 @@ public final class KineticShockwaveRenderer
         poseStack.popPose();
     }
 
-    @Override
-    public void submit(KineticShockwaveRenderState state, PoseStack poseStack,
-                       SubmitNodeCollector collector, CameraRenderState cameraState) {
-        renderRings(poseStack, state.radius, state.progress, state.intensity, state.xRot, state.yRot);
-    }
-
     public static void renderRings(PoseStack poseStack, float radius, float progress,
                                    float intensity, float xRot, float yRot) {
         if (radius <= 0.01f || progress >= 1.0f) return;
@@ -55,22 +49,14 @@ public final class KineticShockwaveRenderer
     }
 
     @Override
-    public KineticShockwaveRenderState createRenderState() {
-        return new KineticShockwaveRenderState();
+    public void render(KineticShockwave entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        var progress = Mth.clamp((entity.tickCount + partialTick) / entity.getLifeTicks(), 0.0f, 1.0f);
+        var radius = entity.getMaxRadius() * progress;
+        renderRings(poseStack, radius, progress, entity.getIntensity(), entity.getXRot(), entity.getYRot());
     }
 
     @Override
-    public void extractRenderState(KineticShockwave entity, KineticShockwaveRenderState state, float partialTick) {
-        super.extractRenderState(entity, state, partialTick);
-        state.progress = Mth.clamp((entity.tickCount + partialTick) / entity.getLifeTicks(), 0.0f, 1.0f);
-        state.radius = entity.getMaxRadius() * state.progress;
-        state.intensity = entity.getIntensity();
-        state.xRot = entity.getXRot();
-        state.yRot = entity.getYRot();
-    }
-
-    @Override
-    protected boolean affectedByCulling(KineticShockwave entity) {
-        return false;
+    public ResourceLocation getTextureLocation(KineticShockwave entity) {
+        return MissingTextureAtlasSprite.getLocation();
     }
 }

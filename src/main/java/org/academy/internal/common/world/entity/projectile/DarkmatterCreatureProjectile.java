@@ -1,6 +1,7 @@
 package org.academy.internal.common.world.entity.projectile;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -11,11 +12,9 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.projectile.ItemSupplier;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.EntityHitResult;
 import org.academy.AcademyCraft;
@@ -33,7 +32,7 @@ import java.util.UUID;
  * Physical direct/homing cannon round fired by a blueprint-created construct.
  */
 public final class DarkmatterCreatureProjectile extends AbstractArrow implements ItemSupplier {
-    private static final Identifier PENETRATION_ID =
+    private static final ResourceLocation PENETRATION_ID =
             AcademyCraft.academy("darkmatter_creature_projectile_penetration");
 
     private UUID creatorId;
@@ -162,32 +161,31 @@ public final class DarkmatterCreatureProjectile extends AbstractArrow implements
     }
 
     @Override
-    protected void readAdditionalSaveData(ValueInput input) {
-        super.readAdditionalSaveData(input);
-        creatorId = parseUuid(input.getString("academy_creator").orElse(""));
-        targetId = parseUuid(input.getString("academy_target").orElse(""));
-        homing = input.getIntOr("academy_homing", 0) != 0;
-        damage = input.getIntOr("academy_damage_milli", 1_000) / 1_000.0f;
-        penetration = input.getIntOr("academy_penetration_milli", 0) / 1_000.0f;
-        betaPower = input.getIntOr("academy_beta_milli", 0) / 1_000.0f;
-        speed = input.getIntOr("academy_speed_milli", 1_200) / 1_000.0f;
-        maximumLifetime = Math.max(20, input.getIntOr("academy_lifetime", 60));
-        outputAdjustmentBypassed = input.getIntOr(
-                "academy_output_adjustment_bypassed", 0) != 0;
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        creatorId = parseUuid(tag.contains("academy_creator", CompoundTag.TAG_STRING) ? tag.getString("academy_creator") : "");
+        targetId = parseUuid(tag.contains("academy_target", CompoundTag.TAG_STRING) ? tag.getString("academy_target") : "");
+        homing = (tag.contains("academy_homing", CompoundTag.TAG_INT) ? tag.getInt("academy_homing") : 0) != 0;
+        damage = (tag.contains("academy_damage_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_damage_milli") : 1_000) / 1_000.0f;
+        penetration = (tag.contains("academy_penetration_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_penetration_milli") : 0) / 1_000.0f;
+        betaPower = (tag.contains("academy_beta_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_beta_milli") : 0) / 1_000.0f;
+        speed = (tag.contains("academy_speed_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_speed_milli") : 1_200) / 1_000.0f;
+        maximumLifetime = Math.max(20, tag.contains("academy_lifetime", CompoundTag.TAG_INT) ? tag.getInt("academy_lifetime") : 60);
+        outputAdjustmentBypassed = (tag.contains("academy_output_adjustment_bypassed", CompoundTag.TAG_INT) ? tag.getInt("academy_output_adjustment_bypassed") : 0) != 0;
     }
 
     @Override
-    protected void addAdditionalSaveData(ValueOutput output) {
-        super.addAdditionalSaveData(output);
-        if (creatorId != null) output.putString("academy_creator", creatorId.toString());
-        if (targetId != null) output.putString("academy_target", targetId.toString());
-        output.putInt("academy_homing", homing ? 1 : 0);
-        output.putInt("academy_damage_milli", Math.round(damage * 1_000.0f));
-        output.putInt("academy_penetration_milli", Math.round(penetration * 1_000.0f));
-        output.putInt("academy_beta_milli", Math.round(betaPower * 1_000.0f));
-        output.putInt("academy_speed_milli", Math.round(speed * 1_000.0f));
-        output.putInt("academy_lifetime", maximumLifetime);
-        output.putInt(
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        if (creatorId != null) tag.putString("academy_creator", creatorId.toString());
+        if (targetId != null) tag.putString("academy_target", targetId.toString());
+        tag.putInt("academy_homing", homing ? 1 : 0);
+        tag.putInt("academy_damage_milli", Math.round(damage * 1_000.0f));
+        tag.putInt("academy_penetration_milli", Math.round(penetration * 1_000.0f));
+        tag.putInt("academy_beta_milli", Math.round(betaPower * 1_000.0f));
+        tag.putInt("academy_speed_milli", Math.round(speed * 1_000.0f));
+        tag.putInt("academy_lifetime", maximumLifetime);
+        tag.putInt(
                 "academy_output_adjustment_bypassed", outputAdjustmentBypassed ? 1 : 0);
     }
 

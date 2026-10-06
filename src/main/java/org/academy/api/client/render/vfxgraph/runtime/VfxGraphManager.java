@@ -2,9 +2,9 @@ package org.academy.api.client.render.vfxgraph.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.api.client.render.texture.GpuTextureView;
 import net.minecraft.client.Minecraft;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import org.academy.AcademyCraft;
 import org.academy.api.client.render.graph.assets.GraphAssets;
@@ -160,7 +160,7 @@ public final class VfxGraphManager {
                 : (now - lastRenderNanos) / 1e9f;
         float dt = Math.min(elapsed, 0.1f);
         lastRenderNanos = now;
-        float partialTick = Minecraft.getInstance().getDeltaTracker().getGameTimeDeltaPartialTick(false);
+        float partialTick = Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false);
         int visible = 0, culled = 0, simulated = 0;
         var iterator = effects.iterator();
         while (iterator.hasNext()) {
@@ -215,7 +215,7 @@ public final class VfxGraphManager {
         return false;
     }
     /** Refresh a uniquely identified analytic effect, retaining its compiled graph and buffers. */
-    public ActiveEffect spawnOrRefresh(Identifier assetId, Vector3f position, String refreshKey) {
+    public ActiveEffect spawnOrRefresh(ResourceLocation assetId, Vector3f position, String refreshKey) {
         if (refreshKey == null || refreshKey.isEmpty()) throw new IllegalArgumentException("Empty refresh key");
         var key = normalizedKey(assetId);
         var iterator = effects.iterator();
@@ -236,7 +236,7 @@ public final class VfxGraphManager {
         return effect;
     }
 
-    public ActiveEffect spawn(Identifier assetId, Vector3f position) {
+    public ActiveEffect spawn(ResourceLocation assetId, Vector3f position) {
         var key = normalizedKey(assetId);
         var container = containerAssets.get(key);
         if (container != null) {
@@ -269,7 +269,7 @@ public final class VfxGraphManager {
     /**
      * 资产键统一为不带 .json 的 identifier 字符串（与命令/API 入参一致）。
      */
-    private static String normalizedKey(Identifier assetId) {
+    private static String normalizedKey(ResourceLocation assetId) {
         var s = assetId.toString();
         return s.endsWith(".json") ? s.substring(0, s.length() - 5) : s;
     }
@@ -282,10 +282,10 @@ public final class VfxGraphManager {
      * 缓存键仍用去掉 .json 的 id。dev 模式下资源管理器可能未挂载 {@code src/main/resources}，
      * 故 classpath 兜底。</p>
      */
-    private @Nullable Graph loadFromResourceManager(Identifier assetId) {
+    private @Nullable Graph loadFromResourceManager(ResourceLocation assetId) {
         var key = normalizedKey(assetId);
         var path = assetId.getPath().endsWith(".json") ? assetId.getPath() : assetId.getPath() + ".json";
-        var fullId = Identifier.fromNamespaceAndPath(assetId.getNamespace(), path);
+        var fullId = ResourceLocation.fromNamespaceAndPath(assetId.getNamespace(), path);
         try {
             var resourceManager = Minecraft.getInstance().getResourceManager();
             var resource = resourceManager.getResource(fullId).orElse(null);
@@ -340,7 +340,7 @@ public final class VfxGraphManager {
     /**
      * spawn 并跟随实体（每 tick 对齐实体位置，实体移除即停）。
      */
-    public ActiveEffect spawnFollow(Identifier assetId, Entity entity) {
+    public ActiveEffect spawnFollow(ResourceLocation assetId, Entity entity) {
         var effect = spawn(assetId, new Vector3f((float) entity.getX(), (float) entity.getY(), (float) entity.getZ()));
         effect.follow(entity);
         return effect;
@@ -364,14 +364,14 @@ public final class VfxGraphManager {
     /**
      * 从磁盘文件加载/重载单个资产（dev 热重载，M15-05）。
      */
-    public void reloadFromFile(Identifier assetId, Path file) throws IOException {
+    public void reloadFromFile(ResourceLocation assetId, Path file) throws IOException {
         reloadFromContent(assetId, Files.readString(file));
     }
 
     /**
      * 以已读取的 JSON 文本加载/重载单个资产（供主线程/后台线程调用）。
      */
-    public void reloadFromContent(Identifier assetId, String jsonText) {
+    public void reloadFromContent(ResourceLocation assetId, String jsonText) {
         var key = assetId.toString();
         var json = new Gson().fromJson(jsonText, JsonObject.class);
         if (isContainerJson(json)) {
@@ -389,7 +389,7 @@ public final class VfxGraphManager {
     /**
      * 注册（或重载）一个资产并刷新使用它的存活效果。解码失败则跳过（不中断重载）。
      */
-    public void registerAsset(Identifier assetId, JsonObject json) {
+    public void registerAsset(ResourceLocation assetId, JsonObject json) {
         var key = assetId.toString();
         if (isContainerJson(json)) {
             try {

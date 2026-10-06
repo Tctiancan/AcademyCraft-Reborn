@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -12,7 +12,7 @@ public record AbilityProgram(
         int schemaVersion,
         UUID id,
         String name,
-        Identifier category,
+        ResourceLocation category,
         ProgramGraph graph,
         ProgramEditorLayout editorLayout
 ) {

@@ -1,7 +1,7 @@
 package org.academy.internal.server.ability;
 
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.AbilityCategory;
@@ -50,7 +50,7 @@ public final class PlayerDataManager implements AbilitySubsystem {
     public AbilityCategory getPlayerAbilityCategory(UUID uuid) {
         return Optional.ofNullable(getData(uuid))
                 .map(Player::getAbilityCategory)
-                .map(Identifier::tryParse)
+                .map(ResourceLocation::tryParse)
                 .flatMap(Registries.ABILITY_CATEGORIES::get)
                 .map(Holder::value)
                 .orElse(AbilityCategories.LEVEL0.get());

@@ -1,7 +1,7 @@
 package org.academy.internal.server.time;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.server.time.TemporalChannel;
 import org.academy.api.server.time.TemporalPauseSource;
 
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 /** Immutable server-thread snapshot used by the operator tick debugger. */
 public record TemporalTickDiagnostics(
-        Identifier dimension,
+        ResourceLocation dimension,
         BlockPos position,
         long gameTime,
         long clockTime,

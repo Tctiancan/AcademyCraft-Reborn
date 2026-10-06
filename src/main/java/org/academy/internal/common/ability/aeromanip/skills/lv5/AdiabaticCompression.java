@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.aeromanip.skills.lv5;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -71,9 +71,9 @@ public final class AdiabaticCompression extends Skill {
     static final int DEBUFF_DURATION_TICKS = 60;
     static final int DAMAGE_INTERVAL_TICKS = 10;
     static final float BASE_DAMAGE_PER_STACK = 0.5f;
-    private static final Identifier MOVEMENT_SLOW_ID =
+    private static final ResourceLocation MOVEMENT_SLOW_ID =
             AcademyCraft.academy("adiabatic_compression_movement");
-    private static final Identifier JUMP_SLOW_ID =
+    private static final ResourceLocation JUMP_SLOW_ID =
             AcademyCraft.academy("adiabatic_compression_jump");
     private static final Map<UUID, SlowState> SLOWED_TARGETS = new HashMap<>();
     private static int serverTicks;
@@ -132,7 +132,7 @@ public final class AdiabaticCompression extends Skill {
             AcademyCraftClient.Config.INSTANCE.save();
         }
         InputSystem.addMaintainedKeyBinding(
-                Client.KEY_NAME_CAST, binding, _ -> Client.start(), _ -> Client.stop());
+                Client.KEY_NAME_CAST, binding, unused399 -> Client.start(), unused400 -> Client.stop());
     }
 
     @Override
@@ -247,11 +247,11 @@ public final class AdiabaticCompression extends Skill {
                         "compressedAirIntervalTicks", 10.0f)));
                 if ((activeTicks - 1) % costInterval == 0 && !skill.executeContinuousWithResource(
                         player,
-                        _ -> skill.getCpCost(player),
-                        _ -> Math.max(0.0f, AeromanipConfig.skillFloat(
+                        unused401 -> skill.getCpCost(player),
+                        unused402 -> Math.max(0.0f, AeromanipConfig.skillFloat(
                                 player, SkillNames.ADIABATIC_COMPRESSION,
                                 "compressedAirPerInterval", 8.0f)),
-                        (_, _) -> { },
+                        (unused403, unused404) -> { },
                         true)) {
                     end();
                     return;
@@ -358,7 +358,7 @@ public final class AdiabaticCompression extends Skill {
                 new SlowState(new WeakReference<>(target), serverTicks + DEBUFF_DURATION_TICKS));
     }
 
-    private static void syncSlowModifier(AttributeInstance attribute, Identifier id) {
+    private static void syncSlowModifier(AttributeInstance attribute, ResourceLocation id) {
         if (attribute == null) return;
         var current = attribute.getModifier(id);
         var amount = movementModifierAmount();

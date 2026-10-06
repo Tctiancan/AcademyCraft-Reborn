@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.field;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class AirflowFieldTest {
     private static final ResourceKey<Level> DIMENSION = ResourceKey.create(
-            Registries.DIMENSION, Identifier.fromNamespaceAndPath("test", "airflow_field"));
+            Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath("test", "airflow_field"));
 
     private static AirflowField field(AirflowField.Shape shape, Vec3 center, Vec3 direction, double radius, double length) {
         return new AirflowField(UUID.randomUUID(), UUID.randomUUID(), DIMENSION,

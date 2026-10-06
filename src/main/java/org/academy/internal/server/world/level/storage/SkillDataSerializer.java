@@ -1,7 +1,7 @@
 package org.academy.internal.server.world.level.storage;
 
 import com.google.gson.*;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.skilldata.CommonSkillData;
 import org.academy.internal.common.skilldata.SkillData;
@@ -21,14 +21,14 @@ public class SkillDataSerializer<T extends SkillData> implements JsonSerializer<
     private static final String LEGACY_REFLECTION_FILTER_DATA_SUFFIX =
             ".accelerator.skills.ReflectionFilter$Data";
 
-    private static final Map<Identifier, SkillStateType<?>> STATE_TYPES = new HashMap<>();
-    private static final Map<Identifier, Class<? extends SkillData>> TYPE_MAP = new HashMap<>();
+    private static final Map<ResourceLocation, SkillStateType<?>> STATE_TYPES = new HashMap<>();
+    private static final Map<ResourceLocation, Class<? extends SkillData>> TYPE_MAP = new HashMap<>();
 
     static {
         TYPE_MAP.put(CommonSkillData.ID, CommonSkillData.class);
     }
 
-    public static void registerType(Identifier id, Class<? extends SkillData> clazz) {
+    public static void registerType(ResourceLocation id, Class<? extends SkillData> clazz) {
         Objects.requireNonNull(id, "id");
         Objects.requireNonNull(clazz, "clazz");
         var previous = TYPE_MAP.putIfAbsent(id, clazz);
@@ -77,7 +77,7 @@ public class SkillDataSerializer<T extends SkillData> implements JsonSerializer<
 
         if (typeStr != null) {
             try {
-                var typeId = Identifier.parse(typeStr);
+                var typeId = ResourceLocation.parse(typeStr);
                 var registeredClass = TYPE_MAP.get(typeId);
                 var stateType = STATE_TYPES.get(typeId);
                 if (stateType != null) {

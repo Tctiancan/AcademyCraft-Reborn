@@ -35,7 +35,8 @@ class   SubtreeCache(
          * 由 [Canvas.addRecomposed] 每次调用预计算一次.
          */
         fun recomposePose(worldPose: PoseStack.Pose, current: Matrix4f, invRecordOrigin: Matrix4f): PoseStack.Pose {
-            val result = PoseStack.Pose()
+            // 1.21.1: `PoseStack.Pose()` 无公开无参构造 (26.2 才有), 借 `copy()` 起容器再覆写矩阵.
+            val result = worldPose.copy()
             val local = Matrix4f()
             invRecordOrigin.mul(worldPose.pose(), local)
             current.mul(local, result.pose())

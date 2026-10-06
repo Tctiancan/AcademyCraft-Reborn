@@ -1,9 +1,9 @@
 package org.academy.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.entity.player.AvatarRenderer;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.item.ItemStack;
 import org.academy.internal.client.animation.AbilityDeveloperSleepClient;
@@ -17,11 +17,11 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @SuppressWarnings("AddedMixinMembersNamePattern")
-@Mixin(AvatarRenderer.class)
+@Mixin(PlayerRenderer.class)
 public abstract class MixinAvatarRenderer {
     @Inject(method = "setupRotations*", at = @At("HEAD"))
     private void alignWithAbilityDeveloperPod(
-            AvatarRenderState state,
+            PlayerRenderState state,
             PoseStack poseStack,
             float bodyRot,
             float entityScale,
@@ -31,7 +31,7 @@ public abstract class MixinAvatarRenderer {
     }
 
     @Inject(method = "setupRotations*", at = @At("RETURN"))
-    private void captureModelRootMatrix(AvatarRenderState state, PoseStack poseStack, float bodyRot, float entityScale, CallbackInfo ci) {
+    private void captureModelRootMatrix(PlayerRenderState state, PoseStack poseStack, float bodyRot, float entityScale, CallbackInfo ci) {
         var matrix = new Matrix4f(poseStack.last().pose());
         matrix.scale(-1.0f, -1.0f, 1.0f);
         matrix.scale(0.9375f);
@@ -40,11 +40,11 @@ public abstract class MixinAvatarRenderer {
     }
 
     @Inject(
-            method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V",
+            method = "extractRenderState(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;F)V",
             at = @At("RETURN")
     )
     private void hideMagneticWeaponInMainHand(
-            Avatar avatar, AvatarRenderState state, float partialTick, CallbackInfo ci
+            Player avatar, PlayerRenderState state, float partialTick, CallbackInfo ci
     ) {
         var data = avatar.getData(AttachmentTypes.MAGNETIC_WEAPON_DATA.get());
         if (!data.active() || !data.hideMainHand()) return;
@@ -58,11 +58,11 @@ public abstract class MixinAvatarRenderer {
     }
 
     @Inject(
-            method = "extractRenderState(Lnet/minecraft/world/entity/Avatar;Lnet/minecraft/client/renderer/entity/state/AvatarRenderState;F)V",
+            method = "extractRenderState(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/client/renderer/entity/state/PlayerRenderState;F)V",
             at = @At("RETURN")
     )
     private void extractWingFlightAnimation(
-            Avatar avatar, AvatarRenderState state, float partialTick, CallbackInfo ci
+            Player avatar, PlayerRenderState state, float partialTick, CallbackInfo ci
     ) {
         WingFlightAnimationClient.prepareRenderState(avatar, state, partialTick);
     }

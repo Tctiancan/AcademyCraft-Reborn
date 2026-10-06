@@ -2,7 +2,7 @@ package org.academy.mixin.client;
 
 import net.minecraft.client.resources.model.ModelDiscovery;
 import net.minecraft.client.resources.model.UnbakedModel;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.model.cuboid.CoinModelGenerator;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ModelDiscovery.class)
 public abstract class MixinModelDiscovery {
     @Shadow
-    public abstract void addSpecialModel(Identifier id, UnbakedModel model);
+    public abstract void addSpecialModel(ResourceLocation id, UnbakedModel model);
 
     /**
      * 用于添加 CoinModelGenerator 喵, 没 API 只能 mixin 了喵

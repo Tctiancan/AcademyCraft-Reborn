@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.darkmatter.resource;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -10,7 +10,7 @@ import org.academy.AcademyCraft;
  * Makes temporary dark-matter absorption compatible with the MAX_ABSORPTION attribute.
  */
 public final class DarkmatterAbsorption {
-    private static final Identifier CAPACITY_ID = AcademyCraft.academy("darkmatter_absorption_capacity");
+    private static final ResourceLocation CAPACITY_ID = AcademyCraft.academy("darkmatter_absorption_capacity");
 
     private DarkmatterAbsorption() {
     }

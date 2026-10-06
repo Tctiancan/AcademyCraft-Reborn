@@ -1,14 +1,14 @@
 package org.academy.internal.common.network;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.vfx.SkillVfxState;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SkillVfxPacketTest {
-    private static final Identifier DIMENSION = Identifier.fromNamespaceAndPath("minecraft", "overworld");
+    private static final ResourceLocation DIMENSION = ResourceLocation.fromNamespaceAndPath("minecraft", "overworld");
 
     private SkillVfxState roundTrip(SkillVfxState state) {
         var buffer = Unpooled.buffer();

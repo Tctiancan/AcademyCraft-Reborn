@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import org.academy.api.common.registries.Registries;
 import java.util.Objects;
@@ -16,7 +16,7 @@ public record ProgramProfile(ResourceKey<ProgramNodeType<?>> entryNode, ProgramL
     public static ProgramProfile standard(ResourceKey<ProgramNodeType<?>> entryNode) {
         return new ProgramProfile(entryNode, ProgramLimits.DEFAULT, ProgramSpatialLimits.DEFAULT);
     }
-    public static ProgramProfile standard(Identifier entryNode) {
+    public static ProgramProfile standard(ResourceLocation entryNode) {
         return standard(ResourceKey.create(Registries.Keys.PROGRAM_NODE_TYPES, entryNode));
     }
 }

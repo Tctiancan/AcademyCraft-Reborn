@@ -434,7 +434,7 @@ public final class PlayerControlSessionManager {
             FREEZE_ANCHORS.remove(player.getUUID());
             return false;
         }
-        var anchor = FREEZE_ANCHORS.computeIfAbsent(player.getUUID(), _ ->
+        var anchor = FREEZE_ANCHORS.computeIfAbsent(player.getUUID(), unused512 ->
                 new Anchor(player.position(), player.getYRot(), player.getXRot()));
         correct(player, anchor, packet.getYRot(player.getYRot()), packet.getXRot(player.getXRot()));
         return true;

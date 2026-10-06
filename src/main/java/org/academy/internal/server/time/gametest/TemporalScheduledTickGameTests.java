@@ -11,7 +11,7 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
@@ -39,7 +39,7 @@ import java.util.Set;
 /** End-to-end validation for scheduled-tick pause and resume rebasing. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalScheduledTickGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE =
+    private static final ResourceLocation TEST_INSTANCE_TYPE =
             AcademyCraft.academy("temporal_scheduled_tick_function");
     private static final long ORIGINAL_DELAY = 40L;
     private static final long SUB_TICK_ORDER = -23L;
@@ -64,7 +64,7 @@ public final class TemporalScheduledTickGameTests {
         );
         var data = new TestData<>(
                 environment,
-                Identifier.withDefaultNamespace("empty"),
+                ResourceLocation.withDefaultNamespace("empty"),
                 30,
                 0,
                 true,

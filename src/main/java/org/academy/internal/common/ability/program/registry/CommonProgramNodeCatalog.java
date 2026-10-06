@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.program.registry;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramNodePurity;
 import org.academy.api.common.ability.program.ProgramEntityPositionAnchor;
 import org.academy.api.common.ability.program.ProgramNodeRole;
@@ -35,17 +35,17 @@ import java.util.stream.IntStream;
  * data evaluation.</p>
  */
 public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
-    private static final Codec<Identifier> IDENTIFIER_CODEC = Codec.STRING.xmap(
-            Identifier::parse,
-            Identifier::toString
+    private static final Codec<ResourceLocation> IDENTIFIER_CODEC = Codec.STRING.xmap(
+            ResourceLocation::parse,
+            ResourceLocation::toString
     );
-    private static final Map<Identifier, ProgramValueType> VARIABLE_TYPES = variableTypes();
+    private static final Map<ResourceLocation, ProgramValueType> VARIABLE_TYPES = variableTypes();
     public static final CommonProgramNodeCatalog INSTANCE = new CommonProgramNodeCatalog();
 
-    private final Map<Identifier, ProgramNodeType<?>> types;
+    private final Map<ResourceLocation, ProgramNodeType<?>> types;
 
     private CommonProgramNodeCatalog() {
-        var result = new HashMap<Identifier, ProgramNodeType<?>>();
+        var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         registerConstants(result);
         registerScalarLogic(result);
         registerTextOperations(result);
@@ -61,21 +61,21 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     @Override
-    public ProgramNodeType<?> find(Identifier id) {
+    public ProgramNodeType<?> find(ResourceLocation id) {
         return types.get(id);
     }
 
-    public Map<Identifier, ProgramNodeType<?>> types() {
+    public Map<ResourceLocation, ProgramNodeType<?>> types() {
         return types;
     }
 
-    public static ProgramValueType variableType(Identifier id) {
+    public static ProgramValueType variableType(ResourceLocation id) {
         var type = VARIABLE_TYPES.get(id);
         if (type == null) throw new IllegalArgumentException("Unsupported program variable type " + id);
         return type;
     }
 
-    private static void registerConstants(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerConstants(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.SCALAR_CONSTANT, type(
                 ScalarConfiguration.CODEC,
                 configuration -> outputSchema("value", configuration.kind().type()),
@@ -84,43 +84,43 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
         put(result, CommonProgramNodeIds.BOOLEAN_CONSTANT, type(
                 BooleanConfiguration.CODEC,
-                _ -> outputSchema("value", ProgramValueTypes.BOOLEAN),
+                unused727 -> outputSchema("value", ProgramValueTypes.BOOLEAN),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.INTEGER_CONSTANT, type(
                 IntegerConfiguration.CODEC,
-                _ -> outputSchema("value", ProgramValueTypes.INTEGER),
+                unused728 -> outputSchema("value", ProgramValueTypes.INTEGER),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.BIG_INTEGER_CONSTANT, type(
                 BigIntegerConfiguration.CODEC,
-                _ -> outputSchema("value", ProgramValueTypes.BIG_INTEGER),
+                unused729 -> outputSchema("value", ProgramValueTypes.BIG_INTEGER),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.FLOAT_CONSTANT, type(
                 FloatConfiguration.CODEC,
-                _ -> outputSchema("value", ProgramValueTypes.FLOAT),
+                unused730 -> outputSchema("value", ProgramValueTypes.FLOAT),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.TEXT_CONSTANT, type(
                 TextConfiguration.CODEC,
-                _ -> outputSchema("value", ProgramValueTypes.TEXT),
+                unused731 -> outputSchema("value", ProgramValueTypes.TEXT),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.TAG_CONSTANT, type(
                 TagConfiguration.CODEC,
-                _ -> outputSchema("value", ProgramValueTypes.TAG),
+                unused732 -> outputSchema("value", ProgramValueTypes.TAG),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
     }
 
-    private static void registerScalarLogic(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerScalarLogic(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.NUMERIC_ARITHMETIC, type(
                 NumericArithmeticConfiguration.CODEC,
                 configuration -> configuration.operator() == ArithmeticOperator.ABSOLUTE
@@ -224,7 +224,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
         put(result, CommonProgramNodeIds.TEXT_COMPARE, type(
                 TextComparisonConfiguration.CODEC,
-                _ -> new ProgramNodeSchema(
+                unused733 -> new ProgramNodeSchema(
                         List.of(
                                 ProgramPortDefinition.requiredInput("left", ProgramValueTypes.TEXT),
                                 ProgramPortDefinition.requiredInput("right", ProgramValueTypes.TEXT)
@@ -236,10 +236,10 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
     }
 
-    private static void registerTextOperations(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerTextOperations(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.TEXT_SPLIT, type(
                 TextSplitConfiguration.CODEC,
-                _ -> new ProgramNodeSchema(List.of(
+                unused734 -> new ProgramNodeSchema(List.of(
                         ProgramPortDefinition.requiredInput("text", ProgramValueTypes.TEXT),
                         ProgramPortDefinition.optionalInput("fragment_index", ProgramValueTypes.INTEGER)
                 ), List.of(
@@ -259,44 +259,44 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
                 )), ProgramNodeRole.VALUE, ProgramNodePurity.STATE));
     }
 
-    private static void registerControlAndState(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerControlAndState(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.TRIGGER_HURT, type(
                 unitCodec(),
-                _ -> entrySchema(),
+                unused735 -> entrySchema(),
                 ProgramNodeRole.ENTRY,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.TRIGGER_LOOP, type(
                 LoopTriggerConfiguration.CODEC,
-                _ -> entrySchema(),
+                unused736 -> entrySchema(),
                 ProgramNodeRole.ENTRY,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.TRIGGER_MELEE, type(
                 unitCodec(),
-                _ -> entrySchema(),
+                unused737 -> entrySchema(),
                 ProgramNodeRole.ENTRY,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.TRIGGER_MOVEMENT, type(
                 MovementTriggerConfiguration.CODEC,
-                _ -> entrySchema(),
+                unused738 -> entrySchema(),
                 ProgramNodeRole.ENTRY,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.TRIGGER_HEALTH_THRESHOLD, type(
                 HealthThresholdTriggerConfiguration.CODEC,
-                _ -> entrySchema(),
+                unused739 -> entrySchema(),
                 ProgramNodeRole.ENTRY,
                 ProgramNodePurity.STATE
         ));
         put(result, CommonProgramNodeIds.TRIGGER_CHAT, type(
-                ChatTriggerConfiguration.CODEC, _ -> entrySchema(),
+                ChatTriggerConfiguration.CODEC, unused740 -> entrySchema(),
                 ProgramNodeRole.ENTRY, ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.BRANCH, type(
                 unitCodec(),
-                _ -> new ProgramNodeSchema(
+                unused741 -> new ProgramNodeSchema(
                         List.of(
                                 flowInput(),
                                 ProgramPortDefinition.requiredInput("condition", ProgramValueTypes.BOOLEAN)
@@ -311,19 +311,19 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
                 CommonProgramNodeIds.CONTINUE_LOOP
         )) put(result, id, type(
                 unitCodec(),
-                _ -> new ProgramNodeSchema(List.of(flowInput()), List.of()),
+                unused742 -> new ProgramNodeSchema(List.of(flowInput()), List.of()),
                 ProgramNodeRole.CONTROL,
                 ProgramNodePurity.STATE
         ));
         put(result, CommonProgramNodeIds.STOP, type(
                 unitCodec(),
-                _ -> new ProgramNodeSchema(List.of(flowInput()), List.of()),
+                unused743 -> new ProgramNodeSchema(List.of(flowInput()), List.of()),
                 ProgramNodeRole.CONTROL,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.WAIT, type(
                 unitCodec(),
-                _ -> new ProgramNodeSchema(
+                unused744 -> new ProgramNodeSchema(
                         List.of(
                                 flowInput(),
                                 ProgramPortDefinition.requiredInput(
@@ -369,17 +369,17 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
         put(result, CommonProgramNodeIds.SHARED_VARIABLE_CLEAR, type(
                 SharedVariableNameConfiguration.CODEC,
-                _ -> new ProgramNodeSchema(List.of(flowInput()), List.of(flowOutput("flow"))),
+                unused745 -> new ProgramNodeSchema(List.of(flowInput()), List.of(flowOutput("flow"))),
                 ProgramNodeRole.CONTROL, ProgramNodePurity.STATE
         ));
         put(result, CommonProgramNodeIds.SHARED_VARIABLE_CLEAR_ALL, type(
                 unitCodec(),
-                _ -> new ProgramNodeSchema(List.of(flowInput()), List.of(flowOutput("flow"))),
+                unused746 -> new ProgramNodeSchema(List.of(flowInput()), List.of(flowOutput("flow"))),
                 ProgramNodeRole.CONTROL, ProgramNodePurity.STATE
         ));
         put(result, CommonProgramNodeIds.CHAT_READ, type(
                 ChatReadConfiguration.CODEC,
-                _ -> new ProgramNodeSchema(List.of(
+                unused747 -> new ProgramNodeSchema(List.of(
                         ProgramPortDefinition.optionalInput("distance", ProgramValueTypes.INTEGER),
                         ProgramPortDefinition.optionalInput("start", ProgramValueTypes.INTEGER),
                         ProgramPortDefinition.optionalInput("length", ProgramValueTypes.INTEGER)
@@ -391,7 +391,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
         put(result, CommonProgramNodeIds.CHAT_TRIGGER_MESSAGE, type(
                 unitCodec(),
-                _ -> new ProgramNodeSchema(List.of(), List.of(
+                unused748 -> new ProgramNodeSchema(List.of(), List.of(
                         ProgramPortDefinition.output("text", ProgramValueTypes.TEXT),
                         ProgramPortDefinition.output("exists", ProgramValueTypes.BOOLEAN)
                 )),
@@ -412,16 +412,16 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
     }
 
-    private static void registerSpatial(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerSpatial(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.WORLD_POSITION_CONSTANT, type(
                 WorldPositionConfiguration.CODEC,
-                _ -> outputSchema("position", ProgramValueTypes.WORLD_POSITION),
+                unused749 -> outputSchema("position", ProgramValueTypes.WORLD_POSITION),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.WORLD_POSITION_CONSTRUCT, type(
                 DimensionConfiguration.CODEC,
-                _ -> constructSchema(ProgramValueTypes.FLOAT, ProgramValueTypes.WORLD_POSITION),
+                unused750 -> constructSchema(ProgramValueTypes.FLOAT, ProgramValueTypes.WORLD_POSITION),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
@@ -448,13 +448,13 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
 
         put(result, CommonProgramNodeIds.BLOCK_POSITION_CONSTANT, type(
                 BlockPositionConfiguration.CODEC,
-                _ -> outputSchema("position", ProgramValueTypes.BLOCK_POSITION),
+                unused751 -> outputSchema("position", ProgramValueTypes.BLOCK_POSITION),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
         put(result, CommonProgramNodeIds.BLOCK_POSITION_CONSTRUCT, type(
                 DimensionConfiguration.CODEC,
-                _ -> constructSchema(ProgramValueTypes.INTEGER, ProgramValueTypes.BLOCK_POSITION),
+                unused752 -> constructSchema(ProgramValueTypes.INTEGER, ProgramValueTypes.BLOCK_POSITION),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
@@ -477,7 +477,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
 
         put(result, CommonProgramNodeIds.DIRECTION_CONSTANT, type(
                 DirectionConfiguration.CODEC,
-                _ -> outputSchema("direction", ProgramValueTypes.DIRECTION),
+                unused753 -> outputSchema("direction", ProgramValueTypes.DIRECTION),
                 ProgramNodeRole.VALUE,
                 ProgramNodePurity.PURE
         ));
@@ -522,7 +522,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
     }
 
-    private static void registerQueries(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerQueries(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.CASTER, queryType(outputSchema(
                 "entity", ProgramValueTypes.ENTITY_REFERENCE
         )));
@@ -552,7 +552,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
         put(result, CommonProgramNodeIds.ENTITY_POSITION, type(
                 EntityPositionConfiguration.CODEC,
-                _ -> unarySchema(
+                unused754 -> unarySchema(
                         "entity",
                         ProgramValueTypes.ENTITY_REFERENCE,
                         "position",
@@ -589,7 +589,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         )));
         put(result, CommonProgramNodeIds.ENTITY_DATA, type(
                 EntityDataConfiguration.CODEC,
-                _ -> unarySchema(
+                unused755 -> unarySchema(
                         "entity",
                         ProgramValueTypes.ENTITY_REFERENCE,
                         "value",
@@ -650,7 +650,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         )));
     }
 
-    private static void registerEquality(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerEquality(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.ENTITY_EQUAL, unitType(binarySchema(
                 ProgramValueTypes.ENTITY_REFERENCE,
                 ProgramValueTypes.BOOLEAN
@@ -669,7 +669,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         )));
     }
 
-    private static void registerFilters(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerFilters(Map<ResourceLocation, ProgramNodeType<?>> result) {
         var entitySetFilter = unarySchema(
                 "entities",
                 ProgramValueTypes.ENTITY_SET,
@@ -720,26 +720,26 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
             )));
         put(result, CommonProgramNodeIds.FILTER_ENTITY_TYPE, type(
                 EntityKindConfiguration.CODEC,
-                _ -> entitySetFilter,
+                unused756 -> entitySetFilter,
                 ProgramNodeRole.QUERY,
                 ProgramNodePurity.WORLD_QUERY
         ));
         put(result, CommonProgramNodeIds.FILTER_ENTITY_EXACT, type(
                 ExactFilterConfiguration.CODEC,
-                _ -> entitySetFilter,
+                unused757 -> entitySetFilter,
                 ProgramNodeRole.QUERY,
                 ProgramNodePurity.WORLD_QUERY
         ));
         put(result, CommonProgramNodeIds.FILTER_BLOCK_EXACT, type(
                 ExactFilterConfiguration.CODEC,
-                _ -> unarySchema("blocks", ProgramValueTypes.BLOCK_POSITION_SET,
+                unused758 -> unarySchema("blocks", ProgramValueTypes.BLOCK_POSITION_SET,
                         "blocks", ProgramValueTypes.BLOCK_POSITION_SET),
                 ProgramNodeRole.QUERY,
                 ProgramNodePurity.WORLD_QUERY
         ));
     }
 
-    private static void registerAdvancedValues(Map<Identifier, ProgramNodeType<?>> result) {
+    private static void registerAdvancedValues(Map<ResourceLocation, ProgramNodeType<?>> result) {
         put(result, CommonProgramNodeIds.RANDOM_NUMBER, type(
                 RandomNumberConfiguration.CODEC,
                 configuration -> outputSchema("value", configuration.kind().type()),
@@ -764,7 +764,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     private static void registerRandomCollectionValues(
-            Map<Identifier, ProgramNodeType<?>> result
+            Map<ResourceLocation, ProgramNodeType<?>> result
     ) {
         put(result, CommonProgramNodeIds.RANDOM_ENTITY, randomCollectionType(
                 "entities", ProgramValueTypes.ENTITY_SET,
@@ -804,7 +804,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ));
     }
 
-    private static String relationPort(Identifier id) {
+    private static String relationPort(ResourceLocation id) {
         if (id.equals(CommonProgramNodeIds.FILTER_ENTITY_TARGETED_BY)) return "target";
         if (id.equals(CommonProgramNodeIds.FILTER_ENTITY_LAST_DAMAGED_BY)) return "attacker";
         if (id.equals(CommonProgramNodeIds.FILTER_ENTITY_VISIBLE_FROM)) return "observer";
@@ -812,7 +812,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     private static void registerCollection(
-            Map<Identifier, ProgramNodeType<?>> result,
+            Map<ResourceLocation, ProgramNodeType<?>> result,
             CollectionDomain domain
     ) {
         var empty = outputSchema("values", domain.collectionType);
@@ -873,7 +873,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         put(result, domain.id("get"), unitType(get));
         put(result, domain.id("foreach"), type(
                 unitCodec(),
-                _ -> foreach,
+                unused759 -> foreach,
                 ProgramNodeRole.CONTROL,
                 ProgramNodePurity.STATE
         ));
@@ -992,11 +992,11 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     private static ProgramNodeType<Unit> unitType(ProgramNodeSchema schema) {
-        return type(unitCodec(), _ -> schema, ProgramNodeRole.VALUE, ProgramNodePurity.PURE);
+        return type(unitCodec(), unused760 -> schema, ProgramNodeRole.VALUE, ProgramNodePurity.PURE);
     }
 
     private static ProgramNodeType<Unit> queryType(ProgramNodeSchema schema) {
-        return type(unitCodec(), _ -> schema, ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY);
+        return type(unitCodec(), unused761 -> schema, ProgramNodeRole.QUERY, ProgramNodePurity.WORLD_QUERY);
     }
 
     private static Codec<Unit> unitCodec() {
@@ -1013,8 +1013,8 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     private static void put(
-            Map<Identifier, ProgramNodeType<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeType<?>> result,
+            ResourceLocation id,
             ProgramNodeType<?> type
     ) {
         if (result.putIfAbsent(id, type) != null) {
@@ -1022,8 +1022,8 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         }
     }
 
-    private static Map<Identifier, ProgramValueType> variableTypes() {
-        var result = new HashMap<Identifier, ProgramValueType>();
+    private static Map<ResourceLocation, ProgramValueType> variableTypes() {
+        var result = new HashMap<ResourceLocation, ProgramValueType>();
         for (var type : List.of(
                 ProgramValueTypes.BOOLEAN,
                 ProgramValueTypes.INTEGER,
@@ -1077,7 +1077,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
             this.collectionType = collectionType;
         }
 
-        public Identifier id(String operation) {
+        public ResourceLocation id(String operation) {
             return CommonProgramNodeIds.collection(path, operation);
         }
 
@@ -1162,7 +1162,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         ).apply(instance, LoopTriggerConfiguration::new));
     }
 
-    public record ValueTypeConfiguration(Identifier typeId) {
+    public record ValueTypeConfiguration(ResourceLocation typeId) {
         public static final Codec<ValueTypeConfiguration> CODEC = IDENTIFIER_CODEC
                 .fieldOf("type")
                 .xmap(ValueTypeConfiguration::new, ValueTypeConfiguration::typeId)
@@ -1886,7 +1886,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         }
     }
 
-    public record DimensionConfiguration(Identifier dimension) {
+    public record DimensionConfiguration(ResourceLocation dimension) {
         public static final Codec<DimensionConfiguration> CODEC = IDENTIFIER_CODEC
                 .fieldOf("dimension")
                 .xmap(DimensionConfiguration::new, DimensionConfiguration::dimension)
@@ -1903,7 +1903,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
     }
 
     public record WorldPositionConfiguration(
-            Identifier dimension,
+            ResourceLocation dimension,
             double x,
             double y,
             double z
@@ -1917,7 +1917,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
                 ).apply(instance, WorldPositionConfiguration::new));
     }
 
-    public record BlockPositionConfiguration(Identifier dimension, int x, int y, int z) {
+    public record BlockPositionConfiguration(ResourceLocation dimension, int x, int y, int z) {
         public static final Codec<BlockPositionConfiguration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         IDENTIFIER_CODEC.fieldOf("dimension").forGetter(BlockPositionConfiguration::dimension),
@@ -1927,7 +1927,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
                 ).apply(instance, BlockPositionConfiguration::new));
     }
 
-    public record VariableConfiguration(String name, Identifier typeId) {
+    public record VariableConfiguration(String name, ResourceLocation typeId) {
         public static final Codec<VariableConfiguration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         Codec.STRING.fieldOf("name").forGetter(VariableConfiguration::name),
@@ -1946,7 +1946,7 @@ public final class CommonProgramNodeCatalog implements ProgramNodeLookup {
         }
     }
 
-    public record SharedVariableConfiguration(String name, Identifier typeId) {
+    public record SharedVariableConfiguration(String name, ResourceLocation typeId) {
         public static final Codec<SharedVariableConfiguration> CODEC = RecordCodecBuilder.create(instance ->
                 instance.group(
                         Codec.STRING.fieldOf("name").forGetter(SharedVariableConfiguration::name),

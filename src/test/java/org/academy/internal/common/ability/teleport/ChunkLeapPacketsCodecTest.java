@@ -8,7 +8,7 @@ import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
 
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
@@ -21,13 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * Round-trips every 区块跃迁 packet through its codec. These guard the wire contract: a field added
+ * Round-trips every 鍖哄潡璺冭縼 packet through its codec. These guard the wire contract: a field added
  * on one side without the other shows up here rather than as a silent desync in game.
  */
 class ChunkLeapPacketsCodecTest {
     /** Built from an identifier so the plain JUnit run never initialises {@code Level}. */
     private static final ResourceKey<Level> OVERWORLD =
-            ResourceKey.create(Registries.DIMENSION, Identifier.parse("minecraft:overworld"));
+            ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("minecraft:overworld"));
 
     @Test
     void viewRequestPreservesRegionAndEpoch() {
@@ -62,7 +62,7 @@ class ChunkLeapPacketsCodecTest {
 
     @Test
     void viewReleasePreservesDimension() {
-        var packet = new ChunkLeapPackets.ViewReleasePacket(Identifier.parse("minecraft:the_nether").toString());
+        var packet = new ChunkLeapPackets.ViewReleasePacket(ResourceLocation.parse("minecraft:the_nether").toString());
         var decoded = roundTrip(packet, ChunkLeapPackets.ViewReleasePacket.CODEC);
         assertEquals(packet.dimensionId(), decoded.dimensionId());
     }

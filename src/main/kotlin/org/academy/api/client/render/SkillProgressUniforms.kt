@@ -1,8 +1,5 @@
 package org.academy.api.client.render
 
-import com.mojang.blaze3d.buffers.Std140Builder
-import com.mojang.blaze3d.buffers.Std140SizeCalculator
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
 import java.nio.ByteBuffer
 
 class SkillProgressUniforms(val progress: Float) : DynamicUniform {

@@ -66,8 +66,8 @@ public class IronSandArsenal extends Skill {
     @Override public void initServer(MinecraftServerContext context) { MisakaNetworkServer.NETWORK_MANAGER.register(Server.class); }
 
     private boolean whip(ServerPlayer player) {
-        return executeActiveWithResource(player, _ -> 0, ctx -> (float) IronSandTuning.massCost(5, ctx.milestone()),
-                (_, _) -> {
+        return executeActiveWithResource(player, unused463 -> 0, ctx -> (float) IronSandTuning.massCost(5, ctx.milestone()),
+                (unused464, unused465) -> {
                     IronSandActions.whip(Server.actor(player), scaledRange(player,
                             IronSandTuning.whipRange(getEffectiveProficiencyMilestone(player))));
                     Server.SWING_UNTIL.put(player, player.level().getServer().getTickCount() + 10L);
@@ -81,8 +81,8 @@ public class IronSandArsenal extends Skill {
     }
 
     private boolean cloudTick(ServerPlayer player, Context context) {
-        return executeContinuousWithResource(player, _ -> 0,
-                ctx -> (float) IronSandTuning.massCost(0.5, ctx.milestone()), (_, _) -> {
+        return executeContinuousWithResource(player, unused466 -> 0,
+                ctx -> (float) IronSandTuning.massCost(0.5, ctx.milestone()), (unused467, unused468) -> {
                     if (++context.paidTicks == 1) reportTrigger(player);
                     if (context.paidTicks % IronSandTuning.HIT_INTERVAL_TICKS == 0) {
                         var hits = IronSandActions.cloudPulse(Server.actor(player), scaledRange(player,
@@ -121,14 +121,14 @@ public class IronSandArsenal extends Skill {
             InputSystem.addKeyBinding(KEY_TOGGLE, CONFIG.getKeyBindingMigratingDefaults(KEY_TOGGLE,
                     InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_SHIFT),
                     InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_ALT)),
-                    _ -> { if (AbilitySystemClient.canUseSkill(skill)) MisakaNetworkClient.send(TogglePacket.INSTANCE); });
+                    unused469 -> { if (AbilitySystemClient.canUseSkill(skill)) MisakaNetworkClient.send(TogglePacket.INSTANCE); });
             InputSystem.addMaintainedKeyBinding(KEY_USE, CONFIG.getKeyBinding(KEY_USE,
                     InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_ALT)),
-                    _ -> {
+                    unused470 -> {
                         if (!AbilitySystemClient.canUseSkill(skill) || Minecraft.getInstance().gui.screen() != null) return;
                         activeSequence = ++sequence;
                         MisakaNetworkClient.send(new ActionPacket(activeSequence, 0));
-                    }, _ -> stop(false), _ -> {
+                    }, unused471 -> stop(false), unused472 -> {
                         // The maintained-binding heartbeat fires every 20 client ticks; the server
                         // drops the context after 40 silent ticks, so every callback must refresh it.
                         if (activeSequence != 0) MisakaNetworkClient.send(new ActionPacket(activeSequence, 3));

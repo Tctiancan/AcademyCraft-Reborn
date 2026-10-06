@@ -1,58 +1,28 @@
 package org.academy.api.client.render.post;
 
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.renderer.StagedVertexBuffer;
-import net.minecraft.client.renderer.rendertype.RenderType;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.client.renderer.RenderType;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/**
+ * 1.21.1 简化版 (C-stun)。
+ *
+ * 26.2 通过 StagedVertexBuffer + RenderType.drawFromBuffer 延迟提交阶段顶点; 1.21.1
+ * 无对应 API。按首版简化策略, getBuffer 返回 Tesselator 的单例 BufferBuilder (不被 flush,
+ * 顶点随即丢弃), draw/close 为空操作, 保证调用方 (粒子/实体渲染器) 仍可编译运行但不产生辉光。
+ */
 public class Phase {
-    private final StagedVertexBuffer stagedVertexBuffer;
-    private final List<PhaseDraw> draws = new ArrayList<>();
-    private @Nullable RenderType lastRenderType;
-    private @Nullable PhaseDraw lastPhaseDraw;
-
     public Phase(String name) {
-        stagedVertexBuffer = new StagedVertexBuffer(() -> "Phase - " + name, 524288);
     }
 
     public VertexConsumer getBuffer(RenderType renderType) {
-        if (lastPhaseDraw == null || lastRenderType != renderType) {
-            var draw = stagedVertexBuffer.appendDraw(
-                    renderType.format(), renderType.primitiveTopology()
-            );
-            lastPhaseDraw = new PhaseDraw(draw, renderType);
-            draws.add(lastPhaseDraw);
-            lastRenderType = renderType;
-        }
-        return stagedVertexBuffer.getVertexBuilder(lastPhaseDraw.draw);
+        return Tesselator.getInstance().getBuilder();
     }
 
     public void draw() {
-        try {
-            stagedVertexBuffer.upload();
-            for (var phaseDraw : draws) {
-                var info = stagedVertexBuffer.getExecuteInfo(phaseDraw.draw);
-                if (info == null) continue;
-
-                var prepared = phaseDraw.renderType.prepare();
-
-                prepared.drawFromBuffer(info);
-            }
-        } finally {
-            draws.clear();
-            lastRenderType = null;
-            lastPhaseDraw = null;
-            stagedVertexBuffer.endFrame();
-        }
+        // C-stun: 1.21.1 不提交阶段缓存。
     }
 
     public void close() {
-        stagedVertexBuffer.close();
-    }
-
-    private record PhaseDraw(StagedVertexBuffer.Draw draw, RenderType renderType) {
     }
 }

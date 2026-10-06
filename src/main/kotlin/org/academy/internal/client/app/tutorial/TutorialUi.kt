@@ -1,6 +1,6 @@
 package org.academy.internal.client.app.tutorial
 
-import com.mojang.blaze3d.textures.FilterMode
+import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.world.level.ItemLike
 import org.academy.api.client.gui.drawable.ColorDrawable
 import org.academy.api.client.gui.drawable.StateListDrawable
@@ -95,7 +95,7 @@ object TutorialUi {
             listOf(
                 recipeRow(null, VanillaItems.COMPARATOR, null),
                 recipeRow(
-                    VanillaItems.LIGHTNING_ROD.weathering().unaffected(),
+                    VanillaItems.LIGHTNING_ROD,
                     VanillaItems.COMPASS,
                     VanillaItems.IRON_INGOT
                 ),
@@ -106,9 +106,9 @@ object TutorialUi {
             "solar", AcademyItems.SOLAR_GEN.get(),
             listOf(
                 recipeRow(
-                    VanillaItems.STAINED_GLASS_PANE.gray(),
-                    VanillaItems.STAINED_GLASS_PANE.gray(),
-                    VanillaItems.STAINED_GLASS_PANE.gray()
+                    VanillaItems.GRAY_STAINED_GLASS_PANE,
+                    VanillaItems.GRAY_STAINED_GLASS_PANE,
+                    VanillaItems.GRAY_STAINED_GLASS_PANE
                 ),
                 recipeRow(
                     AcademyItems.IMAG_PHASE_INGOT.get(),
@@ -583,7 +583,7 @@ object TutorialUi {
             this.gravity = gravity
         }
 
-        private fun iconDrawable(icon: net.minecraft.resources.Identifier): StateListDrawable {
+        private fun iconDrawable(icon: net.minecraft.resources.ResourceLocation): StateListDrawable {
             val resting = TextureDrawable(icon).apply { tintColor = 0xFFBBBBBB.toInt() }
             val active = TextureDrawable(icon).apply { tintColor = 0xFFFFFFFF.toInt() }
             return StateListDrawable().apply {

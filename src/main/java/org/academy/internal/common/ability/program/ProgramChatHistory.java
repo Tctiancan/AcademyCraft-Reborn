@@ -23,7 +23,7 @@ public final class ProgramChatHistory {
 
     static void record(UUID playerId, String message) {
         var text = slice(message, 0, MAX_CODE_POINTS);
-        var history = HISTORY.computeIfAbsent(playerId, _ -> new ArrayDeque<>());
+        var history = HISTORY.computeIfAbsent(playerId, unused710 -> new ArrayDeque<>());
         history.addFirst(text);
         while (history.size() > MAX_MESSAGES) history.removeLast();
     }

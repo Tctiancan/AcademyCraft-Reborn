@@ -87,7 +87,7 @@ public final class MagneticLevitationVfxClient {
                     subject.position().toVector3f());
             effect.setRenderDistance(96);
             effect.bindGameTime("time");
-            effect.bindArcs("paths", _ -> paths);
+            effect.bindArcs("paths", unused218 -> paths);
             effect.bindFrame((active, camera, partialTick) -> {
                 if (!valid()) return false;
                 var origin = subject.getPosition(partialTick);

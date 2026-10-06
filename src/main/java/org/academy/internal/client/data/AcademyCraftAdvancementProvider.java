@@ -3,13 +3,13 @@ package org.academy.internal.client.data;
 import net.minecraft.advancements.Advancement;
 import net.minecraft.advancements.AdvancementHolder;
 import net.minecraft.advancements.AdvancementType;
-import net.minecraft.advancements.triggers.CriteriaTriggers;
-import net.minecraft.advancements.triggers.ImpossibleTrigger;
-import net.minecraft.advancements.triggers.PlayerTrigger;
+import net.minecraft.advancements.CriteriaTriggers;
+import net.minecraft.advancements.critereon.ImpossibleTrigger;
+import net.minecraft.advancements.critereon.PlayerTrigger;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.data.advancements.AdvancementSubProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ItemLike;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.advancement.AbilityAdvancements;
@@ -47,7 +47,7 @@ public final class AcademyCraftAdvancementProvider implements AdvancementSubProv
     private static void branch(
             Consumer<AdvancementHolder> output,
             AdvancementHolder parent,
-            Identifier id,
+            ResourceLocation id,
             ItemLike icon,
             String name
     ) {

@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.model
+﻿package org.academy.api.client.gui.text.model
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 
 data class TextShapingOptions(
     val letterSpacing: Float = 0f,
@@ -8,7 +8,7 @@ data class TextShapingOptions(
     val lineSpacingMultiplier: Float = 1f,
     val lineSpacingExtra: Float = 0f,
     val includeFontPadding: Boolean = true,
-    val preferredFont: Identifier? = null,
+    val preferredFont: ResourceLocation? = null,
     val fontStyle: FontStyle = FontStyle.NORMAL
 ) {
     companion object {

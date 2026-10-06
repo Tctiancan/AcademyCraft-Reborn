@@ -2,13 +2,12 @@ package org.academy.internal.client.gui.screen
 
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.client.Minecraft
-import net.minecraft.client.input.KeyEvent
 import net.minecraft.locale.Language
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.neoforged.neoforge.common.NeoForge
 import org.academy.api.client.ability.AbilitySystemClient
@@ -53,7 +52,7 @@ internal fun parsePropsConfirmation(input: String): PropsConfirmationAnswer = wh
 class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScreen(Component.empty()) {
     private val blockEntity: AbilityDeveloperBlockEntity? = when (developmentSource) {
         is DevelopmentSource.TabletDevelopmentSource -> {
-            val player = minecraft.player ?: throw RuntimeException("Player is null")
+            val player = Minecraft.getInstance().player ?: throw RuntimeException("Player is null")
             if (!player.getItemInHand(developmentSource.hand).`is`(Items.ABILITY_CONTROL_TABLET.get())) {
                 throw RuntimeException("Ability control tablet is no longer held")
             }
@@ -61,7 +60,7 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
         }
 
         is DevelopmentSource.BlockDevelopmentSource -> {
-            val level = minecraft.level ?: throw RuntimeException("Level is null")
+            val level = Minecraft.getInstance().level ?: throw RuntimeException("Level is null")
             val entity = level.getBlockEntity(developmentSource.blockPos)
             if (entity is AbilityDeveloperBlockEntity) {
                 entity.setOpen(true)
@@ -76,7 +75,7 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
     private var isConsoleMode: Boolean = false
     private lateinit var consoleOutputs: LinearLayoutWidget
     private lateinit var consoleScrollPanel: ScrollPanelWidget
-    private var pendingPropsRecommendation: Identifier? = null
+    private var pendingPropsRecommendation: ResourceLocation? = null
     private var activeCover: FrameLayoutWidget? = null
     private val skillLineBindings = mutableListOf<SkillLineBinding>()
     private var coursePage = CoursePage.ABILITY
@@ -89,7 +88,7 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
     private fun currentEnergy(): Int {
         val developer = blockEntity
         if (developer != null) return developer.energyStored
-        val player = minecraft.player ?: return 0
+        val player = Minecraft.getInstance().player ?: return 0
         return AbilityControlTabletItem.storedEnergy(
             player.getItemInHand((developmentSource as DevelopmentSource.TabletDevelopmentSource).hand)
         )
@@ -112,12 +111,12 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
         refreshCompletedSkillDevelopment()
     }
 
-    override fun keyPressed(e: KeyEvent): Boolean {
-        if (e.key() == InputConstants.KEY_ESCAPE && viewedSkillInfo != null) {
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if (keyCode == InputConstants.KEY_ESCAPE && viewedSkillInfo != null) {
             rebuildSkillTree()
             return true
         }
-        return super.keyPressed(e)
+        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
     override fun onInit() {
@@ -457,7 +456,7 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
 
     private fun addOutput(outputs: LinearLayoutWidget, text: String, onEnd: () -> Unit = {}) {
         val label = outputs.add(
-            "label_${text.hashCode()}_${RandomStringUtils.insecure().nextAlphabetic(4)}",
+            "label_${text.hashCode()}_${RandomStringUtils.randomAlphabetic(4)}",
             TextWidget(text)
         ) {
             gravity(Gravity.BOTTOM_LEFT)
@@ -642,8 +641,8 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
         poll()
     }
 
-    private fun localizedAbilityCategoryName(category: Identifier): String {
-        val key = org.academy.api.common.registries.Registries.ABILITY_CATEGORIES.getValue(category)?.descriptionId
+    private fun localizedAbilityCategoryName(category: ResourceLocation): String {
+        val key = org.academy.api.common.registries.Registries.ABILITY_CATEGORIES.get(category)?.descriptionId
             ?: "ability_category.${category.namespace}.${category.path}"
         return Language.getInstance().getOrDefault(key).takeUnless { it == key }
             ?: category.path
@@ -932,8 +931,8 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
         val mc = Minecraft.getInstance()
         val mh = mc.mouseHandler
         val w = mc.window
-        val mouseX = mh.getScaledXPos(w)
-        val mouseY = mh.getScaledYPos(w)
+        val mouseX = (mh.xpos() / w.guiScale).toDouble()
+        val mouseY = (mh.ypos() / w.guiScale).toDouble()
         val skillTreeMouseX = (mouseX / w.width).toFloat().coerceIn(0f, 1f)
         val skillTreeMouseY = (mouseY / w.height).toFloat().coerceIn(0f, 1f)
         widget.translationX = -((skillTreeMouseX - 0.5f) * maxDuSkills)
@@ -1025,10 +1024,10 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
 
                     val texManager = Minecraft.getInstance().textureManager
                     if (!::outlineTexView.isInitialized || outlineTexView.isClosed) {
-                        outlineTexView = texManager.getTexture(skill_outline).getTextureView()
+                        outlineTexView = GpuTextureView.of(skill_outline)
                     }
                     if (!::maskTexView.isInitialized || maskTexView.isClosed) {
-                        maskTexView = texManager.getTexture(skill_radial_mask).getTextureView()
+                        maskTexView = GpuTextureView.of(skill_radial_mask)
                     }
 
                     if (!hasPaddedArea()) return
@@ -1330,14 +1329,14 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
         return button
     }
 
-    private fun renderSkillIcon(context: Canvas, finalAlpha: Float, progress: Float, iconTexture: Identifier) {
+    private fun renderSkillIcon(context: Canvas, finalAlpha: Float, progress: Float, iconTexture: ResourceLocation) {
         val texManager = Minecraft.getInstance().textureManager
         val outlineTex = if (progress >= 1.0f) skill_view_outline_glow else skill_view_outline
-        val backView = texManager.getTexture(skill_back).getTextureView()
-        val outlineView = texManager.getTexture(outlineTex).getTextureView()
-        val maskView = texManager.getTexture(skill_radial_mask).getTextureView()
-        val iconView = texManager.getTexture(iconTexture).getTextureView()
-        val sampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
+        val backView = GpuTextureView.of(skill_back)
+        val outlineView = GpuTextureView.of(outlineTex)
+        val maskView = GpuTextureView.of(skill_radial_mask)
+        val iconView = GpuTextureView.of(iconTexture)
+        val sampler = org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST)
 
         context.pose().pushPose()
         context.submit(
@@ -1480,7 +1479,7 @@ class AbilityDeveloperScreen(val developmentSource: DevelopmentSource) : UiScree
                         listOf(1000, 2000, 3000).forEachIndexed { index, threshold ->
                             val reached = milestone > index
                             val next = milestone == index
-                            val marker = if (reached) "✓" else if (next) "→" else "•"
+                            val marker = if (reached) "✔" else if (next) "→" else "…"
                             val key = "${skill.descriptionId}.proficiency.$threshold"
                             details.text(
                                 "$marker $threshold  ${Language.getInstance().getOrDefault(key)}",

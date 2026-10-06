@@ -9,7 +9,7 @@ import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
@@ -23,11 +23,11 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProgramSessionSchedulerTest {
-    private static final Identifier CATEGORY = AcademyCraft.academy("mentalout");
-    private static final Identifier ENTRY = AcademyCraft.academy("test/scheduler_entry");
-    private static final Identifier YIELD = AcademyCraft.academy("test/scheduler_yield");
-    private static final Identifier LOOP = AcademyCraft.academy("test/scheduler_loop");
-    private static final Identifier STOP = AcademyCraft.academy("test/scheduler_stop");
+    private static final ResourceLocation CATEGORY = AcademyCraft.academy("mentalout");
+    private static final ResourceLocation ENTRY = AcademyCraft.academy("test/scheduler_entry");
+    private static final ResourceLocation YIELD = AcademyCraft.academy("test/scheduler_yield");
+    private static final ResourceLocation LOOP = AcademyCraft.academy("test/scheduler_loop");
+    private static final ResourceLocation STOP = AcademyCraft.academy("test/scheduler_stop");
 
     @Test
     void resumesYieldedProgramAndReportsCompletion() {
@@ -176,7 +176,7 @@ class ProgramSessionSchedulerTest {
         assertEquals(0, scheduler.size());
     }
 
-    private static CompiledProgram compile(List<Identifier> flowNodes) {
+    private static CompiledProgram compile(List<ResourceLocation> flowNodes) {
         var nodes = new ArrayList<ProgramGraph.Node>();
         var edges = new ArrayList<ProgramGraph.Edge>();
         nodes.add(node(0, ENTRY));
@@ -188,7 +188,7 @@ class ProgramSessionSchedulerTest {
         if (flowNodes.size() == 1 && flowNodes.getFirst().equals(LOOP)) {
             edges.add(edge(1, "flow", 1, "flow"));
         }
-        var types = Map.<Identifier, ProgramNodeType<?>>of(
+        var types = Map.<ResourceLocation, ProgramNodeType<?>>of(
                 ENTRY, type(ProgramNodeRole.ENTRY, false),
                 YIELD, type(ProgramNodeRole.SUSPEND, true),
                 LOOP, type(ProgramNodeRole.ACTION, true),
@@ -203,7 +203,7 @@ class ProgramSessionSchedulerTest {
         return result.program();
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> executors() {
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> executors() {
         return Map.of(
                 YIELD, (_, _, _) -> ProgramNodeStep.yield("flow", 3),
                 LOOP, (_, _, _) -> ProgramNodeStep.next("flow"),
@@ -259,7 +259,7 @@ class ProgramSessionSchedulerTest {
         };
     }
 
-    private static ProgramGraph.Node node(int id, Identifier type) {
+    private static ProgramGraph.Node node(int id, ResourceLocation type) {
         return new ProgramGraph.Node(id, type, 1, new JsonObject());
     }
 

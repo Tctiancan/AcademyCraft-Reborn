@@ -1,8 +1,8 @@
 package org.academy.api.client.gui.command
 
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.SkillProgressUniforms
 import org.academy.api.client.render.TextureBinding
@@ -36,6 +36,6 @@ class SkillProgressDrawCommand : PosTexColorRectDrawCommand {
     )
 
     companion object{
-        val SAMPLER = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
+        val SAMPLER = org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.LINEAR)
     }
 }

@@ -3,9 +3,9 @@ package org.academy.api.client.hud.ability
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.neoforged.bus.api.SubscribeEvent
@@ -181,16 +181,8 @@ class AbilityInfoHud private constructor() {
         }
 
         private fun resolveTexture(): GpuTextureView? {
-            val current = textureView
-            if (current != null && !current.isClosed) return current
-            return try {
-                Minecraft.getInstance().textureManager
-                    .getTexture(R.textures.hud.cp_bar_value)
-                    .getTextureView()
-                    .also { textureView = it }
-            } catch (_: Exception) {
-                null
-            }
+            // C-stun: 1.21.1 首版不采样纹理纹理条 (原实现依赖 26.2 getTextureView).
+            return null
         }
     }
 
@@ -263,21 +255,13 @@ class AbilityInfoHud private constructor() {
         }
 
         private fun resolveTexture(): GpuTextureView? {
-            val current = textureView
-            if (current != null && !current.isClosed) return current
-            return try {
-                Minecraft.getInstance().textureManager
-                    .getTexture(R.textures.SP_BAR_VALUE)
-                    .getTextureView()
-                    .also { textureView = it }
-            } catch (_: Exception) {
-                null
-            }
+            // C-stun: 1.21.1 首版不采样纹理纹理条 (原实现依赖 26.2 getTextureView).
+            return null
         }
     }
 
     private class Context : WidgetContext {
-        private val sampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.LINEAR)
+        private val sampler = org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.LINEAR)
         private lateinit var cp: FrameLayoutWidget
         lateinit var skillWheel: SkillWheelWidget
         private val root: FrameLayoutWidget = standaloneFrame { alpha = 0f }

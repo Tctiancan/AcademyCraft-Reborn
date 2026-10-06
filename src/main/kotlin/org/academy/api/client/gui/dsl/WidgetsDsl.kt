@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.dsl
+﻿package org.academy.api.client.gui.dsl
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.event.OnClickListener
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.texture.TextureSource
@@ -25,7 +25,7 @@ fun WidgetContainer.text(
 }
 
 fun WidgetContainer.image(
-    texture: Identifier? = null,
+    texture: ResourceLocation? = null,
     name: String = nextChildName("image"),
     init: ImageWidget.() -> Unit = {}
 ): ImageWidget {
@@ -47,7 +47,7 @@ fun WidgetContainer.image(
 }
 
 fun WidgetContainer.monochromeImage(
-    texture: Identifier,
+    texture: ResourceLocation,
     name: String = nextChildName("mono_image"),
     init: MonochromeImageWidget.() -> Unit = {}
 ): MonochromeImageWidget {
@@ -58,7 +58,7 @@ fun WidgetContainer.monochromeImage(
 }
 
 fun WidgetContainer.spriteSheet(
-    texture: Identifier,
+    texture: ResourceLocation,
     orientation: Orientation,
     sheetWidth: Int,
     sheetHeight: Int,
@@ -121,7 +121,7 @@ fun WidgetContainer.roundedRect(
 }
 
 fun WidgetContainer.nineSlice(
-    texture: Identifier,
+    texture: ResourceLocation,
     left: Float = 0f,
     right: Float = 0f,
     top: Float = 0f,

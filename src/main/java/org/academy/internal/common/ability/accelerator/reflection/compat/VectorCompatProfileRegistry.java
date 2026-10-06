@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.accelerator.reflection.compat;
 
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
@@ -54,7 +54,7 @@ public final class VectorCompatProfileRegistry extends SimpleJsonResourceReloadL
 
     @Override
     protected void apply(
-            Map<Identifier, VectorCompatProfile> prepared,
+            Map<ResourceLocation, VectorCompatProfile> prepared,
             ResourceManager resourceManager,
             ProfilerFiller profiler
     ) {
@@ -71,6 +71,6 @@ public final class VectorCompatProfileRegistry extends SimpleJsonResourceReloadL
         AcademyCraft.LOGGER.info("Loaded {} vector compatibility profiles", profiles.size());
     }
 
-    public record ProfileEntry(Identifier id, VectorCompatProfile profile) {
+    public record ProfileEntry(ResourceLocation id, VectorCompatProfile profile) {
     }
 }

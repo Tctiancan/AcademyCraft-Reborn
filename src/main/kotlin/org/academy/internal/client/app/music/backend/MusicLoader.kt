@@ -6,10 +6,11 @@ import com.google.gson.reflect.TypeToken
 import net.minecraft.server.packs.resources.PreparableReloadListener
 import net.minecraft.server.packs.resources.Resource
 import net.minecraft.server.packs.resources.ResourceManager
+import net.minecraft.util.profiling.ProfilerFiller
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent
 import org.academy.AcademyCraft
 import org.academy.internal.client.app.music.data.MusicData
 import java.io.InputStreamReader
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executor
 
-@EventBusSubscriber(Dist.CLIENT)
+@EventBusSubscriber(modid = "academy", value = [Dist.CLIENT], bus = EventBusSubscriber.Bus.MOD)
 object MusicLoader : PreparableReloadListener {
     private val logger = AcademyCraft.getLogger()
 
@@ -28,16 +29,17 @@ object MusicLoader : PreparableReloadListener {
     private const val FILE_PATH = "musics/music_player.json"
 
     override fun reload(
-        currentReload: PreparableReloadListener.SharedState,
-        taskExecutor: Executor,
         preparationBarrier: PreparableReloadListener.PreparationBarrier,
-        reloadExecutor: Executor
+        resourceManager: ResourceManager,
+        preparationsProfiler: ProfilerFiller,
+        reloadProfiler: ProfilerFiller,
+        backgroundExecutor: Executor,
+        gameExecutor: Executor
     ): CompletableFuture<Void> {
-        val manager = currentReload.resourceManager()
-        val future = CompletableFuture.supplyAsync({ loadAllMusicData(manager) }, taskExecutor)
+        val future = CompletableFuture.supplyAsync({ loadAllMusicData(resourceManager) }, backgroundExecutor)
         return future
             .thenCompose { preparationBarrier.wait(it) }
-            .thenAcceptAsync({ applyToBackend(it) }, reloadExecutor)
+            .thenAcceptAsync({ applyToBackend(it) }, gameExecutor)
     }
 
     private fun loadAllMusicData(manager: ResourceManager): MutableMap<String, MusicData> {
@@ -74,7 +76,7 @@ object MusicLoader : PreparableReloadListener {
     }
 
     @SubscribeEvent
-    fun onAddReloadListener(event: AddClientReloadListenersEvent) {
-        event.addListener(AcademyCraft.academy("music_loader"), MusicLoader)
+    fun onAddReloadListener(event: RegisterClientReloadListenersEvent) {
+        event.registerReloadListener(MusicLoader)
     }
 }

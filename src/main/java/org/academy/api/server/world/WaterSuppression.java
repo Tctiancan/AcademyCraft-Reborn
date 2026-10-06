@@ -93,7 +93,8 @@ public final class WaterSuppression extends SavedData {
     public static BlockState restorationState(BlockState current, BlockState original, BlockState dry) {
         if (current.equals(dry)) return original;
         // Interacting with a drained door or reorienting a slab must not discard its original water.
-        // Preserve those new properties; a different replacement block is left untouched.
+        // Preserve those
+// new properties; a different replacement block is left untouched.
         if (current.is(dry.getBlock()) && original.hasProperty(BlockStateProperties.WATERLOGGED)
                 && original.getValue(BlockStateProperties.WATERLOGGED)
                 && current.hasProperty(BlockStateProperties.WATERLOGGED)) {
@@ -117,7 +118,8 @@ public final class WaterSuppression extends SavedData {
             if (dry.equals(current)) continue;
             journal.putIfAbsent(pos, new Entry(pos, current, dry));
             setDirty();
-            // Avoid breaking aquatic plants or changing the shape of waterlogged blocks while dry.
+            // Avoid breaking aquatic plants or changing the shape of waterlogged blocks
+// while dry.
             level.setBlock(pos, dry, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
         }
     }

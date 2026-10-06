@@ -157,7 +157,7 @@ public final class KineticThrow extends Skill {
                         Client.KEY_NAME_CHARGE,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD,
                                 InputConstants.KEY_H, InputConstants.PRESS, 0)),
-                _ -> Client.startCharge()
+                unused250 -> Client.startCharge()
         );
         InputSystem.addKeyBinding(
                 Client.KEY_NAME_RELEASE,
@@ -165,7 +165,7 @@ public final class KineticThrow extends Skill {
                         Client.KEY_NAME_RELEASE,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD,
                                 InputConstants.KEY_H, InputConstants.RELEASE, 0)),
-                _ -> Client.releaseCharge()
+                unused251 -> Client.releaseCharge()
         );
         InputSystem.addKeyBinding(
                 Client.KEY_NAME_THROW,
@@ -173,7 +173,7 @@ public final class KineticThrow extends Skill {
                         Client.KEY_NAME_THROW,
                         InputSystem.combo(InputSystem.InputType.MOUSE,
                                 InputConstants.MOUSE_BUTTON_LEFT, InputConstants.PRESS, 0)),
-                _ -> Client.throwLookedAtStructure()
+                unused252 -> Client.throwLookedAtStructure()
         );
     }
 
@@ -325,7 +325,7 @@ public final class KineticThrow extends Skill {
             }
 
             var skill = Skills.KINETIC_THROW.get();
-            skill.executeActive(player, (_, _) -> {
+            skill.executeActive(player, (unused253, unused254) -> {
                 var captured = BlockStructureApi.capture(
                         level,
                         positions,
@@ -360,7 +360,7 @@ public final class KineticThrow extends Skill {
                                 true,
                                 true
                         ),
-                        _ -> {
+                        unused255 -> {
                         }
                 );
                 HELD_STRUCTURES.put(player.getUUID(), new HeldStructure(

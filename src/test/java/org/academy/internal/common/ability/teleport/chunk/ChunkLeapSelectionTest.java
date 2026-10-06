@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
@@ -21,9 +21,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class ChunkLeapSelectionTest {
     private static final ResourceKey<Level> OVERWORLD =
-            ResourceKey.create(Registries.DIMENSION, Identifier.parse("minecraft:overworld"));
+            ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("minecraft:overworld"));
     private static final ResourceKey<Level> NETHER =
-            ResourceKey.create(Registries.DIMENSION, Identifier.parse("minecraft:the_nether"));
+            ResourceKey.create(Registries.DIMENSION, ResourceLocation.parse("minecraft:the_nether"));
 
     @Test
     void aRectangleSelectionCoversEveryCell() {

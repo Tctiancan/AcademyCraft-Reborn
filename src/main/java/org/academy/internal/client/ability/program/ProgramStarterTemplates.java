@@ -1,7 +1,7 @@
 package org.academy.internal.client.ability.program;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.program.editor.ProgramEditorDocument;
@@ -23,7 +23,7 @@ public final class ProgramStarterTemplates {
     public static AbilityProgram create(
             AbilityProgram empty,
             AbilityProgramDefinition definition,
-            Set<Identifier> capabilities,
+            Set<ResourceLocation> capabilities,
             Kind kind,
             String chatKeyword,
             String outputText
@@ -68,7 +68,7 @@ public final class ProgramStarterTemplates {
     }
 
     private static Added add(
-            ProgramEditorDocument document, Identifier type, double x, double y,
+            ProgramEditorDocument document, ResourceLocation type, double x, double y,
             JsonObject configuration
     ) {
         var before = document.program().graph().nodes().stream()

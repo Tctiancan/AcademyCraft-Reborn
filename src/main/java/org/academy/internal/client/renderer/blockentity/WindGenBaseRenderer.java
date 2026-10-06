@@ -1,65 +1,21 @@
 package org.academy.internal.client.renderer.blockentity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
-import net.minecraft.world.phys.Vec3;
-import org.academy.api.client.resources.R;
-import org.academy.internal.client.model.WindGenBaseModel;
-import org.academy.internal.client.renderer.blockentity.state.WindGenBaseRenderState;
 import org.academy.internal.common.world.level.block.entity.WindGenBaseBlockEntity;
-import org.jspecify.annotations.Nullable;
 
-public final class WindGenBaseRenderer implements BlockEntityRenderer<WindGenBaseBlockEntity, WindGenBaseRenderState> {
+public final class WindGenBaseRenderer implements BlockEntityRenderer<WindGenBaseBlockEntity> {
     public static final WindGenBaseRenderer INSTANCE = new WindGenBaseRenderer();
 
     private WindGenBaseRenderer() {
     }
 
     @Override
-    public WindGenBaseRenderState createRenderState() {
-        return new WindGenBaseRenderState();
-    }
-
-    @Override
-    public void extractRenderState(WindGenBaseBlockEntity blockEntity, WindGenBaseRenderState renderState, float partialTick, Vec3 cameraPosition, ModelFeatureRenderer.@Nullable CrumblingOverlay breakProgress) {
-        BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPosition, breakProgress);
-        renderState.ageInTicks = blockEntity.ticks + partialTick;
-        renderState.facing = blockEntity.getBlockState().getValue(BlockStateProperties.HORIZONTAL_FACING);
-        renderState.isMain = blockEntity.isMain();
-        renderState.setupState = blockEntity.setupState;
-        renderState.shutdownState = blockEntity.shutdownState;
-    }
-
-    @Override
-    public void submit(WindGenBaseRenderState state, PoseStack poseStack, SubmitNodeCollector submitNodeCollector, CameraRenderState camera) {
-        if (state.isMain) {
-            poseStack.pushPose();
-            var yRot = state.facing.getOpposite().toYRot();
-            poseStack.pushPose();
-            poseStack.scale(1, 15 / 16f, 1);
-            poseStack.translate(0, 1 / 16f, 0);
-            WindGenPillarRenderer.renderPillar(poseStack, submitNodeCollector, state.lightCoords);
-            poseStack.popPose();
-            poseStack.translate(0.5f, 0f, 0.5f);
-            poseStack.translate(0, 1.5f, 0);
-            poseStack.mulPose(Axis.XP.rotationDegrees(180));
-            poseStack.mulPose(Axis.YP.rotationDegrees(yRot));
-            submitNodeCollector.submitModel(
-                    WindGenBaseModel.MODEL,
-                    state,
-                    poseStack, R.textures.model.wind_gen, state.lightCoords, OverlayTexture.NO_OVERLAY,
-                    0, null
-            );
-            poseStack.popPose();
-        } else WindGenPillarRenderer.renderPillar(poseStack, submitNodeCollector, state.lightCoords);
+    public void render(WindGenBaseBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        // C-stun: 26.2 渲染状态管线暂不移植，占位不渲染。
     }
 
     @Override
@@ -68,7 +24,7 @@ public final class WindGenBaseRenderer implements BlockEntityRenderer<WindGenBas
     }
 
     @Override
-    public boolean shouldRenderOffScreen() {
+    public boolean shouldRenderOffScreen(WindGenBaseBlockEntity blockEntity) {
         return true;
     }
 

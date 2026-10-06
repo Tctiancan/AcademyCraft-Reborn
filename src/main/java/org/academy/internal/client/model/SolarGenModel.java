@@ -1,35 +1,34 @@
 package org.academy.internal.client.model;
 
-import net.minecraft.client.animation.KeyframeAnimation;
-import net.minecraft.client.model.Model;
+import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import org.academy.internal.client.definitions.SolarGenAnimation;
 import org.academy.internal.client.renderer.blockentity.state.SolarGenRenderState;
 
-public final class SolarGenModel extends Model<SolarGenRenderState> {
+public final class SolarGenModel {
+    private final ModelPart root;
     private final ModelPart all;
     private final ModelPart bottom;
     private final ModelPart pole;
     private final ModelPart panel1;
     private final ModelPart panel2;
-    private final KeyframeAnimation folding;
-    private final KeyframeAnimation unfolding;
+    private final AnimationDefinition folding;
+    private final AnimationDefinition unfolding;
 
     public SolarGenModel(ModelPart root) {
-        super(root, RenderTypes::entityCutout);
+        this.root = root;
         all = root.getChild("all");
         bottom = all.getChild("bottom");
         pole = bottom.getChild("pole");
         panel1 = all.getChild("panel1");
         panel2 = all.getChild("panel2");
-        folding = SolarGenAnimation.FOLDING.bake(root);
-        unfolding = SolarGenAnimation.UNFOLDING.bake(root);
+        folding = SolarGenAnimation.FOLDING;
+        unfolding = SolarGenAnimation.UNFOLDING;
     }
 
     public static LayerDefinition createBodyLayer() {
@@ -52,10 +51,8 @@ public final class SolarGenModel extends Model<SolarGenRenderState> {
         return LayerDefinition.create(meshdefinition, 64, 64);
     }
 
-    @Override
     public void setupAnim(SolarGenRenderState renderState) {
-        super.setupAnim(renderState);
-        folding.apply(renderState.foldingState, renderState.ageInTicks);
-        unfolding.apply(renderState.unfoldingState, renderState.ageInTicks);
+        KeyframeAnimationApplier.animateState(folding, renderState.foldingState, renderState.ageInTicks, root);
+        KeyframeAnimationApplier.animateState(unfolding, renderState.unfoldingState, renderState.ageInTicks, root);
     }
 }

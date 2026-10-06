@@ -1,6 +1,6 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.model.GraphNode;
 import org.academy.api.client.render.graph.registry.SimpleNodeRegistry;
@@ -50,8 +50,8 @@ class GraphFileWatcherTest {
         Files.writeString(file, codec.encode(graph).toString());
 
         var manager = VfxGraphManager.INSTANCE;
-        manager.reloadFromFile(Identifier.fromNamespaceAndPath("academy", "vfxgraph/demo"), file);
-        var effect = manager.spawn(Identifier.fromNamespaceAndPath("academy", "vfxgraph/demo"), new Vector3f());
+        manager.reloadFromFile(ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/demo"), file);
+        var effect = manager.spawn(ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/demo"), new Vector3f());
         assertNotNull(effect);
         for (var i = 0; i < 3; i++) {
             manager.tick(0.1f);
@@ -67,7 +67,7 @@ class GraphFileWatcherTest {
                 ),
                 List.of(), List.of(), List.of("out"));
         Files.writeString(file, codec.encode(reloaded).toString());
-        manager.reloadFromFile(Identifier.fromNamespaceAndPath("academy", "vfxgraph/demo"), file);
+        manager.reloadFromFile(ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/demo"), file);
         manager.tick(0.1f);
         assertEquals(0, effect.effect().buffer().count());
     }

@@ -152,7 +152,8 @@ public final class SurfaceDischargeEmitter {
                     float length = reach * (0.22f + unit(seed, 2) * 0.18f);
                     append(trace.path, surface, cx, cz, angle, length, settings.width,
                             seed, settings.frame, sky, settings.segments, 0, shape);
-                    // Sparse local forks share a mesh with their parent, but never connect across strokes.
+                    // Sparse local
+// forks share a mesh with their parent, but never connect across strokes.
                     if (settings.forks && patch % 3 == 0 && trace.path.size() >= 4) {
                         int at = Math.clamp(Math.round((trace.path.size() - 1)
                                 * (0.25f + unit(seed, 61) * 0.45f)), 1, trace.path.size() - 2);

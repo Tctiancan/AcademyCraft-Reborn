@@ -1,9 +1,5 @@
 package org.academy.api.client.hud
 
-import com.mojang.blaze3d.GpuFormat
-import com.mojang.blaze3d.resource.RenderTargetDescriptor
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
 import net.minecraft.client.Minecraft
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
@@ -16,14 +12,8 @@ import org.academy.api.client.hud.ability.ToggleStatusHud
 import org.academy.api.client.hud.terminal.TerminalHud
 import org.academy.api.client.gui.imgui.ImGuiUIDebugger
 import org.academy.api.client.gui.widget.WidgetContainer
-import org.academy.api.client.render.Render
-import org.academy.api.client.render.TextureBinding
-import org.academy.api.client.render.post.BlurEffect
-import org.academy.api.client.thread.RenderThread
 import org.academy.api.client.vanilla.MainLoopEvent
 import org.academy.api.common.profiler.AcademyProfiler
-import org.academy.internal.client.profiler.ProfilerClientHooks
-import org.joml.Vector4f
 import org.slf4j.Logger
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -57,7 +47,6 @@ object HudManager {
         ControlledTargetsHud.instance.rebuildLayout()
     }
 
-    @RenderThread
     fun resize(width: Int, height: Int) {
     }
 
@@ -71,9 +60,11 @@ object HudManager {
         val mc = Minecraft.getInstance()
         val w = mc.window
         val m = mc.mouseHandler
-        val mouseX = m.getScaledXPos(w)
-        val mouseY = m.getScaledYPos(w)
-        val deltaPartialTick = mc.deltaTracker.getGameTimeDeltaPartialTick(false)
+        // 1.21.1: MouseHandler 无 getScaledXPos/getScaledYPos, xpos()/ypos() 为物理像素, 除以 guiScale 即 GUI 坐标.
+        val mouseX = (m.xpos() / w.guiScale).toDouble()
+        val mouseY = (m.ypos() / w.guiScale).toDouble()
+        // 1.21.1: Minecraft 无 deltaTracker, 改用 getTimer() 提供本帧 partialTick.
+        val deltaPartialTick = mc.getTimer().getGameTimeDeltaPartialTick(false)
         TerminalHud.INSTANCE.perform(mouseX, mouseY, deltaPartialTick)
         AbilityInfoHud.instance.perform(mouseX, mouseY, deltaPartialTick)
         ToggleStatusHud.instance.perform(mouseX, mouseY, deltaPartialTick)
@@ -81,78 +72,9 @@ object HudManager {
     }
 
     fun render() {
-        if (!AcademyCraftClient.isRenderInitialized()) return
-
-        val mc = Minecraft.getInstance()
-        val main = mc.gameRenderer.mainRenderTarget()
-        val width = main.width
-        val height = main.height
-
-        val pool = Render.Buffers.getResourcePool()
-        val descTemp = RenderTargetDescriptor(width, height, true, true, Vector4f(0f), GpuFormat.RGBA8_UNORM)
-        val descBlur = RenderTargetDescriptor(width, height, false, false, Vector4f(0f), GpuFormat.RGBA8_UNORM)
-
-        val ui = pool.acquire(descTemp)
-        val blur = pool.acquire(descBlur)
-
-        try {
-            val mainColor = main.getColorTextureView()
-            val uiColor = ui.getColorTextureView()
-            val uiDepth = ui.getDepthTextureView()
-            val blurColor = blur.getColorTextureView()
-            if (mainColor == null || uiColor == null || uiDepth == null || blurColor == null) return
-
-            val drewStencil = AtomicBoolean()
-
-            AcademyProfiler.push("academy.hud.terminal")
-            AcademyProfiler.popPush("academy.hud.ability")
-            AbilityInfoHud.instance.render(main)
-            AcademyProfiler.popPush("academy.hud.toggle")
-            ToggleStatusHud.instance.render(main)
-            ControlledTargetsHud.instance.render(main)
-            TerminalHud.INSTANCE.render(width, height, uiColor, uiDepth, drewStencil)
-            AcademyProfiler.pop()
-
-            if (drewStencil.get()) {
-                BlurEffect.apply(
-                    width, height,
-                    mainColor,
-                    blurColor,
-                    uiDepth,
-                    TerminalHud.getBlurRadius()
-                )
-                Render.runBlitPass(
-                    mainColor, Render.RenderPipelines.BLIT_SCREEN_WITH_BLEND,
-                    Render.Buffers.getInstance().fsQuadVBNDC,
-                    listOf(
-                        TextureBinding(
-                            "Sampler0", blurColor,
-                            RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
-                        )
-                    ), mutableListOf(),
-                    false
-                )
-            }
-
-            Render.runBlitPass(
-                mainColor, Render.RenderPipelines.BLIT_SCREEN_PREMULTIPLIED_ALPHA,
-                Render.Buffers.getInstance().fsQuadVBNDC,
-                listOf(
-                    TextureBinding(
-                        "Sampler0", uiColor,
-                        RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
-                    )
-                ), mutableListOf(),
-                false
-            )
-
-            ProfilerClientHooks.renderOverlay()
-            if (ImGuiUIDebugger.enabled) {
-                ImGuiUIDebugger.renderHud(main, inspectableRoots())
-            }
-        } finally {
-            pool.release(descTemp, ui)
-            pool.release(descBlur, blur)
-        }
+        // C-stun: 1.21.1 首版略去世界级 HUD 合成/模糊后处理.
+        // 原实现依赖 26.2 专属 GPU API (Render.Buffers.getResourcePool /
+        // RenderTargetDescriptor / GpuFormat / Render.runBlitPass / getColorTextureView 等),
+        // 在 1.21.1 均已被移除或重构; 保留方法入口以便后续迁移.
     }
 }

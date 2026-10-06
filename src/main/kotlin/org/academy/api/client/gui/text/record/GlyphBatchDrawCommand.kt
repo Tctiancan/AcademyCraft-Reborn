@@ -1,6 +1,6 @@
 package org.academy.api.client.gui.text.record
 
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.gui.text.model.GlyphKind
 import org.academy.api.client.render.MsdfUniformData
 import org.academy.api.client.render.Render

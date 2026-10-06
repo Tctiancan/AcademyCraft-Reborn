@@ -1,10 +1,9 @@
 package org.academy.internal.client.renderer.blockentity.state;
 
-import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.AnimationState;
 
-public final class WindGenBaseRenderState extends BlockEntityRenderState {
+public final class WindGenBaseRenderState {
     public static final WindGenBaseRenderState NONE = new WindGenBaseRenderState();
     public boolean isMain;
     public Direction facing = Direction.NORTH;

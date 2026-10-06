@@ -1,14 +1,14 @@
 package org.academy.internal.common.skilldata;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public final class LocationTeleportData extends SkillData {
-    public static final Identifier ID = AcademyCraft.academy("location_teleport_data");
+    public static final ResourceLocation ID = AcademyCraft.academy("location_teleport_data");
 
     @SerializedName("marks")
     private List<Mark> marks = new ArrayList<>();
@@ -28,7 +28,7 @@ public final class LocationTeleportData extends SkillData {
     }
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 

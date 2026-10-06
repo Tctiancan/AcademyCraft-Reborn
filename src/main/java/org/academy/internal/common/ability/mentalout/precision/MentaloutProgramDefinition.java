@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.mentalout.precision;
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramLimits;
 import org.academy.internal.common.ability.program.*;
 import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
@@ -51,7 +51,7 @@ public final class MentaloutProgramDefinition {
     }
 
     private static ProgramEditorNodeCatalog.Group group(
-            Identifier id,
+            ResourceLocation id,
             PrecisionGraph.@Nullable NodeKind kind
     ) {
         if (id.equals(PrecisionProgramNodeIds.ON_CAST)) return ProgramEditorNodeCatalog.Group.FLOW;

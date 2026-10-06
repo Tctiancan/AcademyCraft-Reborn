@@ -1,7 +1,7 @@
 package org.academy.api.server.ability;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -161,7 +161,7 @@ public final class AbilitySystemServer {
         var level = player.level();
 
         var skillKey = payload.getSkillName();
-        var skillId = Identifier.tryParse(skillKey);
+        var skillId = ResourceLocation.tryParse(skillKey);
         if (skillId == null) {
             return new StartSkillDevPacket.Response(false, "Invalid skill id");
         }
@@ -286,7 +286,8 @@ public final class AbilitySystemServer {
             return new StartLevelDevPacket.Response(false, "Ability exp not full");
         }
 
-        // A missing category is always the initial Level 0 development, even if a legacy save
+        // A missing category is always the initial Level 0 development, even
+// if a legacy save
         // contains an inconsistent CP level. Completing it repairs the player to category Level 1.
         var plan = LevelDevelopmentPlan.create(initialDevelopment, currentLevel);
         if (!AbilityDevelopmentAccess.canDevelopAbilityLevel(source, plan.targetLevel())) {
@@ -487,7 +488,7 @@ public final class AbilitySystemServer {
         var player = serverContext.player;
 
         var instance = getSystem(player);
-        instance.activeContexts.computeIfAbsent(player.getUUID(), _ -> ConcurrentHashMap.newKeySet())
+        instance.activeContexts.computeIfAbsent(player.getUUID(), unused173 -> ConcurrentHashMap.newKeySet())
                 .add(serverContext);
 
         NeoForge.EVENT_BUS.register(serverContext.eventListener());
@@ -551,7 +552,7 @@ public final class AbilitySystemServer {
         serverContext.onUnregistered();
     }
 
-    public void schedulePlayerSync(UUID uuid, Identifier syncType) {
+    public void schedulePlayerSync(UUID uuid, ResourceLocation syncType) {
         syncManager.schedulePlayerSync(uuid, syncType);
     }
 
@@ -644,7 +645,7 @@ public final class AbilitySystemServer {
 
         playerData.getSkillDataMap().forEach((skillId, data) -> {
             if (!data.isEnabled()) return;
-            Registries.SKILLS.get(Identifier.parse(skillId)).ifPresent(skillRef -> {
+            Registries.SKILLS.get(ResourceLocation.parse(skillId)).ifPresent(skillRef -> {
                 var skill = skillRef.value();
                 var maintenanceCost = skill.getMaintenanceCost(player);
                 if (maintenanceCost > 0) {
@@ -704,7 +705,7 @@ public final class AbilitySystemServer {
         if (!clearCategorySkills) {
             playerData.getSkillDataMap().forEach((skillId, data) -> {
                 if (!data.isEnabled()) return;
-                var id = Identifier.tryParse(skillId);
+                var id = ResourceLocation.tryParse(skillId);
                 if (id == null) return;
                 Registries.SKILLS.get(id).ifPresent(skillReference -> {
                     var skill = skillReference.value();
@@ -721,7 +722,8 @@ public final class AbilitySystemServer {
         }
         if (categoryChanged) {
             playerDataManager.setPlayerAbilityCategory(uuid, abilityCategory);
-            // Resource managers reinitialize the pool for the new category on the next tick.
+            // Resource managers reinitialize the pool
+// for the new category on the next tick.
             playerCPManager.setCurrMP(uuid, 0.0f);
             playerCPManager.setMaxMP(uuid, 0.0f);
         }
@@ -810,7 +812,7 @@ public final class AbilitySystemServer {
     }
 
     public void removePlayerSkill(UUID uuid, String skillKey) {
-        var skillId = Identifier.tryParse(skillKey);
+        var skillId = ResourceLocation.tryParse(skillKey);
         var skill = skillId == null ? null : Registries.SKILLS.get(skillId)
                 .map(reference -> reference.value())
                 .orElse(null);
@@ -825,7 +827,7 @@ public final class AbilitySystemServer {
     }
 
     public void toggleSkill(UUID uuid, String skillId) {
-        var id = Identifier.tryParse(skillId);
+        var id = ResourceLocation.tryParse(skillId);
         var skill = id == null ? null : Registries.SKILLS.get(id)
                 .map(reference -> reference.value())
                 .orElse(null);
@@ -839,7 +841,7 @@ public final class AbilitySystemServer {
     }
 
     public void releaseMaintenanceOccupation(UUID uuid, String skillId) {
-        var id = Identifier.tryParse(skillId);
+        var id = ResourceLocation.tryParse(skillId);
         var skill = id == null ? null : Registries.SKILLS.get(id)
                 .map(reference -> reference.value())
                 .orElse(null);
@@ -1033,7 +1035,7 @@ public final class AbilitySystemServer {
     public boolean castCpIfPossible(ServerPlayer player, Skill skill,
                                     float cost,
                                     Skill.SkillAction action) {
-        return castCpIfPossible(player, skill, _ -> cost, action);
+        return castCpIfPossible(player, skill, unused174 -> cost, action);
     }
 
     public boolean castCpIfActionSucceeds(
@@ -1482,13 +1484,13 @@ public final class AbilitySystemServer {
     }
 
     public static final class SubsystemRegistry {
-        private static final Map<Identifier, AbilitySubsystem> SYNC_ROUTERS = new ConcurrentHashMap<>();
+        private static final Map<ResourceLocation, AbilitySubsystem> SYNC_ROUTERS = new ConcurrentHashMap<>();
 
-        public static void registerSubsystem(AbilitySubsystem subsystem, Identifier syncType) {
+        public static void registerSubsystem(AbilitySubsystem subsystem, ResourceLocation syncType) {
             SYNC_ROUTERS.put(syncType, subsystem);
         }
 
-        public static Optional<AbilitySubsystem> getHandler(Identifier type) {
+        public static Optional<AbilitySubsystem> getHandler(ResourceLocation type) {
             return Optional.ofNullable(SYNC_ROUTERS.get(type));
         }
 

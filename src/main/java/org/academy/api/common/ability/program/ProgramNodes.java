@@ -28,7 +28,7 @@ public final class ProgramNodes {
             @Override public ProgramNodePurity purity() { return ProgramNodePurity.PURE; }
             @Override public ProgramNodeScope scope() { return ProgramNodeScope.category(category.identifier()); }
             @Override public ProgramNodeExecution<VoidConfiguration> execution() {
-                return (_, _, _) -> ProgramNodeStep.next("flow");
+                return (unused160, unused161, unused162) -> ProgramNodeStep.next("flow");
             }
             @Override public ProgramNodeEditorMetadata editorMetadata() {
                 return new ProgramNodeEditorMetadata(new JsonObject(), ProgramNodeEditorMetadata.Group.FLOW,

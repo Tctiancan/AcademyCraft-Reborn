@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramDirection;
 import org.academy.api.common.ability.program.ProgramVector;
 import org.academy.api.common.ability.program.ProgramWorldPosition;
@@ -21,7 +21,7 @@ class ProgramDebugFormatterTest {
                 "vector={value}", new ProgramVector(3.0, 4.0, 0.0)));
         assertEquals("minecraft:overworld @ (1.25, 64, -2)",
                 ProgramDebugFormatter.formatValue(new ProgramWorldPosition(
-                        Identifier.parse("minecraft:overworld"), 1.25, 64.0, -2.0)));
+                        ResourceLocation.parse("minecraft:overworld"), 1.25, 64.0, -2.0)));
         assertEquals("vectors=[(1, 0, 0), (0, 1, 0)]", ProgramDebugFormatter.render(
                 "vectors={value}", List.of(
                         new ProgramDirection(1.0, 0.0, 0.0),

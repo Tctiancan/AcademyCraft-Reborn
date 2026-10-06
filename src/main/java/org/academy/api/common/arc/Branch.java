@@ -7,7 +7,7 @@ import net.minecraft.network.codec.StreamCodec;
 public record Branch(float attachmentProgress, ArcPath child) {
     public static final StreamCodec<ByteBuf, Branch> CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT, Branch::attachmentProgress,
-            StreamCodec.recursive(_ -> ArcPath.CODEC), Branch::child,
+            StreamCodec.recursive(unused164 -> ArcPath.CODEC), Branch::child,
             Branch::new
     );
 }

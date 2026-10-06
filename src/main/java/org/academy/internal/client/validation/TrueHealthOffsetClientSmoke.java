@@ -1,9 +1,9 @@
 package org.academy.internal.client.validation;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.level.Level;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -93,7 +93,7 @@ public final class TrueHealthOffsetClientSmoke {
 
     private static final class LockedCow extends Cow {
         private boolean locked;
-        private LockedCow(Level level) { super(EntityTypes.COW, level); }
+        private LockedCow(Level level) { super(EntityType.COW, level); }
         @Override public void setHealth(float value) {
             if (!locked || value >= 100) super.setHealth(value);
         }
@@ -103,3 +103,4 @@ public final class TrueHealthOffsetClientSmoke {
         }
     }
 }
+

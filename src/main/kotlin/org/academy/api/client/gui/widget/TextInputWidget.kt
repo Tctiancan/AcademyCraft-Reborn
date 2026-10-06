@@ -1,7 +1,7 @@
-package org.academy.api.client.gui.widget
+﻿package org.academy.api.client.gui.widget
 
-import net.minecraft.client.input.PreeditEvent
-import net.minecraft.util.ARGB
+import org.academy.api.client.input.PreeditEvent
+import net.minecraft.util.FastColor
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.drawable.ColorDrawable
 import org.academy.api.client.gui.drawable.StateListDrawable
@@ -139,7 +139,7 @@ open class TextInputWidget(protected val maxLength: Int) : AbstractWidget(), Tex
         val (originX, originY) = textOrigin(blob.width, blob.height)
         painter.draw(
             context, text, textSize,
-            ARGB.red(textColor) / 255.0f, ARGB.green(textColor) / 255.0f, ARGB.blue(textColor) / 255.0f,
+            FastColor.ARGB32.red(textColor) / 255.0f, FastColor.ARGB32.green(textColor) / 255.0f, FastColor.ARGB32.blue(textColor) / 255.0f,
             TextShapingOptions.DEFAULT,
             originX, originY, finalScale,
             alpha * context.accumulatedAlpha
@@ -154,7 +154,7 @@ open class TextInputWidget(protected val maxLength: Int) : AbstractWidget(), Tex
         )
         hintPainter.draw(
             context, hint, textSize,
-            ARGB.red(hintTextColor) / 255.0f, ARGB.green(hintTextColor) / 255.0f, ARGB.blue(hintTextColor) / 255.0f,
+            FastColor.ARGB32.red(hintTextColor) / 255.0f, FastColor.ARGB32.green(hintTextColor) / 255.0f, FastColor.ARGB32.blue(hintTextColor) / 255.0f,
             TextShapingOptions.DEFAULT,
             originX, originY, finalScale, alpha * context.accumulatedAlpha
         )

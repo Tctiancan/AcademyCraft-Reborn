@@ -98,7 +98,7 @@ public final class MindDestruction extends Skill {
                         InputConstants.PRESS,
                         0
                 )
-        ), _ -> Client.use());
+        ), unused543 -> Client.use());
     }
 
     @Override
@@ -311,7 +311,7 @@ public final class MindDestruction extends Skill {
             var roster = MentaloutControlContext.get(player);
             var applyStupor = shouldApplyStupor(
                     roster != null && roster.contains(target.getUUID()));
-            if (!skill.executeActive(player, (_, _) -> start(player, target, applyStupor))) {
+            if (!skill.executeActive(player, (unused544, unused545) -> start(player, target, applyStupor))) {
                 feedback(player, "message.academy.mentalout.insufficient_cp");
             }
         }

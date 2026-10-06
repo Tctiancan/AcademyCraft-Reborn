@@ -119,7 +119,7 @@ public final class FriendlyFireSetting {
             if (legacyData.contains(TAG_KEY_FRIENDLY_FIRE)) {
                 setFriendlyFireEnabled(
                         player,
-                        legacyData.getBoolean(TAG_KEY_FRIENDLY_FIRE).orElse(true)
+                        legacyData.getBoolean(TAG_KEY_FRIENDLY_FIRE)
                 );
                 legacyData.remove(TAG_KEY_FRIENDLY_FIRE);
             } else {

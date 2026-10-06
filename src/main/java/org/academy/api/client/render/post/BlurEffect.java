@@ -1,6 +1,6 @@
 package org.academy.api.client.render.post;
 
-import com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.api.client.render.texture.GpuTextureView;
 
 public final class BlurEffect {
     private BlurEffect() {

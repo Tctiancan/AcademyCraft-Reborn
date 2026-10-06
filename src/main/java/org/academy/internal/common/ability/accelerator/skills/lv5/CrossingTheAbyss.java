@@ -87,7 +87,7 @@ public final class CrossingTheAbyss extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, GLFW_KEY_L, GLFW_RELEASE, GLFW_MOD_ALT)
-        ), _ -> Client.toggle());
+        ), unused281 -> Client.toggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.CROSSING_THE_ABYSS.get(), () -> {
             var player = Minecraft.getInstance().player;
             return player != null && player.getData(AttachmentTypes.CROSSING_THE_ABYSS_ACTIVE.get());
@@ -251,7 +251,7 @@ public final class CrossingTheAbyss extends Skill {
             }
 
             var ceiling = Math.max(0.0f, CTAEntityActuallyHurt.readTrueHealth(target));
-            HEAL_LOCKS.compute(target.getUUID(), (_, existing) -> new HealLock(
+            HEAL_LOCKS.compute(target.getUUID(), (unused282, existing) -> new HealLock(
                     attacker.getUUID(),
                     existing == null ? ceiling : Math.min(existing.ceiling, ceiling)
             ));

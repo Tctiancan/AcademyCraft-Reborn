@@ -1,15 +1,16 @@
 package org.academy.api.client.gui.widget
 
-import com.mojang.blaze3d.buffers.Std140Builder
-import com.mojang.blaze3d.buffers.Std140SizeCalculator
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.command.PosTexRectDrawCommand
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.Canvas
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Render
+import org.academy.api.client.render.Std140Builder
+import org.academy.api.client.render.Std140SizeCalculator
 import org.academy.api.client.render.UniformPayload
 import org.academy.api.client.resources.R
 import org.joml.Vector2f
@@ -103,7 +104,7 @@ class BlendQuadWidget : AbstractWidget() {
                     1.0f,
                     listOf(),
                     listOf(
-                        UniformPayload(
+                        UniformPayload.of(
                             "SdfUniforms",
                             SDFData::class.java, SDFData(
                                 Vector2f(paddedWidth, paddedHeight),
@@ -126,7 +127,7 @@ class BlendQuadWidget : AbstractWidget() {
     }
 
     private fun renderLines(context: Canvas, finalAlpha: Float, paddedWidth: Float, paddedHeight: Float) {
-        val sampler = RenderSystem.getSamplerCache().getClampToEdge(FilterMode.NEAREST)
+        val sampler = org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST)
         val lineTextureView = UiEnvironment.get().loadTexture(R.textures.gui.element.line)
         val lineH = 4.0f
         run {

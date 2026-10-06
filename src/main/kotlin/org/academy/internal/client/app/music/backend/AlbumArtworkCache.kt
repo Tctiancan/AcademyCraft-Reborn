@@ -1,9 +1,9 @@
-package org.academy.internal.client.app.music.backend
+﻿package org.academy.internal.client.app.music.backend
 
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import net.neoforged.fml.loading.FMLPaths
 import org.academy.AcademyCraft
 import org.academy.api.client.resources.R
@@ -24,7 +24,7 @@ object AlbumArtworkCache {
     private val cacheDirectory: Path = FMLPaths.GAMEDIR.get()
         .resolve("academy_music")
         .resolve("album_covers")
-    private val textures = ConcurrentHashMap<String, Identifier>()
+    private val textures = ConcurrentHashMap<String, ResourceLocation>()
     private val downloads = ConcurrentHashMap<String, CompletableFuture<*>>()
     private val retryAfter = ConcurrentHashMap<String, Long>()
 
@@ -36,7 +36,7 @@ object AlbumArtworkCache {
         ensureCacheDirectory()
     }
 
-    fun textureFor(info: MusicInfo): Identifier {
+    fun textureFor(info: MusicInfo): ResourceLocation {
         if (info.provider == "local" || info.externalId.isBlank()) return info.icon
         return lookupTexture(info.provider, info.externalId, info.artworkUrl, info.icon)
     }
@@ -44,7 +44,7 @@ object AlbumArtworkCache {
     /**
      * 共享播放（音乐室/点播）曲目封面的懒加载查找喵。
      */
-    fun textureFor(entry: org.academy.internal.common.music.SharedTrackEntry): Identifier {
+    fun textureFor(entry: org.academy.internal.common.music.SharedTrackEntry): ResourceLocation {
         if (entry.provider() == "local" || entry.trackId().isBlank()) {
             return R.textures.gui.app.music.icon
         }
@@ -55,8 +55,8 @@ object AlbumArtworkCache {
         provider: String,
         externalId: String,
         artworkUrl: String,
-        fallback: Identifier
-    ): Identifier {
+        fallback: ResourceLocation
+    ): ResourceLocation {
         val info = MusicInfo(fallback, MusicSource.fromSupplier { throw IllegalStateException() }, "", "", provider, externalId, 0, false, artworkUrl)
         val key = cacheKey(info)
         textures[key]?.let { return it }
@@ -129,7 +129,7 @@ object AlbumArtworkCache {
 
     private fun registerTexture(key: String, bytes: ByteArray) {
         val image = NativeImage.read(ByteArrayInputStream(bytes))
-        val texture = DynamicTexture({ "academy_music_cover_$key" }, image)
+        val texture = DynamicTexture(image)
         val location = AcademyCraft.academy("music_cover/$key")
         Minecraft.getInstance().textureManager.register(location, texture)
         textures[key] = location

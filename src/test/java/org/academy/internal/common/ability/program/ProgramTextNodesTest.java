@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
 import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProgramTextNodesTest {
     private static final ProgramWorldPosition ORIGIN = new ProgramWorldPosition(
-            Identifier.parse("minecraft:the_nether"), 10, 64, -20);
+            ResourceLocation.parse("minecraft:the_nether"), 10, 64, -20);
 
     @Test
     void chatSplitParseAndBranchExecuteTogetherAndInvalidInputDoesNotAct() {
@@ -115,7 +115,7 @@ class ProgramTextNodesTest {
     }
 
     @SuppressWarnings("unchecked")
-    private static <C> ProgramNodeStep execute(Identifier id, C configuration, ProgramVmContext context,
+    private static <C> ProgramNodeStep execute(ResourceLocation id, C configuration, ProgramVmContext context,
                                                Map<String, ProgramValue<?>> values) {
         var inputs = new HashMap<String, List<ProgramValue<?>>>();
         values.forEach((key, value) -> inputs.put(key, List.of(value)));

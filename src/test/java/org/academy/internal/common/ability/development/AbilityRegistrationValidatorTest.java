@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.development;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.Skill;
@@ -88,7 +88,7 @@ class AbilityRegistrationValidatorTest {
         }
 
         @Override
-        public Identifier getDeveloperIcon() {
+        public ResourceLocation getDeveloperIcon() {
             return AcademyCraft.academy("test/validator");
         }
 

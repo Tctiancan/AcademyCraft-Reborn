@@ -1,10 +1,7 @@
 package org.academy.internal.common.ability.accelerator.skills.lv4
 
-import net.minecraft.client.gui.GuiGraphicsExtractor
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.client.gui.components.EditBox
-import net.minecraft.client.input.CharacterEvent
-import net.minecraft.client.input.KeyEvent
-import net.minecraft.client.input.MouseButtonEvent
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
@@ -164,33 +161,29 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         effectScroll = Mth.clamp(effectScroll, 0, maxScroll(filteredEffects.size, effectVisibleRows()))
     }
 
-    override fun extractBackground(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        super.extractBackground(graphics, mouseX, mouseY, a)
-    }
-
-    override fun extractRenderState(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int, a: Float) {
-        super.extractRenderState(graphics, mouseX, mouseY, a)
+    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         syncLayout()
-        fillSection(graphics, leftX, panelY + SECTION_TOP, leftW, panelH - SECTION_TOP - SECTION_BOTTOM_PAD)
-        fillSection(graphics, rightX - 5, panelY + SECTION_TOP, rightW + 5, panelH - SECTION_TOP - SECTION_BOTTOM_PAD)
+        fillSection(guiGraphics, leftX, panelY + SECTION_TOP, leftW, panelH - SECTION_TOP - SECTION_BOTTOM_PAD)
+        fillSection(guiGraphics, rightX - 5, panelY + SECTION_TOP, rightW + 5, panelH - SECTION_TOP - SECTION_BOTTOM_PAD)
         val searchFrame = searchFrame()
-        drawInput(graphics, searchFrame.x, searchFrame.y, searchFrame.width, searchFrame.height, searchBox!!.isFocused)
-        searchBox!!.extractRenderState(graphics, mouseX, mouseY, a)
+        drawInput(guiGraphics, searchFrame.x, searchFrame.y, searchFrame.width, searchFrame.height, searchBox!!.isFocused)
+        searchBox!!.render(guiGraphics, mouseX, mouseY, partialTick)
         val query = searchBox?.value?.trim()?.lowercase(Locale.ROOT) ?: ""
         if (query != lastSearch) rebuildFilteredEffects()
-        graphics.centeredText(font, title, panelX + panelW / 2, panelY + 8, TEXT)
-        graphics.text(
+        guiGraphics.drawCenteredString(font, title, panelX + panelW / 2, panelY + 8, TEXT)
+        guiGraphics.drawString(
             font, Component.translatable("screen.academy.reflection_filter.effects"),
             leftX + SEARCH_X_PAD, panelY + EFFECTS_LABEL_Y, DIM, false
         )
-        renderEffects(graphics, mouseX, mouseY)
-        renderMiddleButtons(graphics, mouseX, mouseY)
-        renderModes(graphics, mouseX, mouseY)
-        renderForcedMovementProtection(graphics, mouseX, mouseY)
-        renderSideLists(graphics, mouseX, mouseY)
+        renderEffects(guiGraphics, mouseX, mouseY)
+        renderMiddleButtons(guiGraphics, mouseX, mouseY)
+        renderModes(guiGraphics, mouseX, mouseY)
+        renderForcedMovementProtection(guiGraphics, mouseX, mouseY)
+        renderSideLists(guiGraphics, mouseX, mouseY)
+        super.render(guiGraphics, mouseX, mouseY, partialTick)
     }
 
-    private fun renderEffects(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderEffects(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val visible = effectVisibleRows()
         effectScroll = Mth.clamp(effectScroll, 0, maxScroll(filteredEffects.size, visible))
         graphics.enableScissor(leftX + 4, listY, leftX + leftW - 4, listBottom)
@@ -207,8 +200,8 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
             if (selected) graphics.fill(leftX + 5, y + 2, leftX + 7, y + ROW_H - 2, ACTIVE)
             val markerY = y + (ROW_H - 5) / 2
             graphics.fill(leftX + 10, markerY, leftX + 15, markerY + 5, categoryColor(entry.category))
-            graphics.text(font, font.plainSubstrByWidth(entry.name, leftW - 36), leftX + 19, y + 2, TEXT, false)
-            graphics.text(font, font.plainSubstrByWidth(entry.id, leftW - 36), leftX + 19, y + 11, DIM, false)
+            graphics.drawString(font, font.plainSubstrByWidth(entry.name, leftW - 36), leftX + 19, y + 2, TEXT, false)
+            graphics.drawString(font, font.plainSubstrByWidth(entry.id, leftW - 36), leftX + 19, y + 11, DIM, false)
             row++
         }
         graphics.disableScissor()
@@ -222,7 +215,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         )
     }
 
-    private fun renderMiddleButtons(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderMiddleButtons(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         drawButton(
             graphics, midX, panelY + MIDDLE_WHITE_Y, MIDDLE_W, MIDDLE_H,
             Component.translatable("screen.academy.reflection_filter.add_white"),
@@ -235,7 +228,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         )
     }
 
-    private fun renderModes(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderModes(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val contentW = rightContentWidth()
         val buttonW = (contentW - 12) / 3
         val mode = data.mode
@@ -255,11 +248,11 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
             Component.translatable("screen.academy.reflection_filter.mode.neutral"),
             mouseX, mouseY, true, mode == ReflectionFilter.Mode.NEUTRAL_FILTER
         )
-        graphics.text(
+        graphics.drawString(
             font, Component.translatable("screen.academy.reflection_filter.mode"),
             rightX, panelY + MODE_LABEL_Y, DIM, false
         )
-        graphics.text(
+        graphics.drawString(
             font,
             font.plainSubstrByWidth(modeDescription(mode).string, contentW),
             rightX,
@@ -269,7 +262,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         )
     }
 
-    private fun renderForcedMovementProtection(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderForcedMovementProtection(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val enabled = data.forcedMovementProtectionValue()
         drawButton(
             graphics,
@@ -288,13 +281,13 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         )
     }
 
-    private fun renderSideLists(graphics: GuiGraphicsExtractor, mouseX: Int, mouseY: Int) {
+    private fun renderSideLists(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
         val listW = sideListWidth()
-        graphics.centeredText(
+        graphics.drawCenteredString(
             font, Component.translatable("screen.academy.reflection_filter.whitelist"),
             whiteX + listW / 2, sideListY - 13, TEXT
         )
-        graphics.centeredText(
+        graphics.drawCenteredString(
             font, Component.translatable("screen.academy.reflection_filter.blacklist"),
             blackX + listW / 2, sideListY - 13, TEXT
         )
@@ -303,7 +296,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
     }
 
     private fun renderIdList(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         mouseX: Int,
         mouseY: Int,
         ids: MutableList<String>,
@@ -321,14 +314,14 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
             val y = sideListY + row * (ROW_H + GAP)
             val hover = inside(mouseX.toDouble(), mouseY.toDouble(), x, y, width, ROW_H)
             graphics.fill(x, y, x + width, y + ROW_H, if (hover) ROW_HOVER else ROW)
-            graphics.text(font, font.plainSubstrByWidth(effectDisplayName(id), width - 22), x + 5, y + 2, TEXT, false)
-            graphics.text(font, font.plainSubstrByWidth(id, width - 22), x + 5, y + 11, DIM, false)
-            graphics.text(font, "x", x + width - 12, y + (ROW_H - 8) / 2, if (hover) TEXT else BAD, false)
+            graphics.drawString(font, font.plainSubstrByWidth(effectDisplayName(id), width - 22), x + 5, y + 2, TEXT, false)
+            graphics.drawString(font, font.plainSubstrByWidth(id, width - 22), x + 5, y + 11, DIM, false)
+            graphics.drawString(font, "x", x + width - 12, y + (ROW_H - 8) / 2, if (hover) TEXT else BAD, false)
             row++
         }
         graphics.disableScissor()
         if (ids.isEmpty()) {
-            graphics.centeredText(
+            graphics.drawCenteredString(
                 font, Component.translatable("screen.academy.reflection_filter.empty"),
                 x + width / 2, sideListY + (ROW_H - 8) / 2, DIM
             )
@@ -343,15 +336,13 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         )
     }
 
-    override fun mouseClicked(e: MouseButtonEvent, isDoubleClick: Boolean): Boolean {
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         syncLayout()
-        if (e.button() == 0) {
-            val mouseX = e.x()
-            val mouseY = e.y()
+        if (button == 0) {
             if (inside(mouseX, mouseY, searchFrame())) {
                 focused = searchBox!!
                 searchBox!!.isFocused = true
-                searchBox!!.mouseClicked(e, isDoubleClick)
+                searchBox!!.mouseClicked(mouseX, mouseY, button)
                 return true
             }
             searchBox!!.isFocused = false
@@ -364,17 +355,17 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
                 return true
             }
         }
-        return super.mouseClicked(e, isDoubleClick)
+        return super.mouseClicked(mouseX, mouseY, button)
     }
 
-    override fun keyPressed(e: KeyEvent): Boolean {
-        return searchBox != null && searchBox!!.isFocused && searchBox!!.keyPressed(e)
-                || super.keyPressed(e)
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        return searchBox != null && searchBox!!.isFocused && searchBox!!.keyPressed(keyCode, scanCode, modifiers)
+                || super.keyPressed(keyCode, scanCode, modifiers)
     }
 
-    override fun charTyped(e: CharacterEvent): Boolean {
-        return searchBox != null && searchBox!!.isFocused && searchBox!!.charTyped(e)
-                || super.charTyped(e)
+    override fun charTyped(codePoint: Char, modifiers: Int): Boolean {
+        return searchBox != null && searchBox!!.isFocused && searchBox!!.charTyped(codePoint, modifiers)
+                || super.charTyped(codePoint, modifiers)
     }
 
     private fun handleEffectClick(mouseX: Double, mouseY: Double): Boolean {
@@ -541,13 +532,13 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         return id
     }
 
-    private fun fillSection(graphics: GuiGraphicsExtractor, x: Int, y: Int, width: Int, height: Int) {
+    private fun fillSection(graphics: GuiGraphics, x: Int, y: Int, width: Int, height: Int) {
         graphics.fill(x, y, x + width, y + height, SECTION)
         border(graphics, x, y, width, height, BORDER_DIM)
     }
 
     private fun drawInput(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         x: Int,
         y: Int,
         width: Int,
@@ -560,7 +551,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
     }
 
     private fun drawButton(
-        graphics: GuiGraphicsExtractor,
+        graphics: GuiGraphics,
         x: Int,
         y: Int,
         width: Int,
@@ -579,7 +570,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         border(graphics, x, y, width, height, if (selected) ACTIVE else if (hover) BORDER else BORDER_DIM)
         if (selected) graphics.fill(x + 1, y + 2, x + 3, y + height - 2, ACTIVE)
         val color = if (enabled) TEXT else DISABLED
-        graphics.centeredText(
+        graphics.drawCenteredString(
             font, font.plainSubstrByWidth(label.string, maxOf(1, width - 6)),
             x + width / 2, y + (height - 8) / 2, color
         )
@@ -639,7 +630,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         private const val SCROLLBAR_W = 3
 
         private fun drawScrollBar(
-            graphics: GuiGraphicsExtractor,
+            graphics: GuiGraphics,
             x: Int,
             y: Int,
             height: Int,

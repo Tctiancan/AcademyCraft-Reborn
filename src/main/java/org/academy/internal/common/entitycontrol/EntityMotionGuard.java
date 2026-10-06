@@ -340,9 +340,12 @@ public final class EntityMotionGuard {
     }
 
     private static void settleForcedMovementProtection(ServerPlayer player) {
-        // The external action was classified while protection was active, so this attempt must
-        // remain blocked even if its CP settlement is rejected. Disable failed protection to
-        // prevent later attempts from being stopped for free.
+        // The external action was classified
+// while protection was active, so this attempt must
+        // remain blocked even
+// if its CP settlement is rejected. Disable failed protection to
+        // prevent later attempts from being stopped
+// for free.
         if (tryProtectForcedMovement(player)) return;
         if (VectorReflection.Server.isActive(player)) {
             VectorReflection.Server.forceDeactivate(player);

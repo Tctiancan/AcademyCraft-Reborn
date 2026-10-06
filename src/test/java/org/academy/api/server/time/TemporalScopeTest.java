@@ -1,7 +1,7 @@
 package org.academy.api.server.time;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.Vec3;
@@ -17,11 +17,11 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class TemporalScopeTest {
     private static final ResourceKey<Level> DIMENSION_A = ResourceKey.create(
             Registries.DIMENSION,
-            Identifier.fromNamespaceAndPath("test", "temporal_a")
+            ResourceLocation.fromNamespaceAndPath("test", "temporal_a")
     );
     private static final ResourceKey<Level> DIMENSION_B = ResourceKey.create(
             Registries.DIMENSION,
-            Identifier.fromNamespaceAndPath("test", "temporal_b")
+            ResourceLocation.fromNamespaceAndPath("test", "temporal_b")
     );
 
     @Test

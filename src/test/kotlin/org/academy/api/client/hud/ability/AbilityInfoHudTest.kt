@@ -1,8 +1,8 @@
-package org.academy.api.client.hud.ability
+﻿package org.academy.api.client.hud.ability
 
 import com.google.gson.Gson
 import com.mojang.blaze3d.platform.InputConstants
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.ability.AbilitySystemClient
 import org.academy.api.client.input.InputSystem
 import org.academy.api.common.ability.AbilityCategory
@@ -83,7 +83,7 @@ class AbilityInfoHudTest {
     }
 
     private open class PlainCategory : AbilityCategory(1f) {
-        override fun getDeveloperIcon(): Identifier = Identifier.parse("academy:test")
+        override fun getDeveloperIcon(): ResourceLocation = ResourceLocation.parse("academy:test")
 
         override fun getDisplayName(): String = "Test"
     }

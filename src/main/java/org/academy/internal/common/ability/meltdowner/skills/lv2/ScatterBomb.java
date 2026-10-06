@@ -100,7 +100,7 @@ public final class ScatterBomb extends Skill {
                         InputConstants.RELEASE,
                         InputConstants.MOD_ALT
                 )
-        ), _ -> Client.end());
+        ), unused495 -> Client.end());
         NeoForge.EVENT_BUS.register(Client.class);
     }
 

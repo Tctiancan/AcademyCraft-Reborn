@@ -12,7 +12,7 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.item.ItemStack;
@@ -35,7 +35,7 @@ import java.util.UUID;
 /** Live-world regressions for Area Teleport's block transaction. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class AreaTeleportGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("area_teleport_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("area_teleport_function");
 
     private AreaTeleportGameTests() {
     }
@@ -49,7 +49,7 @@ public final class AreaTeleportGameTests {
     private static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
         event.registerTest(AcademyCraft.academy("area_teleport_preserves_blocks_without_drops"),
-                new Instance(new TestData<>(environment, Identifier.withDefaultNamespace("empty"),
+                new Instance(new TestData<>(environment, ResourceLocation.withDefaultNamespace("empty"),
                         100, 0, true, Rotation.NONE, false, 1, 1, false, 16)));
     }
 

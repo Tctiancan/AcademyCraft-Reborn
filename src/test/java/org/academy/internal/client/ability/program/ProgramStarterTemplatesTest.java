@@ -1,6 +1,6 @@
 package org.academy.internal.client.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class ProgramStarterTemplatesTest {
     @Test
     void examplesProduceEditableValidProgramsForAnEmptySlot() {
-        var category = Identifier.parse("academy:starter_test");
+        var category = ResourceLocation.parse("academy:starter_test");
         var definition = BaseAbilityProgramDefinition.create(category);
         var empty = new AbilityProgram(1, UUID.randomUUID(), "slot 1", category,
                 ProgramGraph.EMPTY, ProgramEditorLayout.EMPTY);

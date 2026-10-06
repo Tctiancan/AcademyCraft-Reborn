@@ -11,7 +11,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
 import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.world.item.Items;
 import org.academy.internal.common.world.level.material.Fluids;
@@ -77,7 +77,7 @@ public final class ImagPhaseFusionRecipeCategory
     }
 
     @Override
-    public Identifier getIdentifier(ImagPhaseItemFusion.DisplayRecipe recipe) {
+    public ResourceLocation getIdentifier(ImagPhaseItemFusion.DisplayRecipe recipe) {
         return recipe.id();
     }
 }

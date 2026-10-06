@@ -87,14 +87,16 @@ public final class MagneticLevitation {
         var horizontal = MagneticMovement.flightDirection(subject.getYRot(), forward, strafe, speed);
         var smoothed = MagneticMovement.approachHorizontal(subject.getDeltaMovement(), horizontal);
         // Altitude is capped by the field reach minus a margin: an unbounded target would leave the mover
-        // asking for clearance the field cannot provide, climbing into a permanent clamp instead of holding
+        // asking
+// for clearance the field cannot provide, climbing into a permanent clamp instead of holding
         // a steady ceiling, and would let the ground reference slip out of range and flicker admission.
         var climb = ground != null
                 ? MagneticMovement.hoverVertical(intent, clearance, reachableClearance(radius), limits)
                 : Math.clamp(intent, -1.0, 1.0) * limits.inputVerticalSpeed();
         var desired = new Vec3(smoothed.x, climb, smoothed.z);
         var solved = clamp(level, subject.getBoundingBox(), desired, radius, limits.maxSupportSamples());
-        // Identity, not value equality: clamp returns the same instance when the step is accepted whole,
+        // Identity, not value equality: clamp
+// returns the same instance when the step is accepted whole,
         // so rounding can never make an accepted step look modified.
         return new Step(true, ground != null, solved, clearance, solved != desired);
     }
@@ -188,10 +190,12 @@ public final class MagneticLevitation {
 
     private boolean inField(ServerLevel level, AABB bounds, Vec3 delta, double radius, int maxSamples) {
         var moved = bounds.move(delta);
-        // Terrain case, and the overwhelmingly common one: ground under the destination. A short column
+        // Terrain
+// case, and the overwhelmingly common one: ground under the destination. A short column
         // probe, and it is exactly the question admission asks, so the two can never disagree.
         if (groundQuery.groundBelow(level, moved, radius) != null) return true;
-        // Wall or ceiling case: a known neighbour that still measures inside the radius, one block read.
+        // Wall or ceiling
+// case: a known neighbour that still measures inside the radius, one block read.
         if (MagneticSupportQuery.holds(level, moved, envelope, radius)) return true;
         var probed = MagneticSupportQuery.probeAt(level, moved, radius, maxSamples);
         if (probed == null) return false;

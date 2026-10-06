@@ -2,8 +2,8 @@ package org.academy.mixin.common;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.animal.golem.IronGolem;
-import net.minecraft.world.entity.monster.cubemob.AbstractCubeMob;
+import net.minecraft.world.entity.animal.IronGolem;
+import net.minecraft.world.entity.monster.AbstractCubeMob;
 import net.minecraft.world.entity.player.Player;
 import org.academy.api.common.entitycontrol.AttackDecision;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;

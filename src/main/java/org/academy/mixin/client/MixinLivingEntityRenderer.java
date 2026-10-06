@@ -3,7 +3,7 @@ package org.academy.mixin.client;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
@@ -34,7 +34,7 @@ public abstract class MixinLivingEntityRenderer<S extends LivingEntityRenderStat
     private void getModelTint(S state, CallbackInfoReturnable<Integer> cir) {
         var quantum = state.getRenderData(QuantumInterferenceLayer.CONTEXT_KEY);
         if (quantum == null || !quantum.active()) return;
-        cir.setReturnValue(ARGB.color(
+        cir.setReturnValue(FastColor.ARGB32.color(
                 (int) (Math.max(Mth.sin(state.ageInTicks * 0.125), 0) * 255), 255, 255, 255
         ));
     }

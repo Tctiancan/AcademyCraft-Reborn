@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.glyph.msdf
+﻿package org.academy.api.client.gui.text.glyph.msdf
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.text.atlas.AtlasManager
 import org.academy.api.client.gui.text.atlas.GlyphStatus
 import org.academy.api.client.gui.text.font.FontFace
@@ -20,7 +20,7 @@ class MsdfGlyphCache private constructor(private val font: FontFace, executor: E
         getGlyphByIndex(font.glyphIndex(codePoint), codePoint)
 
     companion object {
-        private val caches = ConcurrentHashMap<Identifier, MsdfGlyphCache>()
+        private val caches = ConcurrentHashMap<ResourceLocation, MsdfGlyphCache>()
 
         fun of(font: FontFace): MsdfGlyphCache =
             caches.computeIfAbsent(font.descriptor.identifier) {

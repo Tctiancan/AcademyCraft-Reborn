@@ -18,7 +18,7 @@ object ImGuiUtilInternal {
     fun init() {
         val minecraft = Minecraft.getInstance()
         backend = ImGuiBackend(
-            minecraft.window.handle()
+            minecraft.window.getWindow()
         ).also { it.init() }
     }
 

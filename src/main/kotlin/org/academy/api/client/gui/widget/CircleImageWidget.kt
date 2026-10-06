@@ -1,12 +1,12 @@
 package org.academy.api.client.gui.widget
 
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.Identifier
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.ImageCircleDrawCommand
 
-class CircleImageWidget(texture: Identifier) : ImageWidget(texture) {
+class CircleImageWidget(texture: ResourceLocation) : ImageWidget(texture) {
     override fun generateDrawCommand(
         texture: GpuTextureView, sampler: GpuSampler,
         width: Float, height: Float,

@@ -1,6 +1,5 @@
 package org.academy.api.client.gui.text.glyph.bitmap
 
-import com.mojang.blaze3d.GpuFormat
 import org.academy.api.client.gui.text.atlas.AtlasPage
 import org.academy.api.client.gui.text.atlas.AtlasRect
 import org.academy.api.client.gui.text.atlas.AtlasSpec
@@ -21,7 +20,7 @@ class BitmapAtlas private constructor(private val pageSize: Int) {
                 if (rect != null) return Reservation(candidate, rect)
             }
 
-            val newPage = AtlasPage(pageSize, GpuFormat.R8_UNORM, "bitmap_atlas_page_" + pages.size)
+            val newPage = AtlasPage(pageSize, "bitmap_atlas_page_" + pages.size)
             val newRect = newPage.reserve(width, height)
             if (newRect == null) {
                 newPage.close()

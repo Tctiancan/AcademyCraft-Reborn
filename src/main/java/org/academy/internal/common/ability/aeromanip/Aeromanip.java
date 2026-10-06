@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.aeromanip;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.AbilityResourceSpec;
@@ -19,7 +19,7 @@ public final class Aeromanip extends AbilityCategory {
     }
 
     @Override
-    public Identifier getDeveloperIcon() {
+    public ResourceLocation getDeveloperIcon() {
         return R.textures.ICON_AEROMANIP;
     }
 

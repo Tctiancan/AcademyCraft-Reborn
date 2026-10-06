@@ -3,22 +3,20 @@ package org.academy.internal.client.renderer.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.api.client.resources.R;
-import org.academy.internal.client.renderer.entity.state.DarkmatterCutSlashRenderState;
 import org.academy.internal.common.world.entity.skill.DarkmatterCutSlash;
 import org.joml.Matrix4f;
 
 public final class DarkmatterCutSlashRenderer
-        extends EntityRenderer<DarkmatterCutSlash, DarkmatterCutSlashRenderState> {
-    private static final Identifier[] FRAMES = {
+        extends EntityRenderer<DarkmatterCutSlash> {
+    private static final ResourceLocation[] FRAMES = {
             R.textures.darkmatter_cut_slash_effect_1,
             R.textures.darkmatter_cut_slash_effect_2,
             R.textures.darkmatter_cut_slash_effect_3,
@@ -56,49 +54,30 @@ public final class DarkmatterCutSlashRenderer
     }
 
     @Override
-    public void submit(DarkmatterCutSlashRenderState state, PoseStack poseStack,
-                       SubmitNodeCollector collector, CameraRenderState cameraState) {
-        var swingProgress = Mth.clamp(state.progress * 1.7f, 0.0f, 1.0f);
-        var life = Mth.sin(state.progress * Mth.PI);
+    public void render(DarkmatterCutSlash entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        var progress = Mth.clamp((entity.tickCount + partialTick) / entity.getDuration(), 0, 1);
+        var swingProgress = Mth.clamp(progress * 1.7f, 0.0f, 1.0f);
+        var life = Mth.sin(progress * Mth.PI);
         var alpha = life * 0.92f;
         if (alpha <= 0.001f) return;
-        var frame = Mth.clamp((int) (state.progress * FRAMES.length), 0, FRAMES.length - 1);
-        var scale = state.scale * (0.92f + 0.18f * life);
+        var frame = Mth.clamp((int) (progress * FRAMES.length), 0, FRAMES.length - 1);
+        var scale = entity.getScale() * (0.92f + 0.18f * life);
         var width = 5.0f * scale * (0.82f + 0.18f * swingProgress);
-        var height = 1.05f * scale;
-        var mirrored = state.direction < 0;
+        var height = 1.05f * entity.getScale();
+        var mirrored = entity.getSwingDirection() < 0;
 
         poseStack.pushPose();
-        poseStack.mulPose(Axis.YP.rotationDegrees(270 - state.yRot));
-        poseStack.mulPose(Axis.XP.rotationDegrees(-state.xRot));
-        collector.submitCustomGeometry(poseStack, RenderTypes.entityTranslucent(FRAMES[frame]),
-                (pose, consumer) -> {
-                    renderSlash(consumer, pose.pose(), state.lightCoords, alpha,
-                            width, height, mirrored);
-                    renderSlash(consumer, pose.pose(), state.lightCoords, alpha * 0.52f,
-                            width * 0.76f, height * 0.76f, !mirrored);
-                });
+        poseStack.mulPose(Axis.YP.rotationDegrees(270 - entity.getYRot()));
+        poseStack.mulPose(Axis.XP.rotationDegrees(-entity.getXRot()));
+        var matrix = poseStack.last().pose();
+        var consumer = bufferSource.getBuffer(RenderType.entityTranslucent(FRAMES[frame]));
+        renderSlash(consumer, matrix, packedLight, alpha, width, height, mirrored);
+        renderSlash(consumer, matrix, packedLight, alpha * 0.52f, width * 0.76f, height * 0.76f, !mirrored);
         poseStack.popPose();
     }
 
     @Override
-    public DarkmatterCutSlashRenderState createRenderState() {
-        return new DarkmatterCutSlashRenderState();
-    }
-
-    @Override
-    public void extractRenderState(DarkmatterCutSlash entity,
-                                   DarkmatterCutSlashRenderState state, float partialTick) {
-        super.extractRenderState(entity, state, partialTick);
-        state.progress = Mth.clamp((entity.tickCount + partialTick) / entity.getDuration(), 0, 1);
-        state.scale = entity.getScale();
-        state.xRot = entity.getXRot();
-        state.yRot = entity.getYRot();
-        state.direction = entity.getSwingDirection();
-    }
-
-    @Override
-    protected boolean affectedByCulling(DarkmatterCutSlash entity) {
-        return false;
+    public ResourceLocation getTextureLocation(DarkmatterCutSlash entity) {
+        return FRAMES[Mth.clamp((int) ((Mth.clamp((entity.tickCount + 0) / entity.getDuration(), 0, 1)) * FRAMES.length), 0, FRAMES.length - 1)];
     }
 }

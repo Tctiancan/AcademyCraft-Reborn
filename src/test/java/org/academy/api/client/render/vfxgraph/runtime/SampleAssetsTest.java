@@ -1,7 +1,7 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
 import com.google.gson.JsonParser;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -42,7 +42,7 @@ class SampleAssetsTest {
             var stream = getClass().getResourceAsStream("/assets/academy/vfxgraph/" + name + ".json");
             assertNotNull(stream, "sample asset " + name + " should be packaged");
             var json = JsonParser.parseReader(new InputStreamReader(stream, StandardCharsets.UTF_8)).getAsJsonObject();
-            var assetId = Identifier.fromNamespaceAndPath("academy", "vfxgraph/" + name);
+            var assetId = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/" + name);
             VfxGraphManager.INSTANCE.registerAsset(assetId, json);
 
             var effect = VfxGraphManager.INSTANCE.spawn(assetId, new Vector3f(0f, 0f, 0f));

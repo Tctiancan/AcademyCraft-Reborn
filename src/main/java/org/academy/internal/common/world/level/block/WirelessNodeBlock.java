@@ -107,7 +107,7 @@ public final class WirelessNodeBlock extends BaseEntityBlock {
 
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> blockEntityType) {
-        return (_, pos, _, blockEntity) -> {
+        return (unused796, pos, unused797, blockEntity) -> {
             if (blockEntity instanceof WirelessNodeBlockEntity wirelessNodeBlockEntity) {
                 wirelessNodeBlockEntity.ticks++;
                 if (wirelessNodeBlockEntity.getLevel() instanceof ServerLevel serverLevel) {
@@ -120,7 +120,7 @@ public final class WirelessNodeBlock extends BaseEntityBlock {
     @Override
     public @Nullable MenuProvider getMenuProvider(BlockState state, Level level, BlockPos pos) {
         if (level.getBlockEntity(pos) instanceof WirelessNodeBlockEntity wirelessNodeBlockEntity) {
-            return new SimpleMenuProvider((containerId, playerInventory, _) ->
+            return new SimpleMenuProvider((containerId, playerInventory, unused798) ->
                     new WirelessNodeMenu(containerId, playerInventory, ContainerLevelAccess.create(level, pos), wirelessNodeBlockEntity), Component.empty());
         }
         return null;

@@ -132,8 +132,8 @@ public final class LaminarBuffer extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 Client.KEY_NAME_CAST,
                 configuredBinding,
-                _ -> Client.start(),
-                _ -> Client.stop());
+                unused318 -> Client.start(),
+                unused319 -> Client.stop());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),
                 new AbilitySystemClient.SkillInfo(
@@ -239,9 +239,9 @@ public final class LaminarBuffer extends Skill {
                         }
                         skill.executeActiveWithResource(
                             player,
-                            _ -> cpCost(player, HOVER_CP_COST),
-                            _ -> HOVER_AIR_COST,
-                            (_, _) -> beginHover(player, skill));
+                            unused320 -> cpCost(player, HOVER_CP_COST),
+                            unused321 -> HOVER_AIR_COST,
+                            (unused322, unused323) -> beginHover(player, skill));
                     }
                     case FULL -> {
                         var platformPos = platformPosition(player);
@@ -251,9 +251,9 @@ public final class LaminarBuffer extends Skill {
                         }
                         skill.executeActiveWithResource(
                                 player,
-                                _ -> cpCost(player, PLATFORM_CP_COST),
-                                _ -> PLATFORM_AIR_COST,
-                                (_, _) -> placePlatform(player, skill, platformPos));
+                                unused324 -> cpCost(player, PLATFORM_CP_COST),
+                                unused325 -> PLATFORM_AIR_COST,
+                                (unused326, unused327) -> placePlatform(player, skill, platformPos));
                     }
                 }
             }

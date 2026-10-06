@@ -1,14 +1,14 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class BlockWorkRegionTest {
-    private static final Identifier DIMENSION = AcademyCraft.academy("test_dimension");
+    private static final ResourceLocation DIMENSION = AcademyCraft.academy("test_dimension");
 
     @Test
     void normalizesCornersAndReportsInclusiveDimensions() {

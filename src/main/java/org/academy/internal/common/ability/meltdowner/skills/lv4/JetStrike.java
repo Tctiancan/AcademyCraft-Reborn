@@ -161,7 +161,7 @@ public final class JetStrike extends Skill {
             var base = player.position().add(direction.scale(milestone >= 2 ? 10.0 : DISTANCE));
             var safe = findSafe(player, base);
             var delta = safe == null ? Vec3.ZERO : safe.subtract(player.position());
-            skill.executeActive(player, (context, _) -> dash(player, delta, context.milestone()));
+            skill.executeActive(player, (context, unused498) -> dash(player, delta, context.milestone()));
         }
 
         private static void dash(ServerPlayer player, Vec3 delta, int milestone) {

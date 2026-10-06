@@ -111,7 +111,7 @@ public final class HighSpeedJetStructureService {
                         started[0] = BlockStructureKinetics.propel(
                                 structure,
                                 player,
-                                (movingStructure, _) -> force(
+                                (movingStructure, unused297) -> force(
                                         movingStructure,
                                         player,
                                         plan.targetNozzle,

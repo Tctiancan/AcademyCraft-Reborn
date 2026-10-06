@@ -2,7 +2,7 @@ package org.academy.mixin.common;
 
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.arrow.AbstractArrow;
+import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.phys.EntityHitResult;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileInterceptionService;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileRedirects;

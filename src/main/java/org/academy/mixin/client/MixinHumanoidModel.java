@@ -2,7 +2,7 @@ package org.academy.mixin.client;
 
 import net.minecraft.client.animation.KeyframeAnimation;
 import net.minecraft.client.model.HumanoidModel;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.entity.state.HumanoidRenderState;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
@@ -40,7 +40,7 @@ public abstract class MixinHumanoidModel {
             HumanoidRenderState state,
             CallbackInfo ci
     ) {
-        if (!(state instanceof AvatarRenderState avatarState)) return;
+        if (!(state instanceof PlayerRenderState avatarState)) return;
         var playback = WingFlightAnimationClient.playback(avatarState.id);
         if (playback == null || playback.phase() == WingFlightAnimationTimeline.Phase.IDLE) {
             org.academy.api.client.render.vfxgraph.shape.HumanoidSurfacePose.capture(avatarState.id, (HumanoidModel<?>) (Object) this);

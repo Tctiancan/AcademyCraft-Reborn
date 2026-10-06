@@ -91,7 +91,7 @@ public final class VfxGraphValidator {
                 issues.add(GraphIssue.error("flow to missing context: " + edge.toContextId()));
                 continue;
             }
-            adjacency.computeIfAbsent(edge.fromContextId(), _ -> new ArrayList<>()).add(edge.toContextId());
+            adjacency.computeIfAbsent(edge.fromContextId(), unused150 -> new ArrayList<>()).add(edge.toContextId());
         }
 
         // flow 无环（DFS）

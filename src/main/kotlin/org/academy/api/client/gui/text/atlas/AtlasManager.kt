@@ -1,6 +1,6 @@
-package org.academy.api.client.gui.text.atlas
+﻿package org.academy.api.client.gui.text.atlas
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.text.glyph.bitmap.BitmapAtlas
 import org.academy.api.client.gui.text.glyph.msdf.MsdfAtlas
 import java.util.concurrent.ConcurrentHashMap
@@ -9,7 +9,7 @@ import java.util.concurrent.Executor
 object AtlasManager {
     @Volatile
     private var bitmapAtlas: BitmapAtlas? = null
-    private val msdfAtlases = ConcurrentHashMap<Identifier, MsdfAtlas>()
+    private val msdfAtlases = ConcurrentHashMap<ResourceLocation, MsdfAtlas>()
 
     fun bitmap(): BitmapAtlas {
         val existing = bitmapAtlas
@@ -25,9 +25,9 @@ object AtlasManager {
 
     fun bitmapIfPresent(): BitmapAtlas? = bitmapAtlas
 
-    fun msdfAtlases(): Map<Identifier, MsdfAtlas> = HashMap(msdfAtlases)
+    fun msdfAtlases(): Map<ResourceLocation, MsdfAtlas> = HashMap(msdfAtlases)
 
-    fun msdf(fontId: Identifier, executor: Executor): MsdfAtlas =
+    fun msdf(fontId: ResourceLocation, executor: Executor): MsdfAtlas =
         msdfAtlases.computeIfAbsent(fontId) {
             MsdfAtlas(
                 it,

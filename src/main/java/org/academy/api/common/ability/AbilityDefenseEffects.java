@@ -1,6 +1,6 @@
 package org.academy.api.common.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import org.academy.api.common.attribute.PlayerAttributes;
@@ -10,7 +10,7 @@ public final class AbilityDefenseEffects {
     private AbilityDefenseEffects() {}
 
     /** Returns false when the entity type has not opted into the true-resistance attribute. */
-    public static boolean setTrueResistance(LivingEntity subject, Identifier source, double points, boolean enabled) {
+    public static boolean setTrueResistance(LivingEntity subject, ResourceLocation source, double points, boolean enabled) {
         if (subject.level().isClientSide()) return false;
         var attribute = subject.getAttribute(PlayerAttributes.TRUE_RESISTANCE);
         if (attribute == null) return false;

@@ -1,28 +1,14 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.world.level.block.Rotation;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.SyncTypes;
@@ -32,28 +18,24 @@ import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.server.ability.PlayerCPManager;
 
-import java.util.List;
 import java.util.UUID;
 
 /** Exercises actual category switching, CP ticking and optional installed-addon recovery vetoes. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class NativeCpRecoveryGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("native_cp_recovery_function");
-
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void categoryReturn(GameTestHelper helper) {
+        runScenario(helper, "category_return");
     }
 
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        for (var scenario : List.of("category_return", "occupation_recovery", "overload_recovery")) {
-            var environment = event.registerEnvironment(AcademyCraft.academy("native_cp/" + scenario),
-                    new TestEnvironmentDefinition.AllOf(List.of()));
-            event.registerTest(AcademyCraft.academy("native_cp_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 40, 0, true,
-                    Rotation.NONE, false, 1, 1, false, 16), scenario));
-        }
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void occupationRecovery(GameTestHelper helper) {
+        runScenario(helper, "occupation_recovery");
+    }
+
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void overloadRecovery(GameTestHelper helper) {
+        runScenario(helper, "overload_recovery");
     }
 
     private static ServerPlayer createPlayer(GameTestHelper helper) {
@@ -155,34 +137,6 @@ public final class NativeCpRecoveryGameTests {
             } finally {
                 helper.getLevel().getServer().getPlayerList().remove(player);
             }
-        }
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
-                TestData.CODEC.forGetter(Instance::info),
-                Codec.STRING.fieldOf("scenario").forGetter(value -> value.scenario)
-        ).apply(instance, Instance::new));
-        private final String scenario;
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info, String scenario) {
-            super(info);
-            this.scenario = scenario;
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            runScenario(helper, scenario);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Native CP recovery regression");
         }
     }
 }

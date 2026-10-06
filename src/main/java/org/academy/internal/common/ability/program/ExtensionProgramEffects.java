@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -26,7 +26,7 @@ public final class ExtensionProgramEffects {
 
     static ProgramActionTransaction.Undo track(ServerPlayer player, List<LivingEntity> targets, ProgramEffect effect,
                                                 ServerProgramScheduler.SessionKey key,
-                                                Identifier category, Skill skill) {
+                                                ResourceLocation category, Skill skill) {
         var lease = new Lease(player, targets, effect, player.level().dimension().identifier(),
                 player.level().getGameTime() + effect.lifetimeTicks(), key, category, skill);
         if (effect.lifetimeTicks() > 0) ACTIVE.add(lease);
@@ -71,16 +71,16 @@ public final class ExtensionProgramEffects {
         private final ServerPlayer player;
         private final List<LivingEntity> targets;
         private final ProgramEffect effect;
-        private final Identifier category;
+        private final ResourceLocation category;
         private final Skill skill;
-        private final Identifier dimension;
+        private final ResourceLocation dimension;
         private final long until;
         private final ServerProgramScheduler.SessionKey key;
         private boolean closed;
 
         private Lease(ServerPlayer player, List<LivingEntity> targets, ProgramEffect effect,
-                      Identifier dimension, long until, ServerProgramScheduler.SessionKey key,
-                      Identifier category, Skill skill) {
+                      ResourceLocation dimension, long until, ServerProgramScheduler.SessionKey key,
+                      ResourceLocation category, Skill skill) {
             this.player = player;
             this.targets = targets;
             this.effect = effect;

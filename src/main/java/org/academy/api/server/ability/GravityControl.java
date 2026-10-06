@@ -1,6 +1,6 @@
 package org.academy.api.server.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 
 import java.util.HashSet;
@@ -13,10 +13,10 @@ public final class GravityControl {
     private static final Map<Entity, State> STATES = new WeakHashMap<>();
     private GravityControl() {}
 
-    public static void set(Entity subject, Identifier source, boolean enabled) {
+    public static void set(Entity subject, ResourceLocation source, boolean enabled) {
         if (subject.level().isClientSide()) return;
         if (enabled) {
-            STATES.computeIfAbsent(subject, _ -> new State(subject.isNoGravity())).sources.add(source);
+            STATES.computeIfAbsent(subject, unused176 -> new State(subject.isNoGravity())).sources.add(source);
             subject.setNoGravity(true);
         } else {
             var state = STATES.get(subject);
@@ -30,7 +30,7 @@ public final class GravityControl {
 
     private static final class State {
         final boolean previous;
-        final Set<Identifier> sources = new HashSet<>();
+        final Set<ResourceLocation> sources = new HashSet<>();
         State(boolean previous) { this.previous = previous; }
     }
 }

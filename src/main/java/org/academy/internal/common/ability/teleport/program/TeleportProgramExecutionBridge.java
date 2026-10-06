@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.teleport.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
@@ -21,7 +21,7 @@ import java.util.function.LongSupplier;
 public final class TeleportProgramExecutionBridge {
     private static final int MAX_FUEL = ProgramLimits.DEFAULT.maxNodes()
             * ProgramLimits.DEFAULT.maxNodes() + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
 
     private TeleportProgramExecutionBridge() {
     }
@@ -102,11 +102,11 @@ public final class TeleportProgramExecutionBridge {
         );
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
-        put(result, TeleportProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
+        put(result, TeleportProgramNodeIds.CASTER, (context, unused770, unused771) -> data(
                 "entity", ProgramValueTypes.ENTITY_REFERENCE, runtime(context).caster()));
-        put(result, TeleportProgramNodeIds.LOOK_TARGET, (context, _, _) ->
+        put(result, TeleportProgramNodeIds.LOOK_TARGET, (context, unused772, unused773) ->
                 runtime(context).lookTarget()
                         .map(value -> data(
                                 "entity", ProgramValueTypes.ENTITY_REFERENCE, value))
@@ -145,7 +145,7 @@ public final class TeleportProgramExecutionBridge {
                             blockPosition(inputs, "position"), slot, configuration.mode()));
                     return ProgramNodeStep.next("flow");
                 });
-        put(result, TeleportProgramNodeIds.SPACE_SAFETY, (context, _, inputs) -> data(
+        put(result, TeleportProgramNodeIds.SPACE_SAFETY, (context, unused774, inputs) -> data(
                 "result",
                 ProgramValueTypes.BOOLEAN,
                 runtime(context).isSpaceSafe(
@@ -202,8 +202,8 @@ public final class TeleportProgramExecutionBridge {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {

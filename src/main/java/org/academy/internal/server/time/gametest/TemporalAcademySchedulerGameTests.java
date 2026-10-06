@@ -12,10 +12,10 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -47,11 +47,11 @@ import java.util.concurrent.atomic.AtomicReference;
 /** End-to-end validation for owner-local Academy scheduler time. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalAcademySchedulerGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE =
+    private static final ResourceLocation TEST_INSTANCE_TYPE =
             AcademyCraft.academy("temporal_academy_scheduler_function");
-    private static final Identifier CATEGORY =
+    private static final ResourceLocation CATEGORY =
             AcademyCraft.academy("temporal_scheduler_test");
-    private static final Identifier ENTRY_NODE =
+    private static final ResourceLocation ENTRY_NODE =
             AcademyCraft.academy("temporal_scheduler_test_entry");
     private static final ProgramNodeType<Unit> ENTRY_TYPE = entryType();
     private static final CompiledProgram IMMEDIATE_PROGRAM = immediateProgram();
@@ -76,7 +76,7 @@ public final class TemporalAcademySchedulerGameTests {
         );
         var data = new TestData<>(
                 environment,
-                Identifier.withDefaultNamespace("empty"),
+                ResourceLocation.withDefaultNamespace("empty"),
                 20,
                 0,
                 true,
@@ -96,8 +96,8 @@ public final class TemporalAcademySchedulerGameTests {
     private static void runOwnerPauseTest(GameTestHelper helper) {
         var level = helper.getLevel();
         var server = level.getServer();
-        var pausedOwner = helper.spawn(EntityTypes.ZOMBIE, 1, 2, 1);
-        var normalOwner = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 1);
+        var pausedOwner = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
+        var normalOwner = helper.spawn(EntityType.ZOMBIE, 3, 2, 1);
         var pausedKey = new ServerProgramScheduler.SessionKey(
                 pausedOwner.getUUID(),
                 CATEGORY,
@@ -217,7 +217,7 @@ public final class TemporalAcademySchedulerGameTests {
                 null,
                 2,
                 20L,
-                (_, result) -> termination.set(result.kind())
+                (unused830, result) -> termination.set(result.kind())
         );
     }
 
@@ -330,3 +330,4 @@ public final class TemporalAcademySchedulerGameTests {
         }
     }
 }
+

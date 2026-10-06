@@ -104,9 +104,9 @@ public final class DarkmatterRadiation extends Skill {
         InputSystem.addMaintainedKeyBinding(
                 Client.KEY_NAME_CAST,
                 binding,
-                _ -> Client.start(),
-                _ -> Client.stop(),
-                _ -> Client.heartbeat(),
+                unused429 -> Client.start(),
+                unused430 -> Client.stop(),
+                unused431 -> Client.heartbeat(),
                 () -> AbilitySystemClient.canUseSkill(Skills.DARKMATTER_RADIATION.get())
         );
     }
@@ -495,7 +495,7 @@ public final class DarkmatterRadiation extends Skill {
             if (now >= state.nextCostTick) {
                 var manager = AbilitySystemServer.getSystem(player).getDarkmatterResourceManager();
                 var paid = new boolean[1];
-                var executed = skill.executeContinuous(player, _ -> 0.0f, (context, _) -> {
+                var executed = skill.executeContinuous(player, unused432 -> 0.0f, (context, unused433) -> {
                     paid[0] = manager.consume(
                             player,
                             maintenanceCost(context.milestone()),

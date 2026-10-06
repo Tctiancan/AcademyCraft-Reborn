@@ -4,7 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -65,7 +65,7 @@ public final class DarkmatterCut extends Skill {
     static final float BASE_DAMAGE = 12.0f;
     static final float SIX_WINGS_DAMAGE = 16.0f;
     static final float MATTER_COST = 3.0f;
-    private static final Identifier PENETRATION_ID = AcademyCraft.academy(
+    private static final ResourceLocation PENETRATION_ID = AcademyCraft.academy(
             "darkmatter_cut_phase_penetration");
 
     public DarkmatterCut() {

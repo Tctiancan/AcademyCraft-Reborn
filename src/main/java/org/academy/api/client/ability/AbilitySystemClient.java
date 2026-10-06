@@ -4,9 +4,9 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.util.Util;
+import net.minecraft.Util;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.AcademyCraft;
 import org.academy.AcademyCraftClient;
@@ -208,10 +208,10 @@ public final class AbilitySystemClient {
         return false;
     }
 
-    private static Identifier resolveFallbackTexture(Skill skill) {
+    private static ResourceLocation resolveFallbackTexture(Skill skill) {
         var skillKey = skill.getKey();
         var categoryPath = skill.getCategory().getKey().getPath();
-        var inferred = Identifier.fromNamespaceAndPath(
+        var inferred = ResourceLocation.fromNamespaceAndPath(
                 skillKey.getNamespace(),
                 "textures/ability/" + categoryPath + "/skill/" + skillKey.getPath() + "/icon.png"
         );
@@ -315,7 +315,7 @@ public final class AbilitySystemClient {
         SKILL_DATA.putAll(newData);
 
         LEARNED_SKILLS.clear();
-        newData.keySet().forEach(skillId -> Registries.SKILLS.get(Identifier.parse(skillId))
+        newData.keySet().forEach(skillId -> Registries.SKILLS.get(ResourceLocation.parse(skillId))
                 // Hidden skills keep their persisted data but stay out of every learned-skill UI gate.
                 .filter(holder -> !holder.value().isHidden())
                 .ifPresent(holder -> LEARNED_SKILLS.add(holder.value())));
@@ -663,7 +663,7 @@ public final class AbilitySystemClient {
         }
     }
 
-    public record SkillInfo(Skill skill, List<SkillInfo> dependencies, Identifier texture, float x, float y) {
+    public record SkillInfo(Skill skill, List<SkillInfo> dependencies, ResourceLocation texture, float x, float y) {
     }
 
     public record SkillUseStatus(

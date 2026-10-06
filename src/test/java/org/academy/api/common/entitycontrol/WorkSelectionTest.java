@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
@@ -10,13 +10,13 @@ import static org.junit.jupiter.api.Assertions.*;
 class WorkSelectionTest {
     @Test void previewUsesTheExactInclusiveBlockRegionAtNegativeCoordinates() {
         var bounds = WorkSelection.bounds(new BlockPos(-1, 64, -2), new BlockPos(-4, 100, -7), 3, -2);
-        var region = WorkSelection.region(Identifier.withDefaultNamespace("overworld"), bounds);
+        var region = WorkSelection.region(ResourceLocation.withDefaultNamespace("overworld"), bounds);
         assertEquals(new BlockPos(-4, 60, -7), region.minimum());
         assertEquals(new BlockPos(-1, 62, -2), region.maximum());
         assertEquals(region.volume(), (int) (bounds.getXsize() * bounds.getYsize() * bounds.getZsize()));
     }
     @Test void numericVerticesNormalizeReversedAxesAndRejectInvalidEdits() {
-        var dimension = Identifier.parse("minecraft:overworld");
+        var dimension = ResourceLocation.parse("minecraft:overworld");
         var result = WorkSelection.parseVertices(dimension, new String[]{"-1", "70", "-4", "-8", "64", "-2"}, -64, 320);
         assertEquals(new BlockPos(-8, 64, -4), result.minimum());
         assertEquals(new BlockPos(-1, 70, -2), result.maximum());

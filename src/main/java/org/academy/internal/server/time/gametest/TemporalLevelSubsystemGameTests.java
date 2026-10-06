@@ -11,7 +11,7 @@ import net.minecraft.gametest.framework.TestData;
 import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
@@ -37,7 +37,7 @@ import java.util.Set;
 /** End-to-end validation for level-wide and spatial one-shot channels. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TemporalLevelSubsystemGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE =
+    private static final ResourceLocation TEST_INSTANCE_TYPE =
             AcademyCraft.academy("temporal_level_subsystem_function");
 
     private TemporalLevelSubsystemGameTests() {
@@ -60,7 +60,7 @@ public final class TemporalLevelSubsystemGameTests {
         );
         var data = new TestData<>(
                 environment,
-                Identifier.withDefaultNamespace("empty"),
+                ResourceLocation.withDefaultNamespace("empty"),
                 40,
                 0,
                 true,

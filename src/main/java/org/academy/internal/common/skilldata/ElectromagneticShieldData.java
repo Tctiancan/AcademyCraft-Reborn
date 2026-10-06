@@ -1,11 +1,11 @@
 package org.academy.internal.common.skilldata;
 
 import com.google.gson.annotations.SerializedName;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 
 public final class ElectromagneticShieldData extends SkillData {
-    public static final Identifier ID = AcademyCraft.academy("electromagnetic_shield_data");
+    public static final ResourceLocation ID = AcademyCraft.academy("electromagnetic_shield_data");
 
     @SerializedName("absorbedDamage")
     private float absorbedDamage;
@@ -14,7 +14,7 @@ public final class ElectromagneticShieldData extends SkillData {
     private float capacity = 100.0f;
 
     @Override
-    public Identifier getType() {
+    public ResourceLocation getType() {
         return ID;
     }
 

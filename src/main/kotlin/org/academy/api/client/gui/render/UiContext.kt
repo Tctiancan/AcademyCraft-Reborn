@@ -1,32 +1,20 @@
 package org.academy.api.client.gui.render
 
-import com.mojang.blaze3d.buffers.GpuBuffer
-import com.mojang.blaze3d.buffers.GpuBufferSlice
-import com.mojang.blaze3d.buffers.Std140Builder
-import com.mojang.blaze3d.buffers.Std140SizeCalculator
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.textures.FilterMode
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.render.GuiItemAtlas
-import net.minecraft.client.renderer.DynamicUniformStorage
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
-import net.minecraft.client.renderer.Projection
-import net.minecraft.client.renderer.ProjectionMatrixBuffer
 import org.academy.api.client.gui.command.ItemStackDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.layout.MeasureSpec
 import org.academy.api.client.gui.render.BatchProcessor.UboUploader
 import org.academy.api.client.gui.widget.WidgetContainer
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.UniformPayload
 import org.academy.api.client.thread.MainThread
 import org.academy.api.client.thread.RenderThread
 import org.academy.api.client.thread.runOnRenderThread
-import org.academy.api.common.util.UncheckedUtil
-import org.joml.Matrix4f
-import org.joml.Vector4f
-import org.lwjgl.system.MemoryStack
+import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.math.ceil
@@ -42,15 +30,7 @@ open class UiContext {
     private val closed = AtomicBoolean(false)
     private val closing = AtomicBoolean(false)
 
-    private val dynamicUniformStorages: MutableMap<Class<out DynamicUniform>, DynamicUniformStorage<*>> =
-        HashMap()
     private val commandExecutor = CommandExecutor()
-    private var itemAtlas: GuiItemAtlas? = null
-    private var itemAtlasSlotSize = 0
-
-    private var projectionMatrixBuffer: ProjectionMatrixBuffer? = null
-    private val projection = Projection()
-    private var dynamicTransformsUbo: GpuBuffer? = null
 
     init {
         runOnRenderThread { initOnRenderThread() }
@@ -103,7 +83,6 @@ open class UiContext {
         val commands = commandList.getAndSet(null) ?: return null
         if (commands.isEmpty()) return null
         val preparedCommands = prepareItemCommands(commands, env.guiScale)
-        for (ubo in dynamicUniformStorages.values) ubo.endFrame()
         val segments = splitCommandsForBlurByIndex(preparedCommands, blurRegions)
         return preparedCommands to segments
     }
@@ -142,8 +121,6 @@ open class UiContext {
         blurRegions: List<BlurRegion>,
         backdropBlur: org.academy.api.client.render.post.BackdropBlurEngine? = null
     ) {
-        for (ubo in dynamicUniformStorages.values) ubo.endFrame()
-
         val environment = UiEnvironment.get()
         val effectiveScale = environment.guiScale
 
@@ -152,16 +129,8 @@ open class UiContext {
 
         val preparedCommands = prepareItemCommands(commands, effectiveScale)
 
-        if (blurRegions.isEmpty() || aboveTarget == null) {
-            drawPrepared(target, preparedCommands, clear, guiScaledW, guiScaledH, effectiveScale)
-        } else {
-            val segments = splitCommandsForBlurByIndex(preparedCommands, blurRegions)
-            if (backdropBlur != null) {
-                drawSegments(target, aboveTarget, segments, clear, guiScaledW, guiScaledH, effectiveScale, backdropBlur)
-            } else {
-                drawPrepared(target, preparedCommands, clear, guiScaledW, guiScaledH, effectiveScale)
-            }
-        }
+        // 首版 C-stun: 25.5 的模糊/compositor 双缓冲后处理暂跳过, 一律直接画到 target.
+        drawPrepared(target, preparedCommands, clear, guiScaledW, guiScaledH, effectiveScale)
     }
 
     @RenderThread
@@ -177,34 +146,11 @@ open class UiContext {
     ) {
         if (segments.isEmpty()) return
 
-        val targetView = target.getColorTextureView() ?: return
-        val aboveView = aboveTarget.getColorTextureView() ?: return
-        var isFirst = true
-
-        for ((segmentCommands, segmentRegions) in segments) {
-            if (segmentCommands.isEmpty() && segmentRegions.isEmpty()) continue
-
-            if (segmentCommands.isNotEmpty()) {
-                if (isFirst) {
-                    drawPrepared(target, segmentCommands, clear, guiScaledW, guiScaledH, effectiveScale)
-                    isFirst = false
-                } else {
-                    drawPrepared(aboveTarget, segmentCommands, true, guiScaledW, guiScaledH, effectiveScale)
-                    UiCompositor.blitSource(targetView, aboveView)
-                }
-            }
-
-            if (segmentRegions.isNotEmpty()) {
-                backdropBlur.capture(targetView, segmentRegions.maxOf { it.radius })
-                for ((x, y, width, height, radius) in segmentRegions) {
-                    backdropBlur.fillRegion(
-                        targetView,
-                        x, y, width, height,
-                        radius,
-                        UiCompositor.NEUTRAL_TINT
-                    )
-                }
-            }
+        // 首版 C-stun: 模糊/compositor 后处理跳过, 把所有有命令的段直接画到 target.
+        val merged = ArrayList<SubmittedCommand>()
+        for ((segmentCommands, _) in segments) merged.addAll(segmentCommands)
+        if (merged.isNotEmpty()) {
+            drawPrepared(target, merged, clear, guiScaledW, guiScaledH, effectiveScale)
         }
     }
 
@@ -217,34 +163,23 @@ open class UiContext {
         guiScaledH: Float,
         effectiveScale: Float
     ) {
-        val commandEncoder = RenderSystem.getDevice().createCommandEncoder()
-        val colorTexture = target.getColorTexture()
-        val colorTextureView = target.getColorTextureView()
-
-        if (colorTexture == null || colorTextureView == null) return
-
-        if (clear) commandEncoder.clearColorTexture(colorTexture, Vector4f(0f))
+        // 1.21.1 无 GPU 延迟渲染目标/命令编码; 直接在当前绑定的 framebuffer 上即时绘制.
+        if (clear) {
+            RenderSystem.clearColor(0f, 0f, 0f, 0f)
+            RenderSystem.clear(16384, Minecraft.ON_OSX)
+        }
 
         if (commands.isEmpty()) return
-
-        val projectionMatrixBuffer = projectionMatrixBuffer
-        val dynamicTransformsUbo = dynamicTransformsUbo
-        if (projectionMatrixBuffer == null || dynamicTransformsUbo == null) return
 
         val meshesToDraw = BatchProcessor.process(
             commands,
             object : UboUploader {
-                override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): GpuBufferSlice {
-                    return uploadPayload(payload)
+                override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer {
+                    return payload.toByteBuffer()
                 }
             })
 
-        projection.setupOrtho(0f, 1f, guiScaledW, guiScaledH, true)
-        val projectionBufferSlice = projectionMatrixBuffer.getBuffer(projection)
-        commandExecutor.execute(
-            meshesToDraw, colorTextureView,
-            projectionBufferSlice, dynamicTransformsUbo, effectiveScale
-        )
+        commandExecutor.execute(meshesToDraw, effectiveScale)
     }
 
     companion object {
@@ -294,46 +229,9 @@ open class UiContext {
         commands: MutableList<SubmittedCommand>,
         effectiveScale: Float
     ): MutableList<SubmittedCommand> {
-        val itemCommands = commands.mapNotNull { it.command as? ItemStackDrawCommand }
-        if (itemCommands.isEmpty()) {
-            itemAtlas?.endFrame()
-            return commands
-        }
-
-        val slotSize = ceil(16f * effectiveScale).toInt().coerceAtLeast(16)
-        val identities = itemCommands.mapTo(mutableSetOf()) { it.itemState.modelIdentity }
-        val textureSize = GuiItemAtlas.computeTextureSizeFor(slotSize, identities.size)
-
-        var atlas = itemAtlas
-        val canReuse = atlas != null &&
-                itemAtlasSlotSize == slotSize &&
-                atlas.textureSize() == textureSize &&
-                atlas.tryPrepareFor(identities)
-        if (!canReuse) {
-            atlas?.close()
-            atlas = GuiItemAtlas(
-                Minecraft.getInstance().gameRenderer.featureRenderDispatcher(),
-                textureSize,
-                slotSize
-            )
-            itemAtlas = atlas
-            itemAtlasSlotSize = slotSize
-        }
-
-        val sampler = RenderSystem.getSamplerCache().getRepeat(FilterMode.NEAREST)
-        val prepared = commands.mapNotNullTo(mutableListOf()) { submitted ->
-            val itemCommand = submitted.command as? ItemStackDrawCommand ?: return@mapNotNullTo submitted
-            val slot = atlas.getOrUpdate(itemCommand.itemState) ?: return@mapNotNullTo null
-            SubmittedCommand(
-                itemCommand.resolve(slot, sampler),
-                submitted.pose,
-                submitted.scissorRect,
-                submitted.commandIndex,
-                submitted.alphaMul
-            )
-        }
-        atlas.endFrame()
-        return prepared
+        // 首版 C-stun: 1.21.1 暂未迁移物品图集 (GuiItemAtlas), 物品渲染命令整组跳过;
+        // 非物品命令 (图像/色块/文本/技能进度等) 原样保留.
+        return commands.filterNot { it.command is ItemStackDrawCommand }.toMutableList()
     }
 
     open fun generateCommands(
@@ -348,46 +246,9 @@ open class UiContext {
         context.pose().popPose()
     }
 
-    private fun <T : DynamicUniform> uploadPayload(
-        payload: UniformPayload<T>
-    ): GpuBufferSlice {
-        return getOrCreateUbo(payload.type, payload.size).writeUniform(payload.data)
-    }
-
-    @MainThread
-    private fun <T : DynamicUniform> getOrCreateUbo(
-        uboClass: Class<T>, size: Int
-    ): DynamicUniformStorage<T> {
-        return UncheckedUtil.uncheckedCast<DynamicUniformStorage<T>>(
-            dynamicUniformStorages.computeIfAbsent(
-                uboClass
-            ) { _ ->
-                DynamicUniformStorage<DynamicUniform>(
-                    uboClass.getSimpleName() + "_UBO", size, 2
-                )
-            })
-    }
-
     @RenderThread
     private fun initOnRenderThread() {
-        projectionMatrixBuffer = ProjectionMatrixBuffer("ac_ui")
-        val device = RenderSystem.getDevice()
-        val uboUsage = GpuBuffer.USAGE_UNIFORM or GpuBuffer.USAGE_COPY_DST
-
-        MemoryStack.stackPush().use { memoryStack ->
-            val size = Std140SizeCalculator().putMat4f().putVec4().putVec3().putMat4f().putFloat().get()
-            val builder = Std140Builder.onStack(memoryStack, size)
-            val identityMatrix = Matrix4f()
-            builder.putMat4f(identityMatrix)
-            builder.putVec4(1.0f, 1.0f, 1.0f, 1.0f)
-            builder.putVec3(0.0f, 0.0f, 0.0f)
-            builder.putMat4f(identityMatrix)
-            builder.putFloat(1.0f)
-            val byteBuffer = builder.get()
-            dynamicTransformsUbo = device.createBuffer(
-                { "UI DynamicTransforms UBO" }, uboUsage, byteBuffer
-            )
-        }
+        // 1.21.1 即时渲染无需 GPU UBO/投影缓冲初始化.
     }
 
     fun close() {
@@ -397,15 +258,7 @@ open class UiContext {
     }
 
     fun closeOnRenderThread() {
-        if (projectionMatrixBuffer != null) projectionMatrixBuffer!!.close()
-        if (dynamicTransformsUbo != null) dynamicTransformsUbo!!.close()
-
         commandExecutor.close()
-        itemAtlas?.close()
-        itemAtlas = null
-        itemAtlasSlotSize = 0
-        for (ubo in dynamicUniformStorages.values) ubo.close()
-        dynamicUniformStorages.clear()
         lastBlurRegions = emptyList()
         performedRoot = null
         closed.set(true)

@@ -1,9 +1,9 @@
-package org.academy.internal.client.app.settings.ui
+﻿package org.academy.internal.client.app.settings.ui
 
-import com.mojang.blaze3d.textures.FilterMode
+import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.client.Minecraft
-import net.minecraft.resources.Identifier
-import net.minecraft.util.ARGB
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.FastColor
 import net.neoforged.fml.ModList
 import org.academy.AcademyCraft
 import org.academy.AcademyCraftClient
@@ -48,7 +48,7 @@ object SettingsApp : App {
         return L10n["app.academy.settings.name"]
     }
 
-    override fun icon(): Identifier {
+    override fun icon(): ResourceLocation {
         return R.textures.gui.icon.icon_settings
     }
 
@@ -78,7 +78,7 @@ object SettingsApp : App {
         private data class BindingSection(
             val id: String,
             val title: String,
-            val icon: Identifier,
+            val icon: ResourceLocation,
             override val config: KeyBindingConfig,
             val hiddenBindings: Set<String> = emptySet(),
             override val persist: (KeyBindingConfig) -> Unit
@@ -197,7 +197,7 @@ object SettingsApp : App {
                 val updateState = Consumer<Float> { progress ->
                     progressState.set(progress)
                     val alpha = (progress * 0.5f * 255).toInt()
-                    back.setColor(ARGB.color(alpha, 0, 0, 0))
+                    back.setColor(FastColor.ARGB32.color(alpha, 0, 0, 0))
                 }
                 val animator = StateListAnimator()
                 animator.addState(
@@ -274,7 +274,7 @@ object SettingsApp : App {
                     gravity(Gravity.CENTER)
                     onClick {
                         val minecraft = Minecraft.getInstance()
-                        minecraft.gui.setScreen(HudLayoutEditorScreen(minecraft.gui.screen()))
+                        minecraft.setScreen(HudLayoutEditorScreen(minecraft.screen))
                     }
                     text(L10n["app.academy.settings.general.hud_layout.open"], "text") {
                         scaleX = 0.65f

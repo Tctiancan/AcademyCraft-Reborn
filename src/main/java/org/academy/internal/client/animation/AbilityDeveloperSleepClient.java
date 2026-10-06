@@ -2,12 +2,12 @@ package org.academy.internal.client.animation;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.entity.state.AvatarRenderState;
+import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.context.ContextKey;
-import net.minecraft.world.entity.Avatar;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
@@ -26,7 +26,7 @@ public final class AbilityDeveloperSleepClient {
     private AbilityDeveloperSleepClient() {
     }
 
-    public static void extract(Avatar avatar, AvatarRenderState renderState) {
+    public static void extract(Player avatar, PlayerRenderState renderState) {
         var podPose = sample(avatar, renderState.partialTick);
         renderState.setRenderData(CONTEXT_KEY, podPose);
         if (podPose == null) return;
@@ -37,7 +37,7 @@ public final class AbilityDeveloperSleepClient {
         renderState.walkAnimationSpeed = 0.0f;
     }
 
-    public static void applyModelTransform(AvatarRenderState renderState, PoseStack poseStack) {
+    public static void applyModelTransform(PlayerRenderState renderState, PoseStack poseStack) {
         var podPose = renderState.getRenderData(CONTEXT_KEY);
         if (podPose == null || podPose.angleDegrees() <= 0.0f) return;
 

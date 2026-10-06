@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.aeromanip.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.aeromanip.charge.AeromanipChargeTier;
@@ -23,7 +23,7 @@ import java.util.function.LongSupplier;
 public final class AeromanipProgramExecutionBridge {
     private static final int MAX_FUEL = ProgramLimits.DEFAULT.maxNodes()
             * ProgramLimits.DEFAULT.maxNodes() + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
 
     private AeromanipProgramExecutionBridge() {
     }
@@ -104,11 +104,11 @@ public final class AeromanipProgramExecutionBridge {
         );
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
-        put(result, AeromanipProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
+        put(result, AeromanipProgramNodeIds.CASTER, (context, unused298, unused299) -> data(
                 "entity", ProgramValueTypes.ENTITY_REFERENCE, runtime(context).caster()));
-        put(result, AeromanipProgramNodeIds.LOOK_TARGET, (context, _, _) ->
+        put(result, AeromanipProgramNodeIds.LOOK_TARGET, (context, unused300, unused301) ->
                 runtime(context).lookTarget()
                         .map(value -> data(
                                 "entity", ProgramValueTypes.ENTITY_REFERENCE, value))
@@ -186,7 +186,7 @@ public final class AeromanipProgramExecutionBridge {
                     return ProgramNodeStep.next("flow");
                 });
         put(result, AeromanipProgramNodeIds.OWNED_JET_NOZZLE_COUNT,
-                (context, _, inputs) -> data(
+                (context, unused302, inputs) -> data(
                         "count",
                         ProgramValueTypes.INTEGER,
                         runtime(context).ownedJetNozzleCount(
@@ -323,8 +323,8 @@ public final class AeromanipProgramExecutionBridge {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {

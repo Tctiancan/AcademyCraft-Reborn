@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.electromaster.skills.lv3.magneticwea
 
 import net.minecraft.core.Holder;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EquipmentSlot;
@@ -155,7 +155,7 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
         return snapshots;
     }
 
-    private record ModifierKey(Holder<Attribute> attribute, Identifier id) {
+    private record ModifierKey(Holder<Attribute> attribute, ResourceLocation id) {
     }
 
     private record ModifierSnapshot(AttributeModifier modifier, boolean permanent) {

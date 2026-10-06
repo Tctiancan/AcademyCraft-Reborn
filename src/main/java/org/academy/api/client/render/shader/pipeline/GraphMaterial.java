@@ -1,6 +1,5 @@
 package org.academy.api.client.render.shader.pipeline;
 
-import com.mojang.blaze3d.buffers.Std140Builder;
 import org.academy.api.client.render.graph.model.GraphParameter;
 import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.graph.type.ValueType;
@@ -56,15 +55,11 @@ public final class GraphMaterial {
     }
 
     /**
-     * 按 {@link UniformLayout} 顺序写入：固定首成员 {@code Time}，随后各参数。
-     * std140 对齐由 {@link Std140Builder} 自动处理，与 {@link UniformLayout} 规则一致。
+     * C-stun: 26.2 {@code Std140Builder} std140 uniform 序列化在 1.21.1 暂不移植。
+     * 保留方法签名，实现为空占位。
      */
-    public void write(Std140Builder builder, float time) {
-        builder.putFloat(time);
-        for (var parameter : parameters) {
-            if (!isUniformType(parameter.type())) continue; // sampler/curve/gradient 不走 UBO
-            writeValue(builder, values.get(parameter.id()));
-        }
+    public void write(Object builder, float time) {
+        // C-stun: std140 uniform 写入暂不移植。
     }
 
     private static boolean isUniformType(ValueType type) {
@@ -72,25 +67,5 @@ public final class GraphMaterial {
             case FLOAT, INT, VEC2, VEC3, VEC4, COLOR -> true;
             default -> false;
         };
-    }
-
-    private static void writeValue(Std140Builder builder, Value value) {
-        switch (value.type()) {
-            case FLOAT -> builder.putFloat(value.asFloat());
-            case INT -> builder.putInt(value.asInt());
-            case VEC2 -> {
-                var v = value.asVec2();
-                builder.putVec2(v.x, v.y);
-            }
-            case VEC3 -> {
-                var v = value.asVec3();
-                builder.putVec3(v.x, v.y, v.z);
-            }
-            case VEC4, COLOR -> {
-                var v = value.asVec4();
-                builder.putVec4(v.x, v.y, v.z, v.w);
-            }
-            default -> throw new IllegalArgumentException("not a uniform value type: " + value.type());
-        }
     }
 }

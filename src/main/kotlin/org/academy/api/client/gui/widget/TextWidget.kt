@@ -1,7 +1,7 @@
 package org.academy.api.client.gui.widget
 
-import net.minecraft.resources.Identifier
-import net.minecraft.util.ARGB
+import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.FastColor
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.frame.UiFrame
 import org.academy.api.client.gui.layout.Gravity
@@ -33,7 +33,7 @@ open class TextWidget(text: String) : AbstractWidget(), TextHolder {
             }
         }
 
-    var typeface: Identifier? = null
+    var typeface: ResourceLocation? = null
         set(value) {
             if (field != value) {
                 field = value
@@ -262,9 +262,9 @@ open class TextWidget(text: String) : AbstractWidget(), TextHolder {
             }
         }
 
-    private val redF: Float get() = ARGB.red(textColor) / 255.0f
-    private val greenF: Float get() = ARGB.green(textColor) / 255.0f
-    private val blueF: Float get() = ARGB.blue(textColor) / 255.0f
+    private val redF: Float get() = FastColor.ARGB32.red(textColor) / 255.0f
+    private val greenF: Float get() = FastColor.ARGB32.green(textColor) / 255.0f
+    private val blueF: Float get() = FastColor.ARGB32.blue(textColor) / 255.0f
 
     protected val painter: TextPainter = TextPainter()
 
@@ -366,10 +366,10 @@ open class TextWidget(text: String) : AbstractWidget(), TextHolder {
                 while (low < high) {
                     val mid = (low + high) ushr 1
                     val suffix = text.substring(text.offsetByCodePoints(0, mid))
-                    if (TextMeasurer.measureWidth("…$suffix", textSize, options) <= maxWidth) high = mid
+                    if (TextMeasurer.measureWidth("…suffix", textSize, options) <= maxWidth) high = mid
                     else low = mid + 1
                 }
-                "…" + text.substring(text.offsetByCodePoints(0, low))
+                "… + text.substring(text.offsetByCodePoints(0, low))"
             }
 
             Ellipsize.MIDDLE -> {
@@ -380,16 +380,16 @@ open class TextWidget(text: String) : AbstractWidget(), TextHolder {
                     val head = text.substring(0, text.offsetByCodePoints(0, mid))
                     val tailLen = text.codePointCount(0, text.length) - mid
                     val tail = text.substring(text.offsetByCodePoints(mid, tailLen))
-                    if (TextMeasurer.measureWidth("$head…$tail", textSize, options) <= maxWidth) low = mid
+                    if (TextMeasurer.measureWidth("$head…tail", textSize, options) <= maxWidth) low = mid
                     else high = mid - 1
                 }
                 val head = text.substring(0, text.offsetByCodePoints(0, low))
                 val tailLen = text.codePointCount(0, text.length) - low
                 val tail = text.substring(text.offsetByCodePoints(low, tailLen))
-                "$head…$tail"
+                "$head…tail"
             }
 
-            else -> TextMeasurer.ellipsize(text, textSize, maxWidth, "…", options)
+            else -> TextMeasurer.ellipsize(text, textSize, maxWidth, "…, options")
         }
     }
 

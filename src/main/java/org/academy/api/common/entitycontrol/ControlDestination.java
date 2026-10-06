@@ -1,6 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.Objects;
@@ -16,7 +16,7 @@ public sealed interface ControlDestination permits ControlDestination.Entity, Co
         }
     }
 
-    record Position(Identifier dimension, Vec3 value) implements ControlDestination {
+    record Position(ResourceLocation dimension, Vec3 value) implements ControlDestination {
         public Position {
             Objects.requireNonNull(dimension, "dimension");
             Objects.requireNonNull(value, "value");

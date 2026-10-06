@@ -1,4 +1,4 @@
-package org.academy.desktop.grapheditor.preview
+﻿package org.academy.desktop.grapheditor.preview
 
 import com.mojang.blaze3d.pipeline.RenderTarget
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlockRegistry
@@ -30,7 +30,7 @@ class VfxPreview(
     private val containerRef: VfxContainerModelRef,
     private val blockRegistry: VfxBlockRegistry,
     private val operatorRegistry: VfxOperatorRegistry,
-    private val textureLoader: ((net.minecraft.resources.Identifier) -> com.mojang.blaze3d.textures.GpuTextureView)? = null,
+    private val textureLoader: ((net.minecraft.resources.ResourceLocation) -> com.mojang.blaze3d.textures.GpuTextureView)? = null,
 ) {
     private val model: GraphEditorModel get() = modelRef.model
     private val containerModel: VfxContainerModel get() = containerRef.model

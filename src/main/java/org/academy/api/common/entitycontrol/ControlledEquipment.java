@@ -1,7 +1,7 @@
 package org.academy.api.common.entitycontrol;
 
 import net.minecraft.core.Holder;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
@@ -16,8 +16,8 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** Virtual iron equipment for controlled non-player entities; never inserts or drops items. */
 public final class ControlledEquipment {
-    private static final Identifier ARMOR = Identifier.fromNamespaceAndPath("academy", "control_default_armor");
-    private static final Identifier WEAPON = Identifier.fromNamespaceAndPath("academy", "control_default_weapon");
+    private static final ResourceLocation ARMOR = ResourceLocation.fromNamespaceAndPath("academy", "control_default_armor");
+    private static final ResourceLocation WEAPON = ResourceLocation.fromNamespaceAndPath("academy", "control_default_weapon");
 
     private ControlledEquipment() {}
 
@@ -68,7 +68,7 @@ public final class ControlledEquipment {
         return hit;
     }
 
-    private static void update(Mob subject, Holder<Attribute> attribute, Identifier id, double amount) {
+    private static void update(Mob subject, Holder<Attribute> attribute, ResourceLocation id, double amount) {
         var instance = subject.getAttribute(attribute);
         if (instance == null) return;
         var previous = instance.getModifier(id);

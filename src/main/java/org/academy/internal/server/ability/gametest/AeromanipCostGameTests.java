@@ -1,28 +1,16 @@
 package org.academy.internal.server.ability.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.MapCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
+import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
-import net.minecraft.gametest.framework.GameTestInstance;
-import net.minecraft.gametest.framework.TestData;
-import net.minecraft.gametest.framework.TestEnvironmentDefinition;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
+import net.neoforged.neoforge.gametest.GameTestHolder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.ProgramDirection;
 import org.academy.api.server.ability.AbilitySystemServer;
@@ -40,23 +28,13 @@ import java.util.List;
 import java.util.UUID;
 
 /** Verifies real, atomic CP/air payments for shared casts and Precision Operation nodes. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
+@GameTestHolder(AcademyCraft.MOD_ID)
 public final class AeromanipCostGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("aeromanip_cost_function");
-
     private AeromanipCostGameTests() {}
 
-    @SubscribeEvent
-    private static void registerType(RegisterEvent event) {
-        event.register(Registries.TEST_INSTANCE_TYPE, TYPE, () -> Instance.CODEC);
-    }
-
-    @SubscribeEvent
-    private static void registerTests(RegisterGameTestsEvent event) {
-        var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
-        event.registerTest(AcademyCraft.academy("aeromanip_output_cost"), new Instance(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 100, 0, true,
-                Rotation.NONE, false, 1, 1, false, 16)));
+    @GameTest(template = "empty", timeoutTicks = 200)
+    static void aeromanipOutputCost(GameTestHelper helper) {
+        verify(helper);
     }
 
     private static void verify(GameTestHelper helper) {
@@ -67,7 +45,6 @@ public final class AeromanipCostGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         try {
             var system = AbilitySystemServer.getSystem(player);
@@ -127,7 +104,7 @@ public final class AeromanipCostGameTests {
             output.setAbilityOutput(0.01f);
             system.setPlayerCurrMP(player.getUUID(), capacity);
             helper.assertTrue(system.castContinuousCpAndMpIfPossible(player, Skills.ADIABATIC_COMPRESSION.get(),
-                    _ -> 0, _ -> 10, (_, _) -> {}, true), "Continuous damage payment must succeed");
+                    unused808 -> 0, unused809 -> 10, (unused810, unused811) -> {}, true), "Continuous damage payment must succeed");
             closeTo(helper, capacity - system.getAeromanipResourceManager().getCurrent(player), 1,
                     "Continuous damage skills receive the same output air reduction");
 
@@ -135,7 +112,7 @@ public final class AeromanipCostGameTests {
             helper.assertTrue(!Skills.BREATHING_BUBBLE.get().isOutputAdjustableDamage(),
                     "Non-damage control must remain a utility skill");
             helper.assertTrue(system.castContinuousCpAndMpIfPossible(player, Skills.BREATHING_BUBBLE.get(),
-                    _ -> 0, _ -> 10, (_, _) -> {}, true), "Utility payment must succeed");
+                    unused812 -> 0, unused813 -> 10, (unused814, unused815) -> {}, true), "Utility payment must succeed");
             closeTo(helper, capacity - system.getAeromanipResourceManager().getCurrent(player), 10,
                     "Utility air costs must not receive damage-skill output reduction");
 
@@ -175,28 +152,5 @@ public final class AeromanipCostGameTests {
     private static void closeTo(GameTestHelper helper, float actual, float expected, String message) {
         helper.assertTrue(Math.abs(actual - expected) < 0.02f,
                 message + ": expected " + expected + ", got " + actual);
-    }
-
-    private static final class Instance extends GameTestInstance {
-        private static final MapCodec<Instance> CODEC = TestData.CODEC.xmap(Instance::new, Instance::info);
-
-        private Instance(TestData<Holder<TestEnvironmentDefinition<?>>> info) {
-            super(info);
-        }
-
-        @Override
-        public void run(GameTestHelper helper) {
-            verify(helper);
-        }
-
-        @Override
-        public MapCodec<? extends GameTestInstance> codec() {
-            return CODEC;
-        }
-
-        @Override
-        protected MutableComponent typeDescription() {
-            return Component.literal("Compressed-air costs and output scaling");
-        }
     }
 }

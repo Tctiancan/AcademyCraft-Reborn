@@ -18,13 +18,13 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -75,7 +75,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DarkmatterResourceGameTests {
-    private static final Identifier TEST_INSTANCE_TYPE =
+    private static final ResourceLocation TEST_INSTANCE_TYPE =
             AcademyCraft.academy("darkmatter_resource_function");
     private static final AtomicInteger NEXT_PLAYER_ID = new AtomicInteger();
 
@@ -97,7 +97,7 @@ public final class DarkmatterResourceGameTests {
             );
             var data = new TestData<>(
                     environment,
-                    Identifier.withDefaultNamespace("empty"),
+                    ResourceLocation.withDefaultNamespace("empty"),
                     scenario.maxTicks,
                     0,
                     true,
@@ -236,7 +236,8 @@ public final class DarkmatterResourceGameTests {
             void run(GameTestHelper helper) {
                 var player = createPlayer(helper, 5);
                 var manager = AbilitySystemServer.getSystem(player).getDarkmatterResourceManager();
-                // A freshly connected ServerPlayer has vanilla login invulnerability. Waiting for
+                // A freshly connected ServerPlayer has vanilla login invulnerability. Waiting
+// for
                 // it to expire ensures this gate reaches the real incoming-damage event pipeline.
                 helper.runAfterDelay(65, () -> {
                     helper.assertTrue(player.isAlive(),
@@ -246,7 +247,7 @@ public final class DarkmatterResourceGameTests {
                     player.setHealth(20.0f);
                     player.setInvulnerable(false);
                     player.invulnerableTime = 0;
-                    var attacker = helper.spawn(EntityTypes.ZOMBIE, 2, 2, 1);
+                    var attacker = helper.spawn(EntityType.ZOMBIE, 2, 2, 1);
                     var source = helper.getLevel().damageSources().mobAttack(attacker);
                     helper.assertTrue(!player.isInvulnerableTo(helper.getLevel(), source),
                             "Embedded player remained invulnerable to mob damage; creative="
@@ -295,7 +296,8 @@ public final class DarkmatterResourceGameTests {
                                 player, DarkmatterPhaseTuning.Direction.ALPHA),
                         "Server rejected phase tuning despite the skill being learned and enabled");
                 // GameTest's embedded players are connected to the PlayerList but do not emit
-                // PlayerTickEvent. Advance the same server entry explicitly while preserving
+                // PlayerTickEvent. Advance the same server entry explicitly
+// while preserving
                 // the maintained-key heartbeat schedule used by a real client.
                 for (var tick = 1; tick <= 200; tick++) {
                     var elapsed = tick;
@@ -548,7 +550,7 @@ public final class DarkmatterResourceGameTests {
                 helper.assertTrue(betaLootTool.getEnchantmentLevel(fortune) == 5,
                         "Level-five beta did not reach effective Fortune V in the real loot tool");
 
-                var alphaTarget = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 1);
+                var alphaTarget = helper.spawn(EntityType.ZOMBIE, 3, 2, 1);
                 alphaTarget.setNoAi(true);
                 manager.setAlphaPoints(player, 250);
                 helper.assertTrue(DarkmatterDisassemble.Server.tryAutomatedAttack(
@@ -556,7 +558,7 @@ public final class DarkmatterResourceGameTests {
                         "Alpha entity disassembly was rejected");
                 var alphaRemainingHealth = alphaTarget.getHealth();
 
-                var betaTarget = helper.spawn(EntityTypes.ZOMBIE, 4, 2, 1);
+                var betaTarget = helper.spawn(EntityType.ZOMBIE, 4, 2, 1);
                 betaTarget.setNoAi(true);
                 manager.setAlphaPoints(player, 0);
                 helper.assertTrue(DarkmatterDisassemble.Server.tryAutomatedAttack(
@@ -584,7 +586,7 @@ public final class DarkmatterResourceGameTests {
                 helper.assertTrue(manager.debugSetPools(player, 300.0f, 0.0f, 0.0f, 0.0f),
                         "Failed to initialize uncapped deconstruction MP");
                 manager.setAlphaPoints(player, 0);
-                var target = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 1);
+                var target = helper.spawn(EntityType.ZOMBIE, 3, 2, 1);
                 target.setNoAi(true);
                 target.setHealth(1.0f);
                 var reward = target.getMaxHealth() / 10.0f;
@@ -652,7 +654,7 @@ public final class DarkmatterResourceGameTests {
                 helper.assertTrue(manager.debugSetPools(player, 100.0f, 0.0f, 0.0f, 0.0f),
                         "Failed to initialize cut MP");
 
-                var alphaTarget = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 1);
+                var alphaTarget = helper.spawn(EntityType.ZOMBIE, 3, 2, 1);
                 alphaTarget.setNoAi(true);
                 manager.setAlphaPoints(player, 150);
                 helper.assertTrue(DarkmatterCut.Server.tryCast(
@@ -660,7 +662,7 @@ public final class DarkmatterResourceGameTests {
                         "Alpha cut was rejected");
                 var alphaRemainingHealth = alphaTarget.getHealth();
 
-                var betaTarget = helper.spawn(EntityTypes.ZOMBIE, 4, 2, 1);
+                var betaTarget = helper.spawn(EntityType.ZOMBIE, 4, 2, 1);
                 betaTarget.setNoAi(true);
                 manager.setAlphaPoints(player, 0);
                 helper.assertTrue(DarkmatterCut.Server.tryCast(
@@ -689,19 +691,20 @@ public final class DarkmatterResourceGameTests {
             @Override
             void run(GameTestHelper helper) {
                 var player = createPlayer(helper, 3);
-                var target = helper.spawn(EntityTypes.COW, 4, 3, 1);
-                var behind = helper.spawn(EntityTypes.COW, 6, 3, 1);
+                var target = helper.spawn(EntityType.COW, 4, 3, 1);
+                var behind = helper.spawn(EntityType.COW, 6, 3, 1);
                 target.setNoAi(true); target.setNoGravity(true);
                 behind.setNoAi(true); behind.setNoGravity(true);
                 float before = target.getHealth(), behindBefore = behind.getHealth();
                 var feather = new DarkmatterFeatherProjectile(
-                        org.academy.internal.common.world.entity.EntityTypes.DARKMATTER_FEATHER_PROJECTILE.get(), helper.getLevel());
+                        org.academy.internal.common.world.entity.EntityType.DARKMATTER_FEATHER_PROJECTILE.get(), helper.getLevel());
                 feather.configure(player, target, new Vec3(1, 0, 0), 1, 0, true);
                 feather.setPos(target.getBoundingBox().getCenter().add(-3, 0, 0));
                 feather.setDeltaMovement(new Vec3(1.65, 0, 0));
                 helper.getLevel().addFreshEntity(feather);
                 // Step every projectile tick explicitly: the headless test clock can advance
-                // faster than world entity ticks, while the visual exit lasts only a few ticks.
+                // faster than world entity ticks,
+// while the visual exit lasts only a few ticks.
                 boolean observedExit = false;
                 for (int tick = 0; tick < 20 && !feather.isRemoved(); tick++) {
                     feather.tick();
@@ -732,7 +735,7 @@ public final class DarkmatterResourceGameTests {
                 player.setYHeadRot(-90.0f);
                 player.setXRot(0.0f);
 
-                var alphaTarget = helper.spawn(EntityTypes.ZOMBIE, 3, 2, 1);
+                var alphaTarget = helper.spawn(EntityType.ZOMBIE, 3, 2, 1);
                 alphaTarget.setNoAi(true);
                 manager.setAlphaPoints(player, 150);
                 helper.assertTrue(DarkmatterRadiation.Server.beginChannel(player),
@@ -750,7 +753,7 @@ public final class DarkmatterResourceGameTests {
                                 + feathers.size());
                 alphaTarget.discard();
 
-                var betaTarget = helper.spawn(EntityTypes.ZOMBIE, 4, 2, 1);
+                var betaTarget = helper.spawn(EntityType.ZOMBIE, 4, 2, 1);
                 betaTarget.setNoAi(true);
                 manager.setAlphaPoints(player, 0);
                 var betaPosition = helper.absoluteVec(new Vec3(4.5, 2.0, 1.5));
@@ -804,7 +807,7 @@ public final class DarkmatterResourceGameTests {
             void run(GameTestHelper helper) {
                 var owner = createPlayer(helper, 4);
                 var beetle = new DarkmatterBeetle(
-                        org.academy.internal.common.world.entity.EntityTypes.DARKMATTER_BEETLE.get(),
+                        org.academy.internal.common.world.entity.EntityType.DARKMATTER_BEETLE.get(),
                         helper.getLevel());
                 beetle.setOwnerUUID(owner.getUUID());
                 helper.assertTrue(MentalControlRuntime.isProtectedTarget(beetle),
@@ -897,7 +900,7 @@ public final class DarkmatterResourceGameTests {
                     helper.assertTrue(org.academy.internal.common.world.damagesource.SkillDamageUtil
                             .applyVerifiedTrueHealth(player, dm, 8), "DM detonation failed");
                     assertClose(helper, 2, player.getHealth(), "CTA and DM must accumulate");
-                    var cow = helper.spawn(EntityTypes.COW, 5, 2, 5);
+                    var cow = helper.spawn(EntityType.COW, 5, 2, 5);
                     cow.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(100);
                     cow.setHealth(100);
                     helper.assertTrue(SkillDamageUtil.applyVerifiedTrueHealth(cow, cta, 30), "Cow CTA failed");
@@ -927,7 +930,8 @@ public final class DarkmatterResourceGameTests {
                     player.setHealth(20);
                     assertClose(helper, 2, player.getHealth(), "Unaccepted direct writes must remain clamped");
 
-                    // Deliberately use consecutive non-20th ticks to catch the old one-second gate.
+                    // Deliberately use consecutive non-20th ticks to
+// catch the old one-second gate.
                     for (var tick = 1; tick <= 2; tick++) {
                         player.tickCount = tick;
                         DarkmatterRepair.Events.onPlayerTick(
@@ -1115,3 +1119,4 @@ public final class DarkmatterResourceGameTests {
         }
     }
 }
+

@@ -10,9 +10,9 @@ import net.minecraft.world.entity.AnimationState;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.wireless.WirelessNode;
@@ -174,30 +174,31 @@ public final class OmniCraftingTableBlockEntity extends MultiBlockEntity
     }
 
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (!isMain()) return;
-        ContainerHelper.saveAllItems(output, items);
-        output.putInt("energy_stored", energyStored);
-        output.putInt("imag_phase_fluid_stored", imagPhaseFluidStored);
-        if (connectedNodePos != null) output.putLong("connected_node_pos", connectedNodePos.asLong());
+        ContainerHelper.saveAllItems(tag, items, registries);
+        tag.putInt("energy_stored", energyStored);
+        tag.putInt("imag_phase_fluid_stored", imagPhaseFluidStored);
+        if (connectedNodePos != null) tag.putLong("connected_node_pos", connectedNodePos.asLong());
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
         items = NonNullList.withSize(getContainerSize(), ItemStack.EMPTY);
         if (!isMain()) {
             connectedNodePos = null;
             return;
         }
-        ContainerHelper.loadAllItems(input, items);
-        energyStored = Mth.clamp(input.getIntOr("energy_stored", 0), 0, getMaxEnergyStorage());
+        ContainerHelper.loadAllItems(tag, items, registries);
+        energyStored = Mth.clamp(tag.contains("energy_stored", CompoundTag.TAG_INT) ? tag.getInt("energy_stored") : 0, 0, getMaxEnergyStorage());
         imagPhaseFluidStored = Mth.clamp(
-                input.getIntOr("imag_phase_fluid_stored", 0), 0, MAX_FLUID_STORAGE);
+                tag.contains("imag_phase_fluid_stored", CompoundTag.TAG_INT) ? tag.getInt("imag_phase_fluid_stored") : 0, 0, MAX_FLUID_STORAGE);
         connectedNodePos = null;
-        input.getLong("connected_node_pos")
-                .ifPresent(value -> connectedNodePos = BlockPos.of(value));
+        if (tag.contains("connected_node_pos", CompoundTag.TAG_LONG)) {
+            connectedNodePos = BlockPos.of(tag.getLong("connected_node_pos"));
+        }
     }
 
     @Override

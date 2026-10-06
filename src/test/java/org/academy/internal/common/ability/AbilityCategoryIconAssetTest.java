@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.internal.common.ability.accelerator.Accelerator;
@@ -61,7 +61,7 @@ class AbilityCategoryIconAssetTest {
         }
     }
 
-    private byte[] iconBytes(Identifier icon) throws Exception {
+    private byte[] iconBytes(ResourceLocation icon) throws Exception {
         var resourcePath = "/assets/" + icon.getNamespace() + "/" + icon.getPath();
         try (var stream = getClass().getResourceAsStream(resourcePath)) {
             assertNotNull(stream, "missing category icon " + resourcePath);
@@ -69,9 +69,9 @@ class AbilityCategoryIconAssetTest {
         }
     }
 
-    private record IconExpectation(AbilityCategory category, Identifier icon) {
+    private record IconExpectation(AbilityCategory category, ResourceLocation icon) {
     }
 
-    private record IconAlias(Identifier canonical, Identifier legacy) {
+    private record IconAlias(ResourceLocation canonical, ResourceLocation legacy) {
     }
 }

@@ -1,4 +1,4 @@
-package org.academy.desktop.grapheditor.preview
+﻿package org.academy.desktop.grapheditor.preview
 
 import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.PrimitiveTopology
@@ -7,7 +7,7 @@ import com.mojang.blaze3d.buffers.Std140Builder
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.textures.*
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.graph.compile.DefaultGraphCompiler
 import org.academy.api.client.render.graph.registry.NodeRegistry
@@ -32,7 +32,7 @@ class ShaderPreview(
     private val modelRef: org.academy.desktop.grapheditor.canvas.GraphEditorModelRef,
     private val registry: NodeRegistry,
     private val glslRegistry: GlslNodeRegistry,
-    private val loadTexture: (Identifier) -> GpuTextureView,
+    private val loadTexture: (ResourceLocation) -> GpuTextureView,
 ) {
     private val model: GraphEditorModel get() = modelRef.model
     private val pipeline = ShaderGraphPipeline(glslRegistry)
@@ -141,7 +141,7 @@ class ShaderPreview(
         for (binding in result.layout().samplers()) {
             val view = try {
                 if (binding.identifier().isBlank()) null
-                else loadTexture(Identifier.parse(binding.identifier()))
+                else loadTexture(ResourceLocation.parse(binding.identifier()))
             } catch (_: Exception) {
                 null
             }

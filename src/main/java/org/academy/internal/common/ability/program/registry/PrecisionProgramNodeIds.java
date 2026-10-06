@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program.registry;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 
@@ -11,7 +11,7 @@ import java.util.Map;
  * Stable resource identifiers used when importing the original Precision Operation format.
  */
 public final class PrecisionProgramNodeIds {
-    public static final Identifier ON_CAST = AcademyCraft.academy("program/entry/on_cast");
+    public static final ResourceLocation ON_CAST = AcademyCraft.academy("program/entry/on_cast");
 
     private static final String[] PATHS = {
             "target/caster",
@@ -70,7 +70,7 @@ public final class PrecisionProgramNodeIds {
             "flow/entity_type_branch",
             "flow/status_effect_branch"
     };
-    private static final Map<Identifier, PrecisionGraph.NodeKind> KINDS_BY_ID = kindsById();
+    private static final Map<ResourceLocation, PrecisionGraph.NodeKind> KINDS_BY_ID = kindsById();
 
     static {
         if (PATHS.length != PrecisionGraph.NodeKind.values().length) {
@@ -81,16 +81,16 @@ public final class PrecisionProgramNodeIds {
     private PrecisionProgramNodeIds() {
     }
 
-    public static Identifier id(PrecisionGraph.NodeKind kind) {
+    public static ResourceLocation id(PrecisionGraph.NodeKind kind) {
         return AcademyCraft.academy("program/" + PATHS[kind.wireId()]);
     }
 
-    public static PrecisionGraph.NodeKind kind(Identifier id) {
+    public static PrecisionGraph.NodeKind kind(ResourceLocation id) {
         return KINDS_BY_ID.get(id);
     }
 
-    private static Map<Identifier, PrecisionGraph.NodeKind> kindsById() {
-        var result = new HashMap<Identifier, PrecisionGraph.NodeKind>();
+    private static Map<ResourceLocation, PrecisionGraph.NodeKind> kindsById() {
+        var result = new HashMap<ResourceLocation, PrecisionGraph.NodeKind>();
         for (var kind : PrecisionGraph.NodeKind.values()) result.put(id(kind), kind);
         return Map.copyOf(result);
     }

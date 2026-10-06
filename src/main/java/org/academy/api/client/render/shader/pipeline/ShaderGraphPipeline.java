@@ -5,7 +5,7 @@ import com.mojang.blaze3d.pipeline.*;
 import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.render.graph.compile.CompiledGraph;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.shader.codegen.GlslGenerator;
@@ -41,9 +41,9 @@ public final class ShaderGraphPipeline {
         return device.precompilePipeline(result.pipeline(), shaderSource);
     }
 
-    private static RenderPipeline buildPipeline(Identifier fragment, Identifier vertex, int samplerCount) {
+    private static RenderPipeline buildPipeline(ResourceLocation fragment, ResourceLocation vertex, int samplerCount) {
         var builder = RenderPipeline.builder()
-                .withLocation(Identifier.fromNamespaceAndPath(fragment.getNamespace(), "pipeline/" + fragment.getPath()))
+                .withLocation(ResourceLocation.fromNamespaceAndPath(fragment.getNamespace(), "pipeline/" + fragment.getPath()))
                 .withVertexShader(vertex)
                 .withFragmentShader(fragment)
                 .withBindGroupLayout(BindGroupLayout.builder()

@@ -377,8 +377,10 @@ public final class DefaultPlayerNavigationAdapter implements PlayerNavigationAda
             if (step.mode == PlayerMovementMode.JUMP) {
                 var now = subject.level().getGameTime();
                 if (waterExit) {
-                    // Leaving water for a one-block-higher bank requires a held swim-up input,
-                    // not the grounded jump edge used for ordinary obstacles.
+                    // Leaving water
+// for a one-block-higher bank requires a held swim-up input,
+                    // not the grounded jump edge used
+// for ordinary obstacles.
                     jump = true;
                 } else {
                     jump = shouldPulseJump(subject.onGround(), now, lastJumpTick);
@@ -407,7 +409,8 @@ public final class DefaultPlayerNavigationAdapter implements PlayerNavigationAda
         }
 
         private Vec3 waypoint(NodeStep step, Vec3 goal) {
-            // The planner operates on integer occupancy cells. The final flight frame must use the
+            // The planner operates on integer occupancy cells. The
+// final flight frame must use the
             // original destination Y (including its fractional component), otherwise its vertical
             // controller converges on the cell below the requested point.
             return step.mode == PlayerMovementMode.FLY && pathIndex == path.size() - 1

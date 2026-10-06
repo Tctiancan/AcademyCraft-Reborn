@@ -1,38 +1,17 @@
 package org.academy.internal.gui.map;
 
-import com.mojang.blaze3d.platform.Lighting;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.gui.navigation.ScreenRectangle;
-import net.minecraft.client.gui.render.pip.PictureInPictureRenderer;
-import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.entity.EntityRenderer;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.entity.state.LivingEntityRenderState;
-import net.minecraft.client.renderer.state.gui.pip.PictureInPictureRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.util.LightCoordsUtil;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.LivingEntity;
-import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterPictureInPictureRenderersEvent;
-import org.academy.AcademyCraft;
+import net.minecraft.client.gui.GuiGraphics;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapPackets;
-import org.joml.Quaternionf;
-import org.jspecify.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-/** Creates and submits type-cached, head-focused entity textures for the chunk-map radar. */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
+/**
+ * Creates and submits type-cached, head-focused entity textures for the chunk-map radar.
+ *
+ * <p><b>C-stun (1.21.1):</b> the 26.2 entity-thumbnail path relied on the neoforge
+ * Picture-in-Picture renderer ({@code PictureInPictureRenderer}/{@code SubmitNodeCollector}/
+ * {@code CameraRenderState}), which does not exist in 1.21.1. The real previews are disabled for now:
+ * {@link #render} always returns {@code false}, so the caller draws its plain category square instead.
+ * The pure geometry/policy helpers below are kept intact (they have unit tests).
+ */
 public final class EntityRadarThumbnailRenderer {
     static final int MIN_DIAMETER = 6;
     private static final int MAX_SCALE = 32;
@@ -40,93 +19,21 @@ public final class EntityRadarThumbnailRenderer {
     private static final int MAX_NEW_THUMBNAILS_PER_FRAME = 64;
     private static final float VERTICAL_NUDGE_PIXELS = 1.0f;
 
-    private final Map<Integer, LivingEntity> prototypes = new HashMap<>();
-    private final Set<Integer> unavailableTypes = new HashSet<>();
-    private final Set<MarkerKey> admittedMarkers = new HashSet<>();
-    private final Set<MarkerKey> visibleMarkers = new HashSet<>();
-    private ClientLevel prototypeLevel;
-    private int newThumbnailsThisFrame;
-
-    @SubscribeEvent
-    public static void onRegisterPictureInPictureRenderers(RegisterPictureInPictureRenderersEvent event) {
-        event.register(ThumbnailState.class, ThumbnailPictureInPictureRenderer::new);
-    }
-
     void beginFrame() {
-        visibleMarkers.clear();
-        newThumbnailsThisFrame = 0;
+        // C-stun: thumbnail admission state removed.
     }
 
     void endFrame() {
-        admittedMarkers.retainAll(visibleMarkers);
+        // C-stun: thumbnail admission state removed.
     }
 
-    /** Renders a front-facing entity thumbnail, or returns false so the caller can draw its category square. */
-    boolean render(GuiGraphicsExtractor graphics, ChunkLeapPackets.Marker marker,
+    /**
+     * C-stun: 1.21.1 没有 26.2 的 PIP 提交管线, 实体微缩图渲染在此禁用。始终返回 false,
+     * 调用方 (ChunkMapRenderer) 会改画类别色块代替实体头像。
+     */
+    boolean render(GuiGraphics graphics, ChunkLeapPackets.Marker marker,
                    int centerX, int centerY, int diameter, boolean priority) {
-        if (graphics == null || marker == null || marker.playerId() != null || diameter < MIN_DIAMETER
-                || marker.category() == ChunkLeapPackets.CAT_ITEM
-                || marker.category() == ChunkLeapPackets.CAT_PROJECTILE) {
-            return false;
-        }
-        var entity = entityFor(marker);
-        if (entity == null) return false;
-
-        var markerKey = new MarkerKey(marker.entityId(), marker.typeId());
-        visibleMarkers.add(markerKey);
-        var alreadyAdmitted = admittedMarkers.contains(markerKey);
-        if (!canRenderThumbnail(alreadyAdmitted, priority, newThumbnailsThisFrame)) return false;
-        if (!alreadyAdmitted) {
-            admittedMarkers.add(markerKey);
-            newThumbnailsThisFrame++;
-        }
-
-        var half = diameter / 2;
-        var left = centerX - half;
-        var top = centerY - half;
-        var scale = fitScale(entity.getBbWidth(), entity.getBbHeight(), diameter);
-        graphics.submitPictureInPictureRenderState(new ThumbnailState(
-                marker.entityId(),
-                marker.typeId(),
-                entity,
-                adjustedFocusHeight(entity.getBbHeight(), entity.getEyeHeight(), scale),
-                left,
-                top,
-                left + diameter,
-                top + diameter,
-                scale,
-                graphics.peekScissorStack()
-        ));
-        return true;
-    }
-
-    private LivingEntity entityFor(ChunkLeapPackets.Marker marker) {
-        var minecraft = Minecraft.getInstance();
-        var level = minecraft.level;
-        if (level == null) return null;
-        if (prototypeLevel != level) {
-            prototypes.clear();
-            unavailableTypes.clear();
-            admittedMarkers.clear();
-            visibleMarkers.clear();
-            prototypeLevel = level;
-        }
-        if (unavailableTypes.contains(marker.typeId())) return null;
-
-        var cached = prototypes.get(marker.typeId());
-        if (cached != null) return cached;
-        try {
-            var type = BuiltInRegistries.ENTITY_TYPE.byId(marker.typeId());
-            var created = type == null ? null : type.create(level, EntitySpawnReason.LOAD);
-            if (created instanceof LivingEntity living) {
-                living.setId(-1);
-                prototypes.put(marker.typeId(), living);
-                return living;
-            }
-        } catch (RuntimeException ignored) {
-        }
-        unavailableTypes.add(marker.typeId());
-        return null;
+        return false;
     }
 
     /** Fits the head region inside the square icon; very broad entities remain centered and intentionally cropped. */
@@ -152,88 +59,16 @@ public final class EntityRadarThumbnailRenderer {
                 - VERTICAL_NUDGE_PIXELS / Math.max(1, scale));
     }
 
-    private record MarkerKey(int entityId, int typeId) {
-    }
-
-    /**
-     * Includes the server entity id so two same-type mobs at the same coordinates remain distinct PIP states.
-     * The cached prototype identity is deliberately stable for the lifetime of one client level.
-     */
-    private record ThumbnailState(int markerId, int typeId, LivingEntity prototype, float focusHeight,
-                                  int x0, int y0, int x1, int y1, float scale,
-                                  @Nullable ScreenRectangle scissorArea,
-                                  @Nullable ScreenRectangle bounds) implements PictureInPictureRenderState {
-        private ThumbnailState(int markerId, int typeId, LivingEntity prototype, float focusHeight,
-                               int x0, int y0, int x1, int y1, float scale,
-                               @Nullable ScreenRectangle scissorArea) {
-            this(markerId, typeId, prototype, focusHeight, x0, y0, x1, y1, scale, scissorArea,
-                    PictureInPictureRenderState.getBounds(x0, y0, x1, y1, scissorArea));
-        }
-    }
-
-    /**
-     * NeoForge pools one instance per visible PIP state. Remembering the prototype turns subsequent frames into
-     * texture blits, including while the map pans, instead of resubmitting every entity model on every frame.
-     */
-    private static final class ThumbnailPictureInPictureRenderer
-            extends PictureInPictureRenderer<ThumbnailState> {
-        private final net.minecraft.client.renderer.entity.EntityRenderDispatcher dispatcher =
-                Minecraft.getInstance().getEntityRenderDispatcher();
-        private LivingEntity cachedPrototype;
-
-        @Override
-        public Class<ThumbnailState> getRenderStateClass() {
-            return ThumbnailState.class;
-        }
-
-        @Override
-        protected void renderToTexture(ThumbnailState state, PoseStack poseStack,
-                                       SubmitNodeCollector submitNodeCollector) {
-            cachedPrototype = state.prototype();
-            try {
-                Minecraft.getInstance().gameRenderer.lighting().setupFor(Lighting.Entry.ENTITY_IN_UI);
-                var renderState = extractRenderState(state.prototype());
-                poseStack.translate(0.0f, state.focusHeight(), 0.0f);
-                poseStack.mulPose(new Quaternionf().rotateZ((float) Math.PI));
-                dispatcher.submit(renderState, new CameraRenderState(), 0.0, 0.0, 0.0,
-                        poseStack, submitNodeCollector);
-            } catch (RuntimeException ignored) {
-                // The category marker underneath remains visible when a third-party renderer cannot be previewed.
-            }
-        }
-
-        @SuppressWarnings({"rawtypes", "unchecked"})
-        private EntityRenderState extractRenderState(LivingEntity entity) {
-            EntityRenderer renderer = dispatcher.getRenderer(entity);
-            EntityRenderState renderState = renderer.createRenderState(entity, 1.0f);
-            renderState.shadowPieces.clear();
-            renderState.outlineColor = 0;
-            renderState.lightCoords = LightCoordsUtil.FULL_BRIGHT;
-            if (renderState instanceof LivingEntityRenderState livingState) {
-                livingState.bodyRot = 180.0f;
-                livingState.yRot = 0.0f;
-                livingState.xRot = 0.0f;
-                livingState.boundingBoxWidth /= livingState.scale;
-                livingState.boundingBoxHeight /= livingState.scale;
-                livingState.scale = 1.0f;
-            }
-            return renderState;
-        }
-
-        @Override
-        protected boolean textureIsReadyToBlit(ThumbnailState state) {
-            return cachedPrototype == state.prototype();
-        }
-
-        @Override
-        public boolean canBeReusedFor(ThumbnailState state, int textureWidth, int textureHeight) {
-            return (cachedPrototype == null || cachedPrototype == state.prototype())
-                    && super.canBeReusedFor(state, textureWidth, textureHeight);
-        }
-
-        @Override
-        protected String getTextureLabel() {
-            return "academy_chunk_map_entity";
-        }
+    /** Fallback colour by disposition: hostile red, neutral yellow, friendly green. */
+    static int markerColor(byte category) {
+        return switch (category) {
+            case ChunkLeapPackets.CAT_HOSTILE -> 0xFFE16F68;
+            case ChunkLeapPackets.CAT_PASSIVE -> 0xFF79C58D;
+            case ChunkLeapPackets.CAT_NEUTRAL -> 0xFFF0CE7A;
+            case ChunkLeapPackets.CAT_PLAYER -> 0xFF9FD8F0;
+            case ChunkLeapPackets.CAT_ITEM -> 0xFFBFBFBF;
+            case ChunkLeapPackets.CAT_PROJECTILE -> 0xFFF0A45A;
+            default -> 0xFFB8B1A3;
+        };
     }
 }

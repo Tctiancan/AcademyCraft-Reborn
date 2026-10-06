@@ -5,7 +5,7 @@ import org.academy.internal.common.ability.program.registry.AbilityProgramDefini
 
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.AbilityCategoryNames;
@@ -163,14 +163,14 @@ class AbilityProgramManagerTest {
         var sync = AbilityProgramManager.SyncPacket.CODEC.decode(syncBuffer);
         assertEquals(category, sync.category());
         assertEquals(
-                AbilityProgramDefinitions.require(Identifier.parse(category))
+                AbilityProgramDefinitions.require(ResourceLocation.parse(category))
                         .extensionFingerprint(),
                 sync.extensionFingerprint()
         );
         assertTrue(AbilityProgramManager.compatibleExtensionFingerprint(
-                Identifier.parse(category), sync.extensionFingerprint()));
+                ResourceLocation.parse(category), sync.extensionFingerprint()));
         assertFalse(AbilityProgramManager.compatibleExtensionFingerprint(
-                Identifier.parse(category), "0".repeat(64)));
+                ResourceLocation.parse(category), "0".repeat(64)));
         assertArrayEquals(book, sync.book());
         assertFalse(sync.starterDismissed());
 
@@ -286,7 +286,7 @@ class AbilityProgramManagerTest {
                 new IllegalStateException(message)));
     }
 
-    private static AbilityProgram program(Identifier category) {
+    private static AbilityProgram program(ResourceLocation category) {
         return new AbilityProgram(
                 AbilityProgram.CURRENT_SCHEMA_VERSION,
                 UUID.fromString("10000000-0000-0000-0000-000000000001"),

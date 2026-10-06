@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramExecutionContext;
 import org.academy.api.common.ability.program.ProgramTargetResolver;
 import org.academy.api.common.ability.program.ProgramValue;
@@ -15,7 +15,7 @@ public final class ProgramVmContext implements ProgramExecutionContext {
     private final Map<String, Object> executorState;
     private final @Nullable Object attachment;
     private int nodeId = -1;
-    private @Nullable Identifier nodeType;
+    private @Nullable ResourceLocation nodeType;
 
     ProgramVmContext(
             long gameTime,
@@ -42,7 +42,7 @@ public final class ProgramVmContext implements ProgramExecutionContext {
         return nodeId;
     }
 
-    public Identifier nodeType() {
+    public ResourceLocation nodeType() {
         if (nodeType == null) throw new IllegalStateException("No program node is currently executing");
         return nodeType;
     }
@@ -88,7 +88,7 @@ public final class ProgramVmContext implements ProgramExecutionContext {
         return type.isInstance(attachment) ? Optional.of(type.cast(attachment)) : Optional.empty();
     }
 
-    void enterNode(int nodeId, Identifier nodeType) {
+    void enterNode(int nodeId, ResourceLocation nodeType) {
         this.nodeId = nodeId;
         this.nodeType = nodeType;
     }

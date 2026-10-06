@@ -1,7 +1,7 @@
 package org.academy.api.client.gui.texture
 
-import com.mojang.blaze3d.textures.GpuSampler
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 /**
  * 通用纹理源抽象. 控件只与 [TextureSource] 交互, 不关心具体来源: 静态资源文件 /

@@ -1,6 +1,6 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -9,7 +9,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ProgramTextOperationsTest {
     private static final ProgramWorldPosition ORIGIN = new ProgramWorldPosition(
-            Identifier.parse("minecraft:the_nether"), 10, 64, -20);
+            ResourceLocation.parse("minecraft:the_nether"), 10, 64, -20);
 
     @Test
     void acceptsDocumentedTriplesAndRejectsPartialOrNonFiniteNumbers() {

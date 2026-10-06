@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import io.netty.buffer.Unpooled;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ class SpawnVfxGraphPacketTest {
     @Test
     void codecRoundTripsAllFields() {
         var packet = new SpawnVfxGraphPacket(
-                Identifier.fromNamespaceAndPath("academy", "vfxgraph/minimal_burst"),
+                ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/minimal_burst"),
                 new Vec3(1.5, -2.0, 3.25), new Vec3(0.25, 0.5, -1.0),
                 new Vec3(1.0, 0.0, 0.0), -1, 1.5f, 2.25f,
                 Map.of("size", 0.35f, "radius", 8f)
@@ -48,7 +48,7 @@ class SpawnVfxGraphPacketTest {
     @Test
     void codecRoundTripsFollowEntityAndEmptyParams() {
         var packet = new SpawnVfxGraphPacket(
-                Identifier.fromNamespaceAndPath("academy", "vfxgraph/demo_burst"),
+                ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/demo_burst"),
                 new Vec3(0, 64, 0), new Vec3(0, 1, 0), 42, 1f, 3f, Map.of()
         );
 
@@ -77,7 +77,7 @@ class SpawnVfxGraphPacketTest {
 
     @Test
     void longBoltsReachObserversNearTheMiddleAndEndWithoutBroadcastingBeyondTheSegment() {
-        var packet = new SpawnVfxGraphPacket(Identifier.fromNamespaceAndPath("academy", "vfxgraph/arc_generate"),
+        var packet = new SpawnVfxGraphPacket(ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/arc_generate"),
                 new Vec3(0, 80, 0), new Vec3(0, 0, 1), -1, 2, 1.25f, Map.of("length", 256f));
         assertEquals(9, packet.distanceToEffectSquared(new Vec3(3, 80, 256)), 0.0001);
         assertEquals(25, packet.distanceToEffectSquared(new Vec3(0, 85, 512)), 0.0001);

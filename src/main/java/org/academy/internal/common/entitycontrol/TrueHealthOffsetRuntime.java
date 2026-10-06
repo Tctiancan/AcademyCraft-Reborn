@@ -167,17 +167,18 @@ public final class TrueHealthOffsetRuntime {
     public static void join(EntityJoinLevelEvent event) {
         if (event.isCanceled() || !(event.getLevel() instanceof ServerLevel)
                 || !(event.getEntity() instanceof LivingEntity entity) || !supports(entity)) return;
-        var saved = entity.getPersistentData().getCompound(SAVE_KEY).orElse(null);
-        if (saved == null) return;
-        double maximum = saved.getDoubleOr("maximum", Double.NaN);
-        double offset = Double.longBitsToDouble(saved.getLongOr("value", 0) ^ saved.getLongOr("mask", 0));
+        var tag = entity.getPersistentData();
+        if (!tag.contains(SAVE_KEY)) return;
+        var saved = tag.getCompound(SAVE_KEY);
+        double maximum = saved.contains("maximum") ? saved.getDouble("maximum") : Double.NaN;
+        double offset = Double.longBitsToDouble(saved.getLong("value") ^ saved.getLong("mask"));
         long now = entity.level().getGameTime();
-        long hit = saved.getLongOr("hit", now - 400);
+        long hit = saved.contains("hit") ? saved.getLong("hit") : now - 400;
         if (!Double.isFinite(maximum) || maximum <= 0 || !Double.isFinite(offset)
                 || offset < 0 || offset > maximum || hit > now) { clear(entity); return; }
         var state = new HealthOffsetState(maximum, maximum - offset, hit);
-        state.advancedAt = Math.clamp(saved.getLongOr("advanced", hit), hit, now);
-        state.dead = saved.getBooleanOr("dead", false);
+        state.advancedAt = Math.clamp(saved.contains("advanced") ? saved.getLong("advanced") : hit, hit, now);
+        state.dead = saved.getBoolean("dead");
         ((HealthOffsetAccess) entity).academy$setHealthOffset(state);
         ACTIVE.add(entity);
         reconcile(entity);

@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.meltdowner.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
@@ -23,7 +23,7 @@ import java.util.function.LongSupplier;
 public final class MeltdownerProgramExecutionBridge {
     private static final int MAX_FUEL = ProgramLimits.DEFAULT.maxNodes()
             * ProgramLimits.DEFAULT.maxNodes() + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
 
     private MeltdownerProgramExecutionBridge() {
     }
@@ -104,11 +104,11 @@ public final class MeltdownerProgramExecutionBridge {
         );
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
-        put(result, MeltdownerProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
+        put(result, MeltdownerProgramNodeIds.CASTER, (context, unused482, unused483) -> data(
                 "entity", ProgramValueTypes.ENTITY_REFERENCE, runtime(context).caster()));
-        put(result, MeltdownerProgramNodeIds.LOOK_TARGET, (context, _, _) ->
+        put(result, MeltdownerProgramNodeIds.LOOK_TARGET, (context, unused484, unused485) ->
                 runtime(context).lookTarget()
                         .map(value -> data(
                                 "entity", ProgramValueTypes.ENTITY_REFERENCE, value))
@@ -271,8 +271,8 @@ public final class MeltdownerProgramExecutionBridge {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {

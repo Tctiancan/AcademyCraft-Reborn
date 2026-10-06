@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.darkmatter.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.*;
@@ -22,7 +22,7 @@ import java.util.function.LongSupplier;
 public final class DarkmatterProgramExecutionBridge {
     private static final int MAX_FUEL = ProgramLimits.DEFAULT.maxNodes()
             * ProgramLimits.DEFAULT.maxNodes() + 1;
-    private static final Map<Identifier, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
+    private static final Map<ResourceLocation, ProgramNodeExecutor<?>> EXECUTORS = createExecutors();
 
     private DarkmatterProgramExecutionBridge() {
     }
@@ -103,16 +103,16 @@ public final class DarkmatterProgramExecutionBridge {
         );
     }
 
-    private static Map<Identifier, ProgramNodeExecutor<?>> createExecutors() {
-        var result = new HashMap<Identifier, ProgramNodeExecutor<?>>();
-        put(result, DarkmatterProgramNodeIds.CASTER, (context, _, _) -> data(
+    private static Map<ResourceLocation, ProgramNodeExecutor<?>> createExecutors() {
+        var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
+        put(result, DarkmatterProgramNodeIds.CASTER, (context, unused410, unused411) -> data(
                 "entity", ProgramValueTypes.ENTITY_REFERENCE, runtime(context).caster()));
-        put(result, DarkmatterProgramNodeIds.LOOK_TARGET, (context, _, _) ->
+        put(result, DarkmatterProgramNodeIds.LOOK_TARGET, (context, unused412, unused413) ->
                 runtime(context).lookTarget()
                         .map(value -> data(
                                 "entity", ProgramValueTypes.ENTITY_REFERENCE, value))
                         .orElseGet(() -> ProgramNodeStep.data(Map.of())));
-        put(result, DarkmatterProgramNodeIds.PHASE_STATE, (context, _, _) -> {
+        put(result, DarkmatterProgramNodeIds.PHASE_STATE, (context, unused414, unused415) -> {
             var state = runtime(context).phaseState();
             return ProgramNodeStep.data(Map.of(
                     "alpha", new ProgramValue<>(ProgramValueTypes.FLOAT, state.alpha()),
@@ -229,8 +229,8 @@ public final class DarkmatterProgramExecutionBridge {
     }
 
     private static <C> void put(
-            Map<Identifier, ProgramNodeExecutor<?>> result,
-            Identifier id,
+            Map<ResourceLocation, ProgramNodeExecutor<?>> result,
+            ResourceLocation id,
             ProgramNodeExecutor<C> executor
     ) {
         if (result.putIfAbsent(id, executor) != null) {

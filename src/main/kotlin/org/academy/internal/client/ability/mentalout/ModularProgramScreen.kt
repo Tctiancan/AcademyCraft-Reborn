@@ -1,15 +1,12 @@
-package org.academy.internal.client.ability.mentalout
+﻿package org.academy.internal.client.ability.mentalout
 
 import com.google.gson.JsonElement
 import com.google.gson.JsonPrimitive
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.client.gui.GuiGraphicsExtractor
-import net.minecraft.client.input.CharacterEvent
-import net.minecraft.client.input.KeyEvent
-import net.minecraft.client.input.MouseButtonEvent
+import net.minecraft.client.gui.GuiGraphics
 import net.minecraft.network.chat.Component
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.ability.program.ProgramNodePalette
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.layout.Gravity
@@ -49,7 +46,7 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
     UiScreen(session.title()) {
     private val definition: AbilityProgramDefinition
     private val catalog: ProgramEditorNodeCatalog
-    private val capabilities: Set<Identifier>
+    private val capabilities: Set<ResourceLocation>
     private val accentColor: Int
     private var document: ProgramEditorDocument
     private var revision: Long
@@ -267,17 +264,12 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
         }
     }
 
-    override fun extractRenderState(
-        graphics: GuiGraphicsExtractor,
-        mouseX: Int,
-        mouseY: Int,
-        a: Float
-    ) {
+    override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         syncLayout()
         syncConfigurationInputs()
         editorSurface?.invalidate()
         tooltipSurface?.invalidate()
-        super.extractRenderState(graphics, mouseX, mouseY, a)
+        super.render(guiGraphics, mouseX, mouseY, partialTick)
     }
 
     private inner class EditorSurface : AbstractWidget() {
@@ -286,8 +278,10 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
             syncLayout()
             val minecraft = Minecraft.getInstance()
             val window = minecraft.window
-            val mouseX = (minecraft.mouseHandler.getScaledXPos(window)).roundToInt()
-            val mouseY = (minecraft.mouseHandler.getScaledYPos(window)).roundToInt()
+            // 1.21.1: MouseHandler 无 26.2 的 getScaledXPos/getScaledYPos; xpos()/ypos() 返回物理像素坐标,
+            // 除以 guiScale 即 GUI 坐标, 等价 26.2 的 getScaledXPos(窗口).
+            val mouseX = (minecraft.mouseHandler.xpos() / window.guiScale).roundToInt()
+            val mouseY = (minecraft.mouseHandler.ypos() / window.guiScale).roundToInt()
             val graphics = ProgramUiGraphics(context)
             renderStructure(graphics)
             renderTopBar(graphics, mouseX, mouseY)
@@ -306,8 +300,9 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
             super.renderInternal(context)
             val minecraft = Minecraft.getInstance()
             val window = minecraft.window
-            val mouseX = (minecraft.mouseHandler.getScaledXPos(window)).roundToInt()
-            val mouseY = (minecraft.mouseHandler.getScaledYPos(window)).roundToInt()
+            // 1.21.1: getScaledXPos/getScaledYPos 已移除, 用物理像素除以 guiScale.
+            val mouseX = (minecraft.mouseHandler.xpos() / window.guiScale).roundToInt()
+            val mouseY = (minecraft.mouseHandler.ypos() / window.guiScale).roundToInt()
             renderTooltip(ProgramUiGraphics(context), mouseX, mouseY)
         }
     }
@@ -1207,20 +1202,20 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
         return lines.toList()
     }
 
-    override fun mouseClicked(e: MouseButtonEvent, isDoubleClick: Boolean): Boolean {
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
         syncLayout()
-        val x = e.x()
-        val y = e.y()
-        if (e.button() == 0) {
+        val x = mouseX
+        val y = mouseY
+        if (button == 0) {
             if (search != null && search!!.isVisible()
                 && inside(x, y, search!!.x.toDouble(), search!!.y.toDouble(), search!!.width.toDouble(), 15.0)
             ) {
                 unfocusConfigurationInputs()
                 root.dispatchEvent(
                     org.academy.api.client.gui.event.MouseEvent.createPressEvent(
-                        e.x(),
-                        e.y(),
-                        e.button()
+                        mouseX,
+                        mouseY,
+                        button
                     )
                 )
                 return true
@@ -1231,9 +1226,9 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
                 unfocusConfigurationInputs()
                 root.dispatchEvent(
                     org.academy.api.client.gui.event.MouseEvent.createPressEvent(
-                        e.x(),
-                        e.y(),
-                        e.button()
+                        mouseX,
+                        mouseY,
+                        button
                     )
                 )
                 return true
@@ -1259,62 +1254,62 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
             }
             if (handleStarterClick(x, y) || handleCanvasClick(x, y)) return true
         }
-        if ((e.button() == 1 || e.button() == 2)
+        if ((button == 1 || button == 2)
             && inside(x, y, canvasX.toDouble(), canvasY.toDouble(), canvasW.toDouble(), canvasH.toDouble())
         ) {
             val endpoint = endpointAt(x, y)
-            if (e.button() == 1 && endpoint != null) disconnect(endpoint)
+            if (button == 1 && endpoint != null) disconnect(endpoint)
             else panning = true
             return true
         }
-        return super.mouseClicked(e, isDoubleClick)
+        return super.mouseClicked(mouseX, mouseY, button)
     }
 
-    override fun mouseDragged(e: MouseButtonEvent, mouseX: Double, mouseY: Double): Boolean {
-        if (draggingPowerField != null && e.button() == 0) {
+    override fun mouseDragged(mouseX: Double, mouseY: Double, button: Int, dragX: Double, dragY: Double): Boolean {
+        if (draggingPowerField != null && button == 0) {
             val selected = node(draggingPowerNode)
-            if (selected != null) updatePowerSlider(selected, draggingPowerField!!, e.x())
+            if (selected != null) updatePowerSlider(selected, draggingPowerField!!, mouseX)
             return true
         }
         if (connection != null) return true
-        if (selectionDrag != null && e.button() == 0) {
-            updateSelectionDrag(e.x(), e.y())
+        if (selectionDrag != null && button == 0) {
+            updateSelectionDrag(mouseX, mouseY)
             return true
         }
         val dragging = draggingNode
         if (dragging != null) {
             val nodesToMove = if (selectedNodes.contains(dragging)) selectedNodes.toSet() else setOf(dragging)
-            val result = document.translateNodes(nodesToMove, mouseX / zoom, mouseY / zoom)
+            val result = document.translateNodes(nodesToMove, dragX / zoom, dragY / zoom)
             if (result.successful()) install(result.document(), false)
             return true
         }
         if (panning) {
-            panX += mouseX
-            panY += mouseY
+            panX += dragX
+            panY += dragY
             return true
         }
-        return super.mouseDragged(e, mouseX, mouseY)
+        return super.mouseDragged(mouseX, mouseY, button, dragX, dragY)
     }
 
-    override fun mouseReleased(e: MouseButtonEvent): Boolean {
-        if (draggingPowerField != null && e.button() == 0) {
+    override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        if (draggingPowerField != null && button == 0) {
             draggingPowerField = null
             draggingPowerNode = -1
             return true
         }
-        if (connection != null && e.button() == 0) {
-            finishConnection(e.x(), e.y())
+        if (connection != null && button == 0) {
+            finishConnection(mouseX, mouseY)
             draggingNode = null
             return true
         }
-        if (selectionDrag != null && e.button() == 0) {
-            updateSelectionDrag(e.x(), e.y())
+        if (selectionDrag != null && button == 0) {
+            updateSelectionDrag(mouseX, mouseY)
             selectionDrag = null
             return true
         }
         draggingNode = null
         panning = false
-        return super.mouseReleased(e)
+        return super.mouseReleased(mouseX, mouseY, button)
     }
 
     override fun mouseScrolled(
@@ -1372,11 +1367,11 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
         return super.mouseScrolled(mouseX, mouseY, scrollX, scrollY)
     }
 
-    override fun keyPressed(e: KeyEvent): Boolean {
+    override fun keyPressed(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
         val quick = quickInsert
         if (quick != null) {
             val entries = quickInsertEntries(quick)
-            when (e.key()) {
+            when (keyCode) {
                 InputConstants.KEY_ESCAPE -> quickInsert = null
                 InputConstants.KEY_BACKSPACE -> {
                     if (quick.query.isNotEmpty()) quick.query = quick.query.dropLast(1)
@@ -1396,7 +1391,7 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
                     if (quick.selected in entries.indices) insertQuickEntry(quick, entries[quick.selected])
                 }
                 InputConstants.KEY_V -> {
-                    if ((e.modifiers() and InputConstants.MOD_CONTROL) != 0) {
+                    if ((modifiers and InputConstants.MOD_CONTROL) != 0) {
                         quick.query = (quick.query + UiEnvironment.get().clipboard())
                             .filter { !Character.isISOControl(it) }.take(64)
                         quick.selected = 0
@@ -1407,19 +1402,19 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
             return true
         }
         if (search != null && search!!.isFocused) {
-            dispatchTextInputKey(e)
+            dispatchTextInputKey(keyCode, scanCode, modifiers)
             return true
         }
         val configurationInput = focusedConfigurationInput()
         if (configurationInput != null) {
-            dispatchTextInputKey(e)
+            dispatchTextInputKey(keyCode, scanCode, modifiers)
             return true
         }
-        if (e.key() == InputConstants.KEY_SPACE) {
+        if (keyCode == InputConstants.KEY_SPACE) {
             spaceDown = true
             return true
         }
-        if (e.key() == InputConstants.KEY_ESCAPE
+        if (keyCode == InputConstants.KEY_ESCAPE
             && (connection != null || quickInsert != null || selectionDrag != null)
         ) {
             connection = null
@@ -1427,75 +1422,75 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
             selectionDrag = null
             return true
         }
-        if (isDeleteKey(e.key())) {
+        if (isDeleteKey(keyCode)) {
             deleteSelected()
             return true
         }
-        if ((e.modifiers() and InputConstants.MOD_CONTROL) != 0) {
-            if (e.key() == InputConstants.KEY_C) {
-                if ((e.modifiers() and InputConstants.MOD_SHIFT) != 0) exportProgram()
+        if ((modifiers and InputConstants.MOD_CONTROL) != 0) {
+            if (keyCode == InputConstants.KEY_C) {
+                if ((modifiers and org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT) != 0) exportProgram()
                 else copySelected()
                 return true
             }
-            if (e.key() == InputConstants.KEY_V) {
-                if ((e.modifiers() and InputConstants.MOD_SHIFT) != 0) importProgram()
+            if (keyCode == InputConstants.KEY_V) {
+                if ((modifiers and org.lwjgl.glfw.GLFW.GLFW_MOD_SHIFT) != 0) importProgram()
                 else pasteClipboard()
                 return true
             }
-            if (e.key() == InputConstants.KEY_Z) {
+            if (keyCode == InputConstants.KEY_Z) {
                 undo()
                 return true
             }
-            if (e.key() == InputConstants.KEY_Y) {
+            if (keyCode == InputConstants.KEY_Y) {
                 redo()
                 return true
             }
-            if (e.key() == InputConstants.KEY_S) {
+            if (keyCode == InputConstants.KEY_S) {
                 save()
                 return true
             }
         }
-        return super.keyPressed(e)
+        return super.keyPressed(keyCode, scanCode, modifiers)
     }
 
-    override fun charTyped(e: CharacterEvent): Boolean {
+    override fun charTyped(codePoint: Char, modifiers: Int): Boolean {
         val quick = quickInsert
         if (quick != null) {
-            if (quick.query.length < 64 && !Character.isISOControl(e.codepoint())) {
-                quick.query += String(Character.toChars(e.codepoint()))
+            if (quick.query.length < 64 && !Character.isISOControl(codePoint)) {
+                quick.query += codePoint
                 quick.selected = 0
                 quick.scroll = 0
             }
             return true
         }
         if (search != null && search!!.isFocused) {
-            root.dispatchEvent(org.academy.api.client.gui.event.CharTypedEvent(e.codepoint()))
+            root.dispatchEvent(org.academy.api.client.gui.event.CharTypedEvent(codePoint.code))
             return true
         }
         val configurationInput = focusedConfigurationInput()
         if (configurationInput != null) {
-            root.dispatchEvent(org.academy.api.client.gui.event.CharTypedEvent(e.codepoint()))
+            root.dispatchEvent(org.academy.api.client.gui.event.CharTypedEvent(codePoint.code))
             return true
         }
-        return super.charTyped(e)
+        return super.charTyped(codePoint, modifiers)
     }
 
-    private fun dispatchTextInputKey(e: KeyEvent) {
+    private fun dispatchTextInputKey(keyCode: Int, scanCode: Int, modifiers: Int) {
         root.dispatchEvent(
             org.academy.api.client.gui.event.KeyEvent(
                 org.academy.api.client.gui.event.EventType.KEY_PRESSED,
-                e.key(), e.scancode(), e.modifiers()
+                keyCode, scanCode, modifiers
             )
         )
     }
 
-    override fun keyReleased(e: KeyEvent): Boolean {
-        if (e.key() == InputConstants.KEY_SPACE) {
+    override fun keyReleased(keyCode: Int, scanCode: Int, modifiers: Int): Boolean {
+        if (keyCode == InputConstants.KEY_SPACE) {
             spaceDown = false
             panning = false
             return true
         }
-        return super.keyReleased(e)
+        return super.keyReleased(keyCode, scanCode, modifiers)
     }
 
     override fun onClose() {
@@ -2750,7 +2745,7 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
         }
 
         @JvmStatic
-        fun categoryAccent(category: Identifier): Int = when (category.path) {
+        fun categoryAccent(category: ResourceLocation): Int = when (category.path) {
             AbilityCategoryNames.ACCELERATOR -> 0xFFD4DCE2.toInt()
             AbilityCategoryNames.MELTDOWNER -> 0xFF59D68A.toInt()
             AbilityCategoryNames.DARKMATTER -> 0xFFF4F6F7.toInt()
@@ -2825,8 +2820,8 @@ class ModularProgramScreen(private val session: ModularProgramEditorSession) :
             )
         }
 
-        private fun categoryName(category: Identifier): Component {
-            val registered = org.academy.api.common.registries.Registries.ABILITY_CATEGORIES.getValue(category)
+        private fun categoryName(category: ResourceLocation): Component {
+            val registered = org.academy.api.common.registries.Registries.ABILITY_CATEGORIES.get(category)
             return Component.translatable(
                 registered?.descriptionId
                     ?: "ability_category.${category.namespace}.${category.path}"

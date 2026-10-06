@@ -334,7 +334,8 @@ public final class QqProvider implements MusicProviderApi {
                     if (value == null || value.isBlank()) continue;
                     var normalized = value.endsWith("/") ? value : value + "/";
                     result.add(normalized);
-                    if (normalized.startsWith("http://")) {
+                    if (normalized.startsWith("http://"))
+{
                         result.add("https://" + normalized.substring("http://".length()));
                     }
                 }

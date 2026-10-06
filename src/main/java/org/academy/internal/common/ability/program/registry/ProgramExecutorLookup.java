@@ -1,13 +1,13 @@
 package org.academy.internal.common.ability.program.registry;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
 
 @FunctionalInterface
 public interface ProgramExecutorLookup {
-    @Nullable ProgramNodeExecutor<?> find(Identifier nodeType);
+    @Nullable ProgramNodeExecutor<?> find(ResourceLocation nodeType);
 
     static ProgramExecutorLookup firstOf(ProgramExecutorLookup... lookups) {
         var chain = List.of(lookups);

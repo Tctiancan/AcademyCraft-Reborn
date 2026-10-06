@@ -10,8 +10,6 @@ import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.storage.ValueInput;
-import net.minecraft.world.level.storage.ValueOutput;
 import org.academy.internal.common.world.level.block.MultiBlock;
 import org.jspecify.annotations.Nullable;
 
@@ -58,17 +56,17 @@ public abstract class MultiBlockEntity extends BlockEntity {
         return main instanceof MultiBlockEntity multiBlockEntity ? multiBlockEntity : null;
     }
     @Override
-    protected void saveAdditional(ValueOutput output) {
-        super.saveAdditional(output);
+    protected void saveAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.saveAdditional(tag, registries);
         if (mainPos != null) {
-            output.putLong("main_pos", mainPos.asLong());
+            tag.putLong("main_pos", mainPos.asLong());
         }
     }
 
     @Override
-    protected void loadAdditional(ValueInput input) {
-        super.loadAdditional(input);
-        mainPos = BlockPos.of(input.getLong("main_pos").orElseThrow());
+    protected void loadAdditional(CompoundTag tag, HolderLookup.Provider registries) {
+        super.loadAdditional(tag, registries);
+        mainPos = BlockPos.of(tag.getLong("main_pos"));
     }
 
     @Override

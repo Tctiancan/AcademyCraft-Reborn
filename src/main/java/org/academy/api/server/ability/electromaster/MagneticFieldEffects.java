@@ -1,7 +1,7 @@
 package org.academy.api.server.ability.electromaster;
 
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -13,7 +13,7 @@ import org.academy.api.server.vanilla.MinecraftServerContext;
 
 /** Reusable innate field effects for players, program-controlled entities and addons. */
 public final class MagneticFieldEffects {
-    public static final Identifier SOURCE = AcademyCraft.academy("magnetic_field");
+    public static final ResourceLocation SOURCE = AcademyCraft.academy("magnetic_field");
     private MagneticFieldEffects() {}
 
     public static void setPassives(LivingEntity subject, boolean enabled) {

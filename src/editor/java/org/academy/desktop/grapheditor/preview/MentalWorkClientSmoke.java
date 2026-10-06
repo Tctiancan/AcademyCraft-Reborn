@@ -2,7 +2,7 @@ package org.academy.desktop.grapheditor.preview;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
 import net.minecraft.world.entity.EntitySpawnReason;
@@ -25,7 +25,7 @@ import java.util.*;
 /** Opt-in real client/server work benchmark in an isolated copy of the validation world. */
 @EventBusSubscriber(modid = "academy", value = Dist.CLIENT)
 public final class MentalWorkClientSmoke {
-    private static final Identifier SOURCE = Identifier.parse("academy:mental_work_smoke");
+    private static final ResourceLocation SOURCE = ResourceLocation.parse("academy:mental_work_smoke");
     private static final List<LivingEntity> WORKERS = new ArrayList<>();
     private static final List<BlockWorkRegion> REGIONS = new ArrayList<>();
     private static final List<BlockPos> OUTPUTS = new ArrayList<>();

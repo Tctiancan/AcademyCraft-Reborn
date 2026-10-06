@@ -15,7 +15,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.level.block.Rotation;
@@ -39,7 +39,7 @@ import java.util.UUID;
  */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class MusicServerGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("music_server_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("music_server_function");
 
     @SubscribeEvent
     private static void registerType(RegisterEvent event) {
@@ -52,7 +52,7 @@ public final class MusicServerGameTests {
             var environment = event.registerEnvironment(AcademyCraft.academy("music/" + scenario),
                     new TestEnvironmentDefinition.AllOf(List.of()));
             event.registerTest(AcademyCraft.academy("music_" + scenario), new Instance(new TestData<>(
-                    environment, Identifier.withDefaultNamespace("empty"), 40, 0, true,
+                    environment, ResourceLocation.withDefaultNamespace("empty"), 40, 0, true,
                     Rotation.NONE, false, 1, 1, false, 16), scenario));
         }
     }

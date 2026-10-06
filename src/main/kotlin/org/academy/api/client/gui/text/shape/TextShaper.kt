@@ -1,4 +1,4 @@
-package org.academy.api.client.gui.text.shape
+﻿package org.academy.api.client.gui.text.shape
 
 import org.academy.api.client.gui.text.font.AwtFaceCache
 import org.academy.api.client.gui.text.font.FontLineMetrics
@@ -174,7 +174,7 @@ object TextShaper {
         return attributed
     }
 
-    private fun resolveFontId(cp: Int, options: TextShapingOptions): net.minecraft.resources.Identifier {
+    private fun resolveFontId(cp: Int, options: TextShapingOptions): net.minecraft.resources.ResourceLocation {
         val preferred = options.preferredFont
         if (preferred != null && FontRepository.getFont(preferred).hasGlyph(cp)) return preferred
         return FontRepository.getFont(cp).descriptor.identifier

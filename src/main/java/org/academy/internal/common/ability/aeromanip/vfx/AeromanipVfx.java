@@ -1,7 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.vfx;
 
 import java.util.Map;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -10,12 +10,12 @@ import org.academy.internal.common.network.SpawnVfxGraphPacket;
 
 public final class AeromanipVfx {
     private static final Vec3 UP = new Vec3(0, 1, 0);
-    private static final Identifier MIST_BURST = graph("aeromanip_mist_burst");
-    private static final Identifier MIST_FIELD = graph("aeromanip_mist_field");
-    private static final Identifier MIST_RING = graph("aeromanip_mist_ring");
-    private static final Identifier MIST_STREAM = graph("aeromanip_mist_stream");
-    private static final Identifier MIST_BLADE = graph("aeromanip_mist_blade");
-    private static final Identifier MIST_VORTEX = graph("aeromanip_mist_vortex");
+    private static final ResourceLocation MIST_BURST = graph("aeromanip_mist_burst");
+    private static final ResourceLocation MIST_FIELD = graph("aeromanip_mist_field");
+    private static final ResourceLocation MIST_RING = graph("aeromanip_mist_ring");
+    private static final ResourceLocation MIST_STREAM = graph("aeromanip_mist_stream");
+    private static final ResourceLocation MIST_BLADE = graph("aeromanip_mist_blade");
+    private static final ResourceLocation MIST_VORTEX = graph("aeromanip_mist_vortex");
 
     private AeromanipVfx() {
     }
@@ -55,12 +55,12 @@ public final class AeromanipVfx {
                 finiteScale(radius), 1.25f, Map.of());
     }
 
-    private static void spawn(ServerLevel level, Identifier graph, Vec3 position,
+    private static void spawn(ServerLevel level, ResourceLocation graph, Vec3 position,
             Vec3 direction, double scale, float lifetimeSeconds) {
         spawn(level, graph, position, direction, Vec3.ZERO, scale, lifetimeSeconds);
     }
 
-    private static void spawn(ServerLevel level, Identifier graph, Vec3 position,
+    private static void spawn(ServerLevel level, ResourceLocation graph, Vec3 position,
             Vec3 direction, Vec3 localXDirection, double scale, float lifetimeSeconds) {
         var safeDirection = direction != null && direction.lengthSqr() > 1.0e-8
                 ? direction.normalize()
@@ -77,7 +77,7 @@ public final class AeromanipVfx {
         return (float) Math.clamp(scale, 0.05, 128.0);
     }
 
-    private static Identifier graph(String name) {
+    private static ResourceLocation graph(String name) {
         return AcademyCraft.academy("vfxgraph/" + name);
     }
 }

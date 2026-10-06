@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.program.registry;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.AbilityCategoryNames;
 import org.junit.jupiter.api.Test;
@@ -32,12 +32,12 @@ class AbilityProgramSpatialRangesTest {
     @Test
     void extensionCategoriesUseTheThirtyTwoBlockDefault() {
         var limits = AbilityProgramSpatialRanges.forCategory(
-                Identifier.parse("extension:custom_ability"));
+                ResourceLocation.parse("extension:custom_ability"));
 
         assertEquals(32.0, limits.queryRange());
         assertEquals(32.0, limits.actionRange());
         assertEquals(32.0, AbilityProgramSpatialRanges.forCategory(
-                Identifier.parse("extension:teleport")).actionRange());
+                ResourceLocation.parse("extension:teleport")).actionRange());
     }
 
     @Test

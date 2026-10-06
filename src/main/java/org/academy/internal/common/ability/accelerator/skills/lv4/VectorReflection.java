@@ -356,7 +356,7 @@ public class VectorReflection extends Skill {
 
             var budgetedCost = VectorDefenseCpBudget.limitBaseCost(
                     player, VectorDefenseCpBudget.Channel.DAMAGE, result.baseCpCost());
-            var executed = skill.executeContinuous(player, _ -> budgetedCost, (_, actualCost) -> {
+            var executed = skill.executeContinuous(player, unused268 -> budgetedCost, (unused269, actualCost) -> {
                 VectorDefenseCpBudget.record(
                         player, VectorDefenseCpBudget.Channel.DAMAGE, actualCost);
                 if (emitFeedback) {
@@ -408,8 +408,8 @@ public class VectorReflection extends Skill {
                         VectorDefenseCpBudget.Channel.DAMAGE,
                         result.baseCpCost()
                 );
-                executed = skill.executeContinuous(serverPlayer, _ -> budgetedCost,
-                        (_, actualCost) -> {
+                executed = skill.executeContinuous(serverPlayer, unused270 -> budgetedCost,
+                        (unused271, actualCost) -> {
                             VectorDefenseCpBudget.record(
                                     serverPlayer,
                                     VectorDefenseCpBudget.Channel.DAMAGE,
@@ -418,8 +418,10 @@ public class VectorReflection extends Skill {
                             applyReflection(serverPlayer, level, source, reflectedDamage);
                         }, true);
             }
-            // The unreflected remainder is applied after this method returns. Restore the vanilla
-            // player class first when this charge spent the final CP, so lethal damage cannot enter
+            // The unreflected remainder is applied after this method
+// returns. Restore the vanilla
+            // player class first when this charge spent the
+// final CP, so lethal damage cannot enter
             // the death/respawn pipeline through the dispatch subclass.
             if (executed) deactivateAfterVectorChargeIfNeeded(serverPlayer);
             serverPlayer.invulnerableTime = 0;
@@ -548,8 +550,8 @@ public class VectorReflection extends Skill {
                     player, VectorDefenseCpBudget.Channel.PROJECTILE, projectileCost);
             var executed = Skills.VECTOR_REFLECTION.get().executeContinuous(
                     player,
-                    _ -> budgetedCost,
-                    (_, actualCost) -> {
+                    unused272 -> budgetedCost,
+                    (unused273, actualCost) -> {
                         VectorDefenseCpBudget.record(
                                 player, VectorDefenseCpBudget.Channel.PROJECTILE, actualCost);
                         redirect.run();
@@ -564,8 +566,8 @@ public class VectorReflection extends Skill {
             if (!isActive(player)) return false;
             var executed = Skills.VECTOR_REFLECTION.get().executeContinuous(
                     player,
-                    _ -> projectileReflectionCost(0.0),
-                    (_, _) -> playReflectionSound(player),
+                    unused274 -> projectileReflectionCost(0.0),
+                    (unused275, unused276) -> playReflectionSound(player),
                     true
             );
             if (executed) deactivateAfterVectorChargeIfNeeded(player);

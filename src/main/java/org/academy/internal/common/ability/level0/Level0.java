@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.level0;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityCategory;
 
@@ -15,7 +15,7 @@ public final class Level0 extends AbilityCategory {
     }
 
     @Override
-    public Identifier getDeveloperIcon() {
+    public ResourceLocation getDeveloperIcon() {
         return R.textures.gui.icon.icon_nocategory;
     }
 

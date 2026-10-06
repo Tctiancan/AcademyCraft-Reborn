@@ -3,18 +3,18 @@ package org.academy.internal.client.renderer.entity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.academy.api.client.render.Render;
 import org.academy.api.client.render.post.PostEffect;
-import org.academy.internal.client.renderer.entity.state.GlowCircleRenderState;
 import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
 import org.academy.internal.common.world.entity.skill.GlowCircle;
 
-public class GlowCircleRenderer extends EntityRenderer<GlowCircle, GlowCircleRenderState> {
+public class GlowCircleRenderer extends EntityRenderer<GlowCircle> {
     private static final float MAX_RADIUS = 1.5f * 2.2f;
 
     public GlowCircleRenderer(EntityRendererProvider.Context context) {
@@ -26,9 +26,10 @@ public class GlowCircleRenderer extends EntityRenderer<GlowCircle, GlowCircleRen
     }
 
     @Override
-    public void submit(GlowCircleRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
-        if (!isVisibleForCurrentCamera(renderState.ownerEntityId)) return;
-        renderRing(poseStack, renderState.radius, renderState.xRot, renderState.yRot);
+    public void render(GlowCircle entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
+        if (!isVisibleForCurrentCamera(entity.getEffectOwnerId())) return;
+        var progress = Math.min((entity.ticks + partialTick) / GlowCircle.LIFE_TICKS, 1.0f);
+        renderRing(poseStack, radiusAt(progress), entity.getXRot(), entity.getYRot());
     }
 
     public static void renderRing(PoseStack poseStack, float radius, float xRot, float yRot) {
@@ -55,18 +56,8 @@ public class GlowCircleRenderer extends EntityRenderer<GlowCircle, GlowCircleRen
     }
 
     @Override
-    public GlowCircleRenderState createRenderState() {
-        return new GlowCircleRenderState();
-    }
-
-    @Override
-    public void extractRenderState(GlowCircle entity, GlowCircleRenderState reusedState, float partialTick) {
-        super.extractRenderState(entity, reusedState, partialTick);
-        var progress = Math.min((entity.ticks + partialTick) / GlowCircle.LIFE_TICKS, 1.0f);
-        reusedState.radius = radiusAt(progress);
-        reusedState.xRot = entity.getXRot();
-        reusedState.yRot = entity.getYRot();
-        reusedState.ownerEntityId = entity.getEffectOwnerId();
+    public ResourceLocation getTextureLocation(GlowCircle entity) {
+        return MissingTextureAtlasSprite.getLocation();
     }
 
     public static boolean isVisibleForCurrentCamera(int ownerEntityId) {

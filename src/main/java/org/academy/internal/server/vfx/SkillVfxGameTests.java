@@ -12,7 +12,7 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.level.block.Rotation;
@@ -32,7 +32,7 @@ import org.academy.internal.common.world.entity.skill.Plasma;
 /** Exercises actual entity joins, packet dispatch and retirement on a dedicated game-test server. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class SkillVfxGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("skill_vfx_test_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("skill_vfx_test_function");
     private SkillVfxGameTests() {}
 
     @SubscribeEvent
@@ -45,7 +45,7 @@ public final class SkillVfxGameTests {
         var environment = event.registerEnvironment(AcademyCraft.academy("skill_vfx_environment"),
                 new TestEnvironmentDefinition.AllOf(List.of()));
         event.registerTest(AcademyCraft.academy("skill_vfx_lifecycle"), new Instance(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 100, 0, true,
+                environment, ResourceLocation.withDefaultNamespace("empty"), 100, 0, true,
                 Rotation.NONE, false, 1, 1, false, 16)));
     }
 

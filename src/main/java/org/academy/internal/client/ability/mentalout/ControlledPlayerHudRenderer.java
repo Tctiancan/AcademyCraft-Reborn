@@ -2,9 +2,8 @@ package org.academy.internal.client.ability.mentalout;
 
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
-import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.Identifier;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
@@ -17,30 +16,38 @@ import org.academy.internal.common.ability.mentalout.control.PlayerControlSessio
  */
 public final class ControlledPlayerHudRenderer {
     private static final int MAX_VISIBLE_HEART_CONTAINERS = 40;
-    private static final Identifier HOTBAR = vanilla("hud/hotbar");
-    private static final Identifier HOTBAR_SELECTION = vanilla("hud/hotbar_selection");
-    private static final Identifier OFFHAND_LEFT = vanilla("hud/hotbar_offhand_left");
-    private static final Identifier OFFHAND_RIGHT = vanilla("hud/hotbar_offhand_right");
-    private static final Identifier ATTACK_BACKGROUND = vanilla("hud/hotbar_attack_indicator_background");
-    private static final Identifier ATTACK_PROGRESS = vanilla("hud/hotbar_attack_indicator_progress");
-    private static final Identifier HEART_CONTAINER = vanilla("hud/heart/container");
-    private static final Identifier HEART_FULL = vanilla("hud/heart/full");
-    private static final Identifier HEART_HALF = vanilla("hud/heart/half");
-    private static final Identifier ABSORPTION_FULL = vanilla("hud/heart/absorbing_full");
-    private static final Identifier ABSORPTION_HALF = vanilla("hud/heart/absorbing_half");
-    private static final Identifier ARMOR_EMPTY = vanilla("hud/armor_empty");
-    private static final Identifier ARMOR_HALF = vanilla("hud/armor_half");
-    private static final Identifier ARMOR_FULL = vanilla("hud/armor_full");
-    private static final Identifier FOOD_EMPTY = vanilla("hud/food_empty");
-    private static final Identifier FOOD_HALF = vanilla("hud/food_half");
-    private static final Identifier FOOD_FULL = vanilla("hud/food_full");
-    private static final Identifier AIR = vanilla("hud/air");
-    private static final Identifier AIR_EMPTY = vanilla("hud/air_empty");
+    private static final ResourceLocation HOTBAR = vanilla("hud/hotbar");
+    private static final ResourceLocation HOTBAR_SELECTION = vanilla("hud/hotbar_selection");
+    private static final ResourceLocation OFFHAND_LEFT = vanilla("hud/hotbar_offhand_left");
+    private static final ResourceLocation OFFHAND_RIGHT = vanilla("hud/hotbar_offhand_right");
+    private static final ResourceLocation ATTACK_BACKGROUND = vanilla("hud/hotbar_attack_indicator_background");
+    private static final ResourceLocation ATTACK_PROGRESS = vanilla("hud/hotbar_attack_indicator_progress");
+    private static final ResourceLocation HEART_CONTAINER = vanilla("hud/heart/container");
+    private static final ResourceLocation HEART_FULL = vanilla("hud/heart/full");
+    private static final ResourceLocation HEART_HALF = vanilla("hud/heart/half");
+    private static final ResourceLocation ABSORPTION_FULL = vanilla("hud/heart/absorbing_full");
+    private static final ResourceLocation ABSORPTION_HALF = vanilla("hud/heart/absorbing_half");
+    private static final ResourceLocation ARMOR_EMPTY = vanilla("hud/armor_empty");
+    private static final ResourceLocation ARMOR_HALF = vanilla("hud/armor_half");
+    private static final ResourceLocation ARMOR_FULL = vanilla("hud/armor_full");
+    private static final ResourceLocation FOOD_EMPTY = vanilla("hud/food_empty");
+    private static final ResourceLocation FOOD_HALF = vanilla("hud/food_half");
+    private static final ResourceLocation FOOD_FULL = vanilla("hud/food_full");
+    private static final ResourceLocation AIR = vanilla("hud/air");
+    private static final ResourceLocation AIR_EMPTY = vanilla("hud/air_empty");
 
     private ControlledPlayerHudRenderer() {
     }
 
-    public static void extract(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+    private static int guiWidth() {
+        return Minecraft.getInstance().getWindow().getGuiScaledWidth();
+    }
+
+    private static int guiHeight() {
+        return Minecraft.getInstance().getWindow().getGuiScaledHeight();
+    }
+
+    public static void extract(GuiGraphics graphics, DeltaTracker deltaTracker) {
         var state = PlayerControlClientState.targetViewState();
         if (state == null) return;
         renderHotbar(graphics, state);
@@ -48,14 +55,13 @@ public final class ControlledPlayerHudRenderer {
     }
 
     private static void renderHotbar(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             PlayerControlSessionManager.TargetViewState state
     ) {
-        var center = graphics.guiWidth() / 2;
-        var bottom = graphics.guiHeight();
-        graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HOTBAR, center - 91, bottom - 22, 182, 22);
+        var center = guiWidth() / 2;
+        var bottom = guiHeight();
+        graphics.blitSprite(HOTBAR, center - 91, bottom - 22, 182, 22);
         graphics.blitSprite(
-                RenderPipelines.GUI_TEXTURED,
                 HOTBAR_SELECTION,
                 center - 92 + state.selectedSlot() * 20,
                 bottom - 23,
@@ -69,9 +75,9 @@ public final class ControlledPlayerHudRenderer {
         var offhandArm = mainArm.getOpposite();
         if (!state.offhand().isEmpty()) {
             if (offhandArm == HumanoidArm.LEFT) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, OFFHAND_LEFT, center - 120, bottom - 23, 29, 24);
+                graphics.blitSprite(OFFHAND_LEFT, center - 120, bottom - 23, 29, 24);
             } else {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, OFFHAND_RIGHT, center + 91, bottom - 23, 29, 24);
+                graphics.blitSprite(OFFHAND_RIGHT, center + 91, bottom - 23, 29, 24);
             }
         }
 
@@ -90,26 +96,16 @@ public final class ControlledPlayerHudRenderer {
             var x = offhandArm == HumanoidArm.RIGHT ? center - 113 : center + 97;
             var y = bottom - 20;
             var progress = Mth.clamp((int) (state.attackStrength() * 19.0f), 0, 18);
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ATTACK_BACKGROUND, x, y, 18, 18);
+            graphics.blitSprite(ATTACK_BACKGROUND, x, y, 18, 18);
             if (progress > 0) {
-                graphics.blitSprite(
-                        RenderPipelines.GUI_TEXTURED,
-                        ATTACK_PROGRESS,
-                        18,
-                        18,
-                        0,
-                        18 - progress,
-                        x,
-                        y + 18 - progress,
-                        18,
-                        progress
-                );
+                // 1.21.1 has no sub-region blitSprite(9-arg) overload; draw the full progress sprite.
+                graphics.blitSprite(ATTACK_PROGRESS, x, y, 18, 18);
             }
         }
     }
 
     private static void renderItem(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             LivingEntity entity,
             ItemStack stack,
             int x,
@@ -117,18 +113,18 @@ public final class ControlledPlayerHudRenderer {
             int seed
     ) {
         if (stack.isEmpty()) return;
-        if (entity == null) graphics.item(stack, x, y, seed);
-        else graphics.item(entity, stack, x, y, seed);
-        graphics.itemDecorations(Minecraft.getInstance().font, stack, x, y);
+        if (entity == null) graphics.renderItem(stack, x, y, seed);
+        else graphics.renderItem(entity, stack, x, y, seed);
+        graphics.renderItemDecorations(Minecraft.getInstance().font, stack, x, y);
     }
 
     private static void renderStatus(
-            GuiGraphicsExtractor graphics,
+            GuiGraphics graphics,
             PlayerControlSessionManager.TargetViewState state
     ) {
-        var xLeft = graphics.guiWidth() / 2 - 91;
-        var xRight = graphics.guiWidth() / 2 + 91;
-        var yBase = graphics.guiHeight() - 39;
+        var xLeft = guiWidth() / 2 - 91;
+        var xRight = guiWidth() / 2 + 91;
+        var yBase = guiHeight() - 39;
         var healthHalves = Mth.ceil(state.health());
         var maxHealthHalves = Math.max(1, Mth.ceil(state.maxHealth()));
         var absorptionHalves = Mth.ceil(state.absorption());
@@ -144,20 +140,20 @@ public final class ControlledPlayerHudRenderer {
         for (var index = containers - 1; index >= 0; index--) {
             var x = xLeft + index % 10 * 8;
             var y = yBase - index / 10 * rowHeight;
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_CONTAINER, x, y, 9, 9);
+            graphics.blitSprite(HEART_CONTAINER, x, y, 9, 9);
             var halfIndex = index * 2;
             if (halfIndex < maxHealthHalves) {
                 if (halfIndex + 1 < healthHalves) {
-                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_FULL, x, y, 9, 9);
+                    graphics.blitSprite(HEART_FULL, x, y, 9, 9);
                 } else if (halfIndex < healthHalves) {
-                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, HEART_HALF, x, y, 9, 9);
+                    graphics.blitSprite(HEART_HALF, x, y, 9, 9);
                 }
             } else if (index >= healthContainers) {
                 var absorptionIndex = halfIndex - healthContainers * 2;
                 if (absorptionIndex + 1 < absorptionHalves) {
-                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ABSORPTION_FULL, x, y, 9, 9);
+                    graphics.blitSprite(ABSORPTION_FULL, x, y, 9, 9);
                 } else if (absorptionIndex < absorptionHalves) {
-                    graphics.blitSprite(RenderPipelines.GUI_TEXTURED, ABSORPTION_HALF, x, y, 9, 9);
+                    graphics.blitSprite(ABSORPTION_HALF, x, y, 9, 9);
                 }
             }
         }
@@ -167,40 +163,40 @@ public final class ControlledPlayerHudRenderer {
             var value = index * 2 + 1;
             var sprite = value < state.armor() ? ARMOR_FULL
                     : value == state.armor() ? ARMOR_HALF : ARMOR_EMPTY;
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, xLeft + index * 8, armorY, 9, 9);
+            graphics.blitSprite(sprite, xLeft + index * 8, armorY, 9, 9);
         }
 
         for (var index = 0; index < 10; index++) {
             var value = index * 2 + 1;
             var sprite = value < state.food() ? FOOD_FULL
                     : value == state.food() ? FOOD_HALF : FOOD_EMPTY;
-            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, xRight - index * 8 - 9, yBase, 9, 9);
+            graphics.blitSprite(sprite, xRight - index * 8 - 9, yBase, 9, 9);
         }
 
         if (state.air() < state.maxAir()) {
             var full = Mth.ceil(state.air() * 10.0f / state.maxAir());
             for (var index = 0; index < 10; index++) {
                 var sprite = index < full ? AIR : AIR_EMPTY;
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, xRight - index * 8 - 9, yBase - 10, 9, 9);
+                graphics.blitSprite(sprite, xRight - index * 8 - 9, yBase - 10, 9, 9);
             }
         }
 
-        var xpY = graphics.guiHeight() - 29;
+        var xpY = guiHeight() - 29;
         graphics.fill(xLeft, xpY, xLeft + 182, xpY + 5, 0xB0000000);
         graphics.fill(xLeft + 1, xpY + 1,
                 xLeft + 1 + Math.round(180 * state.experienceProgress()), xpY + 4, 0xFF80C71F);
         if (state.experienceLevel() > 0) {
-            graphics.centeredText(
+            graphics.drawCenteredString(
                     Minecraft.getInstance().font,
                     Integer.toString(state.experienceLevel()),
-                    graphics.guiWidth() / 2,
-                    graphics.guiHeight() - 36,
+                    guiWidth() / 2,
+                    guiHeight() - 36,
                     0xFF80FF20
             );
         }
     }
 
-    private static Identifier vanilla(String path) {
-        return Identifier.withDefaultNamespace(path);
+    private static ResourceLocation vanilla(String path) {
+        return ResourceLocation.withDefaultNamespace(path);
     }
 }

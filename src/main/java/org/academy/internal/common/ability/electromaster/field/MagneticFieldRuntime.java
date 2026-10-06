@@ -117,7 +117,8 @@ public final class MagneticFieldRuntime {
             var strafe = (input.left() ? 1 : 0) - (input.right() ? 1 : 0);
             var vertical = (input.jump() ? 1 : 0) - (input.shift() ? 1 : 0);
             // One solved tick carries field presence and ground clearance together, so the support probe
-            // runs once per tick rather than once for admission and again for motion.
+            // runs once per tick rather than once
+// for admission and again for motion.
             var step = canMove
                     ? movement.step(player, forward, strafe, vertical,
                             MagneticFieldTuning.FLIGHT_SPEED_PER_TICK, radius, tuning)

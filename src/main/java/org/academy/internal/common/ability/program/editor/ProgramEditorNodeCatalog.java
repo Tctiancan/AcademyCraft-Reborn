@@ -10,7 +10,7 @@ import org.academy.internal.common.ability.program.registry.ProgramNodeLookup;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramNodeRole;
 import org.academy.api.common.ability.program.ProgramNodeSchema;
 import org.academy.api.common.ability.program.ProgramNodeType;
@@ -26,11 +26,11 @@ import java.util.*;
  * defaults and presentation groups, then verifies every default through the node's real codec.</p>
  */
 public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
-    private final Identifier category;
-    private final Map<Identifier, Entry> entries;
+    private final ResourceLocation category;
+    private final Map<ResourceLocation, Entry> entries;
     private final List<Entry> orderedEntries;
 
-    private ProgramEditorNodeCatalog(Identifier category, Map<Identifier, Entry> entries) {
+    private ProgramEditorNodeCatalog(ResourceLocation category, Map<ResourceLocation, Entry> entries) {
         this.category = category;
         this.entries = Map.copyOf(entries);
         orderedEntries = entries.values().stream()
@@ -40,7 +40,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
                 .toList();
     }
 
-    public Identifier category() {
+    public ResourceLocation category() {
         return category;
     }
 
@@ -54,17 +54,17 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
                 .toList();
     }
 
-    public @Nullable Entry entry(Identifier id) {
+    public @Nullable Entry entry(ResourceLocation id) {
         return resolvedEntries().get(id);
     }
 
     @Override
-    public @Nullable ProgramNodeType<?> find(Identifier id) {
+    public @Nullable ProgramNodeType<?> find(ResourceLocation id) {
         var entry = resolvedEntries().get(id);
         return entry == null ? null : entry.type();
     }
 
-    public @Nullable ProgramNodeSchema schema(Identifier id, JsonElement configuration) {
+    public @Nullable ProgramNodeSchema schema(ResourceLocation id, JsonElement configuration) {
         var entry = resolvedEntries().get(id);
         return entry == null ? null : decodeSchema(entry.type(), configuration);
     }
@@ -73,14 +73,14 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
      * Decodes and re-encodes configuration so codecs can migrate and discard legacy fields.
      */
     public @Nullable JsonElement normalizeConfiguration(
-            Identifier id,
+            ResourceLocation id,
             JsonElement configuration
     ) {
         var entry = resolvedEntries().get(id);
         return entry == null ? null : normalize(entry.type(), configuration);
     }
 
-    private Map<Identifier, Entry> resolvedEntries() {
+    private Map<ResourceLocation, Entry> resolvedEntries() {
         var extensions = ProgramNodeExtensionIndex.snapshot(category).registrations();
         if (extensions.isEmpty()) return entries;
         var resolved = new HashMap<>(entries);
@@ -102,13 +102,13 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         return Map.copyOf(resolved);
     }
 
-    public static Builder builder(Identifier category) {
+    public static Builder builder(ResourceLocation category) {
         return new Builder(category);
     }
 
     private static void put(
-            Map<Identifier, Entry> entries,
-            Identifier id,
+            Map<ResourceLocation, Entry> entries,
+            ResourceLocation id,
             ProgramNodeType<?> type,
             JsonElement defaultConfiguration,
             Group group,
@@ -139,7 +139,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         }
     }
 
-    private static JsonElement commonDefault(Identifier id) {
+    private static JsonElement commonDefault(ResourceLocation id) {
         var configuration = new JsonObject();
         if (id.equals(CommonProgramNodeIds.SCALAR_CONSTANT)) {
             configuration.addProperty("type", "integer");
@@ -283,7 +283,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         return 0;
     }
 
-    private static Group commonGroup(Identifier id, ProgramNodeRole role) {
+    private static Group commonGroup(ResourceLocation id, ProgramNodeRole role) {
         var path = id.getPath();
         if (id.equals(CommonProgramNodeIds.CASTER)
                 || id.equals(CommonProgramNodeIds.DAMAGE_ATTACKER)
@@ -299,7 +299,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         return Group.VALUE;
     }
 
-    private static boolean commonVisible(Identifier id) {
+    private static boolean commonVisible(ResourceLocation id) {
         return !List.of(
                 CommonProgramNodeIds.BOOLEAN_CONSTANT,
                 CommonProgramNodeIds.INTEGER_CONSTANT,
@@ -338,14 +338,14 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         ).contains(id);
     }
 
-    private static boolean replacedByCommonTarget(Identifier id) {
+    private static boolean replacedByCommonTarget(ResourceLocation id) {
         var path = id.getPath();
         return path.endsWith("/target/caster")
                 || path.endsWith("/target/look_target")
                 || path.endsWith("/target/look_living");
     }
 
-    private static boolean replacedByCommonFilter(Identifier id) {
+    private static boolean replacedByCommonFilter(ResourceLocation id) {
         return switch (id.getPath()) {
             case "program/filter/alive",
                  "program/filter/distance",
@@ -363,7 +363,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         };
     }
 
-    private static String displayName(Identifier id) {
+    private static String displayName(ResourceLocation id) {
         var path = id.getPath()
                 .replaceFirst("^program/core/", "")
                 .replaceFirst("^program/", "");
@@ -420,7 +420,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
     }
 
     public record Entry(
-            Identifier id,
+            ResourceLocation id,
             ProgramNodeType<?> type,
             JsonElement defaultConfiguration,
             ProgramNodeSchema defaultSchema,
@@ -465,7 +465,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         /**
          * Returns the single owning category when the node is category-exclusive.
          */
-        public Optional<Identifier> exclusiveCategory() {
+        public Optional<ResourceLocation> exclusiveCategory() {
             var categories = type.scope().allowedCategories();
             return categories.size() == 1
                     ? Optional.of(categories.iterator().next())
@@ -479,10 +479,10 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
     }
 
     public static final class Builder {
-        private final Identifier category;
-        private final Map<Identifier, Entry> entries = new HashMap<>();
+        private final ResourceLocation category;
+        private final Map<ResourceLocation, Entry> entries = new HashMap<>();
 
-        private Builder(Identifier category) {
+        private Builder(ResourceLocation category) {
             this.category = Objects.requireNonNull(category, "category");
         }
 
@@ -503,7 +503,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         }
 
         public Builder add(
-                Identifier id,
+                ResourceLocation id,
                 ProgramNodeType<?> type,
                 JsonElement defaultConfiguration,
                 Group group,
@@ -524,7 +524,7 @@ public final class ProgramEditorNodeCatalog implements ProgramNodeLookup {
         }
 
         public Builder add(
-                Identifier id,
+                ResourceLocation id,
                 ProgramNodeType<?> type,
                 JsonElement defaultConfiguration,
                 Group group,

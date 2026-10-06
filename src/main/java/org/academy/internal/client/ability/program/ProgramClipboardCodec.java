@@ -1,6 +1,6 @@
 package org.academy.internal.client.ability.program;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
@@ -53,11 +53,11 @@ public final class ProgramClipboardCodec {
         return PROGRAM_PREFIX + encode(program);
     }
 
-    public static @Nullable AbilityProgram decodeFragment(String clipboard, Identifier category) {
+    public static @Nullable AbilityProgram decodeFragment(String clipboard, ResourceLocation category) {
         return decode(clipboard, FRAGMENT_PREFIX, category);
     }
 
-    public static @Nullable AbilityProgram decodeProgram(String clipboard, Identifier category) {
+    public static @Nullable AbilityProgram decodeProgram(String clipboard, ResourceLocation category) {
         return decode(clipboard, PROGRAM_PREFIX, category);
     }
 
@@ -68,7 +68,7 @@ public final class ProgramClipboardCodec {
     private static @Nullable AbilityProgram decode(
             String clipboard,
             String prefix,
-            Identifier category
+            ResourceLocation category
     ) {
         if (clipboard == null || category == null || !clipboard.startsWith(prefix)) return null;
         try {

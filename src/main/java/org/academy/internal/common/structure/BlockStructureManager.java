@@ -924,7 +924,8 @@ public final class BlockStructureManager {
             var stack = new ItemStack(state.getBlock());
             if (!stack.isEmpty()) Block.popResource(level, dropPosition, stack);
         } catch (RuntimeException ignored) {
-            // A third-party block must not keep the structure entity alive forever.
+            // A third-party block must not keep the structure entity alive
+// forever.
         }
     }
 

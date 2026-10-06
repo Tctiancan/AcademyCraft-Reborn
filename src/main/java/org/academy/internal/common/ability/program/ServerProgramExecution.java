@@ -4,7 +4,7 @@ import org.academy.internal.common.ability.program.compile.CompiledProgram;
 import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
 
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraft;
 
@@ -20,7 +20,7 @@ public final class ServerProgramExecution {
     public static Result execute(
             CompiledProgram program,
             ServerPlayer player,
-            Identifier category,
+            ResourceLocation category,
             int fuelPerTick,
             ProgramExecutorLookup executors,
             ProgramExecutionFrame frame,
@@ -56,7 +56,7 @@ public final class ServerProgramExecution {
                 fuelPerTick,
                 now + 1L,
                 MAX_LIFETIME_TICKS,
-                (_, termination) -> finishDeferred(player, category, invocation, transaction, termination)
+                (unused711, termination) -> finishDeferred(player, category, invocation, transaction, termination)
         );
         if (!scheduled) {
             transaction.abort();
@@ -78,7 +78,7 @@ public final class ServerProgramExecution {
 
     private static void finishDeferred(
             ServerPlayer player,
-            Identifier category,
+            ResourceLocation category,
             ProgramInvocationContext invocation,
             ProgramActionTransaction transaction,
             ProgramSessionScheduler.Termination termination

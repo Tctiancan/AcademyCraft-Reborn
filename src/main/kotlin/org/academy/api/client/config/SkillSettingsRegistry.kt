@@ -1,6 +1,6 @@
-package org.academy.api.client.config
+﻿package org.academy.api.client.config
 
-import net.minecraft.resources.Identifier
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.common.ability.Skill
 import java.util.function.BooleanSupplier
 import java.util.function.Consumer
@@ -14,7 +14,7 @@ import kotlin.math.roundToInt
  * without changing the app implementation.
  */
 object SkillSettingsRegistry {
-    private val modulesBySkill = LinkedHashMap<Identifier, LinkedHashMap<String, Module>>()
+    private val modulesBySkill = LinkedHashMap<ResourceLocation, LinkedHashMap<String, Module>>()
 
     @Synchronized
     fun register(skill: Skill, module: Module) {
@@ -22,7 +22,7 @@ object SkillSettingsRegistry {
     }
 
     @Synchronized
-    fun register(skillId: Identifier, module: Module) {
+    fun register(skillId: ResourceLocation, module: Module) {
         val modules = modulesBySkill.getOrPut(skillId) { LinkedHashMap() }
         check(modules.putIfAbsent(module.id, module) == null) {
             "Skill settings module '${module.id}' is already registered for $skillId"
@@ -30,7 +30,7 @@ object SkillSettingsRegistry {
     }
 
     @Synchronized
-    fun unregister(skillId: Identifier, moduleId: String) {
+    fun unregister(skillId: ResourceLocation, moduleId: String) {
         modulesBySkill[skillId]?.let { modules ->
             modules.remove(moduleId)
             if (modules.isEmpty()) modulesBySkill.remove(skillId)

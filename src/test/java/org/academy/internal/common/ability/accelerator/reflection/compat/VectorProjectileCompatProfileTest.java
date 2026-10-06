@@ -2,7 +2,7 @@ package org.academy.internal.common.ability.accelerator.reflection.compat;
 
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -24,7 +24,7 @@ class VectorProjectileCompatProfileTest {
                         """)
         ).getOrThrow();
 
-        assertEquals(List.of(Identifier.parse("twilightforest:hydra_mortar")),
+        assertEquals(List.of(ResourceLocation.parse("twilightforest:hydra_mortar")),
                 profile.entityTypes());
         assertTrue(profile.suppressOwnerlessPeerCollision());
     }

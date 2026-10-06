@@ -2,18 +2,17 @@ package org.academy.internal.client.renderer.entity;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import net.minecraft.client.renderer.entity.state.EntityRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import org.academy.api.client.render.Render;
+import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
+import org.academy.api.client.resources.R;
 import org.academy.internal.client.model.CleaningRobotModel;
 import org.academy.internal.common.world.entity.vehicle.CleaningRobot;
 
-import static net.minecraft.client.renderer.texture.OverlayTexture.NO_OVERLAY;
-
-public class CleaningRobotRenderer extends EntityRenderer<CleaningRobot, EntityRenderState> {
+public class CleaningRobotRenderer extends EntityRenderer<CleaningRobot> {
     public static final CleaningRobotModel CLEANING_ROBOT_MODEL = new CleaningRobotModel(CleaningRobotModel.createBodyLayer().bakeRoot());
 
     protected CleaningRobotRenderer(EntityRendererProvider.Context context) {
@@ -21,15 +20,20 @@ public class CleaningRobotRenderer extends EntityRenderer<CleaningRobot, EntityR
     }
 
     @Override
-    public void submit(EntityRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
+    public void render(CleaningRobot entity, float entityYaw, float partialTick, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight) {
         poseStack.pushPose();
         poseStack.rotateAround(Axis.XP.rotationDegrees(180), 0, 0.75f, 0);
-        nodeCollector.submitModel(CLEANING_ROBOT_MODEL, renderState, poseStack, Render.RenderTypes.CLEANING_ROBOT, renderState.lightCoords, NO_OVERLAY, 0, null);
+        float scale = 1.0F;
+        poseStack.scale(scale, scale, scale);
+        poseStack.translate(0.0F, 1.5F, 0.0F);
+        CLEANING_ROBOT_MODEL.setupAnim(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
+        var vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(R.textures.cleaning_robot));
+        CLEANING_ROBOT_MODEL.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         poseStack.popPose();
     }
 
     @Override
-    public EntityRenderState createRenderState() {
-        return new EntityRenderState();
+    public ResourceLocation getTextureLocation(CleaningRobot entity) {
+        return R.textures.cleaning_robot;
     }
 }

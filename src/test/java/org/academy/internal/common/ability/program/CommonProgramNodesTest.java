@@ -11,7 +11,7 @@ import org.academy.internal.common.ability.program.registry.PrecisionProgramNode
 
 
 import com.google.gson.JsonObject;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramBlockPosition;
 import org.academy.api.common.ability.program.ProgramCompileContext;
 import org.academy.api.common.ability.program.ProgramDirection;
@@ -36,8 +36,8 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class CommonProgramNodesTest {
-    private static final Identifier CATEGORY = PrecisionProgramNodeCatalog.MENTALOUT;
-    private static final Identifier OVERWORLD = Identifier.parse("minecraft:overworld");
+    private static final ResourceLocation CATEGORY = PrecisionProgramNodeCatalog.MENTALOUT;
+    private static final ResourceLocation OVERWORLD = ResourceLocation.parse("minecraft:overworld");
 
     @Test
     void everyCommonNodeHasAnExecutorAndEveryTargetDomainHasCollectionAlgebra() {
@@ -1421,7 +1421,7 @@ class CommonProgramNodesTest {
         return session;
     }
 
-    private static ProgramGraph.Node node(int id, Identifier type) {
+    private static ProgramGraph.Node node(int id, ResourceLocation type) {
         return new ProgramGraph.Node(id, type, 1, new JsonObject());
     }
 
@@ -1480,9 +1480,9 @@ class CommonProgramNodesTest {
 
     private static ProgramGraph.Node variableNode(
             int id,
-            Identifier nodeType,
+            ResourceLocation nodeType,
             String name,
-            Identifier valueType
+            ResourceLocation valueType
     ) {
         var configuration = new JsonObject();
         configuration.addProperty("name", name);
@@ -1492,7 +1492,7 @@ class CommonProgramNodesTest {
 
     private static ProgramGraph.Node worldPositionNode(
             int id,
-            Identifier dimension,
+            ResourceLocation dimension,
             double x,
             double y,
             double z
@@ -1507,7 +1507,7 @@ class CommonProgramNodesTest {
 
     private static ProgramGraph.Node blockPositionNode(
             int id,
-            Identifier dimension,
+            ResourceLocation dimension,
             int x,
             int y,
             int z
@@ -1561,12 +1561,12 @@ class CommonProgramNodesTest {
 
     private static Object randomSingle(
             ProgramGraph.Node valueNode,
-            Identifier singletonType,
-            Identifier randomType,
+            ResourceLocation singletonType,
+            ResourceLocation randomType,
             String valueOutput,
             String randomInput,
             String randomOutput,
-            Identifier valueType
+            ResourceLocation valueType
     ) {
         var graph = new ProgramGraph(
                 List.of(
@@ -1599,7 +1599,7 @@ class CommonProgramNodesTest {
 
     private static ProgramGraph.Node collectionBuilderNode(
             int id,
-            Identifier type,
+            ResourceLocation type,
             int inputs
     ) {
         var configuration = new JsonObject();

@@ -2,7 +2,7 @@ package org.academy.internal.common.skilldata;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.data.SkillStateType;
 import java.util.Objects;
 
@@ -18,7 +18,7 @@ public final class CodecSkillData<T> extends SkillData {
         this.type = type;
         value(value);
     }
-    @Override public Identifier getType() { return type.id(); }
+    @Override public ResourceLocation getType() { return type.id(); }
     public SkillStateType<T> stateType() { return type; }
     public T value() { return value; }
     public void value(T value) {

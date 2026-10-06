@@ -1,6 +1,6 @@
 package org.academy.api.common.ability;
 
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.resources.R;
@@ -20,7 +20,7 @@ public interface DevCondition {
     }
 
     @Nullable
-    Identifier getIcon();
+    ResourceLocation getIcon();
 
     String getHintText();
 
@@ -41,7 +41,7 @@ public interface DevCondition {
         }
 
         @Override
-        public @Nullable Identifier getIcon() {
+        public @Nullable ResourceLocation getIcon() {
             return switch (requiredLevel.levelCode) {
                 case 1 -> R.textures.ability.condition.any1;
                 case 2 -> R.textures.ability.condition.any2;
@@ -70,7 +70,7 @@ public interface DevCondition {
         }
 
         @Override
-        public @Nullable Identifier getIcon() {
+        public @Nullable ResourceLocation getIcon() {
             return null;
         }
 
@@ -105,7 +105,7 @@ public interface DevCondition {
         }
 
         @Override
-        public @Nullable Identifier getIcon() {
+        public @Nullable ResourceLocation getIcon() {
             return null;
         }
 
@@ -139,7 +139,7 @@ public interface DevCondition {
         }
 
         @Override
-        public @Nullable Identifier getIcon() {
+        public @Nullable ResourceLocation getIcon() {
             return switch (requiredLevel) {
                 case 1 -> R.textures.ability.condition.any1;
                 case 2 -> R.textures.ability.condition.any2;

@@ -105,7 +105,8 @@ public final class MaterialSheetEmitter {
                 } else p.fma(0.012f + (style == 2 ? (1 - phase) * 0.018f : 0), normal);
                 float distance = p.distance(camera);
                 float safety = style == 0 ? mediaVisibility(p, camera, forward, firstPerson) : smooth((distance - 0.24f) / 0.4f);
-                // Keep repair feedback visible on hands, while the near-field medium never reaches the eye.
+                // Keep repair feedback visible on hands,
+// while the near-field medium never reaches the eye.
                 float alpha = visible ? opacity * strength * envelope * safety : 0;
                 if (style <= 1) {
                     float lighting = Math.clamp(property(block, "lighting", 1), 0, 1);

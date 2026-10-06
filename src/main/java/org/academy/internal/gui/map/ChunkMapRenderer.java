@@ -2,7 +2,7 @@ package org.academy.internal.gui.map;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.academy.internal.client.ability.teleport.ChunkMapTexture;
@@ -87,9 +87,9 @@ public final class ChunkMapRenderer {
         if (dimension == null) return;
         var patches = ChunkMapClientState.drainTilePatches();
         if (patches.isEmpty()) return;
-        var map = ChunkMapClientState.map(dimension.identifier().toString());
+        var map = ChunkMapClientState.map(dimension.location().toString());
         for (var patch : patches) {
-            if (!patch.dimensionId().equals(dimension.identifier().toString())) continue;
+            if (!patch.dimensionId().equals(dimension.location().toString())) continue;
             for (var tile : patch.tiles()) {
                 var texels = map.tile(tile.chunkX(), tile.chunkZ());
                 if (texels == null) continue;
@@ -101,7 +101,7 @@ public final class ChunkMapRenderer {
     /** Rebuilds the whole window from the cache; used after a re-anchor or dimension switch. */
     public void resyncAll(ResourceKey<Level> dimension) {
         if (dimension == null) return;
-        var map = ChunkMapClientState.map(dimension.identifier().toString());
+        var map = ChunkMapClientState.map(dimension.location().toString());
         // Only the chunks the server was asked for are in the cache, so walk those rather than the
         // whole window: a full-window walk would be 65k cache probes for a few hundred entries.
         for (var z = 0; z < ChunkMapTexture.WINDOW_CHUNKS; z++) {
@@ -116,7 +116,7 @@ public final class ChunkMapRenderer {
     }
 
     /** Draws the raster, clipped to the anchor window, over a placeholder backdrop. */
-    public void renderMap(GuiGraphicsExtractor graphics, Geometry g) {
+    public void renderMap(GuiGraphics graphics, Geometry g) {
         graphics.enableScissor(g.left(), g.top(), g.right(), g.bottom());
         graphics.fill(g.left(), g.top(), g.right(), g.bottom(), PLACEHOLDER);
 
@@ -135,13 +135,19 @@ public final class ChunkMapRenderer {
             var u1 = (x1 + 1 - texture.originChunkX()) * detail / ChunkMapTexture.SIZE;
             var v0 = (z0 - texture.originChunkZ()) * detail / ChunkMapTexture.SIZE;
             var v1 = (z1 + 1 - texture.originChunkZ()) * detail / ChunkMapTexture.SIZE;
-            graphics.blit(texture.textureId(), left, top, right, bottom, u0, u1, v0, v1);
+            // 1.21.1: GuiGraphics.blit takes texel offsets/counts (not normalized UVs); convert the
+            // normalized u0..v1 range to absolute texels against the full map texture size.
+            var texW = ChunkMapTexture.SIZE;
+            var texH = ChunkMapTexture.SIZE;
+            graphics.blit(texture.textureId(), left, top, right - left, bottom - top,
+                    u0 * texW, v0 * texH,
+                    Math.round((u1 - u0) * texW), Math.round((v1 - v0) * texH), texW, texH);
         }
         graphics.disableScissor();
     }
 
     /** Chunk grid: fine lines every chunk, brighter every {@link #MAJOR_EVERY}. */
-    public void renderGrid(GuiGraphicsExtractor graphics, Geometry g) {
+    public void renderGrid(GuiGraphics graphics, Geometry g) {
         graphics.enableScissor(g.left(), g.top(), g.right(), g.bottom());
         var size = g.chunkSize();
         if (size >= 4) {
@@ -165,7 +171,7 @@ public final class ChunkMapRenderer {
      * <p>Chunks are filled individually rather than as one rectangle, because a selection may be
      * disconnected (ctrl-clicked) and must show exactly which chunks it contains.
      */
-    public void renderSelection(GuiGraphicsExtractor graphics, Geometry g,
+    public void renderSelection(GuiGraphics graphics, Geometry g,
                                 java.util.Set<net.minecraft.world.level.ChunkPos> sourceChunks,
                                 java.util.Set<net.minecraft.world.level.ChunkPos> targetChunks,
                                 boolean clamped) {
@@ -181,12 +187,12 @@ public final class ChunkMapRenderer {
     }
 
     /** Fills one chunk cell and outlines it, clipped to the viewport. */
-    private void renderChunkCell(GuiGraphicsExtractor graphics, Geometry g,
+    private void renderChunkCell(GuiGraphics graphics, Geometry g,
                                  net.minecraft.world.level.ChunkPos chunk, int fill, int borderColor) {
-        var x0 = (int) Math.round(g.screenX(chunk.x()));
-        var z0 = (int) Math.round(g.screenZ(chunk.z()));
-        var x1 = (int) Math.round(g.screenX(chunk.x() + 1));
-        var z1 = (int) Math.round(g.screenZ(chunk.z() + 1));
+        var x0 = (int) Math.round(g.screenX(chunk.x));
+        var z0 = (int) Math.round(g.screenZ(chunk.z));
+        var x1 = (int) Math.round(g.screenX(chunk.x + 1));
+        var z1 = (int) Math.round(g.screenZ(chunk.z + 1));
         var left = Math.max(g.left(), x0);
         var top = Math.max(g.top(), z0);
         var right = Math.min(g.right(), x1);
@@ -207,11 +213,11 @@ public final class ChunkMapRenderer {
      *
      * <p>The local player is ringed in blue so the map answers "where am I" without a legend.
      */
-    public void renderMarkers(GuiGraphicsExtractor graphics, Geometry g, ResourceKey<Level> dimension,
+    public void renderMarkers(GuiGraphics graphics, Geometry g, ResourceKey<Level> dimension,
                               int selectedEntityId, int hoveredEntityId,
                               java.util.UUID localPlayerId) {
         if (dimension == null) return;
-        var markers = ChunkMapClientState.map(dimension.identifier().toString()).markers();
+        var markers = ChunkMapClientState.map(dimension.location().toString()).markers();
         graphics.enableScissor(g.left(), g.top(), g.right(), g.bottom());
         var size = g.chunkSize();
         // Portraits read best a little larger than a bare dot, but must not swallow the terrain at low zoom.
@@ -269,7 +275,7 @@ public final class ChunkMapRenderer {
      * <p>Players resolve through the tab list, which already holds every visible player skin. Non-player
      * thumbnails are rendered from their registered entity type instead of pretending every model has a head UV.
      */
-    private static net.minecraft.resources.Identifier portraitFor(ChunkLeapPackets.Marker marker) {
+    private static net.minecraft.resources.ResourceLocation portraitFor(ChunkLeapPackets.Marker marker) {
         if (marker.playerId() == null) return null;
         var connection = net.minecraft.client.Minecraft.getInstance().getConnection();
         if (connection == null) return null;
@@ -286,20 +292,21 @@ public final class ChunkMapRenderer {
      * overlaid hair and accessories, is the same rectangle one sheet-width to the right. Drawing the face
      * first and the hat over it composites them the way the game does.
      */
-    private static void blitFace(GuiGraphicsExtractor graphics, net.minecraft.resources.Identifier skin,
+    private static void blitFace(GuiGraphics graphics, net.minecraft.resources.ResourceLocation skin,
                                  int centreX, int centreZ, int diameter, int tint, boolean hatLayer) {
         var half = diameter / 2;
         var u = hatLayer ? 40 : 8;
         var v = 8;
         var size = 8;
         var textureSize = 64f;
-        graphics.blit(net.minecraft.client.renderer.RenderPipelines.GUI_TEXTURED, skin,
-                centreX - half, centreZ - half,
-                u, v, diameter, diameter, size, size, (int) textureSize, (int) textureSize, tint);
+        // 1.21.1: 26.2 的 RenderPipelines.GUI_TEXTURED + tint 重载不存在; 改用标准 blit, 采样 8x8 面部区域
+        // (u,v) 并放大到 diameter 像素。26.2 的 tint 参数在此省略(按白色绘制)。
+        graphics.blit(skin, centreX - half, centreZ - half, diameter, diameter,
+                (float) u, (float) v, size, size, (int) textureSize, (int) textureSize);
     }
 
     /** Draws one crisp square centred on a screen point. */
-    private static void fillSquare(GuiGraphicsExtractor graphics, int centreX, int centreZ, int diameter,
+    private static void fillSquare(GuiGraphics graphics, int centreX, int centreZ, int diameter,
                                    int color) {
         var half = diameter / 2;
         var left = centreX - half;
@@ -308,7 +315,7 @@ public final class ChunkMapRenderer {
     }
 
     /** Draws four corner brackets forming a square outline outside a marker. */
-    private static void bracket(GuiGraphicsExtractor graphics, int centreX, int centreZ, int size,
+    private static void bracket(GuiGraphics graphics, int centreX, int centreZ, int size,
                                 int color) {
         var half = size / 2;
         var left = centreX - half;
@@ -330,7 +337,7 @@ public final class ChunkMapRenderer {
     public ChunkLeapPackets.Marker pickMarker(Geometry g, double mouseX, double mouseY,
                                              ResourceKey<Level> dimension) {
         if (dimension == null) return null;
-        var markers = ChunkMapClientState.map(dimension.identifier().toString()).markers();
+        var markers = ChunkMapClientState.map(dimension.location().toString()).markers();
         ChunkLeapPackets.Marker best = null;
         var bestDistance = MAX_MARKER_HIT * MAX_MARKER_HIT * 4.0;
         for (var marker : markers) {

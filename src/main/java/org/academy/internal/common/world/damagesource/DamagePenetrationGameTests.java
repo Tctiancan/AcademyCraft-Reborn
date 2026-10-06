@@ -13,17 +13,17 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
@@ -54,7 +54,7 @@ import java.util.UUID;
 /** Exercises loaded damage tags and both the player and mob damage pipelines. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class DamagePenetrationGameTests {
-    private static final Identifier TYPE = AcademyCraft.academy("damage_penetration_function");
+    private static final ResourceLocation TYPE = AcademyCraft.academy("damage_penetration_function");
     private static final EquipmentSlot[] ARMOR = {
             EquipmentSlot.HEAD, EquipmentSlot.CHEST, EquipmentSlot.LEGS, EquipmentSlot.FEET
     };
@@ -70,7 +70,7 @@ public final class DamagePenetrationGameTests {
     private static void registerTests(RegisterGameTestsEvent event) {
         var environment = event.registerEnvironment(TYPE, new TestEnvironmentDefinition.AllOf(List.of()));
         event.registerTest(AcademyCraft.academy("damage_penetration"), new Instance(new TestData<>(
-                environment, Identifier.withDefaultNamespace("empty"), 100, 0, true,
+                environment, ResourceLocation.withDefaultNamespace("empty"), 100, 0, true,
                 Rotation.NONE, false, 1, 1, false, 16)));
     }
 
@@ -207,7 +207,7 @@ public final class DamagePenetrationGameTests {
     }
 
     private static void verifyDischarge(GameTestHelper helper, ServerPlayer attacker) {
-        var target = helper.spawn(EntityTypes.COW, 4, 2, 5);
+        var target = helper.spawn(EntityType.COW, 4, 2, 5);
         target.setNoAi(true);
         reset(target, false, 0);
         try {
@@ -312,7 +312,7 @@ public final class DamagePenetrationGameTests {
     }
 
     private static void verifyParalysisImmunity(GameTestHelper helper, ServerPlayer attacker) {
-        var target = helper.spawn(EntityTypes.COW, 6, 2, 5);
+        var target = helper.spawn(EntityType.COW, 6, 2, 5);
         target.setNoAi(true);
         var source = SkillDamageSource.of(attacker, Skills.ARC_GENERATE.get());
         var settings = ((MinecraftServerContext) helper.getLevel().getServer())
@@ -360,7 +360,7 @@ public final class DamagePenetrationGameTests {
             var testTags = new java.util.HashMap<>(originalTags);
             var immuneTypes = new java.util.ArrayList<>(originalTags.getOrDefault(
                     org.academy.api.common.entitycontrol.MentalControlTags.IMMUNE, List.of()));
-            immuneTypes.add(EntityTypes.COW.builtInRegistryHolder());
+            immuneTypes.add(EntityType.COW.builtInRegistryHolder());
             testTags.put(org.academy.api.common.entitycontrol.MentalControlTags.IMMUNE, immuneTypes);
             registry.prepareTagReload(new net.minecraft.tags.TagLoader.LoadResult<>(registry.key(), testTags)).apply();
             helper.assertTrue(org.academy.internal.common.ability.mentalout.control.MentalControlRuntime
@@ -395,7 +395,8 @@ public final class DamagePenetrationGameTests {
                     "The first lethal direct hit must complete normally");
             helper.assertTrue(invoker.academy$isDead() && target.damageCalls == 1,
                     "The first hit must enter actuallyHurt once and finish vanilla death");
-            // Multipart forwarding and lingering displacement marks can both reach the same
+            // Multipart
+// forwarding and lingering displacement marks can both reach the same
             // corpse again before the death animation removes it from the level.
             for (var index = 0; index < 3; index++) {
                 helper.assertTrue(!target.hurtServer(level, source, 20),
@@ -432,7 +433,7 @@ public final class DamagePenetrationGameTests {
         private int damageCalls;
 
         private CountingCow(ServerLevel level) {
-            super(EntityTypes.COW, level);
+            super(EntityType.COW, level);
         }
 
         @Override
@@ -445,7 +446,7 @@ public final class DamagePenetrationGameTests {
     private static void verify(GameTestHelper helper) {
         var attacker = player(helper, "penetration-owner");
         var defender = player(helper, "penetration-target");
-        var cow = helper.spawn(EntityTypes.COW, 3, 2, 5);
+        var cow = helper.spawn(EntityType.COW, 3, 2, 5);
         cow.setNoAi(true);
         try {
             for (var target : List.<LivingEntity>of(cow, defender)) {
@@ -488,3 +489,4 @@ public final class DamagePenetrationGameTests {
         }
     }
 }
+

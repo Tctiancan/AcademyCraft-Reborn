@@ -71,7 +71,7 @@ public final class CurrentSymbiosis extends Skill {
                                 InputConstants.MOD_ALT
                         )
                 ),
-                _ -> Client.toggle()
+                unused454 -> Client.toggle()
         );
     }
 

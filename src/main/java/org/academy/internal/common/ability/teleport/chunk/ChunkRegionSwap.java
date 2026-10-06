@@ -137,7 +137,8 @@ final class ChunkRegionSwap {
 
         // 6. Reset and rebuild lighting through the vanilla asynchronous pipeline. Direct section exchange
         //    bypasses the per-block notifications that normally keep the light engine's empty-section state
-        //    in sync, so the old storage must be cleared before the new section layout is registered.
+        //    in sync, so the old storage must be cleared before the
+// new section layout is registered.
         var lightingA = refreshLighting(levelA, chunkA);
         CompletableFuture<Void> lightingTask = lightingA;
         if (!sameLevel || chunkA != chunkB) {

@@ -1,7 +1,7 @@
 package org.academy.internal.server.ability;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.AbilityCategory;
 import org.jspecify.annotations.Nullable;
 
@@ -20,7 +20,7 @@ public final class InitialAbilityRecommendationCache {
     public void put(
             UUID playerId,
             AbilityCategory category,
-            Identifier dimension,
+            ResourceLocation dimension,
             BlockPos developerPos,
             long gameTime
     ) {
@@ -30,7 +30,7 @@ public final class InitialAbilityRecommendationCache {
     public void put(
             UUID playerId,
             AbilityCategory category,
-            Identifier dimension,
+            ResourceLocation dimension,
             String developerKey,
             long gameTime
     ) {
@@ -44,7 +44,7 @@ public final class InitialAbilityRecommendationCache {
 
     public @Nullable AbilityCategory consume(
             UUID playerId,
-            Identifier dimension,
+            ResourceLocation dimension,
             BlockPos developerPos,
             long gameTime
     ) {
@@ -53,7 +53,7 @@ public final class InitialAbilityRecommendationCache {
 
     public @Nullable AbilityCategory consume(
             UUID playerId,
-            Identifier dimension,
+            ResourceLocation dimension,
             String developerKey,
             long gameTime
     ) {
@@ -77,7 +77,7 @@ public final class InitialAbilityRecommendationCache {
 
     private record Recommendation(
             AbilityCategory category,
-            Identifier dimension,
+            ResourceLocation dimension,
             String developerKey,
             long expiresAt
     ) {

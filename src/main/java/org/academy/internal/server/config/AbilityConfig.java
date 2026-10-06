@@ -119,12 +119,12 @@ public class AbilityConfig {
 
     /** Returns the group for a category, creating it on demand. */
     public Map<String, SkillSettings> group(String category) {
-        return skills.computeIfAbsent(category == null ? UNCATEGORIZED : category, _ -> new TreeMap<>());
+        return skills.computeIfAbsent(category == null ? UNCATEGORIZED : category, unused825 -> new TreeMap<>());
     }
 
     /** Returns the settings for one skill under a category, creating both on demand. */
     public SkillSettings ensureSkill(String category, String skillPath) {
-        return group(category).computeIfAbsent(skillPath, _ -> new SkillSettings());
+        return group(category).computeIfAbsent(skillPath, unused826 -> new SkillSettings());
     }
 
     /**
@@ -172,7 +172,8 @@ public class AbilityConfig {
                 }
             }
         } catch (Throwable ignored) {
-            // Registries not bound yet; fall back to the static table.
+            // Registries not bound yet; fall back to the
+// static table.
         }
         return null;
     }
@@ -485,7 +486,8 @@ public class AbilityConfig {
                         return;
                     }
                     // Write a trimmed tree so the file stays scannable: neutral values are omitted and
-                    // only gates that matter for a skill are shown.
+                    // only gates that matter
+// for a skill are shown.
                     gson.toJson(toTrimmedTree(gson, value), out);
                 }
 
@@ -494,7 +496,8 @@ public class AbilityConfig {
                         throws java.io.IOException {
                     var element = com.google.gson.JsonParser.parseReader(in);
                     // Convert a legacy flat "skills" object into the grouped layout before Gson reads
-                    // it, so old files still load and then round-trip in the new shape.
+                    // it, so old files still load and then round-trip in the
+// new shape.
                     if (element.isJsonObject() && element.getAsJsonObject().has("skills")
                             && element.getAsJsonObject().get("skills").isJsonObject()) {
                         regroupFlatSkills(element.getAsJsonObject());
@@ -566,8 +569,8 @@ public class AbilityConfig {
             }
 
             var advanced = new com.google.gson.JsonObject();
-            // A gate is shown when it deviates from its default, or when it is meaningful for this
-            // skill (so administrators can discover the switch even while it sits at the default).
+            // A gate is shown when it deviates from its default, or when it is meaningful
+            // for this skill (so administrators can discover the switch even while it sits at the default).
             if (blockGate || !settings.advanced.blockDestruction) {
                 advanced.addProperty("blockDestruction", settings.advanced.blockDestruction);
             }

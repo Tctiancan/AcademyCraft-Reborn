@@ -2,7 +2,7 @@ package org.academy.internal.server.ability;
 
 import net.minecraft.advancements.AdvancementType;
 import net.minecraft.core.component.DataComponents;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -222,7 +222,7 @@ public class PlayerCPManager implements AbilitySubsystem {
         if (builtin) {
             dirty |= restoreAcademyMaxCp(playerData, debugMaxCpOverrides.get(player.getUUID()));
             dirty |= releaseInvalidOccupations(cpData, occupations, skillId -> {
-                var id = Identifier.tryParse(skillId);
+                var id = ResourceLocation.tryParse(skillId);
                 return id != null && Registries.SKILLS.get(id)
                         .map(reference -> LearningHelper.isSkillAvailableForCategory(category, reference.value()))
                         .orElse(false);
@@ -404,7 +404,7 @@ public class PlayerCPManager implements AbilitySubsystem {
             if (!occupation.isPermanent()) continue;
             if ("academy:darkmatter_generation".equals(occupation.getSkillId())
                     && cpData.getCurrMP() > CP_EPSILON) continue;
-            var id = Identifier.tryParse(occupation.getSkillId());
+            var id = ResourceLocation.tryParse(occupation.getSkillId());
             var enabled = id != null && Registries.SKILLS.get(id)
                     .map(reference -> reference.value().isEnabled(player))
                     .orElse(false);
@@ -931,7 +931,7 @@ public class PlayerCPManager implements AbilitySubsystem {
 
         var categoryId = playerData.getAbilityCategory();
 
-        var categoryRef = Registries.ABILITY_CATEGORIES.get(Identifier.parse(categoryId));
+        var categoryRef = Registries.ABILITY_CATEGORIES.get(ResourceLocation.parse(categoryId));
         if (categoryRef.isEmpty()) return 1f;
 
         return LearningHelper.getAbilityExpRequirement(categoryRef.get().value(), getLevel(uuid));
@@ -951,7 +951,7 @@ public class PlayerCPManager implements AbilitySubsystem {
 
             var mul = 1.0f;
             var categoryId = playerData.getAbilityCategory();
-            var categoryRef = Registries.ABILITY_CATEGORIES.get(Identifier.parse(categoryId));
+            var categoryRef = Registries.ABILITY_CATEGORIES.get(ResourceLocation.parse(categoryId));
             if (categoryRef.isPresent()) {
                 mul = categoryRef.get().value().getProgIncrRate();
             }
@@ -1180,7 +1180,7 @@ public class PlayerCPManager implements AbilitySubsystem {
 
         var skillBonus = 0.0f;
         for (var entry : playerData.getSkillDataMap().entrySet()) {
-            var id = Identifier.tryParse(entry.getKey());
+            var id = ResourceLocation.tryParse(entry.getKey());
             if (id == null) continue;
             var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
             if (skill == null || !LearningHelper.isSkillAvailableForCategory(category, skill)) continue;
