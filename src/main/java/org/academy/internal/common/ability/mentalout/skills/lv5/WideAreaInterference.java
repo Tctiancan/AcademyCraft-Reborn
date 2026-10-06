@@ -138,9 +138,9 @@ public final class WideAreaInterference extends Skill {
 
         private static void open() {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.player == null || minecraft.gui.screen() != null
+            if (minecraft.player == null || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.WIDE_AREA_INTERFERENCE.get())) return;
-            minecraft.gui.setScreen(new WideAreaInterferenceScreen());
+            minecraft.setScreen(new WideAreaInterferenceScreen());
         }
 
         public static final class Config extends KeyBindingConfig {

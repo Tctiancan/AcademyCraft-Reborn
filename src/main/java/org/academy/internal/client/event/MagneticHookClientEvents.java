@@ -28,7 +28,7 @@ public final class MagneticHookClientEvents {
         }
         var minecraft = Minecraft.getInstance();
         var player = minecraft.player;
-        if (player == null || minecraft.level == null || minecraft.gui.screen() != null
+        if (player == null || minecraft.level == null || minecraft.screen != null
                 || !minecraft.isWindowActive() || player.isSpectator()
                 || MagneticHookCuriosCompat.findEquippedBeltHook(player).isEmpty()) {
             return;

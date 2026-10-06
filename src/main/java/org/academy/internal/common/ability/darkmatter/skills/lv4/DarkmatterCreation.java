@@ -172,7 +172,7 @@ public final class DarkmatterCreation extends Skill {
         private static void openEditor() {
             if (ClientUtil.hasScreen() || !AbilitySystemClient.canUseSkill(
                     Skills.DARKMATTER_CREATION.get())) return;
-            Minecraft.getInstance().gui.setScreen(new DarkmatterCreationScreen());
+            Minecraft.getInstance().setScreen(new DarkmatterCreationScreen());
             MisakaNetworkClient.send(EditorRequestPacket.INSTANCE);
         }
 
@@ -213,7 +213,7 @@ public final class DarkmatterCreation extends Skill {
         @SubscribePacket
         public static void handle(SummonResultPacket packet) {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.gui.screen() instanceof DarkmatterCreationScreen) {
+            if (minecraft.screen instanceof DarkmatterCreationScreen) {
                 DarkmatterCreationScreen.acceptSummonResult(packet);
             } else if (minecraft.player != null) {
                 minecraft.player.displayClientMessage(Component.translatable(

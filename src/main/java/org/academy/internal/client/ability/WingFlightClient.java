@@ -36,7 +36,7 @@ public final class WingFlightClient {
         var player = mc.player;
         if (player == null) return new WingControlIntent(0, 0, 0);
         int buttons = 0;
-        if (mc.gui.screen() == null) {
+        if (mc.screen == null) {
             if (down(GLFW_KEY_W)) buttons |= WingControlIntent.FRONT;
             if (down(GLFW_KEY_S)) buttons |= WingControlIntent.BACK;
             if (down(GLFW_KEY_A)) buttons |= WingControlIntent.LEFT;

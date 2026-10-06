@@ -137,7 +137,7 @@ public final class ScatterBomb extends Skill {
             var player = minecraft.player;
             if (charging
                     || player == null
-                    || minecraft.gui.screen() != null
+                    || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.SCATTER_BOMB.get())) {
                 return;
             }

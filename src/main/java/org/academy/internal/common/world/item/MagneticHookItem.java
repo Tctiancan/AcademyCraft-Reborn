@@ -9,6 +9,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -38,11 +39,12 @@ public final class MagneticHookItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        var itemStack = player.getItemInHand(hand);
         if (player instanceof ServerPlayer serverPlayer) {
-            performAction(serverPlayer, player.getItemInHand(hand), player.isShiftKeyDown());
+            performAction(serverPlayer, itemStack, player.isShiftKeyDown());
         }
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sided(InteractionResult.SUCCESS, itemStack);
     }
 
     @Override
@@ -74,7 +76,7 @@ public final class MagneticHookItem extends Item {
     }
 
     public static void performAction(ServerPlayer player, ItemStack stack, boolean recall) {
-        if (player.getCooldowns().isOnCooldown(stack)) return;
+        if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
         if (recall) {
             recallLookedAt(player);
             addCooldown(player, stack);
@@ -85,7 +87,7 @@ public final class MagneticHookItem extends Item {
 
     /** Launches a new hook, retracting the oldest owned hook when the three-hook limit is reached. */
     public static void fire(ServerPlayer player, ItemStack stack) {
-        if (player.getCooldowns().isOnCooldown(stack)) return;
+        if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
         var hooks = findOwnedHooks(player);
         while (hooks.size() >= MAX_ACTIVE_HOOKS) {
             hooks.removeFirst().discard();
@@ -171,7 +173,7 @@ public final class MagneticHookItem extends Item {
     }
 
     private static void addCooldown(Player player, ItemStack stack) {
-        player.getCooldowns().addCooldown(stack, USE_COOLDOWN_TICKS);
+        player.getCooldowns().addCooldown(stack.getItem(), USE_COOLDOWN_TICKS);
     }
 
     @Override

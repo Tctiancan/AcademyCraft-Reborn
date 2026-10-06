@@ -162,7 +162,7 @@ public final class EntityMotionGuard {
         var effectDuration = visibleEffectDuration(durationTicks);
         entity.addEffect(visibleImprisonedEffect(effectDuration));
         entity.addEffect(new MobEffectInstance(
-                MobEffects.MINING_FATIGUE,
+                MobEffects.DIG_SLOWDOWN,
                 effectDuration,
                 0,
                 false,

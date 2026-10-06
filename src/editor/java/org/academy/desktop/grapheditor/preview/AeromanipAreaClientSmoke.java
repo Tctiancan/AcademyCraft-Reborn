@@ -66,14 +66,14 @@ public final class AeromanipAreaClientSmoke {
         if (++total > 5000) throw new IllegalStateException("Area smoke timed out: " + ticks);
         var mc = Minecraft.getInstance();
         if (mc.level == null) {
-            if (mc.gui.screen() instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
+            if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) if (widget instanceof net.minecraft.client.gui.components.Button button
                         && button.getMessage().getString().equals("Proceed to main menu")) {
                     button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
                             new net.minecraft.client.input.MouseButtonInfo(0, 0))); break;
                 }
             }
-            if (!opened && mc.gui.screen() instanceof net.minecraft.client.gui.screens.TitleScreen) {
+            if (!opened && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
                 opened = true; mc.createWorldOpenFlows().openWorld("railgun", mc::stop);
             }
             return;
@@ -107,7 +107,7 @@ public final class AeromanipAreaClientSmoke {
                 ready = true;
             });
         }
-        if (!ready || mc.gui.screen() != null || reload != null && !reload.isDone()) return;
+        if (!ready || mc.screen != null || reload != null && !reload.isDone()) return;
         if (ticks == 219 && !reloadHeartbeatReady || ticks == 850 && !matrixDone) return;
         if (serverTicks == previousServerTicks) return;
         previousServerTicks = serverTicks;

@@ -49,7 +49,7 @@ public final class RadiationIntensify extends Skill {
 
     public static void mark(LivingEntity target, long gameTime) {
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 100, 0, false, false, true));
-        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 100, 0, false, false, true));
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 100, 0, false, false, true));
         target.getPersistentData().putLong(TARGET_MARK_UNTIL_KEY, markExpiry(gameTime));
     }
 
@@ -58,7 +58,7 @@ public final class RadiationIntensify extends Skill {
         var milestone = skill.getEffectiveProficiencyMilestone(owner);
         var duration = milestone >= 1 ? 240 : (int) MARK_DURATION_TICKS;
         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration / 2, 0, false, false, true));
-        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, duration / 2, 0, false, false, true));
+        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration / 2, 0, false, false, true));
         target.getPersistentData().putLong(TARGET_MARK_UNTIL_KEY,
                 gameTime > Long.MAX_VALUE - duration ? Long.MAX_VALUE : gameTime + duration);
         TimedSkillEffectRuntime.put(owner, target.getUUID(), skill, "radiation_mark", duration, milestone);

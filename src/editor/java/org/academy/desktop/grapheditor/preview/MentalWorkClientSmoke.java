@@ -58,14 +58,14 @@ public final class MentalWorkClientSmoke {
         }
         if (done) { mc.stop(); return; }
         if (mc.level == null) {
-            if (mc.gui.screen() instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
+            if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) if (widget instanceof net.minecraft.client.gui.components.Button button
                         && button.getMessage().getString().equals("Proceed to main menu")) {
                     button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
                             new net.minecraft.client.input.MouseButtonInfo(0, 0))); break;
                 }
             }
-            if (!opened && mc.gui.screen() instanceof net.minecraft.client.gui.screens.TitleScreen) {
+            if (!opened && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
                 opened = true; mc.createWorldOpenFlows().openWorld("railgun", mc::stop);
             }
             return;

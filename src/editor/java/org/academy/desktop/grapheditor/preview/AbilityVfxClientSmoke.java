@@ -49,7 +49,7 @@ public final class AbilityVfxClientSmoke {
         var mc = Minecraft.getInstance();
         if (++total > 2800) throw new IllegalStateException("Ability VFX smoke timed out");
         if (mc.level == null) {
-            if (mc.gui.screen() instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
+            if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
@@ -59,7 +59,7 @@ public final class AbilityVfxClientSmoke {
                     }
                 }
             }
-            if (!opened && mc.gui.screen() instanceof net.minecraft.client.gui.screens.TitleScreen) {
+            if (!opened && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
                 opened = true;
                 mc.createWorldOpenFlows().openWorld("railgun", mc::stop);
             }

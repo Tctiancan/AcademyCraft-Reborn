@@ -6,7 +6,6 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.*;
-import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.entitycontrol.AttackDecision;
 import org.academy.api.server.damage.DefenseFeedbackSuppression;
@@ -159,15 +158,6 @@ public abstract class MixinEntity {
                 (Entity) (Object) this, new Vec3(x, y, z))) ci.cancel();
     }
 
-    @Inject(method = "teleport(Lnet/minecraft/world/level/portal/TeleportTransition;)Lnet/minecraft/world/entity/Entity;",
-            at = @At("HEAD"), cancellable = true)
-    private void academy$guardTeleportTransition(
-            TeleportTransition transition,
-            CallbackInfoReturnable<Entity> cir
-    ) {
-        if (EntityMotionGuard.shouldBlockTeleport((Entity) (Object) this)) cir.setReturnValue(null);
-    }
-
     @Inject(method = "teleportTo(DDD)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardSimpleTeleport(double x, double y, double z, CallbackInfo ci) {
         if (EntityMotionGuard.shouldBlockTeleport(
@@ -175,7 +165,7 @@ public abstract class MixinEntity {
     }
 
     @Inject(
-            method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFZ)Z",
+            method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FF)Z",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -184,10 +174,9 @@ public abstract class MixinEntity {
             double x,
             double y,
             double z,
-            Set<Relative> relatives,
+            Set<RelativeMovement> relatives,
             float yRot,
             float xRot,
-            boolean resetCamera,
             CallbackInfoReturnable<Boolean> cir
     ) {
         if (EntityMotionGuard.shouldBlockTeleport(
@@ -199,33 +188,6 @@ public abstract class MixinEntity {
         var entity = (Entity) (Object) this;
         if (EntityMotionGuard.shouldBlockTeleport(
                 entity, entity.position().add(x, y, z))) ci.cancel();
-    }
-
-    @Inject(
-            method = "teleportSetPosition(Lnet/minecraft/world/entity/PositionMoveRotation;Ljava/util/Set;)V",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void academy$guardTeleportPosition(
-            PositionMoveRotation position,
-            Set<Relative> relatives,
-            CallbackInfo ci
-    ) {
-        if (EntityMotionGuard.shouldBlockTeleport((Entity) (Object) this)) ci.cancel();
-    }
-
-    @Inject(
-            method = "teleportSetPosition(Lnet/minecraft/world/entity/PositionMoveRotation;Lnet/minecraft/world/entity/PositionMoveRotation;Ljava/util/Set;)V",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void academy$guardTeleportPositionPair(
-            PositionMoveRotation current,
-            PositionMoveRotation target,
-            Set<Relative> relatives,
-            CallbackInfo ci
-    ) {
-        if (EntityMotionGuard.shouldBlockTeleport((Entity) (Object) this)) ci.cancel();
     }
 
     @Inject(

@@ -27,6 +27,7 @@ import org.academy.internal.common.ability.meltdowner.beam.ContinuousBeamReflect
 import org.academy.internal.common.ability.meltdowner.beam.ContinuousReflectionSession;
 import org.academy.internal.common.attachment.AttachmentTypes;
 import org.academy.internal.common.world.entity.skill.HighSpeedElectronBeam;
+import org.academy.internal.common.world.entity.EntityTypes;
 
 import java.util.List;
 import java.util.UUID;
@@ -90,7 +91,7 @@ public final class ShieldAndMagneticRegressionGameTests {
     }
 
     private static void check(GameTestHelper helper, boolean condition, String message) {
-        helper.assertTrue(condition, Component.literal(message));
+        helper.assertTrue(condition, Component.literal(message).getString());
     }
 
     private static void shieldPaths(GameTestHelper helper, ServerPlayer attacker, ServerPlayer defender) {
@@ -130,7 +131,7 @@ public final class ShieldAndMagneticRegressionGameTests {
         pig.setNoAi(true);
         var before = pig.getHealth();
         var beam = new HighSpeedElectronBeam(
-                org.academy.internal.common.world.entity.EntityType.HIGH_SPEED_ELECTRON_BEAM.get(),
+                EntityTypes.HIGH_SPEED_ELECTRON_BEAM.get(),
                 helper.getLevel());
         beam.configure(attacker, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get(), 2.0f, 0, 1, false, false);
         var start = attacker.getBoundingBox().getCenter();

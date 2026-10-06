@@ -1,6 +1,7 @@
 package org.academy.mixin.common;
 
-import net.minecraft.network.protocol.game.ClientboundEntityPositionSyncPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientboundTeleportEntityPacket;
 import net.minecraft.network.protocol.game.VecDeltaCodec;
 import net.minecraft.server.level.ServerEntity;
 import net.minecraft.world.entity.Entity;
@@ -12,6 +13,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+import java.util.function.Consumer;
+
 @Mixin(ServerEntity.class)
 public abstract class MixinServerEntity {
     @Shadow
@@ -20,7 +23,7 @@ public abstract class MixinServerEntity {
 
     @Shadow
     @Final
-    private ServerEntity.Synchronizer synchronizer;
+    private Consumer<Packet<?>> broadcast;
 
     @Shadow
     @Final
@@ -36,7 +39,7 @@ public abstract class MixinServerEntity {
     private void academy$forceAbilityTeleportSync(CallbackInfo ci) {
         if (!TeleportSync.consumeAbsoluteSync(entity)) return;
 
-        synchronizer.sendToTrackingPlayers(ClientboundEntityPositionSyncPacket.of(entity));
+        broadcast.accept(new ClientboundTeleportEntityPacket(entity));
         positionCodec.setBase(entity.trackingPosition());
         teleportDelay = 0;
         wasOnGround = entity.onGround();

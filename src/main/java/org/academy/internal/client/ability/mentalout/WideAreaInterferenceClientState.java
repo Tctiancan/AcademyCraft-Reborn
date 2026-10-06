@@ -699,7 +699,7 @@ public final class WideAreaInterferenceClientState {
         @SubscribeEvent
         public static void onLevelRendered(RenderLevelStageEvent.AfterLevel event) {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.gui.screen() instanceof WideAreaInterferenceScreen) captureCurrentFrame();
+            if (minecraft.screen instanceof WideAreaInterferenceScreen) captureCurrentFrame();
         }
 
         @SubscribeEvent

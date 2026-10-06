@@ -14,14 +14,13 @@ import org.academy.api.common.arc.data.PropertyType;
 import org.academy.api.common.arc.property.AttributeCurve;
 import org.academy.internal.common.arc.PathModifierTypes;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public record WarpModifier(
         AttributeCurve strength,
-        Vector3fc direction,
+        Vector3f direction,
         float frequency,
         float peakPosition,
         float width

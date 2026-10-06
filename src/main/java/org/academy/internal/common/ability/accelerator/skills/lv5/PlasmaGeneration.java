@@ -136,7 +136,7 @@ public class PlasmaGeneration extends Skill {
         }
 
         public static void onChargeStart() {
-            if (charging || Minecraft.getInstance().gui.screen() != null
+            if (charging || Minecraft.getInstance().screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.PLASMA_GENERATION.get())) return;
             charging = true;
             MisakaNetworkClient.send(StartPacket.INSTANCE);

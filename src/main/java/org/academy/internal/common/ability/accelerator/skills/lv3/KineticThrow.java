@@ -204,7 +204,7 @@ public final class KineticThrow extends Skill {
 
         private static void startCharge() {
             var minecraft = Minecraft.getInstance();
-            if (charging || minecraft.gui.screen() != null
+            if (charging || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.KINETIC_THROW.get())) return;
             charging = true;
             MisakaNetworkClient.send(StartPacket.INSTANCE);
@@ -219,7 +219,7 @@ public final class KineticThrow extends Skill {
         private static void throwLookedAtStructure() {
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
-            if (player == null || minecraft.gui.screen() != null) return;
+            if (player == null || minecraft.screen != null) return;
             MisakaNetworkClient.send(ThrowPacket.INSTANCE);
         }
 

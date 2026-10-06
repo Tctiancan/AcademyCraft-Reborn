@@ -323,9 +323,9 @@ public class BloodflowReverse extends Skill {
                                 () -> SkillDamageUtil.applyVerifiedTrueHealth(target, source, damage));
                         if (!damaged) return;
 
-                        target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, duration, amplifier));
+                        target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, amplifier));
                         target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration, amplifier));
-                        target.addEffect(new MobEffectInstance(MobEffects.MINING_FATIGUE, duration, amplifier));
+                        target.addEffect(new MobEffectInstance(MobEffects.DIG_SLOWDOWN, duration, amplifier));
 
                         serverLevel.sendParticles(ParticleTypes.BLOOD_SPLASH.get(),
                                 target.getX(), target.getY(0.6), target.getZ(),

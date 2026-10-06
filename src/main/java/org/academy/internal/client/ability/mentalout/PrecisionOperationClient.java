@@ -153,7 +153,7 @@ public final class PrecisionOperationClient {
 
     public static void openEditor() {
         var minecraft = Minecraft.getInstance();
-        if (minecraft.player == null || minecraft.gui.screen() != null
+        if (minecraft.player == null || minecraft.screen != null
                 || !AbilitySystemClient.category.getKey().equals(
                 AbilityProgramDefinitions.mentalout().category())
                 || AbilitySystemClient.getLevel().getLevelCode() < 5) return;
@@ -167,7 +167,7 @@ public final class PrecisionOperationClient {
                     LAST_NODES[selectedSlot]
             );
         }
-        minecraft.gui.setScreen(screen);
+        minecraft.setScreen(screen);
         MisakaNetworkClient.send(PrecisionOperationManager.RequestPacket.INSTANCE);
     }
 
@@ -176,7 +176,7 @@ public final class PrecisionOperationClient {
     }
 
     public static void execute(int slot) {
-        if (Minecraft.getInstance().gui.screen() != null
+        if (Minecraft.getInstance().screen != null
                 || !AbilitySystemClient.category.getKey().equals(
                 AbilityProgramDefinitions.mentalout().category())
                 || AbilitySystemClient.getLevel().getLevelCode() < 5) return;
@@ -206,7 +206,7 @@ public final class PrecisionOperationClient {
             GRAPHS[slot] = decoded[slot];
             SERVER_GRAPHS[slot] = decoded[slot];
         }
-        if (screen != null && Minecraft.getInstance().gui.screen() == screen) {
+        if (screen != null && Minecraft.getInstance().screen == screen) {
             screen.applyServerState(selectedSlot, editableProgram(selectedSlot), revision);
         }
     }
@@ -241,7 +241,7 @@ public final class PrecisionOperationClient {
             ACTIVE_SLOTS[slot] = false;
             showActionBar("message.academy.precision_operation.feedback.completed", slot);
         }
-        if (screen != null && Minecraft.getInstance().gui.screen() == screen) {
+        if (screen != null && Minecraft.getInstance().screen == screen) {
             screen.applyResult(slot, type, revision, diagnostic, nodeId);
         }
     }

@@ -243,7 +243,7 @@ public final class DamagePolicyGameTests {
         irradiated.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1000);
         irradiated.setHealth(1000);
         irradiated.addEffect(new MobEffectInstance(
-                MobEffects.RESISTANCE, 400, 4));
+                MobEffects.DAMAGE_RESISTANCE, 400, 4));
         irradiated.addEffect(new MobEffectInstance(
                 MobEffects.NAUSEA, 400, 2));
         SkillDamageUtil.apply(player, irradiated, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get(),
@@ -251,8 +251,8 @@ public final class DamagePolicyGameTests {
         helper.assertTrue(Math.abs(irradiated.getHealth() - 990) < 0.01,
                 "Meltdowner must ignore resistance V");
         for (var effect : List.of(MobEffects.NAUSEA,
-                MobEffects.SLOWNESS,
-                MobEffects.MINING_FATIGUE,
+                MobEffects.MOVEMENT_SLOWDOWN,
+                MobEffects.DIG_SLOWDOWN,
                 MobEffects.WEAKNESS)) {
             helper.assertTrue(irradiated.hasEffect(effect), "Successful melt hit must apply all radiation effects");
         }
@@ -267,7 +267,7 @@ public final class DamagePolicyGameTests {
         lawTarget.getAttribute(Attributes.MAX_ABSORPTION).setBaseValue(1000);
         lawTarget.setAbsorptionAmount(1000);
         lawTarget.addEffect(new MobEffectInstance(
-                MobEffects.RESISTANCE, 400, 4));
+                MobEffects.DAMAGE_RESISTANCE, 400, 4));
         var law = new LawDetonationDamageSource(
                 SkillDamageSource.of(player, Skills.DARKMATTER_CUT.get()));
         SkillDamageUtil.applyDirect(level, lawTarget, law, 10);
@@ -308,7 +308,7 @@ public final class DamagePolicyGameTests {
             defender.setHealth(1000);
             defender.getAttribute(PlayerAttributes.TRUE_RESISTANCE).setBaseValue(8);
             defender.addEffect(new MobEffectInstance(
-                    MobEffects.RESISTANCE, 400, 4));
+                    MobEffects.DAMAGE_RESISTANCE, 400, 4));
             SkillDamageUtil.apply(player, defender, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get(),
                     DamageTypes.MELT_DAMAGE, 10);
             helper.assertTrue(Math.abs(defender.getHealth() - 990) < 0.01,

@@ -2,8 +2,10 @@ package org.academy.internal.common.world.item;
 
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import org.academy.internal.client.app.tutorial.TutorialScreen;
 
@@ -13,8 +15,8 @@ public final class TutorialItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         if (level.isClientSide()) TutorialScreen.open();
-        return InteractionResult.SUCCESS;
+        return InteractionResultHolder.sided(InteractionResult.SUCCESS, player.getItemInHand(hand));
     }
 }

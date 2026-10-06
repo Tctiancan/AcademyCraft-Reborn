@@ -53,7 +53,7 @@ public final class WingFlightClientSmoke {
         var mc = Minecraft.getInstance();
         if (++totalTicks > 2400) throw new IllegalStateException("Wing flight smoke timed out, stage=" + stage);
         if (mc.level == null) {
-            if (mc.gui.screen() instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
+            if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
@@ -63,7 +63,7 @@ public final class WingFlightClientSmoke {
                     }
                 }
             }
-            if (!opened && mc.gui.screen() instanceof net.minecraft.client.gui.screens.TitleScreen) {
+            if (!opened && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
                 opened = true;
                 mc.createWorldOpenFlows().openWorld("black_wing", mc::stop);
             }
@@ -72,7 +72,7 @@ public final class WingFlightClientSmoke {
         if (mc.player == null || mc.getSingleplayerServer() == null) return;
         mc.options.pauseOnLostFocus = false;
         mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
-        if (mc.gui.screen() != null) mc.gui.setScreen(null);
+        if (mc.screen != null) mc.setScreen(null);
         if (!requested) {
             requested = true;
             stage = 0;

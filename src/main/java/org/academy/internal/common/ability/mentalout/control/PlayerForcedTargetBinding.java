@@ -1,6 +1,6 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import net.minecraft.network.protocol.game.ClientboundSetHeldSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundSetCarriedItemPacket;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;
@@ -162,9 +162,9 @@ final class PlayerForcedTargetBinding implements ControlBinding {
             inventory.pickSlot(slot);
             subject.inventoryMenu.broadcastChanges();
         } else {
-            inventory.setSelectedSlot(slot);
+            inventory.selected = slot;
         }
-        subject.connection.send(new ClientboundSetHeldSlotPacket(inventory.getSelectedSlot()));
+        subject.connection.send(new ClientboundSetCarriedItemPacket(inventory.selected));
     }
 
     private void useRangedWeapon(long now) {

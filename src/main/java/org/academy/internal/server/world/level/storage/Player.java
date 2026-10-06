@@ -138,9 +138,8 @@ public final class Player {
     private static int resolveMaxSkillLevel(String skillId) {
         var id = ResourceLocation.tryParse(skillId);
         if (id == null) return 3;
-        return Registries.SKILLS.get(id)
-                .map(reference -> reference.value().getMaxSkillLevel())
-                .orElse(3);
+        var skill = Registries.SKILLS.get(id);
+        return skill == null ? 3 : skill.getMaxSkillLevel();
     }
 
     public void markDirty() {

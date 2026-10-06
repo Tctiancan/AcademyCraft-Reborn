@@ -165,11 +165,10 @@ public final class AbilitySystemServer {
         if (skillId == null) {
             return new StartSkillDevPacket.Response(false, "Invalid skill id");
         }
-        var skillRef = Registries.SKILLS.get(skillId);
-        if (skillRef.isEmpty()) {
+        var skill = Registries.SKILLS.get(skillId);
+        if (skill == null) {
             return new StartSkillDevPacket.Response(false, "Unknown skill");
         }
-        var skill = skillRef.get().value();
         if (skill.isHidden()) {
             return new StartSkillDevPacket.Response(false, "Skill is not available yet");
         }
@@ -645,13 +644,12 @@ public final class AbilitySystemServer {
 
         playerData.getSkillDataMap().forEach((skillId, data) -> {
             if (!data.isEnabled()) return;
-            Registries.SKILLS.get(ResourceLocation.parse(skillId)).ifPresent(skillRef -> {
-                var skill = skillRef.value();
-                var maintenanceCost = skill.getMaintenanceCost(player);
-                if (maintenanceCost > 0) {
-                    tryPermanentOccupation(uuid, maintenanceCost, skill);
-                }
-            });
+            var skill = Registries.SKILLS.get(ResourceLocation.parse(skillId));
+            if (skill == null) return;
+            var maintenanceCost = skill.getMaintenanceCost(player);
+            if (maintenanceCost > 0) {
+                tryPermanentOccupation(uuid, maintenanceCost, skill);
+            }
         });
         LOGGER.info("player {} recovered from overload.", player.getName().getString());
     }
@@ -707,12 +705,11 @@ public final class AbilitySystemServer {
                 if (!data.isEnabled()) return;
                 var id = ResourceLocation.tryParse(skillId);
                 if (id == null) return;
-                Registries.SKILLS.get(id).ifPresent(skillReference -> {
-                    var skill = skillReference.value();
+                var skill = Registries.SKILLS.get(id);
+                if (skill == null) return;
                     if (LearningHelper.isSkillAvailableForCategory(abilityCategory, skill)) return;
                     skillDataManager.toggleSkill(uuid, skillId);
                     playerCPManager.releaseMaintenanceOccupation(uuid, skillId);
-                });
             });
         }
 
@@ -813,9 +810,7 @@ public final class AbilitySystemServer {
 
     public void removePlayerSkill(UUID uuid, String skillKey) {
         var skillId = ResourceLocation.tryParse(skillKey);
-        var skill = skillId == null ? null : Registries.SKILLS.get(skillId)
-                .map(reference -> reference.value())
-                .orElse(null);
+        var skill = skillId == null ? null : Registries.SKILLS.get(skillId);
         if (skill == null
                 || !isStateMutationCallerAllowed("removePlayerSkill", skill.getClass())) return;
         var wasLearned = getPlayerData(uuid).isSkillLearned(skillKey);
@@ -828,9 +823,7 @@ public final class AbilitySystemServer {
 
     public void toggleSkill(UUID uuid, String skillId) {
         var id = ResourceLocation.tryParse(skillId);
-        var skill = id == null ? null : Registries.SKILLS.get(id)
-                .map(reference -> reference.value())
-                .orElse(null);
+        var skill = id == null ? null : Registries.SKILLS.get(id);
         if (skill == null || !isStateMutationCallerAllowed("toggleSkill", skill.getClass())) return;
         skillDataManager.toggleSkill(uuid, skillId);
         var playerData = getPlayerData(uuid);
@@ -842,9 +835,7 @@ public final class AbilitySystemServer {
 
     public void releaseMaintenanceOccupation(UUID uuid, String skillId) {
         var id = ResourceLocation.tryParse(skillId);
-        var skill = id == null ? null : Registries.SKILLS.get(id)
-                .map(reference -> reference.value())
-                .orElse(null);
+        var skill = id == null ? null : Registries.SKILLS.get(id);
         if (skill != null
                 && !isStateMutationCallerAllowed("releaseMaintenanceOccupation", skill.getClass())) return;
         playerCPManager.releaseMaintenanceOccupation(uuid, skillId);

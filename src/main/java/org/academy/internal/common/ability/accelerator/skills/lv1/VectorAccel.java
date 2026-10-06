@@ -120,7 +120,7 @@ public final class VectorAccel extends Skill {
 
         public static void onChargeStart() {
             var player = Minecraft.getInstance().player;
-            if (player == null || currentContext != null || Minecraft.getInstance().gui.screen() != null) {
+            if (player == null || currentContext != null || Minecraft.getInstance().screen != null) {
                 return;
             }
             if (!AbilitySystemClient.canUseSkill(Skills.VECTOR_ACCEL.get())) return;
@@ -388,7 +388,7 @@ public final class VectorAccel extends Skill {
 
             @SubscribeEvent
             public void onLevelRender(LevelRenderEvent event) {
-                if (player.isRemoved() || Minecraft.getInstance().gui.screen() != null) {
+                if (player.isRemoved() || Minecraft.getInstance().screen != null) {
                     cleanup();
                     return;
                 }

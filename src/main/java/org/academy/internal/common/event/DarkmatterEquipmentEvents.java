@@ -18,8 +18,7 @@ import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.AnvilUpdateEvent;
-import net.neoforged.neoforge.event.enchanting.EnchantedBlockLootEvent;
-import net.neoforged.neoforge.event.enchanting.EnchantedEntityLootEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.entity.living.LivingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.entity.living.MobEffectEvent;
@@ -196,37 +195,36 @@ public final class DarkmatterEquipmentEvents {
         }
 
         @SubscribeEvent
-        public static void onEnchantedBlockLoot(EnchantedBlockLootEvent event) {
-            if (!event.getEnchantment().is(Enchantments.FORTUNE)) return;
-            var player = BlockLootPlayerContext.current();
-            if (player == null) return;
-            var held = player.getMainHandItem();
-            if (DarkmatterItemUtil.hasNativeItemEffects(held)) return;
-            var beta = 0.0f;
-            if (DarkmatterItemUtil.hasEnchantment(held, DarkmatterEnchantments.DARKMATTER)) {
-                beta += DarkmatterPhase.snapshot(player).betaPower();
-            }
-            if (DarkmatterItemUtil.hasCoating(held)) {
-                beta += DarkmatterItemUtil.coatingProfile(held).betaPower();
-            }
-            var extra = DarkmatterShaping.Server.toolFortune(beta)
-                    + DarkmatterItemUtil.modifierLevel(held,
-                    DarkmatterModifiers.LUCKY);
-            if (extra > 0) event.setEnchantmentLevel(event.getEnchantmentLevel() + extra);
-        }
+        public static void onEnchantmentLevel(GetEnchantmentLevelEvent event) {
+            var target = event.getTargetEnchant();
+            if (target == null) return;
+            var held = event.getStack();
+            if (held.isEmpty()) return;
 
-        @SubscribeEvent
-        public static void onEnchantedEntityLoot(EnchantedEntityLootEvent event) {
-            if (!event.getEnchantment().is(Enchantments.LOOTING)
-                    || !(event.getDamageSource().getEntity() instanceof ServerPlayer player)) return;
-            var held = player.getMainHandItem();
-            // Native equipment already exposes the aggregate level through its synchronized
-            // vanilla enchantment, so only ordinary coated targets need an event-side bonus.
-            if (DarkmatterItemUtil.hasNativeItemEffects(held)
-                    || !DarkmatterItemUtil.hasCoating(held)) return;
-            var extra = DarkmatterItemUtil.modifierLevel(
-                    held, DarkmatterModifiers.LUCKY);
-            if (extra > 0) event.setEnchantmentLevel(event.getEnchantmentLevel() + extra);
+            if (target.is(Enchantments.FORTUNE)) {
+                if (DarkmatterItemUtil.hasNativeItemEffects(held)) return;
+                var beta = DarkmatterItemUtil.effectBetaPower(held);
+                var extra = DarkmatterShaping.Server.toolFortune(beta)
+                        + DarkmatterItemUtil.modifierLevel(held,
+                        DarkmatterModifiers.LUCKY);
+                if (extra > 0) {
+                    var fortune = event.getLookup().getOrThrow(Enchantments.FORTUNE);
+                    event.getEnchantments().upgrade(
+                            fortune, event.getEnchantments().getLevel(fortune) + extra);
+                }
+            } else if (target.is(Enchantments.LOOTING)) {
+                // Native equipment already exposes the aggregate level through its synchronized
+                // vanilla enchantment, so only ordinary coated targets need an event-side bonus.
+                if (DarkmatterItemUtil.hasNativeItemEffects(held)
+                        || !DarkmatterItemUtil.hasCoating(held)) return;
+                var extra = DarkmatterItemUtil.modifierLevel(
+                        held, DarkmatterModifiers.LUCKY);
+                if (extra > 0) {
+                    var looting = event.getLookup().getOrThrow(Enchantments.LOOTING);
+                    event.getEnchantments().upgrade(
+                            looting, event.getEnchantments().getLevel(looting) + extra);
+                }
+            }
         }
 
         @SubscribeEvent
@@ -275,7 +273,7 @@ public final class DarkmatterEquipmentEvents {
         @SubscribeEvent
         public static void onDamageApplied(LivingDamageEvent.Post event) {
             if (!(event.getEntity() instanceof ServerPlayer player)
-                    || !(event.getHealthDamage() > 0.0f)) return;
+                    || !(event.getNewDamage() > 0.0f)) return;
             var phase = DarkmatterPhase.snapshot(player);
             if (!(phase.activeGammaPower() > 0.0f) || !hasOperationalNativeArmorSet(player)) return;
             var now = player.level().getGameTime();
@@ -307,7 +305,7 @@ public final class DarkmatterEquipmentEvents {
             if (result.isEmpty()) return;
             event.setOutput(result);
             event.setMaterialCost(1);
-            event.setXpCost(3);
+            event.setCost(3);
         }
 
         @SubscribeEvent
@@ -318,7 +316,7 @@ public final class DarkmatterEquipmentEvents {
                     ? shaping.getEffectiveProficiencyMilestone(player) : 0;
             var lifetime = integrityLifetimeTicks(milestone);
             var changed = false;
-            for (var stack : player.getInventory().getNonEquipmentItems()) {
+            for (var stack : player.getInventory().items) {
                 changed |= tickNativeStack(player, stack, lifetime);
             }
             for (var slot : new EquipmentSlot[]{

@@ -254,10 +254,10 @@ public final class PropsManager implements AbilitySubsystem {
 
         for (var entry : structures.entrySet()) {
             var structure = entry.getKey();
-            var id = registry.getKey(structure);
+            var id = registry.getResourceKey(structure).map(key -> key.location()).orElse(null);
             if (id == null) continue;
             for (var reference : entry.getValue()) {
-                var chunkPos = ChunkPos.unpack(reference);
+                var chunkPos = new ChunkPos(reference);
                 var key = level.dimension().location() + "|" + id + "|" + chunkPos.x + "," + chunkPos.z;
                 if (data.hasVisitedStructure(key)) continue;
                 // StructureManager.getStructureAt synchronously loads referenced start chunks.
@@ -290,7 +290,7 @@ public final class PropsManager implements AbilitySubsystem {
             var healthBefore = popHealthBeforeDamage(victim);
             var healthLost = PropsAcquisition.healthLost(
                     healthBefore == null ? victim.getMaxHealth() : healthBefore,
-                    event.getHealthDamage()
+                    event.getNewDamage()
             );
             if (healthLost > 0.0) {
                 award(victim, AbilityFactor.ENDURANCE, healthLost * 0.5, false);
@@ -299,7 +299,7 @@ public final class PropsManager implements AbilitySubsystem {
 
         var attacker = resolvePlayer(event.getSource());
         if (attacker == null || attacker == event.getEntity()) return;
-        var reward = PropsAcquisition.damageReward(event.getHealthDamage());
+        var reward = PropsAcquisition.damageReward(event.getNewDamage());
         if (reward > 0.0) {
             award(attacker, AbilityFactor.MUSCLE_STRENGTH, reward, false);
         }

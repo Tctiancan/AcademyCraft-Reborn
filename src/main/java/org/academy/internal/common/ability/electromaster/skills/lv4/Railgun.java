@@ -249,7 +249,7 @@ public final class Railgun extends Skill {
         }
 
         public static void start() {
-            if (Minecraft.getInstance().gui.screen() != null) return;
+            if (Minecraft.getInstance().screen != null) return;
             if (!AbilitySystemClient.canUseSkill(Skills.RAILGUN.get())) return;
             send(StartPacket.INSTANCE);
         }

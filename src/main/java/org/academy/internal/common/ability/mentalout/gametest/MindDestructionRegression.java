@@ -97,7 +97,7 @@ final class MindDestructionRegression {
 
         MentalControlApi.restoreMentalProtection(immune);
         immune.setHealth(5);
-        immune.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 100, 4));
+        immune.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 100, 4));
         try {
             effect = start(controller, immune, false);
             pulse(server, effect);
@@ -105,7 +105,7 @@ final class MindDestructionRegression {
             helper.assertTrue(!MentalImmunity.isSuppressed(immune) && effects().containsValue(effect),
                     "Cancelled damage must neither strip nor terminate the cast");
         } finally {
-            immune.removeEffect(MobEffects.RESISTANCE);
+            immune.removeEffect(MobEffects.DAMAGE_RESISTANCE);
             MindDestruction.releaseTarget(immune.getUUID());
         }
 

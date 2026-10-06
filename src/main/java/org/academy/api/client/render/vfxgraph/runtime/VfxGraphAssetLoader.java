@@ -7,7 +7,7 @@ import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.AddClientReloadListenersEvent;
+import net.neoforged.neoforge.client.event.RegisterClientReloadListenersEvent;
 import org.academy.AcademyCraft;
 import org.slf4j.Logger;
 
@@ -37,7 +37,7 @@ public final class VfxGraphAssetLoader implements PreparableReloadListener {
     }
 
     @SubscribeEvent
-    public static void onAddReloadListener(AddClientReloadListenersEvent event) {
+    public static void onAddReloadListener(RegisterClientReloadListenersEvent event) {
         event.addListener(AcademyCraft.academy("vfx_graph_assets"), INSTANCE);
     }
 

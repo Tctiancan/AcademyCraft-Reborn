@@ -3,7 +3,7 @@ package org.academy.mixin.common;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.animal.IronGolem;
-import net.minecraft.world.entity.monster.AbstractCubeMob;
+import net.minecraft.world.entity.monster.Slime;
 import net.minecraft.world.entity.player.Player;
 import org.academy.api.common.entitycontrol.AttackDecision;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
@@ -13,7 +13,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(AbstractCubeMob.class)
+@Mixin(Slime.class)
 public abstract class MixinAbstractCubeMob {
     @Shadow
     protected abstract boolean isDealsDamage();
@@ -25,7 +25,7 @@ public abstract class MixinAbstractCubeMob {
     private void academy$damageAuthorizedMentalControlTarget(Entity entity, CallbackInfo ci) {
         if (!isDealsDamage() || !(entity instanceof LivingEntity target)
                 || entity instanceof Player || entity instanceof IronGolem) return;
-        var cubeMob = (AbstractCubeMob) (Object) this;
+        var cubeMob = (Slime) (Object) this;
         if (MentalControlRuntime.attackDecision(cubeMob, target) == AttackDecision.ALLOW) {
             dealDamage(target);
         }

@@ -46,7 +46,7 @@ public final class SkyStrikeClientSmoke {
         if (!Boolean.getBoolean("academy.skyStrikeSmoke")) return;
         var mc = Minecraft.getInstance();
         if (mc.level == null) {
-            if (!openedWorld && mc.gui.screen() instanceof TitleScreen) {
+            if (!openedWorld && mc.screen instanceof TitleScreen) {
                 openedWorld = true;
                 System.out.println("[sky-strike-smoke] opening isolated test world");
                 mc.createWorldOpenFlows().openWorld("sky_strike", mc::stop);

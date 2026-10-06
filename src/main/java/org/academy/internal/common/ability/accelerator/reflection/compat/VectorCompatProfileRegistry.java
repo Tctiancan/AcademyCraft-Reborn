@@ -1,6 +1,8 @@
 package org.academy.internal.common.ability.accelerator.reflection.compat;
 
-import net.minecraft.resources.FileToIdConverter;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimpleJsonResourceReloadListener;
@@ -8,7 +10,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import net.minecraft.world.damagesource.DamageSource;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.AddServerReloadListenersEvent;
+import net.neoforged.neoforge.event.AddReloadListenerEvent;
 import org.academy.AcademyCraft;
 
 import java.util.Comparator;
@@ -16,22 +18,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
-public final class VectorCompatProfileRegistry extends SimpleJsonResourceReloadListener<VectorCompatProfile> {
+@EventBusSubscriber(modid = AcademyCraft.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+public final class VectorCompatProfileRegistry extends SimpleJsonResourceReloadListener {
     private static final VectorCompatProfileRegistry INSTANCE = new VectorCompatProfileRegistry();
     private static volatile List<ProfileEntry> profiles = List.of();
     private static volatile VectorCompatibilityMode mode = VectorCompatibilityMode.SAFE;
 
     private VectorCompatProfileRegistry() {
-        super(
-                VectorCompatProfile.CODEC,
-                FileToIdConverter.json("academy_vector_compat")
-        );
+        super(new Gson(), "academy_vector_compat");
     }
 
     @SubscribeEvent
-    public static void registerReloadListener(AddServerReloadListenersEvent event) {
-        event.addListener(AcademyCraft.academy("vector_compat_profiles"), INSTANCE);
+    public static void registerReloadListener(AddReloadListenerEvent event) {
+        event.addListener(INSTANCE);
     }
 
     public static Optional<ProfileEntry> find(DamageSource source) {
@@ -54,12 +53,18 @@ public final class VectorCompatProfileRegistry extends SimpleJsonResourceReloadL
 
     @Override
     protected void apply(
-            Map<ResourceLocation, VectorCompatProfile> prepared,
+            Map<ResourceLocation, JsonElement> prepared,
             ResourceManager resourceManager,
             ProfilerFiller profiler
     ) {
         profiles = prepared.entrySet().stream()
-                .map(entry -> new ProfileEntry(entry.getKey(), entry.getValue()))
+                .map(entry -> VectorCompatProfile.CODEC
+                        .parse(JsonOps.INSTANCE, entry.getValue())
+                        .resultOrPartial(error -> AcademyCraft.LOGGER.error(
+                                "Failed to parse vector compatibility profile {}: {}",
+                                entry.getKey(), error))
+                        .map(profile -> new ProfileEntry(entry.getKey(), profile)))
+                .flatMap(Optional::stream)
                 .sorted(Comparator
                         .<ProfileEntry>comparingInt(entry -> entry.profile().deny() ? 1 : 0)
                         .reversed()

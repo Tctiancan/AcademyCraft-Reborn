@@ -316,7 +316,7 @@ public final class DarkmatterResourceGameTests {
                     player.invulnerableTime = 0;
                     var attacker = helper.spawn(EntityType.ZOMBIE, 2, 2, 1);
                     var source = helper.getLevel().damageSources().mobAttack(attacker);
-                    helper.assertTrue(!player.isInvulnerableTo(helper.getLevel(), source),
+                    helper.assertTrue(!player.isInvulnerableTo(source),
                             "Embedded player remained invulnerable to mob damage; creative="
                                     + player.isCreative() + ", spectator=" + player.isSpectator());
                     helper.assertTrue(player.hurt(
@@ -764,7 +764,7 @@ public final class DarkmatterResourceGameTests {
                 behind.setNoAi(true); behind.setNoGravity(true);
                 float before = target.getHealth(), behindBefore = behind.getHealth();
                 var feather = new DarkmatterFeatherProjectile(
-                        org.academy.internal.common.world.entity.EntityType.DARKMATTER_FEATHER_PROJECTILE.get(), helper.getLevel());
+                        org.academy.internal.common.world.entity.EntityTypes.DARKMATTER_FEATHER_PROJECTILE.get(), helper.getLevel());
                 feather.configure(player, target, new Vec3(1, 0, 0), 1, 0, true);
                 feather.setPos(target.getBoundingBox().getCenter().add(-3, 0, 0));
                 feather.setDeltaMovement(new Vec3(1.65, 0, 0));

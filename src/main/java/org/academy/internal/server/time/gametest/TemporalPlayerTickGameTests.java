@@ -94,7 +94,6 @@ public final class TemporalPlayerTickGameTests {
             server.getConnection().getConnections().remove(connection);
             throw throwable;
         }
-        player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         var position = helper.absoluteVec(new Vec3(2.5D, 2.0D, 2.5D));
         player.moveTo(position.x, position.y, position.z, 0.0F, 0.0F);
@@ -189,9 +188,9 @@ public final class TemporalPlayerTickGameTests {
             var dirt = new ItemStack(Items.DIRT);
             controlled.getInventory().setItem(0, stick);
             controlled.getInventory().setItem(1, dirt);
-            controlled.getCooldowns().addCooldown(stick, 300);
+            controlled.getCooldowns().addCooldown(stick.getItem(), 300);
             AbilityHitEffects.addElectricalCharge(controlled, 5);
-            helper.assertTrue(controlled.getCooldowns().isOnCooldown(dirt),
+            helper.assertTrue(controlled.getCooldowns().isOnCooldown(dirt.getItem()),
                     "Paralysis must cool down carried items");
             var randomDuration = org.academy.api.common.damage.AbilityHitEffects.electricalInterruptionTicks(controlled);
             helper.assertTrue(org.academy.internal.common.ability.mentalout.control.MentalControlRuntime.isFrozen(controlled),
@@ -204,7 +203,7 @@ public final class TemporalPlayerTickGameTests {
             helper.runAfterDelay(10L, () -> guarded(() -> {
                 helper.assertTrue(!AbilityHitEffects.isParalyzed(controlled),
                         "Paralysis must end after ten physical ticks even at two-thirds speed");
-                helper.assertTrue(controlled.getCooldowns().isOnCooldown(dirt) == (randomDuration > 10),
+                helper.assertTrue(controlled.getCooldowns().isOnCooldown(dirt.getItem()) == (randomDuration > 10),
                         "Extra cooldown must follow its own duration after base paralysis ends");
                 helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick),
                         "Ending paralysis must preserve a longer pre-existing cooldown");
@@ -212,7 +211,7 @@ public final class TemporalPlayerTickGameTests {
             helper.runAfterDelay(randomDuration + 1L, () -> guarded(() -> {
                 helper.assertTrue(!org.academy.internal.common.ability.mentalout.control.MentalControlRuntime.isFrozen(controlled),
                         "Player action freeze must expire on physical time");
-                helper.assertTrue(!controlled.getCooldowns().isOnCooldown(dirt),
+                helper.assertTrue(!controlled.getCooldowns().isOnCooldown(dirt.getItem()),
                         "Extra cooldown must expire on physical time despite player slowdown");
                 helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick),
                         "Extra cooldown expiry must preserve a longer existing cooldown");
@@ -261,7 +260,7 @@ public final class TemporalPlayerTickGameTests {
             helper.assertTrue(controlled.connection.isAcceptingMessages(),
                     "Reaction slowdown stopped network transport");
             var remaining = controlled.getCooldowns().getCooldownPercent(
-                    new ItemStack(Items.STICK), 0);
+                    Items.STICK, 0);
             helper.assertTrue(Math.abs(remaining - 1.0f / 3.0f) < 0.001f,
                     "Item cooldown did not follow the player's logical clock");
             reactionA.close();

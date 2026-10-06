@@ -75,7 +75,6 @@ public final class DamagePenetrationGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
         player.setGameMode(GameType.SURVIVAL);
         return player;
     }
@@ -125,12 +124,12 @@ public final class DamagePenetrationGameTests {
             closeTo(helper, target.getHealth(), melt ? 1000 : 980, label + " armor/enchantment bypass");
             closeTo(helper, target.getAbsorptionAmount(), melt ? 30 : 50, label + " absorption policy");
             if (melt) {
-                helper.assertTrue(!target.hasEffect(MobEffects.NAUSEA),
+                helper.assertTrue(!target.hasEffect(MobEffects.CONFUSION),
                         "Absorption-only melt damage must not apply radiation");
             }
 
             reset(target, true, 0);
-            target.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 200, 0));
+            target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 0));
             helper.assertTrue(SkillDamageUtil.apply(attacker, target, hit.skill, hit.type, 20),
                     label + " public direct entry must hit");
             closeTo(helper, target.getHealth(), melt ? 980 : 984, label + " resistance potion policy");
@@ -138,7 +137,7 @@ public final class DamagePenetrationGameTests {
             if (target instanceof ServerPlayer defender) {
                 reset(target, true, 50);
                 defender.getAttribute(PlayerAttributes.TRUE_RESISTANCE).setBaseValue(2);
-                target.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 200, 0));
+                target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 0));
                 if (melt) target.setAbsorptionAmount(0);
                 helper.assertTrue(SkillDamageUtil.apply(attacker, target, hit.skill, hit.type, 20, 10),
                         label + " composed damage must hit");
@@ -189,7 +188,7 @@ public final class DamagePenetrationGameTests {
                     label + " retains Protection enchantment");
 
             reset(target, false, 0);
-            target.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 200, 0));
+            target.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 200, 0));
             if (target instanceof ServerPlayer defender) {
                 defender.getAttribute(PlayerAttributes.TRUE_RESISTANCE).setBaseValue(2);
             }
@@ -312,9 +311,10 @@ public final class DamagePenetrationGameTests {
                 .getAcademyCraftServer().getAbilityConfig().electromaster;
         var previousEnabled = settings.paralysisDamageEnabled;
         var registry = net.minecraft.core.registries.BuiltInRegistries.ENTITY_TYPE;
+        var registryLookup = (net.minecraft.core.HolderLookup.RegistryLookup<net.minecraft.world.entity.EntityType<?>>) registry;
         var originalTags = new java.util.HashMap<net.minecraft.tags.TagKey<net.minecraft.world.entity.EntityType<?>>,
                 List<Holder<net.minecraft.world.entity.EntityType<?>>>>();
-        registry.listTags().forEach(tag -> originalTags.put(tag.key(), tag.stream().toList()));
+        registryLookup.listTags().forEach(tag -> originalTags.put(tag.key(), tag.stream().toList()));
         try {
             target.setInvulnerable(true);
             for (var enabled : new boolean[]{true, false}) {
@@ -355,7 +355,7 @@ public final class DamagePenetrationGameTests {
                     org.academy.api.common.entitycontrol.MentalControlTags.IMMUNE, List.of()));
             immuneTypes.add(EntityType.COW.builtInRegistryHolder());
             testTags.put(org.academy.api.common.entitycontrol.MentalControlTags.IMMUNE, immuneTypes);
-            registry.prepareTagReload(new net.minecraft.tags.TagLoader.LoadResult<>(registry.key(), testTags)).apply();
+            registry.bindTags(testTags);
             helper.assertTrue(org.academy.internal.common.ability.mentalout.control.MentalControlRuntime
                             .isProtectedTarget(target),
                     "Fixture must be immune to mental control");

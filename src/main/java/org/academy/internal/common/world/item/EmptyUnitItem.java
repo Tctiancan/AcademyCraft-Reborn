@@ -4,8 +4,10 @@ import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -19,14 +21,14 @@ public final class EmptyUnitItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
         var hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.SOURCE_ONLY);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return InteractionResult.PASS;
+            return InteractionResultHolder.pass(stack);
         }
         if (hitResult.getType() != HitResult.Type.BLOCK) {
-            return InteractionResult.PASS;
+            return InteractionResultHolder.pass(stack);
         }
 
         var pos = hitResult.getBlockPos();
@@ -34,12 +36,12 @@ public final class EmptyUnitItem extends Item {
         if (!level.mayInteract(player, pos)
                 || !player.mayUseItemAt(pos, hitResult.getDirection(), stack)
                 || !(state.getBlock() instanceof ImagPhaseLiquidBlock liquidBlock)) {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(stack);
         }
 
         var filled = liquidBlock.pickupWithEmptyUnit(level, pos, state);
         if (filled.isEmpty()) {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(stack);
         }
 
         liquidBlock.getPickupSound(state).ifPresent(sound -> player.playSound(sound, 1.0F, 1.0F));
@@ -50,6 +52,6 @@ public final class EmptyUnitItem extends Item {
         if (!level.isClientSide() && player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.FILLED_BUCKET.trigger(serverPlayer, filled);
         }
-        return InteractionResult.SUCCESS.heldItemTransformedTo(result);
+        return InteractionResultHolder.sided(InteractionResult.SUCCESS, result);
     }
 }

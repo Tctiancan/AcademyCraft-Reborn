@@ -35,11 +35,11 @@ public final class MagneticWeaponAttackEvents {
 
     @SubscribeEvent
     public static void applyMagnetizedSlowness(LivingDamageEvent.Post event) {
-        if (event.getHealthDamage() <= 0.0f
+        if (event.getNewDamage() <= 0.0f
                 || !(event.getSource().getEntity() instanceof ServerPlayer attacker)
                 || event.getSource().getDirectEntity() != attacker
                 || !MagneticWeaponEnchantments.isMagnetized(attacker.getMainHandItem())) return;
         event.getEntity().addEffect(new MobEffectInstance(
-                MobEffects.SLOWNESS, 40, 0, false, true, true));
+                MobEffects.MOVEMENT_SLOWDOWN, 40, 0, false, true, true));
     }
 }

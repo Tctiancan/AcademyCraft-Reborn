@@ -223,9 +223,8 @@ public class PlayerCPManager implements AbilitySubsystem {
             dirty |= restoreAcademyMaxCp(playerData, debugMaxCpOverrides.get(player.getUUID()));
             dirty |= releaseInvalidOccupations(cpData, occupations, skillId -> {
                 var id = ResourceLocation.tryParse(skillId);
-                return id != null && Registries.SKILLS.get(id)
-                        .map(reference -> LearningHelper.isSkillAvailableForCategory(category, reference.value()))
-                        .orElse(false);
+                var skill = id == null ? null : Registries.SKILLS.get(id);
+                return skill != null && LearningHelper.isSkillAvailableForCategory(category, skill);
             }, getMaxCP(player.getUUID()));
         }
 
@@ -932,9 +931,9 @@ public class PlayerCPManager implements AbilitySubsystem {
         var categoryId = playerData.getAbilityCategory();
 
         var categoryRef = Registries.ABILITY_CATEGORIES.get(ResourceLocation.parse(categoryId));
-        if (categoryRef.isEmpty()) return 1f;
+        if (categoryRef == null) return 1f;
 
-        return LearningHelper.getAbilityExpRequirement(categoryRef.get().value(), getLevel(uuid));
+        return LearningHelper.getAbilityExpRequirement(categoryRef, getLevel(uuid));
     }
 
     public boolean canLevelUp(UUID uuid) {
@@ -952,8 +951,8 @@ public class PlayerCPManager implements AbilitySubsystem {
             var mul = 1.0f;
             var categoryId = playerData.getAbilityCategory();
             var categoryRef = Registries.ABILITY_CATEGORIES.get(ResourceLocation.parse(categoryId));
-            if (categoryRef.isPresent()) {
-                mul = categoryRef.get().value().getProgIncrRate();
+            if (categoryRef != null) {
+                mul = categoryRef.getProgIncrRate();
             }
             cpData.setAbilityExp(Math.min(getAbilityExpMax(uuid), cpData.getAbilityExp() + amount * mul));
         });
@@ -1182,7 +1181,7 @@ public class PlayerCPManager implements AbilitySubsystem {
         for (var entry : playerData.getSkillDataMap().entrySet()) {
             var id = ResourceLocation.tryParse(entry.getKey());
             if (id == null) continue;
-            var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
+            var skill = Registries.SKILLS.get(id);
             if (skill == null || !LearningHelper.isSkillAvailableForCategory(category, skill)) continue;
             skillBonus += CommonSkillBonuses.reachedProficiencyThresholds(
                     entry.getValue().getProficiency()

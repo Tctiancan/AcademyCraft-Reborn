@@ -3,8 +3,10 @@ package org.academy.internal.common.ability.teleport.chunk;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ChunkResult;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.util.Unit;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.chunk.ChunkStatus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
@@ -117,10 +119,13 @@ public final class ChunkTicketLeaseManager {
         CompletableFuture<Void> loading;
         try {
             for (var i = 0; i < lease.chunks.size(); i++) {
+                var pos = lease.chunks.get(i);
                 // Await the same radius ticket acquired above. Using radius zero here creates a second,
                 // untracked NO_TIMEOUT ticket which release(owner) can never remove.
-                futures[i] = level.getChunkSource()
-                        .addTicketAndLoadWithRadius(ChunkLeapTickets.MAP_VIEW.get(), lease.chunks.get(i), lease.radius);
+                level.getChunkSource()
+                        .addRegionTicket(ChunkLeapTickets.MAP_VIEW.get(), pos, lease.radius, Unit.INSTANCE);
+                futures[i] = CompletableFuture.completedFuture(
+                        ChunkResult.of(level.getChunk(pos.x, pos.z, ChunkStatus.FULL, true)));
             }
             loading = awaitLoads(futures);
         } catch (RuntimeException exception) {
@@ -237,14 +242,14 @@ public final class ChunkTicketLeaseManager {
             for (var posLong : List.copyOf(lease.held)) {
                 if (removals <= 0) break;
                 if (desired.contains(posLong)) continue;
-                releaseTicket(lease.level, ChunkPos.unpack(posLong), 0);
+                releaseTicket(lease.level, new ChunkPos(posLong), 0);
                 lease.held.remove(posLong);
                 removals--;
             }
             for (var posLong : desired) {
                 if (additions <= 0) break;
                 if (!lease.held.add(posLong)) continue;
-                acquireTicket(lease.level, ChunkPos.unpack(posLong), 0);
+                acquireTicket(lease.level, new ChunkPos(posLong), 0);
                 additions--;
             }
             // Cancelled and fully drained:
@@ -258,10 +263,10 @@ public final class ChunkTicketLeaseManager {
     // ---------------------------------------------------------------- shared bookkeeping
 
     private static void acquireTicket(ServerLevel level, ChunkPos pos, int radius) {
-        var key = new ChunkKey(level, pos.pack(), radius);
+        var key = new ChunkKey(level, pos.toLong(), radius);
         var count = REFS.get(key);
         if (count == null) {
-            level.getChunkSource().addTicketWithRadius(ChunkLeapTickets.MAP_VIEW.get(), pos, radius);
+            level.getChunkSource().addRegionTicket(ChunkLeapTickets.MAP_VIEW.get(), pos, radius, Unit.INSTANCE);
             REFS.put(key, 1);
         } else {
             REFS.put(key, count + 1);
@@ -269,7 +274,7 @@ public final class ChunkTicketLeaseManager {
     }
 
     private static void releaseTicket(ServerLevel level, ChunkPos pos, int radius) {
-        var key = new ChunkKey(level, pos.pack(), radius);
+        var key = new ChunkKey(level, pos.toLong(), radius);
         var count = REFS.get(key);
         if (count == null) return;
         if (count > 1) {
@@ -277,7 +282,7 @@ public final class ChunkTicketLeaseManager {
             return;
         }
         REFS.remove(key);
-        level.getChunkSource().removeTicketWithRadius(ChunkLeapTickets.MAP_VIEW.get(), pos, radius);
+        level.getChunkSource().removeRegionTicket(ChunkLeapTickets.MAP_VIEW.get(), pos, radius, Unit.INSTANCE);
     }
 
     public static synchronized void releaseAll() {
@@ -288,7 +293,7 @@ public final class ChunkTicketLeaseManager {
         // Shutdown path: drop every view ticket immediately, budget or not.
         for (var lease : VIEW_LEASES.values()) {
             for (var posLong : List.copyOf(lease.held)) {
-                releaseTicket(lease.level, ChunkPos.unpack(posLong), 0);
+                releaseTicket(lease.level, new ChunkPos(posLong), 0);
                 lease.held.remove(posLong);
             }
         }

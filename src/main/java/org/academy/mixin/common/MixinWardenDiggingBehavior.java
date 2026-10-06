@@ -3,7 +3,7 @@ package org.academy.mixin.common;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.behavior.warden.Digging;
-import net.minecraft.world.entity.monster.Warden;
+import net.minecraft.world.entity.monster.warden.Warden;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

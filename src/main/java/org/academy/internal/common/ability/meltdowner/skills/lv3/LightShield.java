@@ -320,7 +320,7 @@ public final class LightShield extends Skill {
                 end();
                 return;
             }
-            player.addEffect(new MobEffectInstance(MobEffects.RESISTANCE, 10, 1, false, false, true));
+            player.addEffect(new MobEffectInstance(MobEffects.DAMAGE_RESISTANCE, 10, 1, false, false, true));
             destroyIncomingProjectiles();
             var abilityPower = system.getPlayerAbilityPowerMultiplier(player.getUUID());
             var playerMultiplier = system.getPlayerDamageMultiplier(player.getUUID());

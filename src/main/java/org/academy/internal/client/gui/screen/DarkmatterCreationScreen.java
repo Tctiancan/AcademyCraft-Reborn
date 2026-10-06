@@ -94,7 +94,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
     public static void acceptSnapshot(DarkmatterCreation.EditorSnapshotPacket packet) {
         latest = packet;
         Minecraft.getInstance().execute(() -> {
-            if (Minecraft.getInstance().gui.screen() instanceof DarkmatterCreationScreen screen) {
+            if (Minecraft.getInstance().screen instanceof DarkmatterCreationScreen screen) {
                 screen.applySnapshot(packet);
             }
         });
@@ -111,7 +111,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
             var next = new DarkmatterCreation.EditorSnapshotPacket(packet.revision,
                     current.abilityLevel, current.selectedSlot, current.blueprints, packet.roster);
             latest = next;
-            if (Minecraft.getInstance().gui.screen() instanceof DarkmatterCreationScreen screen) {
+            if (Minecraft.getInstance().screen instanceof DarkmatterCreationScreen screen) {
                 screen.applySnapshot(next);
             }
         });
@@ -122,7 +122,7 @@ public final class DarkmatterCreationScreen extends UiScreen {
             var minecraft = Minecraft.getInstance();
             var message = Component.translatable(packet.result.translationKey());
             if (minecraft.player != null) minecraft.player.displayClientMessage(message, true);
-            if (minecraft.gui.screen() instanceof DarkmatterCreationScreen screen) {
+            if (minecraft.screen instanceof DarkmatterCreationScreen screen) {
                 screen.summonStatus = message.getString();
                 if (packet.result == DarkmatterCreation.SummonResult.SUMMONED) {
                     screen.tab = Tab.SUMMONED;

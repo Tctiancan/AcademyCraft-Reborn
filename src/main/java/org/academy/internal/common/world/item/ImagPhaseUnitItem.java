@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
@@ -23,27 +24,27 @@ public final class ImagPhaseUnitItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var stack = player.getItemInHand(hand);
         var hitResult = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         if (hitResult.getType() == HitResult.Type.MISS) {
-            return InteractionResult.PASS;
+            return InteractionResultHolder.pass(stack);
         }
         if (hitResult.getType() != HitResult.Type.BLOCK) {
-            return InteractionResult.PASS;
+            return InteractionResultHolder.pass(stack);
         }
 
         var direction = hitResult.getDirection();
         var pos = hitResult.getBlockPos().relative(direction);
         if (!level.mayInteract(player, pos) || !player.mayUseItemAt(pos, direction, stack)) {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(stack);
         }
         if (!level.getBlockState(pos).canBeReplaced(Fluids.IMAG_PHASE.get())) {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(stack);
         }
 
         if (!level.setBlock(pos, Fluids.IMAG_PHASE.get().defaultFluidState().createLegacyBlock(), 11)) {
-            return InteractionResult.FAIL;
+            return InteractionResultHolder.fail(stack);
         }
         if (player instanceof ServerPlayer serverPlayer) {
             CriteriaTriggers.PLACED_BLOCK.trigger(serverPlayer, pos, stack);
@@ -55,6 +56,6 @@ public final class ImagPhaseUnitItem extends Item {
         var result = player.hasInfiniteMaterials()
                 ? stack
                 : ItemUtils.createFilledResult(stack, player, new ItemStack(Items.EMPTY_UNIT.get()));
-        return InteractionResult.SUCCESS.heldItemTransformedTo(result);
+        return InteractionResultHolder.sided(InteractionResult.SUCCESS, result);
     }
 }

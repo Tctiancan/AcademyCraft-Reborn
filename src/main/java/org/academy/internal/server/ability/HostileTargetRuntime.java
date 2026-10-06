@@ -73,7 +73,7 @@ public final class HostileTargetRuntime {
 
     @SubscribeEvent
     public static void onDamage(LivingDamageEvent.Post event) {
-        if (!(event.getInflictedDamage() > 0.0f) || !Float.isFinite(event.getInflictedDamage())) return;
+        if (!(event.getNewDamage() > 0.0f) || !Float.isFinite(event.getNewDamage())) return;
         var attacker = PvpSetting.resolveAttacker(event.getSource());
         if (attacker == null || MagneticWeaponAttackContext.shouldSuppressExhaustion(attacker)
                 || !isIntentional(event.getSource())) return;

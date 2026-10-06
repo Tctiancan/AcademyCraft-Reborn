@@ -105,15 +105,15 @@ public final class ChunkLeap extends Skill {
         private static void openMap() {
             var minecraft = Minecraft.getInstance();
             if (minecraft.player == null) return;
-            if (minecraft.gui.screen() instanceof
+            if (minecraft.screen instanceof
                     org.academy.internal.client.gui.screen.ChunkLeapScreen) {
-                minecraft.gui.setScreen(null);
+                minecraft.setScreen(null);
                 return;
             }
             if (ClientUtil.hasScreen()) return;
             if (!AbilitySystemClient.canUseSkill(Skills.CHUNK_LEAP.get())) return;
             ChunkMapClientState.clear();
-            minecraft.gui.setScreen(new org.academy.internal.client.gui.screen.ChunkLeapScreen());
+            minecraft.setScreen(new org.academy.internal.client.gui.screen.ChunkLeapScreen());
         }
     }
 }

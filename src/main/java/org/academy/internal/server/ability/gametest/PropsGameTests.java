@@ -3,6 +3,7 @@ package org.academy.internal.server.ability.gametest;
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
@@ -19,9 +20,10 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.enchantment.Enchantments;
+import net.minecraft.world.item.enchantment.ItemEnchantments;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.neoforged.neoforge.event.enchanting.EnchantedEntityLootEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.gametest.GameTestHolder;
 import net.neoforged.neoforge.network.registration.NetworkRegistry;
 import org.academy.AcademyCraft;
@@ -101,7 +103,7 @@ public final class PropsGameTests {
                 case "damage" -> damage(helper, player);
                 case "ability_loot" -> abilityLoot(helper, player);
                 case "structures" -> structures(helper, player);
-                case "loaded_devices" -> loadedDevices(helper);
+                case "loaded_devices" -> runLoadedDevicesScenario(helper);
                 default -> throw new IllegalArgumentException(scenario);
             }
             helper.succeed();
@@ -110,7 +112,7 @@ public final class PropsGameTests {
         }
     }
 
-    private static void loadedDevices(GameTestHelper helper) {
+    private static void runLoadedDevicesScenario(GameTestHelper helper) {
         var level = helper.getLevel();
         var pos = helper.absolutePos(new BlockPos(4, 2, 4));
         var missing = pos.offset(16_384, 0, 16_384);
@@ -180,8 +182,8 @@ public final class PropsGameTests {
                         ResourceLocation.withDefaultNamespace("buried_treasure"))).value();
         var ownPos = chunk.getPos();
         var missingPos = new net.minecraft.world.level.ChunkPos(ownPos.x + 1_024, ownPos.z + 1_024);
-        var ownReference = net.minecraft.world.level.ChunkPos.pack(ownPos.x, ownPos.z);
-        var missingReference = net.minecraft.world.level.ChunkPos.pack(missingPos.x, missingPos.z);
+        var ownReference = net.minecraft.world.level.ChunkPos.asLong(ownPos.x, ownPos.z);
+        var missingReference = net.minecraft.world.level.ChunkPos.asLong(missingPos.x, missingPos.z);
         var keyPrefix = level.dimension().location() + "|minecraft:buried_treasure|";
         var system = AbilitySystemServer.getSystem(player);
         var manager = system.getPropsManager();
@@ -265,7 +267,7 @@ public final class PropsGameTests {
         PlayerAttributeRuntime.syncPlayer(player);
         close(helper, player.getAttributeValue(Attributes.SAFE_FALL_DISTANCE), 6.0,
                 "Dexterity extends the safe fall distance with its jump height");
-        helper.assertTrue(!player.causeFallDamage(5.1, 1.0f, player.damageSources().fall()),
+        helper.assertTrue(!player.causeFallDamage(5.1f, 1.0f, player.damageSources().fall()),
                 "Landing from a full dexterity jump must not cause fall damage");
         player.getAttribute(PlayerAttributes.ENDURANCE).setBaseValue(50.0);
         PlayerAttributeRuntime.syncPlayer(player);
@@ -363,17 +365,22 @@ public final class PropsGameTests {
                     "Direct destruction and secondary drops inherit the caster");
         }
         player.getAttribute(PlayerAttributes.PERCEPTION).setBaseValue(100.0);
-        var looting = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(Enchantments.LOOTING);
-        var source = new DamageSource(level.registryAccess()
-                .lookupOrThrow(Registries.DAMAGE_TYPE).getOrThrow(DamageTypes.ELECTRO_DAMAGE), player);
+        var lootLookup = level.registryAccess().lookupOrThrow(Registries.ENCHANTMENT);
+        var looting = lootLookup.getOrThrow(Enchantments.LOOTING);
         player.getRandom().setSeed(42);
         var extras = 0;
-        for (var sample = 0; sample < 1_000; sample++) {
-            var event = new EnchantedEntityLootEvent(subject, source, looting, 3);
-            PlayerAttributeRuntime.onEnchantedEntityLoot(event);
-            helper.assertTrue(event.getEnchantmentLevel() == 3 || event.getEnchantmentLevel() == 4,
-                    "Perception adds to existing enchantments");
-            extras += event.getEnchantmentLevel() - 3;
+        try (var ignored = AbilityBlockDrops.capture(player)) {
+            for (var sample = 0; sample < 1_000; sample++) {
+                var enchantments = new ItemEnchantments.Mutable(ItemEnchantments.EMPTY);
+                enchantments.set(looting, 3);
+                var event = new GetEnchantmentLevelEvent(
+                        player.getMainHandItem(), enchantments, looting, lootLookup);
+                PlayerAttributeRuntime.onEnchantmentLevel(event);
+                var levelValue = enchantments.getLevel(looting);
+                helper.assertTrue(levelValue == 3 || levelValue == 4,
+                        "Perception adds to existing enchantments");
+                extras += levelValue - 3;
+            }
         }
         helper.assertTrue(extras > 60 && extras < 140, "100 perception rolls an extra level with 10 percent chance");
     }

@@ -68,7 +68,7 @@ public final class WingFlightAnimationClient {
     private static WingFlightPose.Pose requestedPose(Player avatar) {
         var minecraft = Minecraft.getInstance();
         if (avatar == minecraft.player && WingFlightPose.hasActiveWing(avatar)) {
-            if (minecraft.gui.screen() != null) return WingFlightPose.Pose.IDLE;
+            if (minecraft.screen != null) return WingFlightPose.Pose.IDLE;
             if (down(GLFW_KEY_SPACE)) return WingFlightPose.Pose.FAST;
             var forward = down(GLFW_KEY_W);
             var backward = down(GLFW_KEY_S);

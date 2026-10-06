@@ -7,6 +7,7 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.stats.Stats;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BowItem;
@@ -41,20 +42,20 @@ public final class DarkmatterBowItem extends BowItem implements DarkmatterShaped
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var weapon = player.getItemInHand(hand);
         var foundProjectile = !player.getProjectile(weapon).isEmpty();
         var result = EventHooks.onArrowNock(
                 weapon, level, player, hand, foundProjectile);
         if (result != null) return result;
         player.startUsingItem(hand);
-        return InteractionResult.CONSUME;
+        return InteractionResultHolder.consume(weapon);
     }
 
     @Override
-    public boolean releaseUsing(ItemStack weapon, Level level,
+    public void releaseUsing(ItemStack weapon, Level level,
                                 LivingEntity entity, int remainingTime) {
-        if (!(entity instanceof Player player)) return false;
+        if (!(entity instanceof Player player)) return;
         var projectile = player.getProjectile(weapon);
         if (projectile.isEmpty()) {
             projectile = DarkmatterNativeItemSupport.infiniteDarkmatterArrow(weapon);
@@ -62,9 +63,9 @@ public final class DarkmatterBowItem extends BowItem implements DarkmatterShaped
         var timeHeld = getUseDuration(weapon, entity) - remainingTime;
         timeHeld = EventHooks.onArrowLoose(
                 weapon, level, player, timeHeld, true);
-        if (timeHeld < 0) return false;
+        if (timeHeld < 0) return;
         var power = getPowerForTime(timeHeld);
-        if (power < 0.1f) return false;
+        if (power < 0.1f) return;
         var firedProjectiles = draw(weapon, projectile, player);
         if (level instanceof ServerLevel serverLevel && !firedProjectiles.isEmpty()) {
             shoot(serverLevel, player, player.getUsedItemHand(), weapon,
@@ -74,7 +75,6 @@ public final class DarkmatterBowItem extends BowItem implements DarkmatterShaped
                 SoundEvents.ARROW_SHOOT, SoundSource.PLAYERS, 1.0f,
                 1.0f / (level.getRandom().nextFloat() * 0.4f + 1.2f) + power * 0.5f);
         player.awardStat(Stats.ITEM_USED.get(this));
-        return true;
     }
 
     @Override

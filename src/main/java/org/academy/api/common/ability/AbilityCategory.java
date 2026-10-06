@@ -40,9 +40,11 @@ public abstract class AbilityCategory {
 
     /** Stable namespaced codec for persistence; CODEC retains the legacy numeric representation. */
     public static final Codec<AbilityCategory> ID_CODEC = ResourceLocation.CODEC.flatXmap(
-            id -> Registries.ABILITY_CATEGORIES.get(id)
-                    .map(holder -> DataResult.success(holder.value()))
-                    .orElseGet(() -> DataResult.error(() -> "Unknown ability category " + id)),
+            id -> {
+                var category = Registries.ABILITY_CATEGORIES.get(id);
+                return category != null ? DataResult.success(category)
+                        : DataResult.error(() -> "Unknown ability category " + id);
+            },
             category -> DataResult.success(category.getKey()));
 
     public static Builder builder() {

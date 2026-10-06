@@ -106,7 +106,7 @@ public final class TemporalClientRuntime {
             CallbackInfo callback) {
         var minecraft = Minecraft.getInstance();
         return TemporalBoundaryProtection.protectCallback(
-                callback, minecraft != null && minecraft.gui.screen() == null && isExternallyImmune(minecraft.player),
+                callback, minecraft != null && minecraft.screen == null && isExternallyImmune(minecraft.player),
                 UiInputContext::isActive);
     }
 

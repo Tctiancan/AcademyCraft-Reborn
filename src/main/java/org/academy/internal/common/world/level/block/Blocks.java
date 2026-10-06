@@ -31,15 +31,15 @@ public final class Blocks {
     public static final DeferredHolder<Block, SolarGenBlock> SOLAR_GEN =
             BLOCKS.registerBlock("solar_gen", SolarGenBlock::new, Blocks.machineProperties());
     public static final DeferredHolder<Block, Block> LABORATORY_LIGHT_WALL_PANEL =
-            BLOCKS.registerSimpleBlock("laboratory_light_wall_panel", Blocks::laboratoryBlockProperties);
+            BLOCKS.registerSimpleBlock("laboratory_light_wall_panel", Blocks.laboratoryBlockProperties());
     public static final DeferredHolder<Block, Block> LABORATORY_GRAY_WALL_PANEL =
-            BLOCKS.registerSimpleBlock("laboratory_gray_wall_panel", Blocks::laboratoryBlockProperties);
+            BLOCKS.registerSimpleBlock("laboratory_gray_wall_panel", Blocks.laboratoryBlockProperties());
     public static final DeferredHolder<Block, Block> LABORATORY_DARK_WALL_PANEL =
-            BLOCKS.registerSimpleBlock("laboratory_dark_wall_panel", Blocks::laboratoryBlockProperties);
+            BLOCKS.registerSimpleBlock("laboratory_dark_wall_panel", Blocks.laboratoryBlockProperties());
     public static final DeferredHolder<Block, Block> LABORATORY_LIGHT_BRICKS =
-            BLOCKS.registerSimpleBlock("laboratory_light_bricks", Blocks::laboratoryBlockProperties);
+            BLOCKS.registerSimpleBlock("laboratory_light_bricks", Blocks.laboratoryBlockProperties());
     public static final DeferredHolder<Block, Block> LABORATORY_DARK_BRICKS =
-            BLOCKS.registerSimpleBlock("laboratory_dark_bricks", Blocks::laboratoryBlockProperties);
+            BLOCKS.registerSimpleBlock("laboratory_dark_bricks", Blocks.laboratoryBlockProperties());
     public static final DeferredHolder<Block, WaterloggedTransparentBlock> LABORATORY_LIGHT_GRATE =
             BLOCKS.registerBlock(
                     "laboratory_light_grate",

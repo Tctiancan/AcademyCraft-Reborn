@@ -72,8 +72,8 @@ public final class BlackWingClientSmoke {
         if (!Boolean.getBoolean("academy.blackWingSmoke")) return;
         var mc = Minecraft.getInstance();
         if (mc.level == null) {
-            if (++loadingTicks > 1800) { System.out.println("[black-wing-smoke] loading timeout " + mc.gui.screen()); mc.stop(); return; }
-            if (mc.gui.screen() instanceof LoadingErrorScreen warning) {
+            if (++loadingTicks > 1800) { System.out.println("[black-wing-smoke] loading timeout " + mc.screen); mc.stop(); return; }
+            if (mc.screen instanceof LoadingErrorScreen warning) {
                 for (var widget : warning.children()) {
                     if (widget instanceof Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
@@ -83,7 +83,7 @@ public final class BlackWingClientSmoke {
                     }
                 }
             }
-            if (!opened && mc.gui.screen() instanceof TitleScreen) {
+            if (!opened && mc.screen instanceof TitleScreen) {
                 opened = true;
                 System.out.println("[black-wing-smoke] opening isolated world");
                 mc.createWorldOpenFlows().openWorld("black_wing", mc::stop);

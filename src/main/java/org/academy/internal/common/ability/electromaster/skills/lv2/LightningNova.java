@@ -85,7 +85,7 @@ public class LightningNova extends Skill {
 
         public static void onUse() {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.gui.screen() != null
+            if (minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.LIGHTNING_NOVA.get())) return;
             MisakaNetworkClient.send(ActivatePacket.INSTANCE);
         }

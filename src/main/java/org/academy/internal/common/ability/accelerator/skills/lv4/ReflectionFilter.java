@@ -394,13 +394,13 @@ public final class ReflectionFilter extends Skill {
         private static void open() {
             var minecraft = Minecraft.getInstance();
             if (minecraft.player == null
-                    || minecraft.gui.screen() != null
+                    || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.REFLECTION_FILTER.get())) {
                 return;
             }
             var screen = new ReflectionFilterScreen(localData.copy());
             lastScreen = screen;
-            minecraft.gui.setScreen(screen);
+            minecraft.setScreen(screen);
             MisakaNetworkClient.send(RequestPacket.INSTANCE);
         }
 
@@ -413,7 +413,7 @@ public final class ReflectionFilter extends Skill {
             data.forcedMovementProtection = packet.forcedMovementProtection;
             localData = normalizeData(data).copy();
             var screen = lastScreen;
-            if (screen != null && Minecraft.getInstance().gui.screen() == screen) {
+            if (screen != null && Minecraft.getInstance().screen == screen) {
                 screen.setData(localData.copy());
             }
         }

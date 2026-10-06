@@ -256,8 +256,8 @@ public final class CategoryDamageRuntime {
 
     public static void applyRadiation(LivingEntity target) {
         if (!(target.level() instanceof ServerLevel) || !target.isAlive()) return;
-        for (var effect : List.of(MobEffects.NAUSEA, MobEffects.SLOWNESS,
-                MobEffects.MINING_FATIGUE, MobEffects.WEAKNESS)) {
+        for (var effect : List.of(MobEffects.NAUSEA, MobEffects.MOVEMENT_SLOWDOWN,
+                MobEffects.DIG_SLOWDOWN, MobEffects.WEAKNESS)) {
             target.addEffect(new MobEffectInstance(effect, RADIATION_TICKS, 0));
         }
     }
@@ -425,4 +425,3 @@ public final class CategoryDamageRuntime {
         long expires;
     }
 }
-

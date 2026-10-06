@@ -319,7 +319,7 @@ public final class ElectromagneticShield extends Skill {
                 var direction = target.position().subtract(player.position());
                 if (direction.lengthSqr() > 1.0e-8) target.push(direction.normalize().x, 0.25, direction.normalize().z);
                 if (target == attacker) {
-                    target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 40, 1));
+                    target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1));
                     target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, 40, 0));
                 }
             }

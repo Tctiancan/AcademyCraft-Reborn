@@ -236,7 +236,7 @@ public final class CrossingTheAbyss extends Skill {
                 return;
             }
 
-            var appliedDamage = event.getHealthDamage();
+            var appliedDamage = event.getNewDamage();
             var expectedHealth = pending.healthBefore - appliedDamage;
             var observedHealth = CTAEntityActuallyHurt.readTrueHealth(target);
             if (expectedHealth > 0 && observedHealth > expectedHealth) {

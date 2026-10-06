@@ -135,7 +135,7 @@ public class LightningStorm extends Skill {
 
         public static void onUse() {
             var mc = Minecraft.getInstance();
-            if (mc.player == null || mc.gui.screen() != null
+            if (mc.player == null || mc.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.LIGHTNING_STORM.get())) return;
             MisakaNetworkClient.send(ActivatePacket.INSTANCE);
         }

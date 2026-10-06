@@ -315,10 +315,11 @@ public final class AbilitySystemClient {
         SKILL_DATA.putAll(newData);
 
         LEARNED_SKILLS.clear();
-        newData.keySet().forEach(skillId -> Registries.SKILLS.get(ResourceLocation.parse(skillId))
-                // Hidden skills keep their persisted data but stay out of every learned-skill UI gate.
-                .filter(holder -> !holder.value().isHidden())
-                .ifPresent(holder -> LEARNED_SKILLS.add(holder.value())));
+        newData.keySet().forEach(skillId -> {
+            var skill = Registries.SKILLS.get(ResourceLocation.parse(skillId));
+            // Hidden skills keep their persisted data but stay out of every learned-skill UI gate.
+            if (skill != null && !skill.isHidden()) LEARNED_SKILLS.add(skill);
+        });
         PENDING_TOGGLE_REQUESTS.clear();
     }
 

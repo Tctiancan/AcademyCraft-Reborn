@@ -52,9 +52,9 @@ public final class ProgramEditorClientSmoke {
         var minecraft = Minecraft.getInstance();
         if (session == null) {
             if (++loadingTicks > 600) {
-                throw new IllegalStateException("Program editor startup timed out: " + minecraft.gui.screen());
+                throw new IllegalStateException("Program editor startup timed out: " + minecraft.screen);
             }
-            if (minecraft.gui.screen() instanceof LoadingErrorScreen warnings) {
+            if (minecraft.screen instanceof LoadingErrorScreen warnings) {
                 var continueLabel = FMLTranslations.parseMessage("fml.button.continue.launch");
                 for (var widget : warnings.children()) {
                     if (widget instanceof Button button && button.getMessage().getString().equals(continueLabel)) {
@@ -63,10 +63,10 @@ public final class ProgramEditorClientSmoke {
                     }
                 }
             }
-            if (!(minecraft.gui.screen() instanceof TitleScreen)) return;
+            if (!(minecraft.screen instanceof TitleScreen)) return;
             minecraft.options.pauseOnLostFocus = false;
             session = new SmokeSession();
-            minecraft.gui.setScreen(new ModularProgramScreen(session));
+            minecraft.setScreen(new ModularProgramScreen(session));
         }
         ticks++;
         if (ticks == 100) capture("empty");
@@ -84,7 +84,7 @@ public final class ProgramEditorClientSmoke {
             }
         }
         if (ticks == 120) capture("closed");
-        if (ticks == 130) minecraft.gui.setScreen(new ModularProgramScreen(session));
+        if (ticks == 130) minecraft.setScreen(new ModularProgramScreen(session));
         if (ticks == 140) {
             requireStarter(true);
             clickStarter(140, 95);
@@ -97,12 +97,12 @@ public final class ProgramEditorClientSmoke {
         if (ticks == 160) {
             var gson = WorldData.createGson();
             session.playerData = gson.fromJson(gson.toJson(session.playerData), Player.class);
-            minecraft.gui.setScreen(new ModularProgramScreen(session));
+            minecraft.setScreen(new ModularProgramScreen(session));
         }
         if (ticks == 170) requireStarter(false);
         if (ticks == 180) {
             session = new SmokeSession();
-            minecraft.gui.setScreen(new ModularProgramScreen(session));
+            minecraft.setScreen(new ModularProgramScreen(session));
         }
         if (ticks == 190) requireStarter(true);
         if (ticks == 210) {
@@ -111,14 +111,14 @@ public final class ProgramEditorClientSmoke {
                     AbilityProgramDefinitions.mentalout(), Set.of(), ProgramStarterTemplates.Kind.CHAT,
                     Component.translatable("screen.academy.program.starter.chat_keyword").getString(),
                     Component.translatable("screen.academy.program.starter.output").getString());
-            minecraft.gui.setScreen(new ModularProgramScreen(session));
+            minecraft.setScreen(new ModularProgramScreen(session));
         }
         if (ticks == 250) capture("nodes");
         if (Boolean.getBoolean("academy.programTextNodesSmoke")) {
             if (ticks == 260) inspectNode(2);
             if (ticks == 275) capture("text-split-inspector");
             if (ticks == 277) {
-                var current = (ModularProgramScreen) minecraft.gui.screen();
+                var current = (ModularProgramScreen) minecraft.screen;
                 var zoom = doubleField(current, "zoom");
                 for (var index = 0; index < 10; index++) {
                     current.mouseScrolled(canvasField(current, "canvasX") + canvasField(current, "canvasW") - 15,
@@ -171,7 +171,7 @@ public final class ProgramEditorClientSmoke {
 
     private static void inspectNode(int id) {
         try {
-            var screen = Minecraft.getInstance().gui.screen();
+            var screen = Minecraft.getInstance().screen;
             var select = ModularProgramScreen.class.getDeclaredMethod("selectNode", int.class);
             select.setAccessible(true);
             select.invoke(screen, id);
@@ -185,7 +185,7 @@ public final class ProgramEditorClientSmoke {
 
     private static void requireStarter(boolean expected) {
         try {
-            var screen = Minecraft.getInstance().gui.screen();
+            var screen = Minecraft.getInstance().screen;
             var method = ModularProgramScreen.class.getDeclaredMethod("showStarter");
             method.setAccessible(true);
             if (!Boolean.valueOf(expected).equals(method.invoke(screen))) {
@@ -197,7 +197,7 @@ public final class ProgramEditorClientSmoke {
     }
 
     private static void clickStarter(int offsetX, int offsetY) {
-        var screen = (ModularProgramScreen) Minecraft.getInstance().gui.screen();
+        var screen = (ModularProgramScreen) Minecraft.getInstance().screen;
         var x = canvasField(screen, "canvasX");
         var y = canvasField(screen, "canvasY");
         var width = canvasField(screen, "canvasW");

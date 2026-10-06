@@ -180,7 +180,7 @@ public class MagnetManipulation extends Skill {
                 // context after 40 silent ticks, so every callback must refresh it.
                 unused457 -> { if (Client.activeMode != null) MisakaNetworkClient.send(MoveStartPacket.TARGET_TO_PLAYER); },
                 () -> AbilitySystemClient.canUseSkill(this) && Minecraft.getInstance().player != null
-                        && Minecraft.getInstance().player.isAlive() && Minecraft.getInstance().gui.screen() == null);
+                        && Minecraft.getInstance().player.isAlive() && Minecraft.getInstance().screen == null);
         InputSystem.addKeyBinding(Client.KEY_NAME_LEVITATION,
                 Client.CONFIG.getKeyBinding(Client.KEY_NAME_LEVITATION,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R, InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT)),
@@ -236,7 +236,7 @@ public class MagnetManipulation extends Skill {
         public static void onMoveStart(PullMode mode) {
             if (!AbilitySystemClient.canUseSkill(Skills.MAGNET_MANIPULATION.get())) return;
             var player = Minecraft.getInstance().player;
-            if (player == null || Minecraft.getInstance().gui.screen() != null) return;
+            if (player == null || Minecraft.getInstance().screen != null) return;
             if (activeMode != null && activeMode != mode) {
                 MisakaNetworkClient.send(MoveStopPacket.INSTANCE);
             }
@@ -524,7 +524,7 @@ public class MagnetManipulation extends Skill {
             if (Client.activeMode == null) return;
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
-            if (player == null || !player.isAlive() || minecraft.gui.screen() != null
+            if (player == null || !player.isAlive() || minecraft.screen != null
                     || (++Client.activeTicks > 10
                     && !player.getData(AttachmentTypes.MAGNET_MANIPULATION_ACTIVE.get()))) {
                 Client.onMoveStop(Client.activeMode);
@@ -537,7 +537,7 @@ public class MagnetManipulation extends Skill {
             if (event.yOffset == 0) return;
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
-            if (player == null || !player.isAlive() || minecraft.gui.screen() != null
+            if (player == null || !player.isAlive() || minecraft.screen != null
                     || !player.getData(AttachmentTypes.MAGNET_MANIPULATION_ACTIVE)
                     || !AbilitySystemClient.canUseSkill(Skills.MAGNET_MANIPULATION.get())) return;
             // Same wheel convention as PneumaticGrasp: positive yOffset (wheel up) pushes farther,

@@ -8,8 +8,10 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -42,16 +44,16 @@ public class CoinItem extends Item {
     }
 
     @Override
-    public InteractionResult use(Level level, Player player, InteractionHand hand) {
+    public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
         var itemStack = player.getItemInHand(hand);
 
         if (level.isClientSide()) {
             MisakaNetworkClient.send(ThrowCoinPacket.INSTANCE);
-            player.getCooldowns().addCooldown(itemStack, 5);
-            return InteractionResult.SUCCESS;
+            player.getCooldowns().addCooldown(itemStack.getItem(), 5);
+            return InteractionResultHolder.sided(InteractionResult.SUCCESS, itemStack);
         }
 
-        return InteractionResult.PASS;
+        return InteractionResultHolder.pass(itemStack);
     }
 
     @PacketTarget(ThreadType.SERVER)
@@ -78,8 +80,8 @@ public class CoinItem extends Item {
             var hand = findHeldCoin(player);
             if (hand == null) return;
             var stack = player.getItemInHand(hand);
-            if (player.getCooldowns().isOnCooldown(stack)) return;
-            player.getCooldowns().addCooldown(stack, 5);
+            if (player.getCooldowns().isOnCooldown(stack.getItem())) return;
+            player.getCooldowns().addCooldown(stack.getItem(), 5);
             if (!player.isCreative()) stack.shrink(1);
 
             var thrownCoin = new ThrownCoin(player.level(), player);
@@ -124,7 +126,7 @@ public class CoinItem extends Item {
             var data = event.getItemEntity().getPersistentData();
             if (!data.contains(HEADS_TAG)) return;
             player.sendSystemMessage(Component.translatable(
-                    data.getBooleanOr(HEADS_TAG, false)
+                    data.getBoolean(HEADS_TAG)
                             ? "message.academy.coin.heads"
                             : "message.academy.coin.tails"
             ));

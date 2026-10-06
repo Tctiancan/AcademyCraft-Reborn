@@ -109,10 +109,10 @@ public final class DarkmatterShaping extends Skill {
         private static void cast() {
             if (!AbilitySystemClient.canUseSkill(Skills.DARKMATTER_SHAPING.get())) return;
             var minecraft = Minecraft.getInstance();
-            var current = minecraft.gui.screen();
+            var current = minecraft.screen;
             if (current instanceof DarkmatterShapingScreen) return;
             if (current == null) {
-                minecraft.gui.setScreen(new DarkmatterShapingScreen());
+                minecraft.setScreen(new DarkmatterShapingScreen());
                 return;
             }
             if (!(current instanceof AbstractContainerScreen<?> screen)
@@ -463,7 +463,7 @@ public final class DarkmatterShaping extends Skill {
         @SubscribePacket
         public static void handle(ResultPacket packet) {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.gui.screen() instanceof DarkmatterShapingScreen screen) {
+            if (minecraft.screen instanceof DarkmatterShapingScreen screen) {
                 screen.acceptServerResult(packet.result());
             } else if (minecraft.player != null) {
                 minecraft.player.displayClientMessage(Component.translatable(

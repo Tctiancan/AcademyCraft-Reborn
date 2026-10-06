@@ -174,7 +174,7 @@ public final class HudLayoutEditorScreen extends Screen {
     @Override
     public void onClose() {
         saveAndRebuild();
-        Minecraft.getInstance().gui.setScreen(previousScreen);
+        Minecraft.getInstance().setScreen(previousScreen);
     }
 
     private void saveAndRebuild() {

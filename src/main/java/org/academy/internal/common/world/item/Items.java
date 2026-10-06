@@ -23,7 +23,7 @@ public final class Items {
     public static final DeferredHolder<Item, DarkmatterToolItem> DARKMATTER_TOOL =
             ITEMS.registerItem("darkmatter_tool", properties -> new DarkmatterToolItem(
                     properties.tool(
-                            ToolMaterial.NETHERITE,
+                            Tiers.NETHERITE,
                             DarkmatterToolItem.EFFECTIVE_BLOCKS,
                             8.0f,
                             -2.4f,
@@ -32,11 +32,11 @@ public final class Items {
             ));
     public static final DeferredHolder<Item, DarkmatterSwordItem> DARKMATTER_SWORD =
             ITEMS.registerItem("darkmatter_sword", properties -> new DarkmatterSwordItem(
-                    properties.sword(ToolMaterial.NETHERITE, 5.0f, -2.4f)));
+                    properties.sword(Tiers.NETHERITE, 5.0f, -2.4f)));
     public static final DeferredHolder<Item, DarkmatterSpearItem> DARKMATTER_SPEAR =
             ITEMS.registerItem("darkmatter_spear", properties -> new DarkmatterSpearItem(
                     properties.spear(
-                            ToolMaterial.NETHERITE,
+                            Tiers.NETHERITE,
                             0.65f,
                             0.7f,
                             0.75f,

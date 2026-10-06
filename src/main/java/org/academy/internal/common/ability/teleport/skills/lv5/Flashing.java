@@ -166,7 +166,7 @@ public final class Flashing extends Skill {
         @SubscribeEvent
         public static void onClientTick(ClientTickEvent.Post event) {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.player == null || minecraft.gui.screen() != null
+            if (minecraft.player == null || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.FLASHING.get())) {
                 resetHolds();
                 return;
@@ -181,7 +181,7 @@ public final class Flashing extends Skill {
         public static void onLevelRender(LevelRenderEvent event) {
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
-            if (player == null || minecraft.gui.screen() != null
+            if (player == null || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkillSilently(Skills.FLASHING.get())) return;
 
             var partialTick = event.getPartialTick();

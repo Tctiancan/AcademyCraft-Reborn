@@ -108,14 +108,14 @@ public final class AbilityProgramEditorClient {
         if (player == null
                 || !player.isAlive()
                 || player.isSpectator()
-                || minecraft.gui.screen() != null
+                || minecraft.screen != null
                 || !isSupportedCategory(category)) {
             return;
         }
         if (AbilitySystemClient.getLevel().getLevelCode() < 5) return;
         var state = state(player.getUUID(), category.getKey());
         screen = new ModularProgramScreen(new Session(category, state));
-        minecraft.gui.setScreen(screen);
+        minecraft.setScreen(screen);
         MisakaNetworkClient.send(new AbilityProgramManager.RequestPacket(category.getKey()));
     }
 
@@ -174,7 +174,7 @@ public final class AbilityProgramEditorClient {
         var minecraft = Minecraft.getInstance();
         var category = AbilitySystemClient.category;
         if (minecraft.player == null
-                || minecraft.gui.screen() != null
+                || minecraft.screen != null
                 || !isSupportedCategory(category)) {
             return;
         }
@@ -302,7 +302,7 @@ public final class AbilityProgramEditorClient {
         persist(state);
         var currentCategory = AbilitySystemClient.category;
         if (screen != null
-                && Minecraft.getInstance().gui.screen() == screen
+                && Minecraft.getInstance().screen == screen
                 && currentCategory != null
                 && currentCategory.getKey().equals(category)) {
             screen.applyServerState(
@@ -327,10 +327,10 @@ public final class AbilityProgramEditorClient {
         notify("message.academy.program.editor.extension_mismatch", ChatFormatting.RED);
         var currentCategory = AbilitySystemClient.category;
         if (screen != null
-                && minecraft.gui.screen() == screen
+                && minecraft.screen == screen
                 && currentCategory != null
                 && currentCategory.getKey().equals(category)) {
-            minecraft.gui.setScreen(null);
+            minecraft.setScreen(null);
         }
     }
 
@@ -364,7 +364,7 @@ public final class AbilityProgramEditorClient {
                 }
             }
             var currentCategory = AbilitySystemClient.category;
-            if (screen != null && Minecraft.getInstance().gui.screen() == screen
+            if (screen != null && Minecraft.getInstance().screen == screen
                     && currentCategory != null && currentCategory.getKey().equals(category)) {
                 screen.applyRunTrace(slot, trace, traceTruncated);
                 screen.applyProgramResult(slot, revision, null, nodeId,
@@ -432,7 +432,7 @@ public final class AbilityProgramEditorClient {
         }
         var currentCategory = AbilitySystemClient.category;
         if (screen != null
-                && Minecraft.getInstance().gui.screen() == screen
+                && Minecraft.getInstance().screen == screen
                 && currentCategory != null
                 && currentCategory.getKey().equals(category)) {
             screen.applyProgramResult(

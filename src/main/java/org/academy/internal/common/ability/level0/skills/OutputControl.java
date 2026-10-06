@@ -340,12 +340,12 @@ public final class OutputControl extends Skill {
 
         private static void open(InputSystem.BindingContext context) {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.player == null || minecraft.gui.screen() != null) return;
+            if (minecraft.player == null || minecraft.screen != null) return;
             var data = AbilitySystemClient.getSkillData(
                     Skills.OUTPUT_CONTROL.get(), OutputControlData.class
             ).filter(OutputControlData::isEnabled).orElse(null);
             if (data == null || !AbilitySystemClient.isSkillLearned(Skills.OUTPUT_CONTROL.get())) return;
-            minecraft.gui.setScreen(new OutputControlScreen(
+            minecraft.setScreen(new OutputControlScreen(
                     data.getAbilityOutput(), data.getMovementSpeed(), data.getJumpHeight(),
                     context.type(), context.input()
             ));

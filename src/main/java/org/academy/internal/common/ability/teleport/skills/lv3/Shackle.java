@@ -77,7 +77,7 @@ public class Shackle extends Skill {
         public static void onUse() {
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
-            if (player == null || minecraft.gui.screen() != null
+            if (player == null || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.SHACKLE.get())) return;
             var target = TeleportTargeting.findFirstLivingEntity(player, MAX_RANGE);
             if (target != null) {
@@ -90,7 +90,7 @@ public class Shackle extends Skill {
             var minecraft = Minecraft.getInstance();
             var player = minecraft.player;
             if (player == null
-                    || minecraft.gui.screen() != null
+                    || minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.SHACKLE.get())
                     || !isPreviewing()) {
                 return;

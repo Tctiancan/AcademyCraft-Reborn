@@ -67,7 +67,7 @@ public final class MentalControlEvents {
     @SubscribeEvent(priority = EventPriority.LOWEST)
     public static void onLivingDamaged(LivingDamageEvent.Post event) {
         if (event.getEntity() instanceof ServerPlayer player) {
-            PlayerControlSessionManager.onControllerDamaged(player, event.getHealthDamage());
+            PlayerControlSessionManager.onControllerDamaged(player, event.getNewDamage());
         }
         if (event.getOriginalDamage() <= 0.0f
                 || !(event.getSource().getEntity() instanceof LivingEntity aggressor)

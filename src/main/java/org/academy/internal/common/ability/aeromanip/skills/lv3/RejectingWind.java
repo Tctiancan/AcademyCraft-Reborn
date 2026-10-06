@@ -286,7 +286,7 @@ public final class RejectingWind extends Skill {
                 if (target instanceof LivingEntity living) {
                     var slowDuration = Math.max(1, Math.round(
                             (tier == AeromanipChargeTier.INSTANT ? 40 : 60) * durationScale));
-                    living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, slowDuration,
+                    living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, slowDuration,
                             tier == AeromanipChargeTier.INSTANT ? 0 : 1));
                     if (tier == AeromanipChargeTier.FULL) {
                         var liftDuration = Math.max(1, Math.round(50 * durationScale));

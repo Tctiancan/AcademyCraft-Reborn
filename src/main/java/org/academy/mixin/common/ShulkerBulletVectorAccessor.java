@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 @Mixin(ShulkerBullet.class)
 public interface ShulkerBulletVectorAccessor {
     @Accessor("finalTarget")
-    void academy$setFinalTarget(@Nullable EntityReference<Entity> target);
+    void academy$setFinalTarget(@Nullable Entity target);
 
     @Accessor("currentMoveDirection")
     @Nullable Direction academy$getCurrentMoveDirection();

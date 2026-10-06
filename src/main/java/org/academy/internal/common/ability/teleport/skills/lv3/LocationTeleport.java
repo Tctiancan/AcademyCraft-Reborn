@@ -151,12 +151,12 @@ public final class LocationTeleport extends Skill {
         private static void open() {
             if (ClientUtil.hasScreen() || !AbilitySystemClient.canUseSkill(Skills.LOCATION_TELEPORT.get())) return;
             lastScreen = new LocationTeleportScreen();
-            Minecraft.getInstance().gui.setScreen(lastScreen);
+            Minecraft.getInstance().setScreen(lastScreen);
         }
 
         @SubscribePacket
         public static void handleSync(MarksSyncPacket packet) {
-            if (lastScreen != null && Minecraft.getInstance().gui.screen() == lastScreen) {
+            if (lastScreen != null && Minecraft.getInstance().screen == lastScreen) {
                 lastScreen.setMarks(
                         packet.getMarks(),
                         packet.getQuickMarkIndex(),

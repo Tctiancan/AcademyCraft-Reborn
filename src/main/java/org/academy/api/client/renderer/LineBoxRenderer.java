@@ -67,7 +67,7 @@ public final class LineBoxRenderer {
     private static void drawLine(VertexConsumer vc, Matrix4f mat,
                                  float x1, float y1, float z1, float x2, float y2, float z2,
                                  float r, float g, float b, float a) {
-        var lineWidth = Minecraft.getInstance().getWindow().getAppropriateLineWidth();
+        var lineWidth = 1.0f / (float) Minecraft.getInstance().getWindow().getGuiScale();
         vc.addVertex(mat, x1, y1, z1)
                 .setColor(r, g, b, a)
                 .setNormal(0, 1, 0).setLineWidth(lineWidth);

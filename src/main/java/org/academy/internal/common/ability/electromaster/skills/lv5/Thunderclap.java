@@ -275,7 +275,7 @@ public class Thunderclap extends Skill {
                 if (milestone >= 3) {
                     var duration = target instanceof Player || target instanceof EnderDragon || target instanceof WitherBoss
                             ? 30 : 60;
-                    target.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, duration, 3));
+                    target.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, duration, 3));
                     target.addEffect(new MobEffectInstance(MobEffects.WEAKNESS, duration, 1));
                 }
             }

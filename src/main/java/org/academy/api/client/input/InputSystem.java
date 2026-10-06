@@ -449,7 +449,7 @@ public final class InputSystem {
     public static void tickMaintainedKeyBindings() {
         var minecraft = Minecraft.getInstance();
         if (minecraft.player == null || minecraft.level == null
-                || minecraft.gui.screen() != null || !minecraft.isWindowActive()) {
+                || minecraft.screen != null || !minecraft.isWindowActive()) {
             cancelMaintainedKeyBindings();
             return;
         }

@@ -126,7 +126,7 @@ public class IronSandArsenal extends Skill {
             InputSystem.addMaintainedKeyBinding(KEY_USE, CONFIG.getKeyBinding(KEY_USE,
                     InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, GLFW.GLFW_MOD_ALT)),
                     unused470 -> {
-                        if (!AbilitySystemClient.canUseSkill(skill) || Minecraft.getInstance().gui.screen() != null) return;
+                        if (!AbilitySystemClient.canUseSkill(skill) || Minecraft.getInstance().screen != null) return;
                         activeSequence = ++sequence;
                         MisakaNetworkClient.send(new ActionPacket(activeSequence, 0));
                     }, unused471 -> stop(false), unused472 -> {
@@ -134,7 +134,7 @@ public class IronSandArsenal extends Skill {
                         // drops the context after 40 silent ticks, so every callback must refresh it.
                         if (activeSequence != 0) MisakaNetworkClient.send(new ActionPacket(activeSequence, 3));
                     }, () -> Minecraft.getInstance().player != null && Minecraft.getInstance().player.isAlive()
-                            && Minecraft.getInstance().gui.screen() == null && AbilitySystemClient.canUseSkill(skill));
+                            && Minecraft.getInstance().screen == null && AbilitySystemClient.canUseSkill(skill));
             ToggleStatusHud.Companion.registerStateProvider(skill, () -> Minecraft.getInstance().player != null
                     && Minecraft.getInstance().player.getData(AttachmentTypes.IRON_SAND_DATA.get()).defense());
             ToggleStatusHud.Companion.registerDetailProvider(skill, () -> String.format(java.util.Locale.ROOT, "%.1f / %.1f MP",
@@ -146,7 +146,7 @@ public class IronSandArsenal extends Skill {
             if (activeSequence == 0) return;
             var mc = Minecraft.getInstance();
             if (mc.player != null) MisakaNetworkClient.send(new ActionPacket(activeSequence,
-                    cancel || mc.gui.screen() != null || !mc.isWindowActive() || !mc.player.isAlive() ? 2 : 1));
+                    cancel || mc.screen != null || !mc.isWindowActive() || !mc.player.isAlive() ? 2 : 1));
             activeSequence = 0;
         }
 
@@ -156,7 +156,7 @@ public class IronSandArsenal extends Skill {
         }
         @SubscribeEvent public static void onClientTick(ClientTickEvent.Post event) {
             IronSandVfxClient.tick();
-            if (activeSequence != 0 && (Minecraft.getInstance().player == null || Minecraft.getInstance().gui.screen() != null)) stop(true);
+            if (activeSequence != 0 && (Minecraft.getInstance().player == null || Minecraft.getInstance().screen != null)) stop(true);
         }
         @SubscribeEvent public static void onLogout(ClientPlayerNetworkEvent.LoggingOut event) {
             activeSequence = 0;

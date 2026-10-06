@@ -133,7 +133,11 @@ public final class PlayerAttributeRuntime {
         if (!target.is(Enchantments.LOOTING) && !target.is(Enchantments.FORTUNE)) return;
         var player = BlockLootPlayerContext.current();
         if (player == null) return;
-        event.getEnchantments().upgrade(target, perceptionBonus(player));
+        var bonus = perceptionBonus(player);
+        if (bonus > 0) {
+            event.getEnchantments().upgrade(
+                    target, event.getEnchantments().getLevel(target) + bonus);
+        }
     }
 
     public static int perceptionBonus(Player player) {

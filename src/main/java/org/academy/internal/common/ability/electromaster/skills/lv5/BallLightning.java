@@ -129,7 +129,7 @@ public class BallLightning extends Skill {
 
         public static void handler() {
             var minecraft = Minecraft.getInstance();
-            if (minecraft.gui.screen() != null
+            if (minecraft.screen != null
                     || !AbilitySystemClient.canUseSkill(Skills.BALL_LIGHTNING.get())) return;
             MisakaNetworkClient.send(ActivatePacket.INSTANCE);
         }

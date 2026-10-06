@@ -69,9 +69,8 @@ public class SkillDataManager implements AbilitySubsystem {
     private static SkillScope resolveSkillScope(String skillId) {
         var identifier = ResourceLocation.tryParse(skillId);
         if (identifier == null) return null;
-        return Registries.SKILLS.get(identifier)
-                .map(reference -> reference.value().getScope())
-                .orElse(null);
+        var skill = Registries.SKILLS.get(identifier);
+        return skill == null ? null : skill.getScope();
     }
 
     @Override
@@ -241,27 +240,25 @@ public class SkillDataManager implements AbilitySubsystem {
         var playerData = playerDataManager.getData(uuid);
         if (playerData == null) return;
 
-        Registries.SKILLS.get(ResourceLocation.parse(skillKey)).ifPresent(skillReference -> {
-            var skillData = playerData.getMutableSkillDataMap().putIfAbsent(
-                    skillKey,
-                    skillReference.value().createData()
-            );
-            if (skillData == null) {
-                var addedData = playerData.getSkillDataMap().get(skillKey);
-                playerData.restoreRetainedSkillProficiency(skillKey, addedData);
-                bindSkillActivationState(playerData, skillKey, addedData);
-                playerData.markDirty();
-                syncManager.schedulePlayerSync(uuid, SyncTypes.SKILL_DATA);
-                onSkillSetChanged.accept(uuid);
-            }
-        });
+        var skill = Registries.SKILLS.get(ResourceLocation.parse(skillKey));
+        if (skill == null) return;
+        var skillData = playerData.getMutableSkillDataMap().putIfAbsent(
+                skillKey,
+                skill.createData()
+        );
+        if (skillData == null) {
+            var addedData = playerData.getSkillDataMap().get(skillKey);
+            playerData.restoreRetainedSkillProficiency(skillKey, addedData);
+            bindSkillActivationState(playerData, skillKey, addedData);
+            playerData.markDirty();
+            syncManager.schedulePlayerSync(uuid, SyncTypes.SKILL_DATA);
+            onSkillSetChanged.accept(uuid);
+        }
     }
 
     public void removeSkill(UUID uuid, String skillKey) {
         var skillId = ResourceLocation.tryParse(skillKey);
-        var skill = skillId == null ? null : Registries.SKILLS.get(skillId)
-                .map(reference -> reference.value())
-                .orElse(null);
+        var skill = skillId == null ? null : Registries.SKILLS.get(skillId);
         if (skill == null) return;
         var caller = STATE_STACK_WALKER.walk(frames -> frames
                 .dropWhile(frame -> frame.getDeclaringClass() != SkillDataManager.class
@@ -341,9 +338,7 @@ public class SkillDataManager implements AbilitySubsystem {
 
     public void toggleSkill(UUID uuid, String skillId) {
         var id = ResourceLocation.tryParse(skillId);
-        var skill = id == null ? null : Registries.SKILLS.get(id)
-                .map(reference -> reference.value())
-                .orElse(null);
+        var skill = id == null ? null : Registries.SKILLS.get(id);
         if (skill == null) return;
         var caller = STATE_STACK_WALKER.walk(frames -> frames
                 .dropWhile(frame -> frame.getDeclaringClass() != SkillDataManager.class

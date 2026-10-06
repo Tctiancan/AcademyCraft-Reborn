@@ -56,17 +56,17 @@ public final class AeromanipRegressionGameTests {
         var second = UUID.randomUUID();
         WaterSuppression.refresh(level, first, Vec3.atCenterOf(pos), 2.0);
         WaterSuppression.refresh(level, second, Vec3.atCenterOf(pos), 2.0);
-        helper.assertTrue(!level.getBlockState(pos).getValue(BlockStateProperties.WATERLOGGED), Component.literal("Slab must be drained"));
+        helper.assertTrue(!level.getBlockState(pos).getValue(BlockStateProperties.WATERLOGGED), "Slab must be drained");
         WaterSuppression.release(level, first);
-        helper.assertTrue(level.getFluidState(pos).isEmpty(), Component.literal("One lease must not restore another bubble's water"));
+        helper.assertTrue(level.getFluidState(pos).isEmpty(), "One lease must not restore another bubble's water");
         // A player edit made inside the bubble must survive restoration.
         level.setBlockAndUpdate(pos.east(), Blocks.STONE.defaultBlockState());
         level.setBlockAndUpdate(pos, level.getBlockState(pos).setValue(BlockStateProperties.SLAB_TYPE,
                 SlabType.TOP));
         WaterSuppression.release(level, second);
         helper.assertTrue(level.getBlockState(pos).equals(waterlogged.setValue(BlockStateProperties.SLAB_TYPE,
-                SlabType.TOP)), Component.literal("Original waterlogged slab must return"));
-        helper.assertTrue(level.getBlockState(pos.east()).is(Blocks.STONE), Component.literal("Restoration must preserve player edits"));
+                SlabType.TOP)), "Original waterlogged slab must return");
+        helper.assertTrue(level.getBlockState(pos.east()).is(Blocks.STONE), "Restoration must preserve player edits");
         helper.succeed();
     }
 
@@ -92,18 +92,18 @@ public final class AeromanipRegressionGameTests {
         } catch (ReflectiveOperationException exception) {
             throw new IllegalStateException("Cannot exercise the runtime fluid-spread entry point", exception);
         }
-        helper.assertTrue(level.getFluidState(pos.east()).isEmpty(), Component.literal("Fluid spread mixin must reject incoming water immediately"));
+        helper.assertTrue(level.getFluidState(pos.east()).isEmpty(), "Fluid spread mixin must reject incoming water immediately");
         for (var tick = 1; tick <= 15; tick++) {
             helper.runAfterDelay(tick, () -> WaterSuppression.refresh(level, lease, Vec3.atCenterOf(pos), 1.0));
         }
         helper.runAfterDelay(12, () -> {
-            helper.assertTrue(level.getFluidState(pos.east()).isEmpty(), Component.literal("Neighbouring water must not flow into the dry pocket"));
-            helper.assertTrue(WaterSuppression.suppliesAir(level, Vec3.atCenterOf(pos)), Component.literal("Displaced water must count as artificial air"));
+            helper.assertTrue(level.getFluidState(pos.east()).isEmpty(), "Neighbouring water must not flow into the dry pocket");
+            helper.assertTrue(WaterSuppression.suppliesAir(level, Vec3.atCenterOf(pos)), "Displaced water must count as artificial air");
         });
         // Stop renewing: abandoned leases must restore water without a live owner.
         helper.runAfterDelay(22, () -> {
-            helper.assertTrue(level.getBlockState(pos).is(Blocks.WATER), Component.literal("Expired bubble must restore its source water"));
-            helper.assertTrue(!WaterSuppression.contains(level, pos), Component.literal("Expired lease must stop blocking water"));
+            helper.assertTrue(level.getBlockState(pos).is(Blocks.WATER), "Expired bubble must restore its source water");
+            helper.assertTrue(!WaterSuppression.contains(level, pos), "Expired lease must stop blocking water");
             helper.succeed();
         });
     }
@@ -120,7 +120,7 @@ public final class AeromanipRegressionGameTests {
         var reloaded = WaterSuppression.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow();
         level.getDataStorage().set(AcademyCraft.academy("suppressed_water").toString(), reloaded);
         helper.runAfterDelay(2, () -> {
-            helper.assertTrue(level.getBlockState(pos).equals(original), Component.literal("Reloaded restoration journal must restore the original slab without an owner"));
+            helper.assertTrue(level.getBlockState(pos).equals(original), "Reloaded restoration journal must restore the original slab without an owner");
             helper.succeed();
         });
     }
@@ -131,12 +131,12 @@ public final class AeromanipRegressionGameTests {
         entity.setDeltaMovement(1.5, -0.9, -0.75);
         AirMobility.setSupport(entity, AirMobility.HOVER, entity.getY());
         AirMobility.applySupport(entity);
-        helper.assertTrue(entity.getDeltaMovement().equals(new Vec3(1.5, 0.0, -0.75)), Component.literal("Hover must retain horizontal movement"));
+        helper.assertTrue(entity.getDeltaMovement().equals(new Vec3(1.5, 0.0, -0.75)), "Hover must retain horizontal movement");
         AirMobility.prioritizePropulsion(entity, 20);
         entity.setDeltaMovement(1.5, -2.0, -0.75);
         AirMobility.setSupport(entity, AirMobility.SLOW_FALL, 0.0);
         AirMobility.applySupport(entity);
-        helper.assertTrue(entity.getDeltaMovement().y == -2.0, Component.literal("Slow fall must not brake active propulsion"));
+        helper.assertTrue(entity.getDeltaMovement().y == -2.0, "Slow fall must not brake active propulsion");
         helper.succeed();
     }
 }

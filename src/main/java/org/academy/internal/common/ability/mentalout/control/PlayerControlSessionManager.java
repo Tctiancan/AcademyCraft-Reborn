@@ -660,8 +660,8 @@ public final class PlayerControlSessionManager {
                 }
                 session.lastHotbarSwitchTick = now;
                 var inventory = session.subject.getInventory();
-                inventory.setSelectedSlot(packet.value);
-                session.subject.connection.send(new ClientboundSetHeldSlotPacket(packet.value));
+                inventory.selected = packet.value;
+                session.subject.connection.send(new ClientboundSetCarriedItemPacket(packet.value));
                 session.subject.inventoryMenu.broadcastChanges();
                 sendTargetViewState(session, now);
             }

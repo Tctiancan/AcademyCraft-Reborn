@@ -57,9 +57,11 @@ public abstract class Skill {
     public static final Codec<Skill> CODEC =
             Codec.INT.xmap(Registries.SKILLS::byIdOrThrow, Registries.SKILLS::getId);
     public static final Codec<Skill> ID_CODEC = ResourceLocation.CODEC.flatXmap(
-            id -> Registries.SKILLS.get(id)
-                    .map(holder -> DataResult.success(holder.value()))
-                    .orElseGet(() -> DataResult.error(() -> "Unknown skill " + id)),
+            id -> {
+                var skill = Registries.SKILLS.get(id);
+                return skill != null ? DataResult.success(skill)
+                        : DataResult.error(() -> "Unknown skill " + id);
+            },
             skill -> DataResult.success(skill.getKey()));
     public static final StreamCodec<ByteBuf, Skill> STREAM_CODEC = ByteBufCodecs.idMapper(Registries.SKILLS);
     public static final StreamCodec<ByteBuf, Set<Skill>> STREAM_CODEC_SET = STREAM_CODEC.apply(
@@ -509,9 +511,9 @@ public abstract class Skill {
 
     public AbilityCategory getCategory() {
         if (category != null) return category;
-        return Registries.ABILITY_CATEGORIES.get(Objects.requireNonNull(categoryKey))
-                .orElseThrow(() -> new IllegalStateException("Missing category " + categoryKey.location()))
-                .value();
+        var resolved = Registries.ABILITY_CATEGORIES.get(Objects.requireNonNull(categoryKey));
+        if (resolved == null) throw new IllegalStateException("Missing category " + categoryKey.location());
+        return resolved;
     }
 
     /** Returns this skill's addon state, separate from enabled/proficiency. Use immutable values. */
@@ -553,10 +555,15 @@ public abstract class Skill {
         var owner = getCategory();
         var linked = new LinkedHashSet<Skill>();
         for (var key : dependencyKeys) {
-            linked.add(Registries.SKILLS.get(key)
-                    .orElseThrow(() -> new IllegalStateException(getKey() + " missing dependency " + key.location())).value());
+            var dependency = Registries.SKILLS.get(key);
+            if (dependency == null)
+                throw new IllegalStateException(getKey() + " missing dependency " + key.location());
+            linked.add(dependency);
         }
-        for (var key : optionalDependencyKeys) Registries.SKILLS.get(key).ifPresent(value -> linked.add(value.value()));
+        for (var key : optionalDependencyKeys) {
+            var dependency = Registries.SKILLS.get(key);
+            if (dependency != null) linked.add(dependency);
+        }
         if (stateType == null) SkillDataSerializer.registerType(dataTypeId, dataClass);
         else SkillDataSerializer.registerStateType(stateType);
         dependencies = Collections.unmodifiableSet(linked);

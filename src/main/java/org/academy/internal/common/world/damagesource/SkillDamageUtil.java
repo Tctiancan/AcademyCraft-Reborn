@@ -177,7 +177,7 @@ public final class SkillDamageUtil {
         containers.push(container);
 
         try {
-            invoker.academy$actuallyHurt(level, source, amount);
+            invoker.academy$actuallyHurt(source, amount);
         } catch (Throwable error) {
             LOGGER.warn(
                     "Direct actuallyHurt failed for {}; preserving any damage already committed",
@@ -225,7 +225,7 @@ public final class SkillDamageUtil {
     ) {
         var invoker = (LivingEntityDamageInvoker) target;
         if (attacker != null) {
-            target.setLastHurtByPlayer(attacker, 100);
+            target.setLastHurtByPlayer(attacker);
             target.setLastHurtByMob(attacker);
         } else if (source.getEntity() instanceof LivingEntity livingAttacker) {
             target.setLastHurtByMob(livingAttacker);

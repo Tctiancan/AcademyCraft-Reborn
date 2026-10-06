@@ -4,10 +4,9 @@ import com.mojang.authlib.GameProfile;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
-import net.minecraft.world.entity.Relative;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.portal.TeleportTransition;
 import org.academy.api.common.ability.ImagineBreakerHealthAccess;
 import org.academy.api.server.damage.DefenseFeedbackSuppression;
 import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
@@ -33,20 +32,6 @@ public abstract class MixinServerPlayer extends Player implements ImagineBreaker
         VectorReflection.Server.imaginebreaker((ServerPlayer) (Object) this, amount);
     }
 
-    @Inject(
-            method = "teleport(Lnet/minecraft/world/level/portal/TeleportTransition;)Lnet/minecraft/server/level/ServerPlayer;",
-            at = @At("HEAD"),
-            cancellable = true
-    )
-    private void academy$guardPlayerTeleportTransition(
-            TeleportTransition transition,
-            CallbackInfoReturnable<ServerPlayer> cir
-    ) {
-        if (EntityMotionGuard.shouldBlockTeleport((ServerPlayer) (Object) this)) {
-            cir.setReturnValue(null);
-        }
-    }
-
     @Inject(method = "teleportTo(DDD)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardSimplePlayerTeleport(double x, double y, double z, CallbackInfo ci) {
         if (EntityMotionGuard.shouldBlockTeleport((ServerPlayer) (Object) this)) ci.cancel();
@@ -63,7 +48,7 @@ public abstract class MixinServerPlayer extends Player implements ImagineBreaker
     }
 
     @Inject(
-            method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FFZ)Z",
+            method = "teleportTo(Lnet/minecraft/server/level/ServerLevel;DDDLjava/util/Set;FF)Z",
             at = @At("HEAD"),
             cancellable = true
     )
@@ -72,10 +57,9 @@ public abstract class MixinServerPlayer extends Player implements ImagineBreaker
             double x,
             double y,
             double z,
-            Set<Relative> relatives,
+            Set<RelativeMovement> relatives,
             float yRot,
             float xRot,
-            boolean resetCamera,
             CallbackInfoReturnable<Boolean> cir
     ) {
         if (EntityMotionGuard.shouldBlockTeleport((ServerPlayer) (Object) this)) {

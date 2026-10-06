@@ -238,7 +238,7 @@ public final class AcademyCraftCommand {
 
         var skillToLearn = Registries.SKILLS.get(skillIdentifier);
 
-        if (skillToLearn.isEmpty()) {
+        if (skillToLearn == null) {
             context.getSource().sendFailure(Component.literal("Skill '" + skillIdentifier + "' not found."));
             return 0;
         }
@@ -274,7 +274,7 @@ public final class AcademyCraftCommand {
 
         var categoryToSet = Registries.ABILITY_CATEGORIES.get(categoryIdentifier);
 
-        if (categoryToSet.isEmpty()) {
+        if (categoryToSet == null) {
             context.getSource().sendFailure(Component.literal("Ability category '" + categoryIdentifier + "' not found."));
             return 0;
         }
@@ -289,7 +289,7 @@ public final class AcademyCraftCommand {
 
         var serverContext = player.level().getServer();
         var abilitySystemServer = serverContext.getAcademyCraftServer().getAbilitySystemServer();
-        abilitySystemServer.replacePlayerAbilityCategory(playerUuid, categoryToSet.get().value());
+        abilitySystemServer.replacePlayerAbilityCategory(playerUuid, categoryToSet);
 
         context.getSource().sendSuccess(
                 () -> Component.literal(
@@ -621,7 +621,7 @@ public final class AcademyCraftCommand {
             var player = EntityArgument.getPlayer(ctx, "target");
             var id = ResourceLocationArgument.getId(ctx, "skill");
             var value = FloatArgumentType.getFloat(ctx, "value");
-            var skill = Registries.SKILLS.get(id).map(reference -> reference.value()).orElse(null);
+            var skill = Registries.SKILLS.get(id);
             if (skill == null || skill.getCategory() != AbilityCategories.DARKMATTER.get()
                     || !CommandUtils.getSystem(ctx).setPlayerSkillProficiency(player.getUUID(), skill, value)) {
                 ctx.getSource().sendFailure(Component.literal("Unable to set darkmatter proficiency for " + id));

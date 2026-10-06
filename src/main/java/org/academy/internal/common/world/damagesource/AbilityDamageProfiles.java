@@ -24,7 +24,7 @@ public final class AbilityDamageProfiles {
         var owners = new HashMap<ResourceKey<DamageType>, String>();
         for (var id : Registries.DAMAGE_PROFILES.keySet().stream()
                 .sorted(Comparator.comparing(Object::toString)).toList()) {
-            var profile = Registries.DAMAGE_PROFILES.getValue(id);
+            var profile = Registries.DAMAGE_PROFILES.get(id);
             var previous = owners.putIfAbsent(profile.damageType(), id.toString());
             if (previous != null || DamageTypes.isBuiltInType(profile.damageType())) {
                 throw new IllegalStateException("Damage profile " + id + " conflicts on " + profile.damageType().location()

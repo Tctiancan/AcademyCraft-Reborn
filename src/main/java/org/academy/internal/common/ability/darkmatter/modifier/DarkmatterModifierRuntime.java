@@ -121,7 +121,7 @@ public final class DarkmatterModifierRuntime {
         if (freezing > 0) {
             target.setTicksFrozen(Math.max(target.getTicksFrozen(), 80 + freezing * 60));
             target.addEffect(new MobEffectInstance(
-                    MobEffects.SLOWNESS, 40 + freezing * 40,
+                    MobEffects.MOVEMENT_SLOWDOWN, 40 + freezing * 40,
                     Math.max(0, freezing - 1)));
         }
         var burning = DarkmatterItemUtil.modifierLevel(weapon, DarkmatterModifiers.BURNING);
