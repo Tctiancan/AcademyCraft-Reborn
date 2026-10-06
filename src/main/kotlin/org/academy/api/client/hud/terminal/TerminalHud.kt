@@ -22,6 +22,7 @@ import org.academy.api.client.gui.animation.ValueAnimator.Companion.ofFloat
 import org.academy.api.client.gui.command.LocalBounds
 import org.academy.api.client.gui.command.PosTexRectDrawCommand
 import org.academy.api.client.gui.event.*
+import org.academy.api.client.gui.event.KeyEvent
 import org.academy.api.client.gui.event.MouseEvent.Companion.createDragEvent
 import org.academy.api.client.gui.event.MouseEvent.Companion.createMoveEvent
 import org.academy.api.client.gui.event.MouseEvent.Companion.createPressEvent

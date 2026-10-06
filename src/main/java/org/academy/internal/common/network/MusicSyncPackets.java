@@ -82,7 +82,7 @@ public final class MusicSyncPackets {
         @SubscribePacket
         public static void share(SharePacket packet) {
             var sender = packet.getPacketListener().getPlayer();
-            var broadcast = new SyncPacket(sender.getGameProfile().name(), packet.snapshot);
+            var broadcast = new SyncPacket(sender.getGameProfile().getName(), packet.snapshot);
             for (var receiver : sender.level().players()) {
                 if (receiver == sender || receiver.distanceToSqr(sender) > SHARE_RANGE_SQR) continue;
                 MisakaNetworkServer.send(receiver, broadcast);

@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.darkmatter.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -110,7 +111,7 @@ public final class DarkmatterSixWings extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)
         ), context -> Client.toggle());
     }
 

@@ -2,10 +2,12 @@ package org.academy.internal.server.pvp;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import net.minecraft.nbt.NbtOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import org.academy.AcademyCraft;
 
 import java.util.HashMap;
@@ -31,11 +33,21 @@ public final class PvpCooldownData extends SavedData {
                             .forGetter(PvpCooldownData::snapshot)
             ).apply(instance, PvpCooldownData::new)
     );
-    public static final SavedDataType<PvpCooldownData> SAVED_DATA_TYPE = new SavedDataType<>(
-            AcademyCraft.academy("pvp_cooldowns"),
-            PvpCooldownData::new,
-            CODEC
-    );
+    public static SavedData.Factory<PvpCooldownData> getType() {
+        return new SavedData.Factory<>(PvpCooldownData::new, PvpCooldownData::load);
+    }
+
+    private static PvpCooldownData load(CompoundTag tag, HolderLookup.Provider registries) {
+        return CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+                .result().orElseGet(PvpCooldownData::new);
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), this)
+                .result().ifPresent(data -> tag.merge((CompoundTag) data));
+        return tag;
+    }
 
     private final Map<UUID, Integer> remainingTicks;
 
@@ -53,7 +65,8 @@ public final class PvpCooldownData extends SavedData {
     }
 
     public static PvpCooldownData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(SAVED_DATA_TYPE);
+        return server.overworld().getDataStorage()
+                .computeIfAbsent(getType(), AcademyCraft.academy("pvp_cooldowns").toString());
     }
 
     public synchronized int remainingTicks(UUID playerId) {

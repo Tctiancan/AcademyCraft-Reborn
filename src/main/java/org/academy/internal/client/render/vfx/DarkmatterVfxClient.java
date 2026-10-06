@@ -44,7 +44,7 @@ public final class DarkmatterVfxClient {
         if (!mc.isSameThread()) { mc.execute(() -> accept(packet)); return; }
         if (packet.kind == Kind.INTERFERENCE) { InterferenceFieldClient.accept(packet); return; }
         resetWorld();
-        if (world == null || !world.dimension().identifier().equals(packet.dimension)) return;
+        if (world == null || !world.dimension().location().equals(packet.dimension)) return;
         var key = new Key(packet.kind, packet.entityId, packet.entityId < 0 ? BlockPos.containing(packet.position) : BlockPos.ZERO);
         if (!packet.active) { remove(key); return; }
         var subject = packet.entityId < 0 ? null : world.getEntity(packet.entityId);
@@ -137,16 +137,16 @@ public final class DarkmatterVfxClient {
             var rotation = new Quaternionf();
             active.setRotation(rotation);
             var inverse = new Quaternionf(rotation).conjugate();
-            var viewPosition = inverse.transform(new Vector3f(camera.position()).sub(origin.toVector3f()));
+            var viewPosition = inverse.transform(new Vector3f(camera.getPosition()).sub(origin.toVector3f()));
             var viewDirection = new Matrix4f(camera.viewRotation()).invert().transformDirection(new Vector3f(0, 0, -1));
             inverse.transform(viewDirection).normalize();
             bones = subject == null ? null : HumanoidSurfacePose.get(subject.getId());
             var root = subject == null ? null : WingAvatarRegistry.entries().get(subject.getId());
             modelRoot = root == null ? null : new Matrix4f(root);
             if (modelRoot != null) {
-                modelRoot.m30(modelRoot.m30() + camera.position().x - (float) origin.x);
-                modelRoot.m31(modelRoot.m31() + camera.position().y - (float) origin.y);
-                modelRoot.m32(modelRoot.m32() + camera.position().z - (float) origin.z);
+                modelRoot.m30(modelRoot.m30() + camera.getPosition().x - (float) origin.x);
+                modelRoot.m31(modelRoot.m31() + camera.getPosition().y - (float) origin.y);
+                modelRoot.m32(modelRoot.m32() + camera.getPosition().z - (float) origin.z);
             }
             float elapsed = (level.getGameTime() - updated + partialTick) / 20f;
             float progress = Math.clamp(elapsed / (state.kind == Kind.CONTACT ? 0.18f : state.kind == Kind.REPAIR ? 0.38f : 0.65f), 0, 1);
@@ -236,7 +236,7 @@ public final class DarkmatterVfxClient {
             boolean right = subject.getMainArm() == HumanoidArm.RIGHT;
             if (off && (!main || index % 2 != 0)) right = !right;
             var transform = new Matrix4f(camera.viewRotation()).invert();
-            transform.setTranslation(new Vector3f(camera.position()).sub(origin.toVector3f()));
+            transform.setTranslation(new Vector3f(camera.getPosition()).sub(origin.toVector3f()));
             transform.translate(right ? 0.30f : -0.30f, -0.23f, -0.53f);
             SurfaceSampler.box(5, u, v, new Vector3f(-0.05f, -0.05f, -0.02f),
                     new Vector3f(0.05f, 0.05f, 0.02f), transform, p, n);

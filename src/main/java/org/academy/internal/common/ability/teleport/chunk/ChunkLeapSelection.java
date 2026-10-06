@@ -43,14 +43,14 @@ public record ChunkLeapSelection(ResourceKey<Level> dimension, int originChunkX,
     }
 
     public static ChunkLeapSelection single(ResourceKey<Level> dimension, ChunkPos chunk) {
-        return new ChunkLeapSelection(dimension, chunk.x(), chunk.z(), List.of(new Offset(0, 0)));
+        return new ChunkLeapSelection(dimension, chunk.x, chunk.z, List.of(new Offset(0, 0)));
     }
 
     public static ChunkLeapSelection rectangle(ResourceKey<Level> dimension, ChunkPos from, ChunkPos to) {
-        var minX = Math.min(from.x(), to.x());
-        var minZ = Math.min(from.z(), to.z());
-        var width = Math.abs(to.x() - from.x()) + 1;
-        var height = Math.abs(to.z() - from.z()) + 1;
+        var minX = Math.min(from.x, to.x);
+        var minZ = Math.min(from.z, to.z);
+        var width = Math.abs(to.x - from.x) + 1;
+        var height = Math.abs(to.z - from.z) + 1;
         var offsets = new ArrayList<Offset>(width * height);
         for (var dz = 0; dz < height; dz++) {
             for (var dx = 0; dx < width; dx++) {
@@ -90,7 +90,7 @@ public record ChunkLeapSelection(ResourceKey<Level> dimension, int originChunkX,
      * position differs. This is what lets the player place a target with a single click.
      */
     public ChunkLeapSelection anchoredAt(ResourceKey<Level> targetDimension, ChunkPos targetOrigin) {
-        return new ChunkLeapSelection(targetDimension, targetOrigin.x(), targetOrigin.z(), offsets);
+        return new ChunkLeapSelection(targetDimension, targetOrigin.x, targetOrigin.z, offsets);
     }
 
     /** True when this selection's chunks fall inside {@code region}; used to size the view lease. */
@@ -122,15 +122,15 @@ public record ChunkLeapSelection(ResourceKey<Level> dimension, int originChunkX,
         var minZ = Integer.MAX_VALUE;
         for (var chunk : chunks) {
             unique.add(chunk);
-            minX = Math.min(minX, chunk.x());
-            minZ = Math.min(minZ, chunk.z());
+            minX = Math.min(minX, chunk.x);
+            minZ = Math.min(minZ, chunk.z);
             if (unique.size() >= MAX_CHUNKS) break;
         }
         if (unique.isEmpty()) return null;
         var offsets = new ArrayList<Offset>(unique.size());
         for (var chunk : unique) {
-            var dx = chunk.x() - minX;
-            var dz = chunk.z() - minZ;
+            var dx = chunk.x - minX;
+            var dz = chunk.z - minZ;
             // A selection spanning more than MAX_OFFSET cannot be expressed; drop the far chunks.
             if (dx > MAX_OFFSET || dz > MAX_OFFSET) continue;
             offsets.add(new Offset(dx, dz));

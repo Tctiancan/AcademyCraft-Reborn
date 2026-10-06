@@ -2,6 +2,7 @@ package org.academy.internal.common.ability.accelerator.skills.lv5;
 
 import org.academy.api.common.damage.DamageComposition;
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -157,7 +158,7 @@ public class BloodflowReverse extends Skill {
 
         var binding = Client.CONFIG.getMaintainedKeyBinding(Client.KEY_NAME,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT)
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT)
         );
         AcademyCraftClient.Config.INSTANCE.save();
         InputSystem.addMaintainedKeyBinding(
@@ -225,7 +226,7 @@ public class BloodflowReverse extends Skill {
                 if (target == null) return;
 
                 var minecraft = Minecraft.getInstance();
-                var camera = minecraft.gameRenderer.mainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().getPosition();
                 var bounds = target.getBoundingBox().inflate(TARGET_BOX_INFLATE);
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();

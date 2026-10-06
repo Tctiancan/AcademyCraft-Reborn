@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
@@ -95,7 +96,7 @@ public class ThunderLance extends Skill {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_RIGHT,
                         InputConstants.RELEASE,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 )
         ), unused449 -> Client.onQuickUse());
     }

@@ -22,7 +22,7 @@ public record JaggedModifier(float jaggedness, int subdivisions, long seed) impl
     public static final StreamCodec<ByteBuf, JaggedModifier> CODEC = StreamCodec.composite(
             ByteBufCodecs.FLOAT, JaggedModifier::jaggedness,
             ByteBufCodecs.INT, JaggedModifier::subdivisions,
-            ByteBufCodecs.LONG, JaggedModifier::seed,
+            ByteBufCodecs.VAR_LONG, JaggedModifier::seed,
             JaggedModifier::new
     );
 

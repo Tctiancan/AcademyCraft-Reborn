@@ -13,11 +13,11 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.item.enchantment.Enchantment;
 import net.minecraft.world.item.enchantment.Enchantments;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.event.enchanting.EnchantedBlockLootEvent;
-import net.neoforged.neoforge.event.enchanting.EnchantedEntityLootEvent;
+import net.neoforged.neoforge.event.enchanting.GetEnchantmentLevelEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.attribute.PlayerAttributes;
@@ -127,19 +127,13 @@ public final class PlayerAttributeRuntime {
     }
 
     @SubscribeEvent
-    public static void onEnchantedEntityLoot(EnchantedEntityLootEvent event) {
-        if (!event.getEnchantment().is(Enchantments.LOOTING)) return;
-        var player = resolvePlayer(event.getDamageSource());
-        if (player == null) return;
-        event.setEnchantmentLevel(event.getEnchantmentLevel() + perceptionBonus(player));
-    }
-
-    @SubscribeEvent
-    public static void onEnchantedBlockLoot(EnchantedBlockLootEvent event) {
-        if (!event.getEnchantment().is(Enchantments.FORTUNE)) return;
+    public static void onEnchantmentLevel(GetEnchantmentLevelEvent event) {
+        Holder<Enchantment> target = event.getTargetEnchant();
+        if (target == null) return;
+        if (!target.is(Enchantments.LOOTING) && !target.is(Enchantments.FORTUNE)) return;
         var player = BlockLootPlayerContext.current();
         if (player == null) return;
-        event.setEnchantmentLevel(event.getEnchantmentLevel() + perceptionBonus(player));
+        event.getEnchantments().upgrade(target, perceptionBonus(player));
     }
 
     public static int perceptionBonus(Player player) {
@@ -265,26 +259,19 @@ public final class PlayerAttributeRuntime {
                                      AttributeModifier.Operation operation, boolean permanent) {
         if (attribute == null) return;
         var current = attribute.getModifier(id);
-        var currentIsPermanent = current != null && attribute.getPermanentModifiers().stream()
-                .anyMatch(modifier -> modifier.id().equals(id));
         if (current != null
                 && current.operation() == operation
-                && Math.abs(current.amount() - amount) < 1.0E-9
-                && currentIsPermanent == permanent) return;
+                && Math.abs(current.amount() - amount) < 1.0E-9) return;
         if (amount == 0.0 || !Double.isFinite(amount)) {
             if (current != null) attribute.removeModifier(id);
             return;
         }
 
         var replacement = new AttributeModifier(id, amount, operation);
+        attribute.removeModifier(id);
         if (permanent) {
-            attribute.addOrReplacePermanentModifier(replacement);
-        } else if (current == null) {
-            attribute.addTransientModifier(replacement);
-        } else if (!currentIsPermanent && current.operation() == operation) {
-            attribute.addOrUpdateTransientModifier(replacement);
+            attribute.addPermanentModifier(replacement);
         } else {
-            attribute.removeModifier(id);
             attribute.addTransientModifier(replacement);
         }
     }

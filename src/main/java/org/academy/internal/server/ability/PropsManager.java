@@ -113,7 +113,7 @@ public final class PropsManager implements AbilitySubsystem {
 
         var gameTime = player.level().getGameTime();
         if (storedPlayer != null && storedPlayer.getPropsData().isStarted()
-                && snapshot.structures.shouldCheck(gameTime, player.level().dimension().identifier(),
+                && snapshot.structures.shouldCheck(gameTime, player.level().dimension().location(),
                 player.blockPosition().asLong(), player.getUUID().hashCode())) {
             checkStructures(player);
         }
@@ -258,11 +258,11 @@ public final class PropsManager implements AbilitySubsystem {
             if (id == null) continue;
             for (var reference : entry.getValue()) {
                 var chunkPos = ChunkPos.unpack(reference);
-                var key = level.dimension().identifier() + "|" + id + "|" + chunkPos.x() + "," + chunkPos.z();
+                var key = level.dimension().location() + "|" + id + "|" + chunkPos.x + "," + chunkPos.z;
                 if (data.hasVisitedStructure(key)) continue;
                 // StructureManager.getStructureAt synchronously loads referenced start chunks.
                 // Discovery is optional: skip missing chunks and retry on a later scheduled check.
-                var startChunk = chunks.getChunkNow(chunkPos.x(), chunkPos.z());
+                var startChunk = chunks.getChunkNow(chunkPos.x, chunkPos.z);
                 if (startChunk == null) continue;
                 var start = startChunk.getStartForStructure(structure);
                 if (start == null || !start.isValid() || !start.getBoundingBox().isInside(pos)) continue;
@@ -513,4 +513,3 @@ public final class PropsManager implements AbilitySubsystem {
     private record Milestone(int bit, double reward) {
     }
 }
-

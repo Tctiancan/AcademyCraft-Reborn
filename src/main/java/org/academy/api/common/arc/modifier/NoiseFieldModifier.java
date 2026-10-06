@@ -23,7 +23,7 @@ public record NoiseFieldModifier(AttributeCurve strength, float scale, float spe
             AttributeCurve.CODEC, NoiseFieldModifier::strength,
             ByteBufCodecs.FLOAT, NoiseFieldModifier::scale,
             ByteBufCodecs.FLOAT, NoiseFieldModifier::speed,
-            ByteBufCodecs.LONG, NoiseFieldModifier::seed,
+            ByteBufCodecs.VAR_LONG, NoiseFieldModifier::seed,
             NoiseFieldModifier::new
     );
 

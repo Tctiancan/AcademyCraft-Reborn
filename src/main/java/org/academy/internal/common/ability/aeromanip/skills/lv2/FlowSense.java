@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
@@ -80,12 +81,12 @@ public final class FlowSense extends Skill {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_N,
                 InputConstants.RELEASE,
-                InputConstants.MOD_ALT);
+                GLFW.GLFW_MOD_ALT);
         var binding = Client.CONFIG.getKeyBindingMigratingDefaults(
                 Client.KEY_NAME_TOGGLE,
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_M,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT));
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT));
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused335 -> Client.toggle());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),

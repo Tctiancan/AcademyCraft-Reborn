@@ -6,6 +6,7 @@ import net.neoforged.neoforge.attachment.AttachmentType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.neoforged.neoforge.registries.NeoForgeRegistries;
+import org.academy.api.common.ability.Input;
 import org.academy.internal.client.renderer.entity.layers.quantum.QuantumData;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileRedirectData;
 import org.academy.internal.common.ability.accelerator.flight.WingFlightPose;
@@ -196,5 +197,14 @@ public final class AttachmentTypes {
             () -> AttachmentType
                     .builder(VectorProjectileRedirectData::none)
                     .build()
+    );
+    /**
+     * 服务端可见的"最近一次客户端移动输入"。26.2 原生由 {@code ServerboundPlayerInputPacket} 写入
+     * {@code ServerPlayer.lastClientInput}；1.21.1 无此字段与投递，由本附件存储并由 mod 的
+     * {@code ServerGamePacketListenerImpl.handlePlayerInput} 注入按需写入。
+     */
+    public static final DeferredHolder<AttachmentType<?>, AttachmentType<Input>> LAST_CLIENT_INPUT = REGISTER.register(
+            "last_client_input",
+            () -> AttachmentType.<Input>builder(() -> Input.EMPTY).build()
     );
 }

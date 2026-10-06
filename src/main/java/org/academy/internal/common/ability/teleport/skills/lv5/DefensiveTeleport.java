@@ -155,7 +155,7 @@ public final class DefensiveTeleport extends Skill {
                     return;
                 }
                 var partialTick = event.getPartialTick();
-                var camera = minecraft.gameRenderer.mainCamera();
+                var camera = minecraft.gameRenderer.getMainCamera();
                 var selectionOffset = selectionOffset(
                         player.getViewVector(partialTick),
                         new Vec3(camera.forwardVector()),
@@ -360,7 +360,7 @@ public final class DefensiveTeleport extends Skill {
 
     @PacketTarget(ThreadType.SERVER)
     public static final class TogglePacket extends Packet<ServerGamePacketListenerImpl, TogglePacket> {
-        public static final StreamCodec<ByteBuf, TogglePacket> CODEC = Vec3.STREAM_CODEC
+        public static final StreamCodec<ByteBuf, TogglePacket> CODEC = StreamCodec.of((buf, v) -> buf.writeDouble(v.x).writeDouble(v.y).writeDouble(v.z), buf -> new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble()))
                 .map(TogglePacket::new, packet -> packet.center);
         private final Vec3 center;
 

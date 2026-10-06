@@ -27,7 +27,7 @@ public final class ExtensionProgramEffects {
     static ProgramActionTransaction.Undo track(ServerPlayer player, List<LivingEntity> targets, ProgramEffect effect,
                                                 ServerProgramScheduler.SessionKey key,
                                                 ResourceLocation category, Skill skill) {
-        var lease = new Lease(player, targets, effect, player.level().dimension().identifier(),
+        var lease = new Lease(player, targets, effect, player.level().dimension().location(),
                 player.level().getGameTime() + effect.lifetimeTicks(), key, category, skill);
         if (effect.lifetimeTicks() > 0) ACTIVE.add(lease);
         return lease::close;
@@ -53,7 +53,7 @@ public final class ExtensionProgramEffects {
             if (!lease.player.isAlive() || lease.player.hasDisconnected()
                     || !system.getPlayerAbilityCategory(lease.player.getUUID()).getKey().equals(lease.category)
                     || system.getPlayerLevel(lease.player.getUUID()) < 5 || !lease.skill.isEnabled(lease.player)
-                    || !lease.player.level().dimension().identifier().equals(lease.dimension)
+                    || !lease.player.level().dimension().location().equals(lease.dimension)
                     || lease.player.level().getGameTime() >= lease.until
                     || lease.targets.stream().anyMatch(target -> !target.isAlive() || target.isRemoved()
                     || target.level() != lease.player.level())) lease.close();

@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -123,7 +124,7 @@ public final class AdiabaticCompression extends Skill {
                         InputSystem.InputType.KEYBOARD,
                         InputConstants.KEY_Y,
                         InputSystem.ANY_ACTION,
-                        InputConstants.MOD_ALT));
+                        GLFW.GLFW_MOD_ALT));
         if (binding.action() != InputSystem.ANY_ACTION) {
             binding = new InputSystem.KeyCombination(
                     binding.type(), binding.keys(), InputSystem.ANY_ACTION, binding.modifiers(),

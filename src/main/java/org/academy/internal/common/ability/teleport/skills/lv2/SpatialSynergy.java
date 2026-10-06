@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.teleport.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
@@ -66,7 +67,7 @@ public class SpatialSynergy extends Skill {
 
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_H,
-                        InputConstants.PRESS, InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.onToggle());
         ToggleStatusHud.Companion.registerStateProvider(Skills.SPATIAL_SYNERGY.get(),
                 () -> AbilitySystemClient.canUseSkillSilently(Skills.SPATIAL_SYNERGY.get()));

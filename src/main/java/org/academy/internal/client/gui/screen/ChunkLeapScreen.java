@@ -1130,8 +1130,8 @@ public final class ChunkLeapScreen extends UiScreen {
         var before = chunkAt(mouseX, mouseY);
         zoom = clampZoom(zoom * factor);
         var after = chunkAt(mouseX, mouseY);
-        panChunkX += before.x() - after.x();
-        panChunkZ += before.z() - after.z();
+        panChunkX += before.x - after.x;
+        panChunkZ += before.z - after.z;
         ensureAnchorCoversView();
         viewClient.invalidate();
         return true;
@@ -1221,8 +1221,8 @@ public final class ChunkLeapScreen extends UiScreen {
                 var own = ChunkMapViewClient.playerDimension();
                 switchDimension(own);
                 if (minecraft.player != null) {
-                    panChunkX = minecraft.player.chunkPosition().x();
-                    panChunkZ = minecraft.player.chunkPosition().z();
+                    panChunkX = minecraft.player.chunkPosition().x;
+                    panChunkZ = minecraft.player.chunkPosition().z;
                 }
                 syncAnchor();
                 return true;

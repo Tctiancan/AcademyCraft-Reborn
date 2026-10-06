@@ -1465,7 +1465,7 @@ public final class PrecisionOperationRuntime {
         if (value instanceof Entity entity) {
             requireUsable(entity);
             return new ControlDestination.Position(
-                    entity.level().dimension().identifier(), entity.position());
+                    entity.level().dimension().location(), entity.position());
         }
         if (value instanceof ProgramWorldPosition(var dimension, var x, var y, var z)) {
             return new ControlDestination.Position(
@@ -1483,7 +1483,7 @@ public final class PrecisionOperationRuntime {
     private static ResolvedPosition resolvedPosition(Object value, ServerPlayer player) {
         if (value instanceof Entity entity) {
             requireUsable(entity);
-            return new ResolvedPosition(entity.level().dimension().identifier(), entity.position());
+            return new ResolvedPosition(entity.level().dimension().location(), entity.position());
         }
         if (value instanceof ControlDestination.Position(var dimension1, var value1)) {
             return new ResolvedPosition(dimension1, value1);
@@ -1495,7 +1495,7 @@ public final class PrecisionOperationRuntime {
         if (value instanceof ProgramBlockPosition position) {
             var center = position.center();
             return new ResolvedPosition(
-                    center.dimension(), new Vec3(center.x(), center.y(), center.z()));
+                    center.dimension(), new Vec3(center.x, center.y(), center.z));
         }
         if (value instanceof ControlDestination.Entity(var uuid)) {
             Entity target = null;
@@ -1504,7 +1504,7 @@ public final class PrecisionOperationRuntime {
                 if (target != null) break;
             }
             if (target == null) throw new EvaluationFailure(PrecisionGraph.Diagnostic.TARGET_UNAVAILABLE);
-            return new ResolvedPosition(target.level().dimension().identifier(), target.position());
+            return new ResolvedPosition(target.level().dimension().location(), target.position());
         }
         throw new EvaluationFailure(PrecisionGraph.Diagnostic.NO_EFFECTIVE_TARGET);
     }
@@ -1580,7 +1580,7 @@ public final class PrecisionOperationRuntime {
             ControlDestination destination
     ) {
         var resolved = resolvedPosition(destination, player);
-        if (!resolved.dimension().equals(player.level().dimension().identifier())
+        if (!resolved.dimension().equals(player.level().dimension().location())
                 || resolved.value().distanceToSqr(player.position())
                 > MAX_ACTION_RANGE * MAX_ACTION_RANGE) {
             throw new EvaluationFailure(PrecisionGraph.Diagnostic.TARGET_UNAVAILABLE);

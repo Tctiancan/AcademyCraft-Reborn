@@ -39,7 +39,7 @@ public final class DarkmatterFeatherVfxClient {
             active.setCullingSphere(position, 1.2f);
             active.effect().setLiveParam("time", Value.of(active.gameAgeSeconds()));
             active.effect().setLiveParam("camera", Value.of(new Quaternionf(rotation).conjugate()
-                    .transform(new Vector3f(camera.position()).sub(position))));
+                    .transform(new Vector3f(camera.getPosition()).sub(position))));
             return true;
         });
         BLADES.put(feather, effect);

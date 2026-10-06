@@ -2,10 +2,12 @@ package org.academy.internal.server.time;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
+import net.minecraft.nbt.NbtOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import org.academy.AcademyCraft;
 import org.academy.api.server.time.TemporalPauseSource;
 
@@ -55,11 +57,21 @@ public final class TemporalSavedData extends SavedData {
                             .forGetter(TemporalSavedData::entries)
             ).apply(instance, TemporalSavedData::new)
     );
-    public static final SavedDataType<TemporalSavedData> SAVED_DATA_TYPE = new SavedDataType<>(
-            AcademyCraft.academy("temporal_state"),
-            TemporalSavedData::new,
-            CODEC
-    );
+    public static SavedData.Factory<TemporalSavedData> getType() {
+        return new SavedData.Factory<>(TemporalSavedData::new, TemporalSavedData::load);
+    }
+
+    private static TemporalSavedData load(CompoundTag tag, HolderLookup.Provider registries) {
+        return CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+                .result().orElseGet(TemporalSavedData::new);
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), this)
+                .result().ifPresent(data -> tag.merge((CompoundTag) data));
+        return tag;
+    }
 
     private final Map<UUID, EnumSet<TemporalPauseSource>> persistentImmunities;
 
@@ -79,7 +91,8 @@ public final class TemporalSavedData extends SavedData {
     }
 
     public static TemporalSavedData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(SAVED_DATA_TYPE);
+        return server.overworld().getDataStorage()
+                .computeIfAbsent(getType(), AcademyCraft.academy("temporal_state").toString());
     }
 
     synchronized boolean isImmune(UUID entityId, TemporalPauseSource source) {

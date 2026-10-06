@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.darkmatter.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -66,7 +67,7 @@ public final class DarkmatterPhaseTuning extends Skill {
         register(Client.KEY_ALPHA, Client.LEGACY_KEY_ALPHA_PRESS, Client.LEGACY_KEY_ALPHA_RELEASE,
                 Direction.ALPHA, 0);
         register(Client.KEY_BETA, Client.LEGACY_KEY_BETA_PRESS, Client.LEGACY_KEY_BETA_RELEASE,
-                Direction.BETA, InputConstants.MOD_ALT);
+                Direction.BETA, GLFW.GLFW_MOD_ALT);
         AcademyCraftClient.Config.INSTANCE.save();
     }
 

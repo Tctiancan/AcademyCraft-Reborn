@@ -319,7 +319,7 @@ public final class VectorAccel extends Skill {
                     var p2 = trajectoryPath.get(i + 1).add(renderOffset);
 
                     var dir = p2.subtract(p1).normalize();
-                    var cross = dir.cross(p1.subtract(camera.position())).normalize();
+                    var cross = dir.cross(p1.subtract(camera.getPosition())).normalize();
 
                     var width = 0.025f * (1 - (float) i / trajectoryPath.size());
                     var v1 = p1.add(cross.scale(width));
@@ -400,8 +400,8 @@ public final class VectorAccel extends Skill {
                 simulatePath(partialTick);
 
                 var matrixStack = event.getMatrixStack();
-                var camera = Minecraft.getInstance().gameRenderer.mainCamera();
-                var camPos = camera.position();
+                var camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+                var camPos = camera.getPosition();
                 var renderOffset = calculateLeftHandOffset(partialTick);
 
                 matrixStack.pushPose();

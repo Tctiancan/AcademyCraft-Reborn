@@ -114,10 +114,11 @@ public final class AeromanipRegressionGameTests {
         var original = Blocks.OAK_SLAB.defaultBlockState().setValue(BlockStateProperties.WATERLOGGED, true);
         level.setBlockAndUpdate(pos, original);
         WaterSuppression.refresh(level, UUID.randomUUID(), Vec3.atCenterOf(pos), 2.0);
-        var data = level.getDataStorage().computeIfAbsent(WaterSuppression.SAVED_DATA_TYPE);
+        var data = level.getDataStorage()
+                .computeIfAbsent(WaterSuppression.getType(), AcademyCraft.academy("suppressed_water").toString());
         var encoded = WaterSuppression.CODEC.encodeStart(NbtOps.INSTANCE, data).getOrThrow();
         var reloaded = WaterSuppression.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow();
-        level.getDataStorage().set(WaterSuppression.SAVED_DATA_TYPE, reloaded);
+        level.getDataStorage().set(AcademyCraft.academy("suppressed_water").toString(), reloaded);
         helper.runAfterDelay(2, () -> {
             helper.assertTrue(level.getBlockState(pos).equals(original), Component.literal("Reloaded restoration journal must restore the original slab without an owner"));
             helper.succeed();

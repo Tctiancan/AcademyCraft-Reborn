@@ -510,7 +510,7 @@ public abstract class Skill {
     public AbilityCategory getCategory() {
         if (category != null) return category;
         return Registries.ABILITY_CATEGORIES.get(Objects.requireNonNull(categoryKey))
-                .orElseThrow(() -> new IllegalStateException("Missing category " + categoryKey.identifier()))
+                .orElseThrow(() -> new IllegalStateException("Missing category " + categoryKey.location()))
                 .value();
     }
 
@@ -554,7 +554,7 @@ public abstract class Skill {
         var linked = new LinkedHashSet<Skill>();
         for (var key : dependencyKeys) {
             linked.add(Registries.SKILLS.get(key)
-                    .orElseThrow(() -> new IllegalStateException(getKey() + " missing dependency " + key.identifier())).value());
+                    .orElseThrow(() -> new IllegalStateException(getKey() + " missing dependency " + key.location())).value());
         }
         for (var key : optionalDependencyKeys) Registries.SKILLS.get(key).ifPresent(value -> linked.add(value.value()));
         if (stateType == null) SkillDataSerializer.registerType(dataTypeId, dataClass);

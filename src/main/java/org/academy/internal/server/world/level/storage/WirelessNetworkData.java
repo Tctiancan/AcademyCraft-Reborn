@@ -3,11 +3,13 @@ package org.academy.internal.server.world.level.storage;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.DataResult;
 import com.mojang.serialization.Keyable;
+import net.minecraft.nbt.NbtOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import org.academy.AcademyCraft;
 import org.academy.api.server.wireless.WirelessManager;
 import org.jspecify.annotations.Nullable;
@@ -47,11 +49,22 @@ public final class WirelessNetworkData extends SavedData {
                             .forGetter(data -> data.nodes.getPrimaryMap())
             ).apply(instance, WirelessNetworkData::new)
     );
-    public static final SavedDataType<WirelessNetworkData> SAVED_DATA_TYPE = new SavedDataType<>(
-            academy("wireless"),
-            WirelessNetworkData::new,
-            CODEC
-    );
+    public static SavedData.Factory<WirelessNetworkData> getType() {
+        return new SavedData.Factory<>(WirelessNetworkData::new, WirelessNetworkData::load);
+    }
+
+    private static WirelessNetworkData load(CompoundTag tag, HolderLookup.Provider registries) {
+        return CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+                .result().orElseGet(WirelessNetworkData::new);
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), this)
+                .result().ifPresent(data -> tag.merge((CompoundTag) data));
+        return tag;
+    }
+
     private static final Logger LOGGER = AcademyCraft.getLogger();
 
     private final DualKeyMap<BlockPos, String, NodeConfig> nodes =
@@ -65,7 +78,8 @@ public final class WirelessNetworkData extends SavedData {
     }
 
     public static WirelessNetworkData get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(SAVED_DATA_TYPE);
+        return level.getDataStorage()
+                .computeIfAbsent(getType(), AcademyCraft.academy("wireless").toString());
     }
 
     public boolean registerNode(BlockPos pos, String name, String password, int radius, int maxConnections) {

@@ -174,7 +174,7 @@ public class KineticEnergyApplied extends Skill {
 
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(Client.KEY_NAME_TOGGLE,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_K,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.toggle());
         InputSystem.addKeyBinding(Client.KEY_NAME_BLOCK_BREAK,
                 Client.CONFIG.getKeyBinding(Client.KEY_NAME_BLOCK_BREAK,

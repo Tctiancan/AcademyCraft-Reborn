@@ -1226,7 +1226,7 @@ public final class CommonProgramExecutors implements ProgramExecutorLookup {
             ProgramBlockPosition position,
             List<String> selectors
     ) {
-        if (!position.dimension().equals(player.level().dimension().identifier())) return false;
+        if (!position.dimension().equals(player.level().dimension().location())) return false;
         var blockPosition = new BlockPos(position.x(), position.y(), position.z());
         if (!player.level().hasChunkAt(blockPosition)) return false;
         var state = player.level().getBlockState(blockPosition);

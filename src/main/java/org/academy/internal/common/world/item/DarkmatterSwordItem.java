@@ -1,6 +1,5 @@
 package org.academy.internal.common.world.item;
 
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.common.ItemAbilities;
 import net.neoforged.neoforge.common.ItemAbility;
@@ -17,9 +16,8 @@ public final class DarkmatterSwordItem extends DarkmatterEquipmentItem {
     }
 
     @Override
-    public boolean canPerformAction(ItemInstance stack, ItemAbility action) {
-        if (stack instanceof ItemStack itemStack
-                && !DarkmatterItemUtil.isOperational(itemStack)) return false;
+    public boolean canPerformAction(ItemStack stack, ItemAbility action) {
+        if (!DarkmatterItemUtil.isOperational(stack)) return false;
         return action == ItemAbilities.SWORD_SWEEP
                 || super.canPerformAction(stack, action);
     }

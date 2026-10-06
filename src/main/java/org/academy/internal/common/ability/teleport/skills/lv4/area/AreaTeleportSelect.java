@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.teleport.skills.lv4.area;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -78,22 +79,22 @@ public final class AreaTeleportSelect extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_SETUP, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_SETUP,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_Y,
-                        InputConstants.PRESS, InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.setup());
         InputSystem.addKeyBinding(Client.KEY_NAME_TRANSFORM, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TRANSFORM,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_Y,
-                        InputConstants.PRESS, InputConstants.MOD_SHIFT | InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.transform());
         InputSystem.addKeyBinding(Client.KEY_NAME_SWAP, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_SWAP,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_Y,
-                        InputConstants.PRESS, InputConstants.MOD_CONTROL | InputConstants.MOD_ALT)
+                        InputConstants.PRESS, InputConstants.MOD_CONTROL | GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.toggleSwap());
         InputSystem.addKeyBinding(Client.KEY_NAME_RUN, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_RUN,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_Y,
-                        InputConstants.PRESS, InputConstants.MOD_SHIFT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT)
         ), ctx -> Client.run());
     }
 
@@ -158,9 +159,9 @@ public final class AreaTeleportSelect extends Skill {
             if (previews.isEmpty()) return;
             var minecraft = Minecraft.getInstance();
             if (minecraft.level == null) return;
-            var dimension = minecraft.level.dimension().identifier().toString();
+            var dimension = minecraft.level.dimension().location().toString();
             var renderType = Render.RenderTypes.MINE_DETECT_LINES;
-            var camera = minecraft.gameRenderer.mainCamera().position();
+            var camera = minecraft.gameRenderer.getMainCamera().getPosition();
             var matrices = event.getMatrixStack();
             matrices.pushPose();
             matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);
@@ -234,7 +235,7 @@ public final class AreaTeleportSelect extends Skill {
             var snapshot = AreaTeleportState.snapshot(player.getUUID());
             var previews = new ArrayList<Preview>(3);
             if (snapshot.pending() != null && snapshot.dimension() != null) {
-                previews.add(new Preview(snapshot.dimension().identifier().toString(),
+                previews.add(new Preview(snapshot.dimension().location().toString(),
                         snapshot.pending(), snapshot.pending(), 0));
             }
             addRegion(previews, snapshot.selected(), 1);
@@ -243,7 +244,7 @@ public final class AreaTeleportSelect extends Skill {
         }
 
         private static void addRegion(List<Preview> previews, AreaTeleportState.Region region, int color) {
-            if (region != null) previews.add(new Preview(region.dimension().identifier().toString(),
+            if (region != null) previews.add(new Preview(region.dimension().location().toString(),
                     region.min(), region.max(), color));
         }
     }

@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -143,7 +144,7 @@ public final class Railgun extends Skill {
         var startBinding = Client.CLIENT_CONFIG.getKeyBinding(
                 Client.KEY_NAME_START,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R,
-                        InputConstants.PRESS, InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_ALT)
         );
         if (startBinding.action() != InputConstants.PRESS) {
             startBinding = Client.withAction(startBinding, InputConstants.PRESS);

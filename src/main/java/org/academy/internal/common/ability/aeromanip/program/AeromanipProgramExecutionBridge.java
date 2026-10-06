@@ -1,4 +1,4 @@
-package org.academy.internal.common.ability.aeromanip.program;
+﻿package org.academy.internal.common.ability.aeromanip.program;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;

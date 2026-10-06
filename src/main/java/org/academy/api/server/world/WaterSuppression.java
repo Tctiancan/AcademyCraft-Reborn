@@ -1,8 +1,11 @@
 package org.academy.api.server.world;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.nbt.NbtOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.FluidTags;
 import net.minecraft.world.level.block.Block;
@@ -11,7 +14,6 @@ import net.minecraft.world.level.block.LiquidBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -36,8 +38,20 @@ public final class WaterSuppression extends SavedData {
             BlockState.CODEC.fieldOf("dry").forGetter(Entry::dry)
     ).apply(instance, Entry::new));
     public static final Codec<WaterSuppression> CODEC = ENTRY_CODEC.listOf().xmap(WaterSuppression::new, WaterSuppression::entries);
-    public static final SavedDataType<WaterSuppression> SAVED_DATA_TYPE = new SavedDataType<>(
-            AcademyCraft.academy("suppressed_water"), () -> new WaterSuppression(List.of()), CODEC);
+    public static SavedData.Factory<WaterSuppression> getType() {
+        return new SavedData.Factory<>(
+                () -> new WaterSuppression(List.of()),
+                (tag, registries) -> CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+                        .result().orElseGet(() -> new WaterSuppression(List.of())));
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), this)
+                .result().ifPresent(data -> tag.merge((CompoundTag) data));
+        return tag;
+    }
+
     private final Map<BlockPos, Entry> journal = new HashMap<>();
     private final Map<UUID, Zone> zones = new HashMap<>();
 
@@ -50,7 +64,8 @@ public final class WaterSuppression extends SavedData {
     }
 
     private static WaterSuppression get(ServerLevel level) {
-        return level.getDataStorage().computeIfAbsent(SAVED_DATA_TYPE);
+        return level.getDataStorage()
+                .computeIfAbsent(getType(), AcademyCraft.academy("suppressed_water").toString());
     }
 
     public static void refresh(ServerLevel level, UUID source, Vec3 center, double radius) {

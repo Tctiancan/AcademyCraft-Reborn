@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv3;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SoundInstance;
@@ -22,7 +23,6 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.item.FallingBlockEntity;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.Item;
@@ -183,7 +183,7 @@ public class MagnetManipulation extends Skill {
                         && Minecraft.getInstance().player.isAlive() && Minecraft.getInstance().gui.screen() == null);
         InputSystem.addKeyBinding(Client.KEY_NAME_LEVITATION,
                 Client.CONFIG.getKeyBinding(Client.KEY_NAME_LEVITATION,
-                        InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R, InputConstants.PRESS, InputConstants.MOD_SHIFT)),
+                        InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R, InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT)),
                 unused458 -> { if (AbilitySystemClient.canUseSkill(this)) MisakaNetworkClient.send(MoveStartPacket.PLAYER_TO_TARGET); });
         org.academy.api.client.hud.ability.ToggleStatusHud.Companion.registerStateProvider(this,
                 () -> Minecraft.getInstance().player != null && Minecraft.getInstance().player.getData(AttachmentTypes.MAGNETIC_LEVITATION_REQUESTED));

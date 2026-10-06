@@ -64,18 +64,17 @@ public final class DarkmatterConfigurableBlock extends FallingBlock implements E
     }
 
     @Override
-    protected BlockState updateShape(BlockState state, LevelReader level,
-                                     ScheduledTickAccess scheduledTicks, BlockPos pos,
-                                     Direction direction, BlockPos neighborPos,
-                                     BlockState neighborState, RandomSource random) {
-        if (state.getValue(GRAVITY)) scheduledTicks.scheduleTick(pos, this, getDelayAfterPlace());
+    protected BlockState updateShape(BlockState state, Direction direction,
+                                     BlockState neighborState, LevelAccessor level,
+                                     BlockPos pos, BlockPos neighborPos) {
+        if (state.getValue(GRAVITY)) level.scheduleTick(pos, this, getDelayAfterPlace());
         return state;
     }
 
     @Override
     protected void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         if (!state.getValue(GRAVITY) || !isFree(level.getBlockState(pos.below()))
-                || pos.getY() < level.getMinY()) return;
+                || pos.getY() < level.getMinBuildHeight()) return;
         var blockEntity = level.getBlockEntity(pos);
         var data = blockEntity == null ? null
                 : blockEntity.saveWithoutMetadata(level.registryAccess());

@@ -26,7 +26,7 @@ public final class ProgramNodes {
             }
             @Override public ProgramNodeRole role() { return ProgramNodeRole.ENTRY; }
             @Override public ProgramNodePurity purity() { return ProgramNodePurity.PURE; }
-            @Override public ProgramNodeScope scope() { return ProgramNodeScope.category(category.identifier()); }
+            @Override public ProgramNodeScope scope() { return ProgramNodeScope.category(category.location()); }
             @Override public ProgramNodeExecution<VoidConfiguration> execution() {
                 return (unused160, unused161, unused162) -> ProgramNodeStep.next("flow");
             }

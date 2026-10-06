@@ -24,7 +24,7 @@ public record DisplacementModifier(AttributeCurve strength, AttributeCurve frequ
     public static final StreamCodec<ByteBuf, DisplacementModifier> CODEC = StreamCodec.composite(
             AttributeCurve.CODEC, DisplacementModifier::strength,
             AttributeCurve.CODEC, DisplacementModifier::frequency,
-            ByteBufCodecs.LONG, DisplacementModifier::seed,
+            ByteBufCodecs.VAR_LONG, DisplacementModifier::seed,
             DisplacementModifier::new
     );
 

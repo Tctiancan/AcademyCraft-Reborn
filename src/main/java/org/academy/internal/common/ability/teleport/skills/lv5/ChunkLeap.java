@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.teleport.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraftClient;
@@ -77,7 +78,7 @@ public final class ChunkLeap extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_OPEN, config.getKeyBinding(
                 Client.KEY_NAME_OPEN,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_C,
-                        InputConstants.PRESS, InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.openMap());
     }
 

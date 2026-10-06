@@ -32,13 +32,13 @@ public final class WingFlightRuntime {
         int previousButtons;
         Session(ServerPlayer player, Skill skill) {
             this.skill = skill;
-            level = player.level();
+            level = player.serverLevel();
         }
     }
 
     private static Session session(ServerPlayer player, Skill skill) {
         var session = SESSIONS.get(player);
-        if (session == null || session.skill != skill || session.level != player.level()) {
+        if (session == null || session.skill != skill || session.level != player.serverLevel()) {
             session = new Session(player, skill);
             SESSIONS.put(player, session);
         }

@@ -1,4 +1,4 @@
-package org.academy.internal.common.ability.program.compile;
+﻿package org.academy.internal.common.ability.program.compile;
 
 import com.google.gson.JsonParser;
 import net.minecraft.resources.ResourceLocation;

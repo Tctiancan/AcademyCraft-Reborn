@@ -2,6 +2,7 @@ package org.academy.internal.common.ability.teleport.skills.lv3;
 
 import org.academy.api.common.damage.DamageComposition;
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -85,12 +86,12 @@ public final class FleshRipping extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_START, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_START,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT,
-                        InputConstants.PRESS, InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.start());
         InputSystem.addKeyBinding(Client.KEY_NAME_END, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_END,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_RIGHT,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.end());
     }
 
@@ -174,7 +175,7 @@ public final class FleshRipping extends Skill {
                 }
 
                 var renderType = Render.RenderTypes.MINE_DETECT_LINES;
-                var camera = minecraft.gameRenderer.mainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().position();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

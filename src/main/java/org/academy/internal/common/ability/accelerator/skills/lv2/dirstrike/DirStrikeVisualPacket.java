@@ -23,22 +23,22 @@ import org.misaka.api.common.network.packet.PacketType;
 public final class DirStrikeVisualPacket extends Packet<ClientPacketListener, DirStrikeVisualPacket> {
     public static final StreamCodec<ByteBuf, DirStrikeVisualPacket> CODEC = StreamCodec.of(
             (buffer, packet) -> {
-                Vec3.STREAM_CODEC.encode(buffer, packet.center);
+                buffer.writeDouble(packet.center.x).writeDouble(packet.center.y).writeDouble(packet.center.z);
                 BlockPos.STREAM_CODEC.encode(buffer, packet.origin);
                 ByteBufCodecs.VAR_INT.encode(buffer, packet.radius);
                 ByteBufCodecs.BOOL.encode(buffer, packet.airborne);
                 ByteBufCodecs.FLOAT.encode(buffer, packet.lookX);
                 ByteBufCodecs.FLOAT.encode(buffer, packet.lookZ);
-                ByteBufCodecs.LONG.encode(buffer, packet.seed);
+                ByteBufCodecs.VAR_LONG.encode(buffer, packet.seed);
             },
             buffer -> new DirStrikeVisualPacket(
-                    Vec3.STREAM_CODEC.decode(buffer),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
                     BlockPos.STREAM_CODEC.decode(buffer),
                     ByteBufCodecs.VAR_INT.decode(buffer),
                     ByteBufCodecs.BOOL.decode(buffer),
                     ByteBufCodecs.FLOAT.decode(buffer),
                     ByteBufCodecs.FLOAT.decode(buffer),
-                    ByteBufCodecs.LONG.decode(buffer)
+                    ByteBufCodecs.VAR_LONG.decode(buffer)
             )
     );
     private static final double BROADCAST_RANGE = 96.0;

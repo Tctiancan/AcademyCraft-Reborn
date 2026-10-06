@@ -130,9 +130,9 @@ public final class ChunkTicketLeaseManager {
             for (var pos : lease.chunks) {
                 for (var dx = -lease.radius; dx <= lease.radius; dx++) {
                     for (var dz = -lease.radius; dz <= lease.radius; dz++) {
-                        if (level.getChunkSource().getChunkNow(pos.x() + dx, pos.z() + dz) == null) {
+                        if (level.getChunkSource().getChunkNow(pos.x + dx, pos.z + dz) == null) {
                             throw new IllegalStateException("Chunk preload is not resident in "
-                                    + level.dimension().identifier() + " at " + (pos.x() + dx) + "," + (pos.z() + dz));
+                                    + level.dimension().location() + " at " + (pos.x + dx) + "," + (pos.z + dz));
                         }
                     }
                 }
@@ -297,7 +297,7 @@ public final class ChunkTicketLeaseManager {
     }
 
     public static String viewOwner(UUID player, ResourceKey<Level> dimension) {
-        return "chunk_leap_view:" + player + ":" + dimension.identifier();
+        return "chunk_leap_view:" + player + ":" + dimension.location();
     }
 
     public static String preloadOwner(UUID player) {

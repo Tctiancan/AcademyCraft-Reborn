@@ -7,7 +7,6 @@ import org.academy.internal.server.time.TemporalControlProvenance;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
 import net.neoforged.neoforge.common.NeoForge;
@@ -503,7 +502,7 @@ public final class InputSystem {
         NeoForge.EVENT_BUS.post(inputEvent);
 
         if (inputEvent.isCanceled()) {
-            if (action == InputConstants.RELEASE) KeyMapping.set(InputConstants.getKey(event), false);
+            if (action == InputConstants.RELEASE) KeyMapping.set(InputConstants.getKey(event.key(), event.scancode()), false);
             ci.cancel();
             return;
         }
@@ -872,9 +871,9 @@ public final class InputSystem {
                 return "Any";
             }
             var builder = new StringBuilder();
-            if ((modifiers & InputConstants.MOD_SHIFT) != 0) builder.append("Shift+");
+            if ((modifiers & GLFW.GLFW_MOD_SHIFT) != 0) builder.append("Shift+");
             if ((modifiers & InputConstants.MOD_CONTROL) != 0) builder.append("Ctrl+");
-            if ((modifiers & InputConstants.MOD_ALT) != 0) builder.append("Alt+");
+            if ((modifiers & GLFW.GLFW_MOD_ALT) != 0) builder.append("Alt+");
             var keyCodes = keys.stream().sorted().toList();
             for (var i = 0; i < keyCodes.size(); i++) {
                 if (i > 0) builder.append('+');

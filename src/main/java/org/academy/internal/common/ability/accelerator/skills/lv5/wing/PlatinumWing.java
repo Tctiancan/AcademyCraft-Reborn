@@ -280,7 +280,7 @@ public final class PlatinumWing extends Skill {
             var tombstone = new ExecutionTombstone(
                     target.getUUID(),
                     typeId,
-                    level.dimension().identifier(),
+                    level.dimension().location(),
                     target.position(),
                     level.getGameTime(),
                     controllerBacked,
@@ -388,7 +388,7 @@ public final class PlatinumWing extends Skill {
                 if (!tombstone.controllerBacked
                         && level.getGameTime() - tombstone.gameTime > SIGNATURE_SUPPRESSION_TICKS) continue;
                 if (!tombstone.typeId.equals(typeId)) continue;
-                if (!tombstone.dimension.equals(level.dimension().identifier())) continue;
+                if (!tombstone.dimension.equals(level.dimension().location())) continue;
                 if (tombstone.controllerBacked && !tombstone.matchesControllerRespawn(entity)) continue;
                 if (tombstone.position.distanceToSqr(entity.position()) > 4.0) continue;
                 entity.discard();

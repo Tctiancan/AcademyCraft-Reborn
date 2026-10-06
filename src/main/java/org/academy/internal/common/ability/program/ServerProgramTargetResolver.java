@@ -135,7 +135,7 @@ public final class ServerProgramTargetResolver implements ProgramTargetResolver 
         if (hit.getType() != HitResult.Type.BLOCK) return Optional.empty();
         var block = hit.getBlockPos();
         return Optional.of(new ProgramBlockPosition(
-                level().dimension().identifier(), block.getX(), block.getY(), block.getZ()));
+                level().dimension().location(), block.getX(), block.getY(), block.getZ()));
     }
 
     @Override
@@ -198,7 +198,7 @@ public final class ServerProgramTargetResolver implements ProgramTargetResolver 
 
     public Vec3 requireLocalPosition(ProgramWorldPosition position) {
         Objects.requireNonNull(position, "position");
-        if (!position.dimension().equals(level().dimension().identifier())) {
+        if (!position.dimension().equals(level().dimension().location())) {
             throw new IllegalArgumentException("Position is in another dimension");
         }
         var value = new Vec3(position.x(), position.y(), position.z());
@@ -219,7 +219,7 @@ public final class ServerProgramTargetResolver implements ProgramTargetResolver 
     }
 
     public ServerLevel level() {
-        return player.level();
+        return player.serverLevel();
     }
 
     /**
@@ -237,7 +237,7 @@ public final class ServerProgramTargetResolver implements ProgramTargetResolver 
 
     private ProgramWorldPosition worldPosition(Vec3 position) {
         return new ProgramWorldPosition(
-                level().dimension().identifier(), position.x, position.y, position.z);
+                level().dimension().location(), position.x, position.y, position.z));
     }
 
     private double requireRange(double range) {

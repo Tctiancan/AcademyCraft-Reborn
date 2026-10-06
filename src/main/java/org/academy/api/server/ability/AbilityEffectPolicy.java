@@ -31,7 +31,7 @@ public final class AbilityEffectPolicy {
     private static Decision decide(Level effectLevel, boolean pvp) {
         if (!(effectLevel instanceof ServerLevel level)) return Decision.DEFAULT;
         var server = level.getServer().getAcademyCraftServer();
-        return decide(server.getDimensionEffectsConfig(), level.dimension().identifier().toString(), pvp);
+        return decide(server.getDimensionEffectsConfig(), level.dimension().location().toString(), pvp);
     }
 
     static Decision decide(DimensionEffectsConfig config, String dimension, boolean pvp) {

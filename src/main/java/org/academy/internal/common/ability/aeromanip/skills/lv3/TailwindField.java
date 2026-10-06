@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv3;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
@@ -96,9 +97,9 @@ public final class TailwindField extends Skill {
         var binding = Client.CONFIG.getKeyBindingMigratingDefaults(
                 Client.KEY_NAME_CAST,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT),
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT),
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_T,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT));
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT));
         if (binding.action() != InputSystem.ANY_ACTION) {
             binding = new InputSystem.KeyCombination(
                     binding.type(), binding.keys(), InputSystem.ANY_ACTION, binding.modifiers(),

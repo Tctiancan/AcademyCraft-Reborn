@@ -48,7 +48,7 @@ final class PrecisionProgramTargetResolver implements ProgramTargetResolver {
         var eye = player.getEyePosition();
         return raycastEntity(
                 new ProgramWorldPosition(
-                        player.level().dimension().identifier(), eye.x, eye.y, eye.z
+                        player.level().dimension().location(), eye.x, eye.y, eye.z
                 ),
                 new ProgramDirection(look.x, look.y, look.z),
                 MAX_QUERY_RANGE
@@ -62,7 +62,7 @@ final class PrecisionProgramTargetResolver implements ProgramTargetResolver {
         var eye = player.getEyePosition();
         return raycastBlock(
                 new ProgramWorldPosition(
-                        player.level().dimension().identifier(), eye.x, eye.y, eye.z
+                        player.level().dimension().location(), eye.x, eye.y, eye.z
                 ),
                 new ProgramDirection(look.x, look.y, look.z),
                 MAX_QUERY_RANGE
@@ -78,7 +78,7 @@ final class PrecisionProgramTargetResolver implements ProgramTargetResolver {
         }
         var position = entity.position();
         return Optional.of(new ProgramWorldPosition(
-                entity.level().dimension().identifier(),
+                entity.level().dimension().location(),
                 position.x,
                 position.y,
                 position.z
@@ -131,7 +131,7 @@ final class PrecisionProgramTargetResolver implements ProgramTargetResolver {
         if (hit.getType() != HitResult.Type.BLOCK) return Optional.empty();
         var block = hit.getBlockPos();
         return Optional.of(new ProgramBlockPosition(
-                player.level().dimension().identifier(),
+                player.level().dimension().location(),
                 block.getX(),
                 block.getY(),
                 block.getZ()
@@ -151,7 +151,7 @@ final class PrecisionProgramTargetResolver implements ProgramTargetResolver {
         var look = entity.getViewVector(1.0f);
         if (look.lengthSqr() <= 1.0E-12) return Optional.empty();
         var start = requireLocalOrigin(new ProgramWorldPosition(
-                player.level().dimension().identifier(),
+                player.level().dimension().location(),
                 entity.getEyePosition().x,
                 entity.getEyePosition().y,
                 entity.getEyePosition().z
@@ -210,7 +210,7 @@ final class PrecisionProgramTargetResolver implements ProgramTargetResolver {
     }
 
     private Vec3 requireLocalOrigin(ProgramWorldPosition position) {
-        if (!position.dimension().equals(player.level().dimension().identifier())) {
+        if (!position.dimension().equals(player.level().dimension().location())) {
             throw new IllegalArgumentException("Precision query origin is in another dimension");
         }
         var origin = new Vec3(position.x(), position.y(), position.z());

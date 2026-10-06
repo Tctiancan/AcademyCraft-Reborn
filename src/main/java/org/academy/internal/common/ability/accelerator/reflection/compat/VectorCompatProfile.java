@@ -54,7 +54,7 @@ public record VectorCompatProfile(
 
     public static String damageTypeId(DamageSource source) {
         return source.typeHolder().unwrapKey()
-                .map(key -> key.identifier().toString().toLowerCase(Locale.ROOT))
+                .map(key -> key.location().toString().toLowerCase(Locale.ROOT))
                 .orElseGet(() -> source.getMsgId().toLowerCase(Locale.ROOT));
     }
 

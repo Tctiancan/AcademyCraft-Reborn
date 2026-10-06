@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.meltdowner.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.StreamCodec;
@@ -74,7 +75,7 @@ public class Disintegrate extends Skill {
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(key);
         InputSystem.addKeyBinding(Client.KEY, Client.CONFIG.getKeyBinding(Client.KEY,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_K,
-                                InputConstants.PRESS, InputConstants.MOD_ALT | InputConstants.MOD_SHIFT)),
+                                InputConstants.PRESS, GLFW.GLFW_MOD_ALT | GLFW.GLFW_MOD_SHIFT)),
                 unused505 -> Client.onUse());
     }
 

@@ -48,7 +48,7 @@ public final class ChunkLeapInspector {
     }
 
     public static Report inspect(ServerLevel level, int chunkX, int chunkZ) {
-        var dimensionId = level.dimension().identifier().toString();
+        var dimensionId = level.dimension().location().toString();
         var chunk = level.getChunkSource().getChunkNow(chunkX, chunkZ);
         if (chunk == null) {
             return Report.unloaded(dimensionId, chunkX, chunkZ);
@@ -58,7 +58,7 @@ public final class ChunkLeapInspector {
         var baseZ = chunkZ << 4;
         var step = 16 / SAMPLES_PER_AXIS;
         var tally = new HashMap<String, Integer>();
-        var surfaceY = level.getMinY();
+        var surfaceY = level.getMinBuildHeight();
         var surfaceBlock = "";
 
         for (var sx = 0; sx < SAMPLES_PER_AXIS; sx++) {
@@ -71,7 +71,7 @@ public final class ChunkLeapInspector {
                     surfaceBlock = idOf(level.getBlockState(new BlockPos(blockX, height, blockZ)));
                 }
                 var recorded = 0;
-                for (var y = height; y >= level.getMinY() && recorded < BLOCKS_PER_COLUMN; y--) {
+                for (var y = height; y >= level.getMinBuildHeight() && recorded < BLOCKS_PER_COLUMN; y--) {
                     var state = level.getBlockState(new BlockPos(blockX, y, blockZ));
                     if (state.isAir()) continue;
                     tally.merge(idOf(state), 1, Integer::sum);
@@ -87,10 +87,10 @@ public final class ChunkLeapInspector {
                 .toList());
 
         var biome = level.getBiome(new BlockPos(baseX + 8, surfaceY, baseZ + 8))
-                .unwrapKey().map(key -> key.identifier().toString()).orElse("");
+                .unwrapKey().map(key -> key.location().toString()).orElse("");
         var entityCount = level.getEntitiesOfClass(net.minecraft.world.entity.Entity.class,
-                new net.minecraft.world.phys.AABB(baseX, level.getMinY(), baseZ,
-                        baseX + 16.0, level.getMaxY(), baseZ + 16.0),
+                new net.minecraft.world.phys.AABB(baseX, level.getMinBuildHeight(), baseZ,
+                        baseX + 16.0, level.getMaxBuildHeight(), baseZ + 16.0),
                 candidate -> !candidate.isRemoved()).size();
 
         return new Report(dimensionId, chunkX, chunkZ, surfaceBlock, surfaceY, biome,

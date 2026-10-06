@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv3;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
@@ -92,12 +93,12 @@ public final class LaminarCutter extends Skill {
                 InputSystem.InputType.MOUSE,
                 InputConstants.MOUSE_BUTTON_RIGHT,
                 InputSystem.ANY_ACTION,
-                InputConstants.MOD_ALT);
+                GLFW.GLFW_MOD_ALT);
         var binding = Client.CONFIG.getKeyBindingMigratingDefaults(
                 Client.KEY_NAME_CAST,
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_V,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT));
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT));
         if (binding.action() != InputSystem.ANY_ACTION) {
             binding = new InputSystem.KeyCombination(
                     binding.type(), binding.keys(), InputSystem.ANY_ACTION, binding.modifiers(),

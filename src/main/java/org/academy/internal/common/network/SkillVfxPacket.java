@@ -45,7 +45,7 @@ public final class SkillVfxPacket extends Packet<ClientPacketListener, SkillVfxP
             case SkillVfxState.Slash ignored -> 5;
             case SkillVfxState.DistortionRing ignored -> 6;
         });
-        Vec3.STREAM_CODEC.encode(b, state.position());
+        b.writeDouble(state.position().x).writeDouble(state.position().y).writeDouble(state.position().z);
         switch (state) {
             case SkillVfxState.Beam s -> {
                 b.writeFloat(s.xRot()); b.writeFloat(s.yRot());
@@ -56,25 +56,25 @@ public final class SkillVfxPacket extends Packet<ClientPacketListener, SkillVfxP
                 b.writeByte(s.flags());
                 if (s.reflected()) {
                     b.writeFloat(s.reflectionDistance()); b.writeFloat(s.returnLength());
-                    Vec3.STREAM_CODEC.encode(b, s.returnDirection());
+                    b.writeDouble(s.returnDirection().x).writeDouble(s.returnDirection().y).writeDouble(s.returnDirection().z);
                 }
                 b.writeFloat(s.tickRate());
             }
             case SkillVfxState.Plasma s -> {
                 b.writeBoolean(s.launched());
                 if (s.launched()) {
-                    Vec3.STREAM_CODEC.encode(b, s.target()); b.writeFloat(s.speed());
+                    b.writeDouble(s.target().x).writeDouble(s.target().y).writeDouble(s.target().z); b.writeFloat(s.speed());
                     ByteBufCodecs.VAR_INT.encode(b, s.launchDelay());
                     b.writeFloat(s.launchScale());
                 } else {
-                    Vec3.STREAM_CODEC.encode(b, s.chargeOrigin());
+                    b.writeDouble(s.chargeOrigin().x).writeDouble(s.chargeOrigin().y).writeDouble(s.chargeOrigin().z);
                     b.writeFloat(s.progress()); b.writeFloat(s.chargeRate());
                 }
                 b.writeFloat(s.tickRate());
             }
             case SkillVfxState.Burst s -> {
                 b.writeBoolean(s.plasmaImpact());
-                if (!s.plasmaImpact()) Vec3.STREAM_CODEC.encode(b, s.direction());
+                if (!s.plasmaImpact()) b.writeDouble(s.direction().x).writeDouble(s.direction().y).writeDouble(s.direction().z);
                 b.writeFloat(s.radius()); b.writeFloat(s.intensity());
                 ByteBufCodecs.VAR_INT.encode(b, s.lifetimeTicks());
             }
@@ -178,7 +178,7 @@ public final class SkillVfxPacket extends Packet<ClientPacketListener, SkillVfxP
     }
 
     private static Vec3 vector(ByteBuf b) {
-        var v = Vec3.STREAM_CODEC.decode(b);
+        var v = new Vec3(b.readDouble(), b.readDouble(), b.readDouble());
         if (!Double.isFinite(v.lengthSqr())) throw new IllegalArgumentException("Non-finite VFX position");
         return v;
     }

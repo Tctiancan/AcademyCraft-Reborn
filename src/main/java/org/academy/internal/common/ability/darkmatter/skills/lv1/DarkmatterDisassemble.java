@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.darkmatter.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -108,7 +109,7 @@ public final class DarkmatterDisassemble extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_CAST, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_CAST,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_LEFT,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)
         ), context -> Client.cast());
     }
 
@@ -436,7 +437,7 @@ public final class DarkmatterDisassemble extends Skill {
                 int milestone
         ) {
             if (!level.hasChunkAt(pos) || !level.getWorldBorder().isWithinBounds(pos)
-                    || pos.getY() < level.getMinY() || pos.getY() >= level.getMaxY()
+                    || pos.getY() < level.getMinBuildHeight() || pos.getY() >= level.getMaxBuildHeight()
                     || !level.mayInteract(player, pos)) return false;
             var state = level.getBlockState(pos);
             var hardness = state.getDestroySpeed(level, pos);

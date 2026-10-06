@@ -346,7 +346,7 @@ public final class DarkmatterCreation extends Skill {
             }
             updateData(player, mutable -> mutable.addSummon(
                     creature.getUUID(), blueprint.name(), investment, normalizedSlot,
-                    level.dimension().identifier().toString(), creature.getX(), creature.getY(), creature.getZ()));
+                    level.dimension().location().toString(), creature.getX(), creature.getY(), creature.getZ()));
             Skills.DARKMATTER_CREATION.get().reportActivity(player, true);
             return SummonResult.SUMMONED;
         }
@@ -369,7 +369,7 @@ public final class DarkmatterCreation extends Skill {
                     var candidate = origin.add(offset).add(0.0, vertical, 0.0);
                     var block = BlockPos.containing(candidate);
                     if (!level.hasChunkAt(block) || !level.getWorldBorder().isWithinBounds(block)
-                            || block.getY() < level.getMinY() || block.getY() >= level.getMaxY()) {
+                            || block.getY() < level.getMinBuildHeight() || block.getY() >= level.getMaxBuildHeight()) {
                         continue;
                     }
                     creature.snapTo(candidate.x, candidate.y, candidate.z, player.getYRot(), 0.0f);
@@ -440,7 +440,7 @@ public final class DarkmatterCreation extends Skill {
                 return Optional.empty();
             }
             updateData(player, mutable -> mutable.addSummon(creature.getUUID(), blueprint.name(),
-                    blueprint.investment(), slot, level.dimension().identifier().toString(),
+                    blueprint.investment(), slot, level.dimension().location().toString(),
                     creature.getX(), creature.getY(), creature.getZ()));
             return Optional.of(creature.getUUID());
         }
@@ -496,7 +496,7 @@ public final class DarkmatterCreation extends Skill {
         private static void migrateLegacy(ServerPlayer player) {
             if (data(player).map(DarkmatterCreationData::needsLegacyMigration).orElse(false)) {
                 AcademyCraft.LOGGER.info("Migrating legacy darkmatter beetles for {} by safe dismantle",
-                        player.getGameProfile().name());
+                        player.getGameProfile().getName());
                 discardAll(player);
             }
         }
@@ -526,11 +526,11 @@ public final class DarkmatterCreation extends Skill {
                     if (loaded != null) {
                         var creature = loaded;
                         updateData(player, mutable -> mutable.updateSummon(uuid,
-                                creature.level().dimension().identifier().toString(),
+                                creature.level().dimension().location().toString(),
                                 creature.getX(), creature.getY(), creature.getZ(),
                                 creature.getHealth(), creature.getMaxHealth(), true));
                     } else updateData(player, mutable -> mutable.updateSummon(uuid,
-                            record.dimension(), record.x(), record.y(), record.z(),
+                            record.dimension(), record.x, record.y(), record.z,
                             record.health(), record.maxHealth(), false));
                 });
             if (MinecraftServerTick.shouldSyncRoster(player.tickCount)) {
@@ -560,9 +560,9 @@ public final class DarkmatterCreation extends Skill {
             var entries = new ArrayList<RosterEntry>();
             for (var record : creationData.getSummons())
                 record.uuid().ifPresent(uuid -> {
-                    var sameDimension = record.dimension().equals(player.level().dimension().identifier().toString());
+                    var sameDimension = record.dimension().equals(player.level().dimension().location().toString());
                     var distance = sameDimension ? (float) Math.sqrt(player.distanceToSqr(
-                            record.x(), record.y(), record.z())) : -1.0f;
+                            record.x, record.y(), record.z)) : -1.0f;
                     entries.add(new RosterEntry(uuid, record.name(), record.health(), record.maxHealth(),
                             record.dimension(), distance, record.investment(), record.slot(), record.loaded()));
                 });
@@ -593,7 +593,7 @@ public final class DarkmatterCreation extends Skill {
             resource.releaseReservation(player, reserved);
             AcademyCraft.LOGGER.info(
                     "Released {} legacy reserved darkmatter MP for {} while migrating creation to fixed CP occupation",
-                    reserved, player.getGameProfile().name());
+                    reserved, player.getGameProfile().getName());
         }
 
         private static boolean validProgramPosition(ServerPlayer player, Vec3 position,
@@ -607,7 +607,7 @@ public final class DarkmatterCreation extends Skill {
             }
             var block = BlockPos.containing(position);
             return level.hasChunkAt(block) && level.getWorldBorder().isWithinBounds(block)
-                    && block.getY() >= level.getMinY() && block.getY() < level.getMaxY();
+                    && block.getY() >= level.getMinBuildHeight() && block.getY() < level.getMaxBuildHeight();
         }
     }
 

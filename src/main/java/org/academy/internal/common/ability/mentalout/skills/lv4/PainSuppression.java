@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.mentalout.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -80,7 +81,7 @@ public final class PainSuppression extends Skill {
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(getKey());
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_TOGGLE, InputSystem.combo(InputSystem.InputType.KEYBOARD,
-                        InputConstants.KEY_J, InputConstants.RELEASE, InputConstants.MOD_ALT)), unused542 -> Client.toggle());
+                        InputConstants.KEY_J, InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)), unused542 -> Client.toggle());
     }
 
     @Override

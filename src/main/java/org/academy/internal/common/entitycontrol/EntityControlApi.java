@@ -341,7 +341,7 @@ public final class EntityControlApi {
     }
 
     private static boolean matchesDimension(LivingEntity entity, String dimensionId) {
-        return dimensionId == null || dimensionId.equals(entity.level().dimension().identifier().toString());
+        return dimensionId == null || dimensionId.equals(entity.level().dimension().location().toString());
     }
 
     private static State state(LivingEntity entity) {

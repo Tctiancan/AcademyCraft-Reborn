@@ -1,4 +1,4 @@
-package org.academy.internal.common.ability.program.editor;
+﻿package org.academy.internal.common.ability.program.editor;
 
 import org.academy.internal.common.ability.program.compile.ProgramGraphValidator;
 import org.academy.internal.common.ability.program.registry.AbilityProgramDefinition;

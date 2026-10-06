@@ -33,7 +33,7 @@ public final class VectorExternalInterceptionService {
         }
 
         var result = VectorReflection.Server.hurtServer(
-                defender, defender.level(), event.getSource(), amount);
+                defender, defender.serverLevel(), event.getSource(), amount);
         var remaining = result.getRight();
         if (VectorReflection.Server.usesFullInstanceProtection(defender)) {
             event.setCanceled(true);
@@ -86,7 +86,7 @@ public final class VectorExternalInterceptionService {
                 || VectorDeviation.Server.canMaintain(defender)) {
             var reflection = VectorReflection.Server.hurtServer(
                     defender,
-                    defender.level(),
+                    defender.serverLevel(),
                     event.getSource(),
                     event.getAmount()
             );

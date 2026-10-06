@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
@@ -101,7 +102,7 @@ public final class VortexPull extends Skill {
         var binding = Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_CAST,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_B,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT));
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT));
         if (binding.action() != InputSystem.ANY_ACTION) {
             binding = new InputSystem.KeyCombination(
                     binding.type(), binding.keys(), InputSystem.ANY_ACTION, binding.modifiers(),

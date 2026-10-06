@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
@@ -77,9 +78,9 @@ public class LightningStorm extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_USE, Client.CONFIG.getKeyBindingMigratingDefaults(
                         Client.KEY_NAME_USE,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_N,
-                                InputConstants.PRESS, InputConstants.MOD_ALT),
+                                InputConstants.PRESS, GLFW.GLFW_MOD_ALT),
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_X,
-                                InputConstants.PRESS, InputConstants.MOD_ALT))
+                                InputConstants.PRESS, GLFW.GLFW_MOD_ALT))
                 , ctx -> Client.onUse());
     }
 

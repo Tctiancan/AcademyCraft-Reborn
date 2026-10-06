@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -56,7 +57,7 @@ public final class TurbulentCavitation extends Skill {
                 Client.KEY_NAME_TOGGLE,
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_B,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT));
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT));
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused346 -> Client.toggle());
         Client.SKILL_INFO = AbilitySystemClient.addSkillInfo(
                 AbilityCategories.AEROMANIP.get(),

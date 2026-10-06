@@ -802,7 +802,7 @@ public final class SpacialExcisionVfxClient {
                 return;
             }
             var now = context.gameTime();
-            var dimension = level.dimension().identifier();
+            var dimension = level.dimension().location();
             List<Session> snapshot;
             synchronized (SESSIONS) {
                 pruneEndedSessions(now);

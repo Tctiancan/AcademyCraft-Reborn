@@ -305,7 +305,7 @@ public class PlasmaGeneration extends Skill {
             } else {
                 horizontal = horizontal.normalize();
             }
-            var y = Mth.clamp(player.getY() + 31.0, level.getMinY() + 1.0, level.getMaxY() - 1.0);
+            var y = Mth.clamp(player.getY() + 31.0, level.getMinBuildHeight() + 1.0, level.getMaxBuildHeight() - 1.0);
             return new Vec3(
                     player.getX() + horizontal.x * 6.0,
                     y,

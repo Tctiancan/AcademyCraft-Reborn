@@ -2,7 +2,6 @@ package org.academy.internal.common.world.item;
 
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.world.item.*;
-import net.minecraft.world.item.equipment.ArmorType;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.academy.internal.common.world.level.block.Blocks;
@@ -81,18 +80,18 @@ public final class Items {
             ITEMS.registerItem("wind_gen_base_screen", Item::new);
     public static final DeferredHolder<Item, ImagPhaseDowsingRodItem> IMAG_PHASE_DOWSING_ROD =
             ITEMS.registerItem("imag_phase_dowsing_rod", ImagPhaseDowsingRodItem::new);
-    public static final DeferredHolder<Item, DarkmatterEquipmentItem> DARK_MATTER_HELMET =
-            ITEMS.registerItem("dark_matter_helmet", properties -> new DarkmatterEquipmentItem(
-                    properties.humanoidArmor(DarkmatterArmorMaterial.INSTANCE, ArmorType.HELMET)));
-    public static final DeferredHolder<Item, DarkmatterEquipmentItem> DARK_MATTER_CHESTPLATE =
-            ITEMS.registerItem("dark_matter_chestplate", properties -> new DarkmatterEquipmentItem(
-                    properties.humanoidArmor(DarkmatterArmorMaterial.INSTANCE, ArmorType.CHESTPLATE)));
-    public static final DeferredHolder<Item, DarkmatterEquipmentItem> DARK_MATTER_LEGGINGS =
-            ITEMS.registerItem("dark_matter_leggings", properties -> new DarkmatterEquipmentItem(
-                    properties.humanoidArmor(DarkmatterArmorMaterial.INSTANCE, ArmorType.LEGGINGS)));
-    public static final DeferredHolder<Item, DarkmatterEquipmentItem> DARK_MATTER_BOOTS =
-            ITEMS.registerItem("dark_matter_boots", properties -> new DarkmatterEquipmentItem(
-                    properties.humanoidArmor(DarkmatterArmorMaterial.INSTANCE, ArmorType.BOOTS)));
+    public static final DeferredHolder<Item, DarkmatterArmorItem> DARK_MATTER_HELMET =
+            ITEMS.registerItem("dark_matter_helmet", properties -> new DarkmatterArmorItem(
+                    DarkmatterArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, properties));
+    public static final DeferredHolder<Item, DarkmatterArmorItem> DARK_MATTER_CHESTPLATE =
+            ITEMS.registerItem("dark_matter_chestplate", properties -> new DarkmatterArmorItem(
+                    DarkmatterArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE, properties));
+    public static final DeferredHolder<Item, DarkmatterArmorItem> DARK_MATTER_LEGGINGS =
+            ITEMS.registerItem("dark_matter_leggings", properties -> new DarkmatterArmorItem(
+                    DarkmatterArmorMaterial.INSTANCE, ArmorItem.Type.LEGGINGS, properties));
+    public static final DeferredHolder<Item, DarkmatterArmorItem> DARK_MATTER_BOOTS =
+            ITEMS.registerItem("dark_matter_boots", properties -> new DarkmatterArmorItem(
+                    DarkmatterArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, properties));
     public static final DeferredHolder<Item, DataTerminalItem> DATA_TERMINAL =
             ITEMS.registerItem("data_terminal", DataTerminalItem::new);
     public static final DeferredHolder<Item, TutorialItem> TUTORIAL =

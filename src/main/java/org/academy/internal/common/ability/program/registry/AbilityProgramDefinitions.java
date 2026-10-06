@@ -47,18 +47,18 @@ public final class AbilityProgramDefinitions {
                 throw new IllegalStateException("Duplicate program profile for " + category.getKey());
             }
             var entry = Registries.PROGRAM_NODE_TYPES.get(profile.entryNode())
-                    .orElseThrow(() -> new IllegalStateException("Missing entry node " + profile.entryNode().identifier())).value();
+                    .orElseThrow(() -> new IllegalStateException("Missing entry node " + profile.entryNode().location())).value();
             if (!(entry instanceof ProgramNodeExtension<?> extension)
                     || entry.role() != ProgramNodeRole.ENTRY) {
                 throw new IllegalStateException("Program entry must be a registered ENTRY extension: " + profile.entryNode());
             }
             var metadata = extension.editorMetadata();
             var editor = ProgramEditorNodeCatalog.builder(category.getKey()).includeCommonNodes()
-                    .add(profile.entryNode().identifier(), entry, metadata.defaultConfiguration(),
+                    .add(profile.entryNode().location(), entry, metadata.defaultConfiguration(),
                             ProgramEditorNodeCatalog.Group.FLOW, metadata.translationKey(),
                             metadata.portTranslationPrefix(), null).build();
             result.put(category.getKey(), new AbilityProgramDefinition(category.getKey(),
-                    Map.of(profile.entryNode().identifier(), entry), unused725 -> null, editor,
+                    Map.of(profile.entryNode().location(), entry), unused725 -> null, editor,
                     profile.limits(), profile.spatialLimits()));
         }
         DEFINITIONS = Map.copyOf(result);

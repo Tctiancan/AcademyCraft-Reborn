@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.meltdowner.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -184,7 +185,7 @@ public final class SingleHighSpeedElectronBeam extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_SHOOT, skillKeyConfig.getKeyBinding(
                 Client.KEY_NAME_SHOOT,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_LEFT,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.handleKey());
     }
 

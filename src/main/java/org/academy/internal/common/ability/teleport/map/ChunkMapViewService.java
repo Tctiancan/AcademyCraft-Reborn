@@ -208,10 +208,10 @@ public final class ChunkMapViewService {
      */
     public static void invalidateChunks(ServerLevel level, ChunkLeapRegion changed) {
         if (level == null || changed == null) return;
-        var dimensionId = level.dimension().identifier().toString();
+        var dimensionId = level.dimension().location().toString();
         for (var session : SESSIONS.values()) {
             if (session.dimension == null || session.region == null) continue;
-            if (!session.dimension.identifier().toString().equals(dimensionId)) continue;
+            if (!session.dimension.location().toString().equals(dimensionId)) continue;
             var overlap = intersect(session.region, changed);
             if (overlap == null) continue;
             for (var x = overlap.minChunkX(); x <= overlap.maxChunkX(); x++) {
@@ -272,7 +272,7 @@ public final class ChunkMapViewService {
             var entry = iterator.next();
             checked++;
             var pos = entry.getKey();
-            if (level.hasChunk(pos.x(), pos.z())) {
+            if (level.hasChunk(pos.x, pos.z)) {
                 iterator.remove();
                 session.pending.add(pos);
             } else if (tick - entry.getValue() > MAX_RETRY_TICKS) {
@@ -300,8 +300,8 @@ public final class ChunkMapViewService {
                 && attempts < RETRY_BUDGET_PER_TICK) {
             var pos = session.pending.poll();
             attempts++;
-            if (MapTileBuilder.sampleChunk(level, pos.x(), pos.z(), texels)) {
-                tiles.add(new ChunkLeapPackets.Tile(pos.x(), pos.z(), texels.clone()));
+            if (MapTileBuilder.sampleChunk(level, pos.x, pos.z, texels)) {
+                tiles.add(new ChunkLeapPackets.Tile(pos.x, pos.z, texels.clone()));
             } else {
                 // Still generating: retry instead of dropping, or the tile is lost for good.
                 session.awaiting.putIfAbsent(pos, tick);
@@ -310,7 +310,7 @@ public final class ChunkMapViewService {
         }
         if (!tiles.isEmpty()) {
             MisakaNetworkServer.send(player, new ChunkLeapPackets.TilesPacket(
-                    session.dimension.identifier().toString(), session.epoch, tiles));
+                    session.dimension.location().toString(), session.epoch, tiles));
         }
     }
 
@@ -319,8 +319,8 @@ public final class ChunkMapViewService {
         session.lastEntityTick = tick;
 
         var region = session.region;
-        var aabb = new AABB(region.minBlockX(), level.getMinY(), region.minBlockZ(),
-                region.maxBlockX() + 1.0, level.getMaxY(), region.maxBlockZ() + 1.0);
+        var aabb = new AABB(region.minBlockX(), level.getMinBuildHeight(), region.minBlockZ(),
+                region.maxBlockX() + 1.0, level.getMaxBuildHeight(), region.maxBlockZ() + 1.0);
         var markers = new ArrayList<ChunkLeapPackets.Marker>();
         for (var entity : level.getEntitiesOfClass(Entity.class, aabb, candidate -> !candidate.isRemoved())) {
             if (markers.size() >= ChunkLeapPackets.EntitiesPacket.MAX_MARKERS) break;
@@ -333,7 +333,7 @@ public final class ChunkMapViewService {
                     BuiltInRegistries.ENTITY_TYPE.getId(entity.getType()), pos.getX(), pos.getZ(), playerId));
         }
         MisakaNetworkServer.send(player, new ChunkLeapPackets.EntitiesPacket(
-                session.dimension.identifier().toString(), markers));
+                session.dimension.location().toString(), markers));
     }
 
     static byte categoryOf(Entity entity) {
@@ -364,7 +364,7 @@ public final class ChunkMapViewService {
             }
         }
         MisakaNetworkServer.send(player, new ChunkLeapPackets.ViewStatusPacket(
-                session.dimension.identifier().toString(), loaded, total));
+                session.dimension.location().toString(), loaded, total));
     }
 
     // ---------------------------------------------------------------- lifecycle

@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.meltdowner.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -89,7 +90,7 @@ public final class ScatterBomb extends Skill {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_RIGHT,
                         InputConstants.PRESS,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 )
         ), Client::start);
         InputSystem.addKeyBinding(Client.KEY_NAME_END, Client.CONFIG.getKeyBinding(
@@ -98,7 +99,7 @@ public final class ScatterBomb extends Skill {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_RIGHT,
                         InputConstants.RELEASE,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 )
         ), unused495 -> Client.end());
         NeoForge.EVENT_BUS.register(Client.class);

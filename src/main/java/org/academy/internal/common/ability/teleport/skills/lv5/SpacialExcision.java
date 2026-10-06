@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.teleport.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -23,7 +24,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.LevelEvent;
@@ -99,7 +99,7 @@ public final class SpacialExcision extends Skill {
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(key);
         InputSystem.addKeyBinding(Client.KEY, Client.CONFIG.getKeyBinding(Client.KEY,
                         InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_X,
-                                InputConstants.PRESS, InputConstants.MOD_ALT)),
+                                InputConstants.PRESS, GLFW.GLFW_MOD_ALT)),
                 ctx -> Client.onUse());
     }
 
@@ -154,11 +154,8 @@ public final class SpacialExcision extends Skill {
             }
         }
 
-        @SubscribeEvent
-        public static void onResourceLoadFinished(ClientResourceLoadFinishedEvent event) {
-            if (!event.isInitial()) {
-                SpacialExcisionVfxClient.releaseTransientResources();
-            }
+        public static void onClientResourcesReloaded() {
+            SpacialExcisionVfxClient.releaseTransientResources();
         }
 
         public static class Config extends KeyBindingConfig {
@@ -399,7 +396,7 @@ public final class SpacialExcision extends Skill {
 
             var segment = new RecordedSegment(
                     event.origin(), event.destination(), event.preTeleportYaw(),
-                    event.sourceLevel().dimension().identifier(),
+                    event.sourceLevel().dimension().location(),
                     event.sourceLevel().getRandom().nextLong(), now, new HashSet<>(),
                     new HashMap<>()
             );
@@ -709,25 +706,25 @@ public final class SpacialExcision extends Skill {
         public static final StreamCodec<ByteBuf, SegmentPacket> CODEC = StreamCodec.of(
                 (buffer, packet) -> {
                     writeUuid(buffer, packet.sessionId);
-                    ByteBufCodecs.LONG.encode(buffer, packet.startTick);
-                    ByteBufCodecs.LONG.encode(buffer, packet.createdTick);
-                    ByteBufCodecs.LONG.encode(buffer, packet.endTick);
+                    ByteBufCodecs.VAR_LONG.encode(buffer, packet.startTick);
+                    ByteBufCodecs.VAR_LONG.encode(buffer, packet.createdTick);
+                    ByteBufCodecs.VAR_LONG.encode(buffer, packet.endTick);
                     ByteBufCodecs.STRING_UTF8.encode(buffer, packet.dimension.toString());
-                    Vec3.STREAM_CODEC.encode(buffer, packet.start);
-                    Vec3.STREAM_CODEC.encode(buffer, packet.end);
+                    buffer.writeDouble(packet.start.x).writeDouble(packet.start.y).writeDouble(packet.start.z);
+                    buffer.writeDouble(packet.end.x).writeDouble(packet.end.y).writeDouble(packet.end.z);
                     ByteBufCodecs.FLOAT.encode(buffer, packet.preTeleportYaw);
-                    ByteBufCodecs.LONG.encode(buffer, packet.seed);
+                    ByteBufCodecs.VAR_LONG.encode(buffer, packet.seed);
                 },
                 buffer -> new SegmentPacket(
                         readUuid(buffer),
-                        ByteBufCodecs.LONG.decode(buffer),
-                        ByteBufCodecs.LONG.decode(buffer),
-                        ByteBufCodecs.LONG.decode(buffer),
+                        ByteBufCodecs.VAR_LONG.decode(buffer),
+                        ByteBufCodecs.VAR_LONG.decode(buffer),
+                        ByteBufCodecs.VAR_LONG.decode(buffer),
                         parseIdentifier(ByteBufCodecs.STRING_UTF8.decode(buffer)),
-                        Vec3.STREAM_CODEC.decode(buffer),
-                        Vec3.STREAM_CODEC.decode(buffer),
+                        new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
+                        new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
                         ByteBufCodecs.FLOAT.decode(buffer),
-                        ByteBufCodecs.LONG.decode(buffer)
+                        ByteBufCodecs.VAR_LONG.decode(buffer)
                 )
         );
 

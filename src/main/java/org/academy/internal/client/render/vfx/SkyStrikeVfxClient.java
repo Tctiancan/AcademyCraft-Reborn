@@ -48,7 +48,7 @@ public final class SkyStrikeVfxClient {
     public static void spawn(Vec3 impact, long seed, SkyStrikeProfile profile) {
         var minecraft = Minecraft.getInstance();
         if (minecraft.level == null) return;
-        var cameraPos = minecraft.gameRenderer.mainCamera().position();
+        var cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
         var distance = cameraPos.distanceTo(impact);
         if (!Double.isFinite(distance) || distance > SkyStrikeVisualPacket.BROADCAST_RANGE + 1.0) return;
 

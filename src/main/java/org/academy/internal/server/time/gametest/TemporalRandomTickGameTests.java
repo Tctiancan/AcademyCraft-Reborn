@@ -100,7 +100,7 @@ public final class TemporalRandomTickGameTests {
                     String.format(
                             Locale.ROOT,
                             "academy debug tick field add sphere %s %.3f %.3f %.3f 4 0 random_tick",
-                            level.dimension().identifier(),
+                            level.dimension().location(),
                             center.x,
                             center.y,
                             center.z
@@ -392,4 +392,3 @@ public final class TemporalRandomTickGameTests {
         }
     }
 }
-

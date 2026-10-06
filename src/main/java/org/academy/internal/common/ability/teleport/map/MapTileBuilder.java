@@ -82,8 +82,8 @@ public final class MapTileBuilder {
 
         var baseX = chunkX << 4;
         var baseZ = chunkZ << 4;
-        var minY = level.getMinY();
-        var maxY = level.getMaxY();
+        var minY = level.getMinBuildHeight();
+        var maxY = level.getMaxBuildHeight();
         var ceilingDimension = level.dimensionType().hasCeiling();
         var ceiling = ceilingDimension
                 ? NO_CEILING
@@ -301,17 +301,17 @@ public final class MapTileBuilder {
     }
 
     /**
-     * The Y a player looking straight down would see in this column, or {@code level.getMinY()} when the
+     * The Y a player looking straight down would see in this column, or {@code level.getMinBuildHeight()} when the
      * column is empty.
      *
      * <p>Shared with teleport landing, so an entity arrives on the surface the map showed — including
      * under the Nether's roof.
      */
     public static int visibleSurfaceY(ServerLevel level, int blockX, int blockZ) {
-        var minY = level.getMinY();
+        var minY = level.getMinBuildHeight();
         var chunk = level.getChunkSource().getChunkNow(blockX >> 4, blockZ >> 4);
         if (chunk == null) return minY;
-        var maxY = level.getMaxY();
+        var maxY = level.getMaxBuildHeight();
         var surface = level.dimensionType().hasCeiling()
                 ? resolveCeilingDimensionSurfaceY(level, blockX, blockZ, minY, maxY)
                 : resolveSurfaceY(level, blockX, blockZ,

@@ -107,7 +107,7 @@ public class Shackle extends Skill {
                         point.x + 0.5, point.y + 0.5, point.z + 0.5);
             }
 
-            var camera = minecraft.gameRenderer.mainCamera().position();
+            var camera = minecraft.gameRenderer.getMainCamera().position();
             var matrices = event.getMatrixStack();
             matrices.pushPose();
             matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

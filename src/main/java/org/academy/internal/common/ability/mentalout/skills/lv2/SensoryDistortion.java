@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.mentalout.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import org.academy.AcademyCraftClient;
 import org.academy.AcademyCraftConfig;
 import org.academy.api.client.ability.AbilitySystemClient;
@@ -51,7 +52,7 @@ public final class SensoryDistortion extends Skill {
                         InputSystem.InputType.KEYBOARD,
                         InputConstants.KEY_G,
                         InputConstants.PRESS,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 )
         ), unused535 -> Client.use());
     }

@@ -323,7 +323,7 @@ final class ChunkRegionSwap {
      * being repeated here costs one packet per chunk once, not per tick.
      */
     static void refreshHeightmapsAndResend(ServerLevel level, ChunkPos pos) {
-        var chunk = level.getChunkSource().getChunkNow(pos.x(), pos.z());
+        var chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
         if (chunk == null) return;
         Heightmap.primeHeightmaps(chunk, existingHeightmapTypes(chunk));
         resend(level, chunk);
@@ -400,8 +400,8 @@ final class ChunkRegionSwap {
     /** Keeps a relocated position inside the destination level's vertical bounds. */
     private static net.minecraft.world.phys.Vec3 clampY(net.minecraft.world.phys.Vec3 position,
                                                          ServerLevel level) {
-        var minY = level.getMinY();
-        var maxY = level.getMaxY() - 1.0;
+        var minY = level.getMinBuildHeight();
+        var maxY = level.getMaxBuildHeight() - 1.0;
         if (position.y >= minY && position.y <= maxY) return position;
         return new net.minecraft.world.phys.Vec3(position.x, Math.clamp(position.y, minY, maxY), position.z);
     }

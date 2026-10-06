@@ -49,7 +49,7 @@ public final class VectorIncomingDamageCoordinator {
         }
         return VectorReflection.Server.applyPartialReflection(
                 defender,
-                defender.level(),
+                defender.serverLevel(),
                 source,
                 damage
         );

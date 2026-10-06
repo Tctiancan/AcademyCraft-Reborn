@@ -133,11 +133,11 @@ public final class WindGenBaseBlockEntity extends MultiBlockEntity implements Co
             var p = getBlockPos();
             var calculatedCompleteness = Completeness.BASE_ONLY;
 
-            for (var y = p.getY() + 2; y < level.getMaxY(); ++y) {
+            for (var y = p.getY() + 2; y < level.getMaxBuildHeight(); ++y) {
                 var pos = new BlockPos(p.getX(), y, p.getZ());
                 var currentState = level.getBlockState(pos);
                 if (currentState.isAir()) {
-                    y = level.getMaxY();
+                    y = level.getMaxBuildHeight();
                 }
                 var block = currentState.getBlock();
 

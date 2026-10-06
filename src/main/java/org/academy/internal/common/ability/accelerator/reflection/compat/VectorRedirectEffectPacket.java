@@ -21,22 +21,22 @@ public final class VectorRedirectEffectPacket
         extends Packet<ClientPacketListener, VectorRedirectEffectPacket> {
     public static final StreamCodec<ByteBuf, VectorRedirectEffectPacket> CODEC = StreamCodec.of(
             (buffer, packet) -> {
-                Vec3.STREAM_CODEC.encode(buffer, packet.mirrorPoint);
-                Vec3.STREAM_CODEC.encode(buffer, packet.direction);
+                buffer.writeDouble(packet.mirrorPoint.x).writeDouble(packet.mirrorPoint.y).writeDouble(packet.mirrorPoint.z);
+                buffer.writeDouble(packet.direction.x).writeDouble(packet.direction.y).writeDouble(packet.direction.z);
                 ByteBufCodecs.FLOAT.encode(buffer, packet.length);
                 ByteBufCodecs.FLOAT.encode(buffer, packet.radius);
                 ByteBufCodecs.VAR_INT.encode(buffer, packet.kind.ordinal());
                 ByteBufCodecs.VAR_INT.encode(buffer, packet.style.ordinal());
-                ByteBufCodecs.LONG.encode(buffer, packet.seed);
+                ByteBufCodecs.VAR_LONG.encode(buffer, packet.seed);
             },
             buffer -> new VectorRedirectEffectPacket(
-                    Vec3.STREAM_CODEC.decode(buffer),
-                    Vec3.STREAM_CODEC.decode(buffer),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
                     ByteBufCodecs.FLOAT.decode(buffer),
                     ByteBufCodecs.FLOAT.decode(buffer),
                     enumValue(VectorRedirectKind.values(), ByteBufCodecs.VAR_INT.decode(buffer), VectorRedirectKind.REFLECTION),
                     enumValue(VectorVisualStyle.values(), ByteBufCodecs.VAR_INT.decode(buffer), VectorVisualStyle.ENERGY),
-                    ByteBufCodecs.LONG.decode(buffer)
+                    ByteBufCodecs.VAR_LONG.decode(buffer)
             )
     );
     private static boolean clientInitialized;

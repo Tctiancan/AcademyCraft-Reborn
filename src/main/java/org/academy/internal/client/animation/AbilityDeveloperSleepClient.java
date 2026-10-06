@@ -55,7 +55,7 @@ public final class AbilityDeveloperSleepClient {
         if (podPose == null || podPose.angleDegrees() <= 0.0f) return null;
 
         var pivot = Vec3.atBottomCenterOf(podPose.mainPosition()).add(0.0, SLEEPING_HEIGHT, 0.0);
-        var rotatedOffset = camera.position().subtract(pivot).toVector3f();
+        var rotatedOffset = camera.getPosition().subtract(pivot).toVector3f();
         rotation(podPose).transform(rotatedOffset);
         return new CameraAdjustment(
                 pivot.add(rotatedOffset.x, rotatedOffset.y, rotatedOffset.z),

@@ -170,7 +170,7 @@ public final class SharedAccountService {
                         upload(provider, packet.payload());
                         messageKey = "message.academy.music_account.uploaded";
                         AcademyCraft.LOGGER.info("Shared music account '{}' uploaded by {}",
-                                provider, player.getGameProfile().name());
+                                provider, player.getGameProfile().getName());
                     } catch (IllegalArgumentException exception) {
                         ok = false;
                         messageKey = "message.academy.music_account.payload_invalid";

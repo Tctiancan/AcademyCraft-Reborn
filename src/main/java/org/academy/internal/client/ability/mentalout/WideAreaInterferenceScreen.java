@@ -358,7 +358,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     private void updateSelectionEnd(double x, double y) {
-        var point = WorkSelection.intersectHorizontal(minecraft.gameRenderer.mainCamera().position(),
+        var point = WorkSelection.intersectHorizontal(minecraft.gameRenderer.getMainCamera().position(),
                 rayDirection(x, y), selectionPlaneY);
         if (point != null && regionFirst != null) {
             regionLast = new BlockPos(Mth.floor(point.x), regionFirst.getY(), Mth.floor(point.z));
@@ -782,9 +782,9 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     private boolean applyVertexFields() {
         if (minecraft.level == null || workCoordinates[0] == null) return false;
         try {
-            var region = WorkSelection.parseVertices(minecraft.level.dimension().identifier(),
+            var region = WorkSelection.parseVertices(minecraft.level.dimension().location(),
                     Arrays.stream(workCoordinates).map(TextInputWidget::getText).toArray(String[]::new),
-                    minecraft.level.getMinY(), minecraft.level.getMaxY());
+                    minecraft.level.getMinBuildHeight(), minecraft.level.getMaxBuildHeight());
             if (!minecraft.level.getWorldBorder().isWithinBounds(region.minimum())
                     || !minecraft.level.getWorldBorder().isWithinBounds(region.maximum())) {
                 throw new IllegalArgumentException("Coordinates outside world border");
@@ -1130,7 +1130,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         var y = display.y + display.height / 2.0;
         var hit = raycastBlockHit(x, y);
         var pivot = hit != null ? hit.getLocation() : WorkSelection.intersectHorizontal(
-                minecraft.gameRenderer.mainCamera().position(), rayDirection(x, y),
+                minecraft.gameRenderer.getMainCamera().position(), rayDirection(x, y),
                 WideAreaInterferenceClientState.focusPosition().y);
         WideAreaInterferenceClientState.anchorOrbit(pivot, preserveZoom);
     }
@@ -1189,7 +1189,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     private void completeRegionCommand() {
         if (armedAction == null || regionFirst == null || regionLast == null) return;
         try {
-            var region = WorkSelection.region(minecraft.level.dimension().identifier(), selectionBounds());
+            var region = WorkSelection.region(minecraft.level.dimension().location(), selectionBounds());
             if (armedAction == WideAreaInterference.Action.WORK) {
                 workFirst = region.minimum();
                 workLast = region.maximum();
@@ -1259,7 +1259,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         if (minecraft.level == null) return null;
         LivingEntity best = null;
         var bestDistance = Double.MAX_VALUE;
-        var camera = minecraft.gameRenderer.mainCamera().position();
+        var camera = minecraft.gameRenderer.getMainCamera().position();
         for (var entity : visibleEntities()) {
             var bounds = projectBounds(entity.getBoundingBox().inflate(0.20));
             if (bounds == null || !bounds.contains(mouseX, mouseY)) continue;
@@ -1284,8 +1284,8 @@ public final class WideAreaInterferenceScreen extends UiScreen {
 
     private BlockHitResult raycastBlockHit(double mouseX, double mouseY) {
         if (minecraft.level == null) return null;
-        var camera = minecraft.gameRenderer.mainCamera();
-        var origin = camera.position();
+        var camera = minecraft.gameRenderer.getMainCamera();
+        var origin = camera.getPosition();
         var direction = rayDirection(mouseX, mouseY);
         var hit = minecraft.level.clip(new ClipContext(
                 origin,
@@ -1299,7 +1299,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     private Vec3 rayDirection(double mouseX, double mouseY) {
         var renderedDirection = WideAreaInterferenceClientState.rayDirection(mouseX, mouseY, width, height);
         if (renderedDirection != null) return renderedDirection;
-        var camera = minecraft.gameRenderer.mainCamera();
+        var camera = minecraft.gameRenderer.getMainCamera();
         var forward = Vec3.directionFromRotation(camera.xRot(), camera.yRot());
         var right = forward.cross(new Vec3(0.0, 1.0, 0.0)).normalize();
         var up = right.cross(forward).normalize();
@@ -1313,7 +1313,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
 
     private List<LivingEntity> visibleEntities() {
         if (minecraft.level == null || minecraft.player == null) return List.of();
-        var camera = minecraft.gameRenderer.mainCamera().position();
+        var camera = minecraft.gameRenderer.getMainCamera().position();
         return minecraft.level.getEntitiesOfClass(
                 LivingEntity.class,
                 new AABB(WideAreaInterferenceClientState.focusPosition(), WideAreaInterferenceClientState.focusPosition())
@@ -1328,11 +1328,11 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     private ScreenPoint project(Vec3 point) {
         var rendered = WideAreaInterferenceClientState.projectWorld(point, width, height);
         if (rendered != null) return new ScreenPoint(rendered.x(), rendered.y());
-        var camera = minecraft.gameRenderer.mainCamera();
+        var camera = minecraft.gameRenderer.getMainCamera();
         var forward = Vec3.directionFromRotation(camera.xRot(), camera.yRot());
         var right = forward.cross(new Vec3(0.0, 1.0, 0.0)).normalize();
         var up = right.cross(forward).normalize();
-        var delta = point.subtract(camera.position());
+        var delta = point.subtract(camera.getPosition());
         var depth = delta.dot(forward);
         if (depth <= 0.1) return null;
         var tangent = Math.tan(Math.toRadians(minecraft.options.fov().get()) / 2.0);
@@ -1386,8 +1386,8 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     private void clampRegionVerticalOffset() {
         if (minecraft.level == null || regionFirst == null || regionLast == null) return;
         var baseTopY = Math.min(regionFirst.getY(), regionLast.getY());
-        var minimumOffset = minecraft.level.getMinY() + regionHeight - 1 - baseTopY;
-        var maximumOffset = minecraft.level.getMaxY() - 1 - baseTopY;
+        var minimumOffset = minecraft.level.getMinBuildHeight() + regionHeight - 1 - baseTopY;
+        var maximumOffset = minecraft.level.getMaxBuildHeight() - 1 - baseTopY;
         regionVerticalOffset = Math.clamp(regionVerticalOffset, minimumOffset, maximumOffset);
     }
 

@@ -75,7 +75,7 @@ public final class DimensionEffectsGameTests {
         var attacker = createPlayer(helper, "policy-attacker");
         var target = createPlayer(helper, "policy-target");
         try {
-            var dimension = level.dimension().identifier().toString();
+            var dimension = level.dimension().location().toString();
             var skill = Skills.MINING_BEAM.get();
             config.pvp = new DimensionEffectsConfig.DimensionRule();
             config.blockDestruction = new DimensionEffectsConfig.DimensionRule();
@@ -117,8 +117,8 @@ public final class DimensionEffectsGameTests {
                     "Block whitelist must override global and independent per-skill switches");
 
             config.pvp.whitelist = Set.of(dimension);
-            config.pvp.blacklist = Set.of(Level.NETHER.identifier().toString());
-            config.blockDestruction.blacklist = Set.of(Level.NETHER.identifier().toString());
+            config.pvp.blacklist = Set.of(Level.NETHER.location().toString());
+            config.blockDestruction.blacklist = Set.of(Level.NETHER.location().toString());
             var nether = level.getServer().getLevel(Level.NETHER);
             helper.assertTrue(nether != null, "Nether level must be present");
             helper.assertTrue(AbilityEffectPolicy.blockDestruction(nether) == AbilityEffectPolicy.Decision.DENY,
@@ -258,4 +258,3 @@ public final class DimensionEffectsGameTests {
         }
     }
 }
-

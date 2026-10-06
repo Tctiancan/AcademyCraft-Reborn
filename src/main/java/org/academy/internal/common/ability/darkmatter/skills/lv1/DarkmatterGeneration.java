@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.darkmatter.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -75,7 +76,7 @@ public final class DarkmatterGeneration extends Skill {
                 Client.LEGACY_KEY_ERASE_PRESS,
                 Client.LEGACY_KEY_ERASE_RELEASE,
                 Mode.ERASE,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
         AcademyCraftClient.Config.INSTANCE.save();
     }

@@ -46,7 +46,7 @@ public final class ChunkMapViewClient {
 
     public void release(ResourceKey<Level> dimension) {
         if (dimension == null) return;
-        MisakaNetworkClient.send(new ChunkLeapPackets.ViewReleasePacket(dimension.identifier().toString()));
+        MisakaNetworkClient.send(new ChunkLeapPackets.ViewReleasePacket(dimension.location().toString()));
     }
 
     /**

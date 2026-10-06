@@ -45,9 +45,9 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
     public static final StreamCodec<ByteBuf, SpawnVfxGraphPacket> CODEC = StreamCodec.of(
             (buffer, packet) -> {
                 ResourceLocation.STREAM_CODEC.encode(buffer, packet.assetId);
-                Vec3.STREAM_CODEC.encode(buffer, packet.position);
-                Vec3.STREAM_CODEC.encode(buffer, packet.direction);
-                Vec3.STREAM_CODEC.encode(buffer, packet.localXDirection);
+                buffer.writeDouble(packet.position.x).writeDouble(packet.position.y).writeDouble(packet.position.z);
+                buffer.writeDouble(packet.direction.x).writeDouble(packet.direction.y).writeDouble(packet.direction.z);
+                buffer.writeDouble(packet.localXDirection.x).writeDouble(packet.localXDirection.y).writeDouble(packet.localXDirection.z);
                 ByteBufCodecs.VAR_INT.encode(buffer, packet.followEntityId);
                 ByteBufCodecs.FLOAT.encode(buffer, packet.scale);
                 ByteBufCodecs.FLOAT.encode(buffer, packet.lifetimeSeconds);
@@ -55,9 +55,9 @@ public final class SpawnVfxGraphPacket extends Packet<ClientPacketListener, Spaw
             },
             buffer -> new SpawnVfxGraphPacket(
                     ResourceLocation.STREAM_CODEC.decode(buffer),
-                    Vec3.STREAM_CODEC.decode(buffer),
-                    Vec3.STREAM_CODEC.decode(buffer),
-                    Vec3.STREAM_CODEC.decode(buffer),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
                     ByteBufCodecs.VAR_INT.decode(buffer),
                     ByteBufCodecs.FLOAT.decode(buffer),
                     ByteBufCodecs.FLOAT.decode(buffer),

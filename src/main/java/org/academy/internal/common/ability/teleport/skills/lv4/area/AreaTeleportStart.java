@@ -100,7 +100,7 @@ public final class AreaTeleportStart {
                                         AreaTeleportState.Region destination,
                                         AreaTeleportState.Transform transform,
                                         boolean swap) {
-            if (destination.min().getY() < level.getMinY() || destination.max().getY() >= level.getMaxY()) return false;
+            if (destination.min().getY() < level.getMinBuildHeight() || destination.max().getY() >= level.getMaxBuildHeight()) return false;
             if (regionsOverlap(source, destination)) return false;
             var entityCap = ProficiencyPolicy.server(player).maxBonusEntitiesPerTick();
             var entityCount = level.getEntities(player, source.box(), entity ->

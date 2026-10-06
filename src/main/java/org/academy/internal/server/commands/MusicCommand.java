@@ -321,7 +321,7 @@ public final class MusicCommand {
     private static int invitePlayer(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         MusicRoomManager.invite(
                 context.getSource().getPlayerOrException(),
-                EntityArgument.getPlayer(context, "player").getGameProfile().name()
+                EntityArgument.getPlayer(context, "player").getGameProfile().getName()
         );
         return 1;
     }
@@ -350,7 +350,7 @@ public final class MusicCommand {
     private static int kickMember(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
         MusicRoomManager.kick(
                 context.getSource().getPlayerOrException(),
-                EntityArgument.getPlayer(context, "player").getGameProfile().name()
+                EntityArgument.getPlayer(context, "player").getGameProfile().getName()
         );
         return 1;
     }

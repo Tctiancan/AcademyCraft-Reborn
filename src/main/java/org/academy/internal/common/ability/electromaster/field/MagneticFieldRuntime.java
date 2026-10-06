@@ -2,7 +2,6 @@ package org.academy.internal.common.ability.electromaster.field;
 
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.player.Input;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -17,6 +16,7 @@ import org.academy.api.common.ability.electromaster.MagneticFieldTuning;
 import org.academy.api.server.ability.*;
 import org.academy.api.server.ability.electromaster.MagneticFieldEffects;
 import org.academy.api.server.ability.electromaster.MagneticLevitation;
+import org.academy.api.server.vanilla.PlayerInputTracker;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.attachment.AttachmentTypes;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
@@ -111,8 +111,7 @@ public final class MagneticFieldRuntime {
             var tuning = MagneticFieldEffects.levitationTuning(player);
             var radius = MagneticFieldTuning.supportRadius(skill.getEffectiveProficiencyMilestone(player));
             var canMove = EntityMotionGuard.canApplyMotionFrom(player, player);
-            var input = player.getLastClientInput();
-            if (input == null) input = Input.EMPTY;
+            var input = PlayerInputTracker.get(player);
             var forward = (input.forward() ? 1 : 0) - (input.backward() ? 1 : 0);
             var strafe = (input.left() ? 1 : 0) - (input.right() ? 1 : 0);
             var vertical = (input.jump() ? 1 : 0) - (input.shift() ? 1 : 0);

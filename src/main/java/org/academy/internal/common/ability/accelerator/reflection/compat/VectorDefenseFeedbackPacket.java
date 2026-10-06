@@ -22,7 +22,7 @@ public final class VectorDefenseFeedbackPacket
     public static final StreamCodec<ByteBuf, VectorDefenseFeedbackPacket> CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             packet -> packet.entityId,
-            ByteBufCodecs.LONG,
+            ByteBufCodecs.VAR_LONG,
             packet -> packet.serverTick,
             VectorDefenseFeedbackPacket::new
     );

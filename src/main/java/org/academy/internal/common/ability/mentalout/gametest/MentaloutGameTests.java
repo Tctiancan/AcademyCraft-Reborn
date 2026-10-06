@@ -28,7 +28,8 @@ import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.boss.enderdragon.phases.EnderDragonPhase;
 import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.player.Input;
+import org.academy.api.common.ability.Input;
+import org.academy.api.server.vanilla.PlayerInputTracker;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -171,7 +172,7 @@ public final class MentaloutGameTests {
                 SOURCE,
                 100,
                 new ControlDirective.MoveTo(new ControlDestination.Position(
-                        subject.level().dimension().identifier(),
+                        subject.level().dimension().location(),
                         destination
                 ))
         ));
@@ -289,7 +290,7 @@ public final class MentaloutGameTests {
                     var cargo = new ArrayList<ItemStack>();
                     if (i < 8) for (int stack = 0; stack < 64; stack++) cargo.add(new ItemStack(Items.DIAMOND, 64));
                     var entry = new WorkOrderData.Entry(controller.getUUID().toString(), UUID.randomUUID().toString(), SOURCE,
-                            helper.getLevel().dimension().identifier(), pos, pos, WorkSettings.defaults(), 100, false, cargo).asReturning();
+                            helper.getLevel().dimension().location(), pos, pos, WorkSettings.defaults(), 100, false, cargo).asReturning();
                     data.put(entry); keys.add(entry.key());
                 }
                 helper.runAtTickTime(40, () -> {
@@ -307,7 +308,7 @@ public final class MentaloutGameTests {
                 var first = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
                 var second = helper.spawn(EntityType.VILLAGER, 3, 2, 1);
                 MentalControlMemory.remember(controller, first);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(),
                         helper.absolutePos(new BlockPos(2, 2, 1)), helper.absolutePos(new BlockPos(5, 2, 1)));
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(first, second),
                         new GroupControlCommand.Work(region, WorkSettings.defaults()), 1000));
@@ -336,7 +337,7 @@ public final class MentaloutGameTests {
                 helper.getLevel().setBlock(pos.below(), Blocks.FARMLAND.defaultBlockState(), 3);
                 helper.getLevel().setBlock(pos, ((net.minecraft.world.level.block.CropBlock) Blocks.WHEAT).getStateForAge(7), 3);
                 var settings = new WorkSettings(WorkSettings.Mode.FARMING, true, true, false, false, List.of(), Optional.empty(), Optional.empty());
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), pos, pos);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), pos, pos);
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(first, second),
                         new GroupControlCommand.Work(region, settings), 1000));
                 var paused = new LivingEntity[1];
@@ -363,22 +364,25 @@ public final class MentaloutGameTests {
                     var owner = UUID.randomUUID(); var worker = UUID.randomUUID();
                     var data = new WorkOrderData();
                     var entry = new WorkOrderData.Entry(owner.toString(), worker.toString(), SOURCE,
-                            helper.getLevel().dimension().identifier(), BlockPos.ZERO, BlockPos.ZERO,
+                            helper.getLevel().dimension().location(), BlockPos.ZERO, BlockPos.ZERO,
                             WorkSettings.defaults(), 100, true, List.of(new ItemStack(Items.DIAMOND, 9))).asReturning();
                     data.put(entry);
-                    try (var storage = new net.minecraft.world.level.storage.SavedDataStorage(folder,
-                            net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess())) {
-                        storage.set(WorkOrderData.TYPE, data);
-                        storage.saveAndJoin();
-                    }
-                    try (var storage = new net.minecraft.world.level.storage.SavedDataStorage(folder,
-                            net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess())) {
-                        var restored = storage.computeIfAbsent(WorkOrderData.TYPE).selected(owner, List.of(worker));
+                    try {
+                        var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder,
+                                net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess());
+                        storage.set(AcademyCraft.academy("mental_work_orders").toString(), data);
+                        storage.save();
+                    } catch (Exception failure) { throw new IllegalStateException(failure); }
+                    try {
+                        var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder,
+                                net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess());
+                        var restored = storage.computeIfAbsent(WorkOrderData.getType(),
+                                AcademyCraft.academy("mental_work_orders").toString()).selected(owner, List.of(worker));
                         helper.assertValueEqual(restored.size(), 1, "Disk reload lost the pending return");
                         helper.assertValueEqual(restored.getFirst().cargo().getFirst().getCount(), 9, "Disk reload changed cargo");
                         helper.assertTrue(restored.getFirst().paused() && restored.getFirst().returning(), "Disk reload resumed a cancelled order");
                         helper.assertTrue(restored.getFirst().orderId().equals(entry.orderId()), "Order identity changed across disk reload");
-                    }
+                    } catch (Exception failure) { throw new IllegalStateException(failure); }
                     helper.succeed();
                 } catch (java.io.IOException failure) { throw new IllegalStateException(failure); }
             }
@@ -438,7 +442,7 @@ public final class MentaloutGameTests {
                 var pos = helper.absolutePos(BlockPos.ZERO);
                 var cargo = new ItemStack(Items.DIAMOND, 7);
                 var entry = new WorkOrderData.Entry(ownerId.toString(), worker.toString(), SOURCE,
-                        helper.getLevel().dimension().identifier(), pos, pos, WorkSettings.defaults(), 100, false, List.of(cargo));
+                        helper.getLevel().dimension().location(), pos, pos, WorkSettings.defaults(), 100, false, List.of(cargo));
                 cargo.setCount(0);
                 var data = WorkOrderData.get(server);
                 data.put(entry);
@@ -483,7 +487,7 @@ public final class MentaloutGameTests {
                     var worker = helper.spawn(EntityType.VILLAGER, i % 8 + 1, 2, i / 8 + 1);
                     workers.add(worker);
                 }
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(),
                         helper.absolutePos(new BlockPos(0, 2, 0)), helper.absolutePos(new BlockPos(9, 2, 9)));
                 var result = GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, workers,
                         new GroupControlCommand.Work(region, WorkSettings.defaults()), 1000));
@@ -511,7 +515,7 @@ public final class MentaloutGameTests {
                 chest.setItem(0, new ItemStack(Items.WHEAT_SEEDS, 16));
                 var settings = new WorkSettings(WorkSettings.Mode.FARMING, true, false, true, false,
                         List.of("minecraft:wheat"), Optional.of(supplyPos), Optional.empty());
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), cropPos.below(), cropPos);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), cropPos.below(), cropPos);
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
                         new GroupControlCommand.Work(region, settings), 1000));
                 helper.runAtTickTime(60, () -> {
@@ -534,7 +538,7 @@ public final class MentaloutGameTests {
                 var worker = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
                 var block = helper.absolutePos(new BlockPos(3, 2, 1));
                 helper.setBlock(3, 2, 1, Blocks.STONE);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), block, block);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), block, block);
                 var settings = new WorkSettings(WorkSettings.Mode.MINING, false, true, false, false,
                         List.of("minecraft:stone"), Optional.empty(), Optional.empty());
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
@@ -558,7 +562,7 @@ public final class MentaloutGameTests {
                 var min = helper.absolutePos(new BlockPos(4, 2, 1));
                 var max = helper.absolutePos(new BlockPos(7, 8, 4));
                 for (var block : BlockPos.betweenClosed(min, max)) helper.getLevel().setBlock(block, Blocks.DIRT.defaultBlockState(), 3);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), min, max);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), min, max);
                 var settings = new WorkSettings(WorkSettings.Mode.MINING, false, true, false, false,
                         List.of("minecraft:dirt"), Optional.empty(), Optional.empty());
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
@@ -589,7 +593,7 @@ public final class MentaloutGameTests {
                 for (var block : BlockPos.betweenClosed(min, max)) helper.getLevel().setBlock(block, Blocks.DIRT.defaultBlockState(), 3);
                 var marker = min.west();
                 helper.getLevel().setBlock(marker, Blocks.DIRT.defaultBlockState(), 3);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), min, max);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), min, max);
                 var settings = new WorkSettings(WorkSettings.Mode.MINING, false, true, false, false,
                         List.of("minecraft:dirt"), Optional.empty(), Optional.empty(), WorkSettings.MiningReach.AREA);
                 var result = GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, workers,
@@ -616,7 +620,7 @@ public final class MentaloutGameTests {
                 var worker = helper.spawn(EntityType.VILLAGER, 1, 2, 1);
                 var block = helper.absolutePos(new BlockPos(3, 12, 1));
                 helper.getLevel().setBlock(block, Blocks.STONE.defaultBlockState(), 3);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), block, block);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), block, block);
                 var nearby = new WorkSettings(WorkSettings.Mode.MINING, false, true, false, false,
                         List.of(), Optional.empty(), Optional.empty(), WorkSettings.MiningReach.NEARBY);
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
@@ -646,7 +650,7 @@ public final class MentaloutGameTests {
                 var high = low.above();
                 helper.getLevel().setBlock(low, Blocks.DIRT.defaultBlockState(), 3);
                 helper.getLevel().setBlock(high, Blocks.OBSIDIAN.defaultBlockState(), 3);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), low, high);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), low, high);
                 var settings = new WorkSettings(WorkSettings.Mode.MINING, false, true, false, false,
                         List.of(), Optional.empty(), Optional.empty(), WorkSettings.MiningReach.AREA);
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
@@ -672,7 +676,7 @@ public final class MentaloutGameTests {
                 var armorBefore = armor.getValue();
                 var attackBefore = attack.getValue();
                 var cell = helper.absolutePos(new BlockPos(3, 2, 1));
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(), cell, cell);
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(), cell, cell);
                 GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
                         new GroupControlCommand.Work(region, WorkSettings.defaults()), 1000));
                 helper.runAtTickTime(10, () -> {
@@ -710,7 +714,7 @@ public final class MentaloutGameTests {
                 var worker = helper.spawn(EntityType.VILLAGER, 2, 2, 1);
                 var sheep = helper.spawn(EntityType.SHEEP, 3, 2, 1);
                 sheep.setNoAi(true);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(),
                         helper.absolutePos(new BlockPos(1, 2, 0)), helper.absolutePos(new BlockPos(4, 3, 2)));
                 var settings = new WorkSettings(WorkSettings.Mode.SHEARING, false, true, false, false,
                         List.of("minecraft:sheep"), Optional.empty(), Optional.empty());
@@ -731,7 +735,7 @@ public final class MentaloutGameTests {
                 var controller = createController(helper);
                 var worker = helper.spawn(EntityType.VILLAGER, 3, 2, 1);
                 MentalControlMemory.remember(controller, worker);
-                var region = new BlockWorkRegion(helper.getLevel().dimension().identifier(),
+                var region = new BlockWorkRegion(helper.getLevel().dimension().location(),
                         helper.absolutePos(new BlockPos(2, 2, 1)), helper.absolutePos(new BlockPos(4, 2, 1)));
                 var result = GroupControlApi.dispatch(new GroupControlRequest(controller, SOURCE, List.of(worker),
                         new GroupControlCommand.Work(region, WorkSettings.defaults()), 1000));
@@ -847,7 +851,7 @@ public final class MentaloutGameTests {
                             "Controller did not mount the impression target after releasing Shift");
                     controller.setYRot(0.0f);
                     controller.setXRot(-30.0f);
-                    controller.setLastClientInput(new Input(
+                    PlayerInputTracker.set(controller, new Input(
                             true, false, false, false, false, false, true
                     ));
                 });
@@ -904,7 +908,7 @@ public final class MentaloutGameTests {
                             "Controller did not mount the impressed player");
                     controller.setYRot(0.0f);
                     controller.setXRot(-30.0f);
-                    controller.setLastClientInput(new Input(
+                    PlayerInputTracker.set(controller, new Input(
                             true, false, false, false, false, false, true
                     ));
                 });
@@ -949,7 +953,7 @@ public final class MentaloutGameTests {
                         SOURCE,
                         250,
                         new ControlDirective.MoveTo(new ControlDestination.Position(
-                                helper.getLevel().dimension().identifier(), destination))
+                                helper.getLevel().dimension().location(), destination))
                 ));
                 helper.runAtTickTime(32L, () -> {
                     helper.assertTrue(handle.failureReason().isEmpty(),
@@ -1025,7 +1029,7 @@ public final class MentaloutGameTests {
                     ));
                     helper.assertTrue(
                             blockHit instanceof ControlDestination.Position(var dimension, var value)
-                                    && dimension.equals(helper.getLevel().dimension().identifier())
+                                    && dimension.equals(helper.getLevel().dimension().location())
                                     && value.distanceToSqr(expected) < 1.0e-6,
                             "Sight destination did not return the outside face position"
                     );
@@ -1049,7 +1053,7 @@ public final class MentaloutGameTests {
                         SOURCE,
                         100,
                         new ControlDirective.MoveTo(new ControlDestination.Position(
-                                helper.getLevel().dimension().identifier(),
+                                helper.getLevel().dimension().location(),
                                 destination
                         ))
                 ));
@@ -1096,7 +1100,7 @@ public final class MentaloutGameTests {
                         SOURCE,
                         100,
                         new ControlDirective.MoveTo(new ControlDestination.Position(
-                                helper.getLevel().dimension().identifier(),
+                                helper.getLevel().dimension().location(),
                                 destination
                         ))
                 ));
@@ -1152,7 +1156,7 @@ public final class MentaloutGameTests {
                         SOURCE,
                         100,
                         new ControlDirective.MoveTo(new ControlDestination.Position(
-                                helper.getLevel().dimension().identifier(),
+                                helper.getLevel().dimension().location(),
                                 destination
                         ))
                 ));
@@ -1222,7 +1226,7 @@ public final class MentaloutGameTests {
                         SOURCE,
                         100,
                         new ControlDirective.MoveTo(new ControlDestination.Position(
-                                helper.getLevel().dimension().identifier(),
+                                helper.getLevel().dimension().location(),
                                 destination
                         ))
                 ));
@@ -1837,7 +1841,7 @@ public final class MentaloutGameTests {
                         SOURCE,
                         100,
                         new ControlDirective.MoveTo(new ControlDestination.Position(
-                                helper.getLevel().dimension().identifier(),
+                                helper.getLevel().dimension().location(),
                                 destination
                         ))
                 ));
@@ -2023,4 +2027,3 @@ public final class MentaloutGameTests {
         }
     }
 }
-

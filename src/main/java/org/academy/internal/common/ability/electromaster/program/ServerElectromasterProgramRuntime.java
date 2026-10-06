@@ -268,7 +268,7 @@ public final class ServerElectromasterProgramRuntime implements ElectromasterPro
         var minimum = BlockPos.containing(origin.add(-bounded, -bounded, -bounded));
         var maximum = BlockPos.containing(origin.add(bounded, bounded, bounded));
         var result = new ArrayList<ProgramBlockPosition>();
-        var dimension = targets.level().dimension().identifier();
+        var dimension = targets.level().dimension().location();
         for (var pos : BlockPos.betweenClosed(minimum, maximum)) {
             if (result.size() >= MAX_QUERY_RESULTS) break;
             if (Vec3.atCenterOf(pos).distanceToSqr(origin) > bounded * bounded
@@ -400,13 +400,13 @@ public final class ServerElectromasterProgramRuntime implements ElectromasterPro
 
     private BlockPos requireLocalBlock(Object value) {
         if (!(value instanceof ProgramBlockPosition(var dimension, var x, var y, var z))
-                || !dimension.equals(targets.level().dimension().identifier())) {
+                || !dimension.equals(targets.level().dimension().location())) {
             throw new IllegalArgumentException("Block target is in another dimension");
         }
         var position = new BlockPos(x, y, z);
         if (!targets.level().hasChunkAt(position)
-                || position.getY() < targets.level().getMinY()
-                || position.getY() >= targets.level().getMaxY()
+                || position.getY() < targets.level().getMinBuildHeight()
+                || position.getY() >= targets.level().getMaxBuildHeight()
                 || Vec3.atCenterOf(position).distanceToSqr(player.position())
                     > MAX_ACTION_RANGE * MAX_ACTION_RANGE) {
             throw new IllegalArgumentException("Block target is outside program range");
@@ -431,7 +431,7 @@ public final class ServerElectromasterProgramRuntime implements ElectromasterPro
     }
 
     private String blockKey(BlockPos position) {
-        return "block:" + targets.level().dimension().identifier() + ':'
+        return "block:" + targets.level().dimension().location() + ':'
                 + position.getX() + ':' + position.getY() + ':' + position.getZ();
     }
 

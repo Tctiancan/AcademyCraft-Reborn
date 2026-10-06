@@ -48,7 +48,7 @@ public final class AeromanipFieldSyncPacket extends Packet<ClientPacketListener,
     private final boolean active;
 
     public AeromanipFieldSyncPacket(AirflowField field, boolean active) {
-        this(field.id(), field.ownerId(), field.dimension().identifier().toString(), field.type().ordinal(), field.shape().ordinal(),
+        this(field.id(), field.ownerId(), field.dimension().location().toString(), field.type().ordinal(), field.shape().ordinal(),
                 field.center().x, field.center().y, field.center().z,
                 field.direction().x, field.direction().y, field.direction().z,
                 field.radius(), field.length(), field.strength(), field.durationTicks(), field.proficiencyMilestone(), active);

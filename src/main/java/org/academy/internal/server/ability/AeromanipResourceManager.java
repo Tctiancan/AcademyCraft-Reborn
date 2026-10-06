@@ -150,7 +150,7 @@ public final class AeromanipResourceManager implements AbilitySubsystem {
                 && AirAccessResolver.hasAmbientAir(player);
         var recovered = recover(
                 cpData.getCurrMP(), capacity, configuredRecovery(player)
-                        * (WaterSuppression.suppliesAir(player.level(), player.getEyePosition()) ? 0.5f : 1.0f), canRecover);
+                        * (WaterSuppression.suppliesAir(player.serverLevel(), player.getEyePosition()) ? 0.5f : 1.0f), canRecover);
         if (recovered > cpData.getCurrMP() + EPSILON) {
             cpData.setCurrMP(recovered);
             changed = true;

@@ -150,7 +150,7 @@ public final class ChunkLeapPackets {
                 (buf, packet) -> {
                     writeUuid(buf, packet.opId);
                     // Source selection: dimension, origin, and the shared offset list.
-                    ByteBufCodecs.STRING_UTF8.encode(buf, packet.source.dimension().identifier().toString());
+                    ByteBufCodecs.STRING_UTF8.encode(buf, packet.source.dimension().location().toString());
                     ByteBufCodecs.VAR_INT.encode(buf, packet.source.originChunkX());
                     ByteBufCodecs.VAR_INT.encode(buf, packet.source.originChunkZ());
                     ByteBufCodecs.VAR_INT.encode(buf, packet.source.count());
@@ -159,7 +159,7 @@ public final class ChunkLeapPackets {
                         ByteBufCodecs.VAR_INT.encode(buf, offset.dz());
                     }
                     // Target: destination dimension and origin only.
-                    ByteBufCodecs.STRING_UTF8.encode(buf, packet.targetDimension.identifier().toString());
+                    ByteBufCodecs.STRING_UTF8.encode(buf, packet.targetDimension.location().toString());
                     ByteBufCodecs.VAR_INT.encode(buf, packet.targetOriginX);
                     ByteBufCodecs.VAR_INT.encode(buf, packet.targetOriginZ);
                     ByteBufCodecs.BOOL.encode(buf, packet.movePlayers);

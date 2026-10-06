@@ -2,12 +2,12 @@ package org.academy.api.client.util;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.input.InputWithModifiers;
-import net.minecraft.client.input.KeyEvent;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.gui.environment.UiEnvironment;
+import org.academy.api.client.input.InputWithModifiers;
+import org.academy.api.client.input.KeyEvent;
 import org.academy.api.common.ability.Skill;
 import org.academy.internal.common.sounds.SoundEvents;
 
@@ -57,19 +57,19 @@ public final class ClientUtil {
         var event = new KeyEvent(key, scancode, modifiers);
         var isHotbarKey = false;
         for (var hotbarKey : options.keyHotbarSlots) {
-            if (hotbarKey.matches(event)) {
+            if (hotbarKey.matches(event.key(), event.scancode())) {
                 isHotbarKey = true;
                 break;
             }
         }
         var isMovementKey
-                = options.keyUp.matches(event)
-                || options.keyDown.matches(event)
-                || options.keyLeft.matches(event)
-                || options.keyRight.matches(event)
-                || options.keyJump.matches(event)
-                || options.keyShift.matches(event)
-                || options.keySprint.matches(event);
+                = options.keyUp.matches(event.key(), event.scancode())
+                || options.keyDown.matches(event.key(), event.scancode())
+                || options.keyLeft.matches(event.key(), event.scancode())
+                || options.keyRight.matches(event.key(), event.scancode())
+                || options.keyJump.matches(event.key(), event.scancode())
+                || options.keyShift.matches(event.key(), event.scancode())
+                || options.keySprint.matches(event.key(), event.scancode());
         return isHotbarKey || isMovementKey;
     }
 }

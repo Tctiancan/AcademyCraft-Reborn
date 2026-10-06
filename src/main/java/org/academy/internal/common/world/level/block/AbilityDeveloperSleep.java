@@ -3,8 +3,6 @@ package org.academy.internal.common.world.level.block;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.util.TriState;
-import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.Level;
@@ -13,6 +11,7 @@ import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.common.util.TriState;
 import net.neoforged.neoforge.event.entity.player.CanContinueSleepingEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
@@ -82,10 +81,8 @@ public final class AbilityDeveloperSleep {
 
     public static boolean canSkipTime(ServerPlayer player) {
         var level = player.level();
-        var sleepingPosition = player.getSleepingPos().orElse(player.blockPosition());
-        var bedRule = level.environmentAttributes()
-                .getValue(EnvironmentAttributes.BED_RULE, sleepingPosition);
-        return level.dimensionType().defaultClock().isPresent() && bedRule.canSleep(level);
+        return level.dimensionType().bedWorks()
+                && !level.dimensionType().hasFixedTime();
     }
 
     @Nullable

@@ -73,7 +73,7 @@ public final class EnderDragonMentalControlAdapter implements MentalControlAdapt
                         : new ResolvedDestination(target.position(), target);
             }
             case ControlDestination.Position position ->
-                    dragon.level().dimension().identifier().equals(position.dimension())
+                    dragon.level().dimension().location().equals(position.dimension())
                             ? new ResolvedDestination(position.value(), null)
                             : null;
         };

@@ -89,7 +89,6 @@
     "client.MixinRenderTypeSurfaceMask",
     "client.MixinChunkSectionsSurfaceMask",
     "client.AbstractContainerScreenAccessor",
-    "client.ClientInputAccessor",
     "client.ItemInHandRendererInvoker",
     "client.MixinArmedEntityRenderState",
     "client.MixinAvatarRenderer",

@@ -22,13 +22,13 @@ public final class SkyStrikeVisualPacket extends Packet<ClientPacketListener, Sk
     public static final double BROADCAST_RANGE = 128.0;
     public static final StreamCodec<ByteBuf, SkyStrikeVisualPacket> CODEC = StreamCodec.of(
             (buffer, packet) -> {
-                Vec3.STREAM_CODEC.encode(buffer, packet.impact);
-                ByteBufCodecs.LONG.encode(buffer, packet.seed);
+                buffer.writeDouble(packet.impact.x).writeDouble(packet.impact.y).writeDouble(packet.impact.z);
+                ByteBufCodecs.VAR_LONG.encode(buffer, packet.seed);
                 buffer.writeByte(packet.profile.wireId());
             },
             buffer -> new SkyStrikeVisualPacket(
-                    Vec3.STREAM_CODEC.decode(buffer),
-                    ByteBufCodecs.LONG.decode(buffer),
+                    new Vec3(buffer.readDouble(), buffer.readDouble(), buffer.readDouble()),
+                    ByteBufCodecs.VAR_LONG.decode(buffer),
                     SkyStrikeProfile.fromWireId(buffer.readUnsignedByte())
             )
     );

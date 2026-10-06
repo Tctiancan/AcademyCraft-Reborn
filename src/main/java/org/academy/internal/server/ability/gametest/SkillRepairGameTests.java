@@ -129,7 +129,7 @@ public final class SkillRepairGameTests {
                 if (scenario.equals("mining_program")) {
                     var runtime = new ServerMeltdownerProgramRuntime(player);
                     var action = runtime.fireMiningBeam(
-                            new ProgramWorldPosition(level.dimension().identifier(), origin.x, origin.y, origin.z),
+                            new ProgramWorldPosition(level.dimension().location(), origin.x, origin.y, origin.z),
                             new ProgramDirection(1, 0, 0), null, null, 1.0f);
                     action.validate();
                     action.apply();
@@ -200,7 +200,7 @@ public final class SkillRepairGameTests {
         }
         var runtime = new ServerTeleportProgramRuntime(player);
         var position = new ProgramBlockPosition(
-                level.dimension().identifier(), pos.getX(), pos.getY(), pos.getZ());
+                level.dimension().location(), pos.getX(), pos.getY(), pos.getZ());
         var action = runtime.teleportBlockOrItem(position, 0,
                 TeleportProgramNodeCatalog.BlockItemTeleportMode.COLLECT);
         if (full) {
@@ -253,7 +253,7 @@ public final class SkillRepairGameTests {
                 var center = Vec3.atCenterOf(pos).add(face.getStepX() * 2, face.getStepY() * 2, face.getStepZ() * 2);
                 var normal = runtime.raycastBlockNormal(
                         new ProgramWorldPosition(
-                                level.dimension().identifier(), center.x, center.y, center.z),
+                                level.dimension().location(), center.x, center.y, center.z),
                         new ProgramDirection(-face.getStepX(), -face.getStepY(), -face.getStepZ()), 4);
                 helper.assertTrue(normal.equals(Optional.of(new ProgramDirection(
                         face.getStepX(), face.getStepY(), face.getStepZ()))), runtime.getClass().getSimpleName() + " normal " + face);

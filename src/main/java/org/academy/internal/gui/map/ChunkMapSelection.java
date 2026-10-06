@@ -104,10 +104,10 @@ public final class ChunkMapSelection {
     public void setRectangle(ResourceKey<Level> dimension, ChunkPos from, ChunkPos to) {
         rebaseIfNeeded(dimension);
         source.clear();
-        var minX = Math.min(from.x(), to.x());
-        var minZ = Math.min(from.z(), to.z());
-        var width = Math.abs(to.x() - from.x()) + 1;
-        var height = Math.abs(to.z() - from.z()) + 1;
+        var minX = Math.min(from.x, to.x);
+        var minZ = Math.min(from.z, to.z);
+        var width = Math.abs(to.x - from.x) + 1;
+        var height = Math.abs(to.z - from.z) + 1;
         for (var dz = 0; dz < height && source.size() < ChunkLeapSelection.MAX_CHUNKS; dz++) {
             for (var dx = 0; dx < width && source.size() < ChunkLeapSelection.MAX_CHUNKS; dx++) {
                 source.add(new ChunkPos(minX + dx, minZ + dz));

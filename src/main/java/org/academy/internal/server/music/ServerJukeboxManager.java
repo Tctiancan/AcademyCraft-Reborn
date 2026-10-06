@@ -140,7 +140,7 @@ public final class ServerJukeboxManager {
 
         boolean wasPlayingPreset;
         synchronized (channel) {
-            if (countPlayerPending(player.getGameProfile().name()) >= settings.perPlayerLimit) {
+            if (countPlayerPending(player.getGameProfile().getName()) >= settings.perPlayerLimit) {
                 sendError(player, "message.academy.jukebox.player_limit");
                 return;
             }
@@ -160,7 +160,7 @@ public final class ServerJukeboxManager {
         ).withStyle(ChatFormatting.GOLD));
 
         synchronized (channel) {
-            channel.enqueue(new QueueSnapshot.QueueEntry(entry, player.getGameProfile().name()));
+            channel.enqueue(new QueueSnapshot.QueueEntry(entry, player.getGameProfile().getName()));
             if (channel.timeline().isEmpty()) {
                 channel.skipToNext(gameTime());
                 playingPreset = false;
@@ -181,12 +181,12 @@ public final class ServerJukeboxManager {
         var now = gameTime();
         if (votes == null) {
             votes = new SkipVoteSession(now, settings.voteWindowSeconds * 20L,
-                    player.getUUID(), player.getGameProfile().name());
+                    player.getUUID(), player.getGameProfile().getName());
             player.sendSystemMessage(Component.translatable("message.academy.jukebox.vote_started"));
             broadcast();
             return;
         }
-        if (!votes.addVote(player.getUUID(), player.getGameProfile().name())) {
+        if (!votes.addVote(player.getUUID(), player.getGameProfile().getName())) {
             sendError(player, "message.academy.jukebox.already_voted");
             return;
         }

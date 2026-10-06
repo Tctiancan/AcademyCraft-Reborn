@@ -250,7 +250,7 @@ public final class ServerDarkmatterProgramRuntime implements DarkmatterProgramRu
 
     private BlockPos requireLocalBlock(ProgramBlockPosition block) {
         Objects.requireNonNull(block, "block");
-        if (!block.dimension().equals(targets.level().dimension().identifier())) {
+        if (!block.dimension().equals(targets.level().dimension().location())) {
             throw new IllegalArgumentException("Block is in another dimension");
         }
         return new BlockPos(block.x(), block.y(), block.z());

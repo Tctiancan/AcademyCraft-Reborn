@@ -170,8 +170,8 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
         var destination = targets.requireLocalPosition(position);
         var block = BlockPos.containing(destination);
         if (!targets.level().hasChunkAt(block)
-                || block.getY() < targets.level().getMinY()
-                || block.getY() >= targets.level().getMaxY()) return false;
+                || block.getY() < targets.level().getMinBuildHeight()
+                || block.getY() >= targets.level().getMaxBuildHeight()) return false;
         var moved = entity.getBoundingBox().move(destination.subtract(entity.position()));
         return targets.level().getWorldBorder().isWithinBounds(moved)
                 && targets.level().noCollision(entity, moved);
@@ -610,8 +610,8 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
         }
         var block = BlockPos.containing(requested);
         if (!level.hasChunkAt(block)
-                || block.getY() < level.getMinY()
-                || block.getY() >= level.getMaxY()) {
+                || block.getY() < level.getMinBuildHeight()
+                || block.getY() >= level.getMaxBuildHeight()) {
             throw new IllegalArgumentException("Teleport destination is not loaded");
         }
         if (limitDistance && requested.distanceToSqr(target.position())
@@ -719,13 +719,13 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
 
     private BlockPos requireLocalBlock(Object value) {
         if (!(value instanceof ProgramBlockPosition(var dimension, var x, var y, var z))
-                || !dimension.equals(targets.level().dimension().identifier())) {
+                || !dimension.equals(targets.level().dimension().location())) {
             throw new IllegalArgumentException("Teleport block is in another dimension");
         }
         var position = new BlockPos(x, y, z);
         if (!targets.level().hasChunkAt(position)
-                || position.getY() < targets.level().getMinY()
-                || position.getY() >= targets.level().getMaxY()
+                || position.getY() < targets.level().getMinBuildHeight()
+                || position.getY() >= targets.level().getMaxBuildHeight()
                 || Vec3.atCenterOf(position).distanceToSqr(player.position())
                 > MAX_ACTION_RANGE * MAX_ACTION_RANGE) {
             throw new IllegalArgumentException("Teleport block is outside program range");
@@ -950,9 +950,9 @@ public final class ServerTeleportProgramRuntime implements TeleportProgramRuntim
     }
 
     private static Direction nearestDirection(ProgramDirection direction) {
-        var x = direction.x();
+        var x = direction.x;
         var y = direction.y();
-        var z = direction.z();
+        var z = direction.z;
         if (Math.abs(y) >= Math.abs(x) && Math.abs(y) >= Math.abs(z)) {
             return y >= 0.0 ? Direction.UP : Direction.DOWN;
         }

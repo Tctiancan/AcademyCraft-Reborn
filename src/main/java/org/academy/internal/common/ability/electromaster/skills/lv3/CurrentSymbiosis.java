@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv3;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
@@ -68,7 +69,7 @@ public final class CurrentSymbiosis extends Skill {
                                 InputSystem.InputType.KEYBOARD,
                                 InputConstants.KEY_H,
                                 InputConstants.RELEASE,
-                                InputConstants.MOD_ALT
+                                GLFW.GLFW_MOD_ALT
                         )
                 ),
                 unused454 -> Client.toggle()

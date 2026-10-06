@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.teleport.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -76,12 +77,12 @@ public class Disarm extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_START, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_START,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R,
-                        InputConstants.PRESS, InputConstants.MOD_SHIFT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT)
         ), ctx -> Client.start());
         InputSystem.addKeyBinding(Client.KEY_NAME_END, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_END,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_R,
-                        InputConstants.RELEASE, InputConstants.MOD_SHIFT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_SHIFT)
         ), ctx -> Client.end());
     }
 
@@ -146,7 +147,7 @@ public class Disarm extends Skill {
                             point.x + 0.5, point.y + 0.5, point.z + 0.5);
                 }
 
-                var camera = minecraft.gameRenderer.mainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().position();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

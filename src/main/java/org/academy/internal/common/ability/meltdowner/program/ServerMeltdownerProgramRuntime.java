@@ -261,12 +261,12 @@ public final class ServerMeltdownerProgramRuntime implements MeltdownerProgramRu
         }
         var targetBlock = legacyTarget;
         var level = targets.level();
-        if (!targetBlock.dimension().equals(level.dimension().identifier())) {
+        if (!targetBlock.dimension().equals(level.dimension().location())) {
             throw new IllegalArgumentException("Mining target is in another dimension");
         }
         var position = new BlockPos(targetBlock.x(), targetBlock.y(), targetBlock.z());
-        if (position.getY() < level.getMinY()
-                || position.getY() >= level.getMaxY()
+        if (position.getY() < level.getMinBuildHeight()
+                || position.getY() >= level.getMaxBuildHeight()
                 || !level.hasChunkAt(position)) {
             throw new IllegalArgumentException("Mining target is outside loaded world bounds");
         }

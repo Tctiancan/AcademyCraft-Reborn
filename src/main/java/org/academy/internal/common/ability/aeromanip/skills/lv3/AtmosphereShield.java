@@ -4,6 +4,7 @@ import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -101,7 +102,7 @@ public final class AtmosphereShield extends Skill {
                 Client.KEY_NAME_TOGGLE,
                 defaultBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_N,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT));
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT));
         InputSystem.addKeyBinding(Client.KEY_NAME_TOGGLE, binding, unused347 -> Client.toggle());
     }
 

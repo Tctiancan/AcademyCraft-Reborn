@@ -179,15 +179,15 @@ public final class PropsGameTests {
                 net.minecraft.resources.ResourceKey.create(Registries.STRUCTURE,
                         ResourceLocation.withDefaultNamespace("buried_treasure"))).value();
         var ownPos = chunk.getPos();
-        var missingPos = new net.minecraft.world.level.ChunkPos(ownPos.x() + 1_024, ownPos.z() + 1_024);
-        var ownReference = net.minecraft.world.level.ChunkPos.pack(ownPos.x(), ownPos.z());
-        var missingReference = net.minecraft.world.level.ChunkPos.pack(missingPos.x(), missingPos.z());
-        var keyPrefix = level.dimension().identifier() + "|minecraft:buried_treasure|";
+        var missingPos = new net.minecraft.world.level.ChunkPos(ownPos.x + 1_024, ownPos.z + 1_024);
+        var ownReference = net.minecraft.world.level.ChunkPos.pack(ownPos.x, ownPos.z);
+        var missingReference = net.minecraft.world.level.ChunkPos.pack(missingPos.x, missingPos.z);
+        var keyPrefix = level.dimension().location() + "|minecraft:buried_treasure|";
         var system = AbilitySystemServer.getSystem(player);
         var manager = system.getPropsManager();
         var data = system.getPlayerData(player.getUUID()).getPropsData();
         try {
-            helper.assertTrue(level.getChunkSource().getChunkNow(missingPos.x(), missingPos.z()) == null,
+            helper.assertTrue(level.getChunkSource().getChunkNow(missingPos.x, missingPos.z) == null,
                     "The referenced start chunk must initially be unloaded");
             chunk.setAllReferences(java.util.Map.of(structure,
                     new it.unimi.dsi.fastutil.longs.LongOpenHashSet(new long[]{missingReference, ownReference})));
@@ -198,7 +198,7 @@ public final class PropsGameTests {
             manager.reset(player);
             scanStructures(player);
             close(helper, data.total(), 0, "Inactive P.R.O.P.S must not discover structures");
-            helper.assertTrue(!data.hasVisitedStructure(keyPrefix + ownPos.x() + "," + ownPos.z()),
+            helper.assertTrue(!data.hasVisitedStructure(keyPrefix + ownPos.x + "," + ownPos.z),
                     "Inactive scanning must not consume the one-time reward");
             manager.start(player);
             player.setPos(pos.getX() + 2.5, pos.getY(), pos.getZ() + 0.5);
@@ -209,9 +209,9 @@ public final class PropsGameTests {
             close(helper, data.total(), 20, "A loaded start containing the player awards discovery");
             scanStructures(player);
             close(helper, data.total(), 20, "Repeated discovery must not award twice");
-            helper.assertTrue(level.getChunkSource().getChunkNow(missingPos.x(), missingPos.z()) == null,
+            helper.assertTrue(level.getChunkSource().getChunkNow(missingPos.x, missingPos.z) == null,
                     "Structure discovery must never load a referenced chunk");
-            helper.assertTrue(!data.hasVisitedStructure(keyPrefix + missingPos.x() + "," + missingPos.z()),
+            helper.assertTrue(!data.hasVisitedStructure(keyPrefix + missingPos.x + "," + missingPos.z),
                     "Skipped unloaded references must remain eligible for a later retry");
         } finally {
             chunk.setAllStarts(originalStarts);

@@ -32,7 +32,7 @@ public final class MagneticLevitationVfxClient {
         var minecraft = Minecraft.getInstance();
         if (!minecraft.isSameThread()) { minecraft.execute(() -> accept(packet)); return; }
         resetWorld();
-        if (world == null || !world.dimension().identifier().equals(packet.dimension)) return;
+        if (world == null || !world.dimension().location().equals(packet.dimension)) return;
         if (!packet.active) { remove(packet.entityId); return; }
         if (!(world.getEntity(packet.entityId) instanceof LivingEntity subject)) return;
         var current = EFFECTS.get(packet.entityId);

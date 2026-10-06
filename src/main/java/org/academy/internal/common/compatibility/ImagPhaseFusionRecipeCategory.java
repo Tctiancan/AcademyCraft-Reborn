@@ -8,8 +8,8 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
@@ -19,8 +19,9 @@ import org.academy.internal.common.world.level.material.ImagPhaseItemFusion;
 
 public final class ImagPhaseFusionRecipeCategory
         extends AbstractRecipeCategory<ImagPhaseItemFusion.DisplayRecipe> {
-    public static final IRecipeType<ImagPhaseItemFusion.DisplayRecipe> TYPE = IRecipeType.create(
-            AcademyCraft.academy("imag_phase_fusion"),
+    public static final RecipeType<ImagPhaseItemFusion.DisplayRecipe> TYPE = RecipeType.create(
+            AcademyCraft.MOD_ID,
+            "imag_phase_fusion",
             ImagPhaseItemFusion.DisplayRecipe.class
     );
 
@@ -46,7 +47,7 @@ public final class ImagPhaseFusionRecipeCategory
         builder.addInputSlot(3, 7)
                 .setStandardSlotBackground()
                 .add(recipe.input());
-        builder.addSlot(RecipeIngredientRole.CRAFTING_STATION, 36, 7)
+        builder.addSlot(RecipeIngredientRole.CATALYST, 36, 7)
                 .setStandardSlotBackground()
                 .setFluidRenderer(1_000, true, 16, 16)
                 .add(Fluids.IMAG_PHASE.get(), 1_000);
@@ -77,7 +78,7 @@ public final class ImagPhaseFusionRecipeCategory
     }
 
     @Override
-    public ResourceLocation getIdentifier(ImagPhaseItemFusion.DisplayRecipe recipe) {
+    public ResourceLocation getRegistryName(ImagPhaseItemFusion.DisplayRecipe recipe) {
         return recipe.id();
     }
 }

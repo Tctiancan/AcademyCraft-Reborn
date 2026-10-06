@@ -1,4 +1,4 @@
-package org.academy.internal.client.particle;
+﻿package org.academy.internal.client.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Camera;
@@ -70,7 +70,7 @@ public final class ImagPhaseFluidParticle extends TextureSheetParticle {
 
     @Override
     public void render(VertexConsumer ignored, Camera camera, float partialTick) {
-        Vec3 cameraPos = camera.position();
+        Vec3 cameraPos = camera.getPosition();
         float renderX = (float) (Mth.lerp(partialTick, xo, x) - cameraPos.x());
         float renderY = (float) (Mth.lerp(partialTick, yo, y) - cameraPos.y());
         float renderZ = (float) (Mth.lerp(partialTick, zo, z) - cameraPos.z());

@@ -34,12 +34,12 @@ public final class DarkmatterVisualPacket extends Packet<ClientPacketListener, D
         b.writeByte(p.kind.ordinal());
         ByteBufCodecs.VAR_INT.encode(b, p.entityId);
         b.writeBoolean(p.active);
-        Vec3.STREAM_CODEC.encode(b, p.position);
+        b.writeDouble(p.position.x).writeDouble(p.position.y).writeDouble(p.position.z);
         b.writeFloat(p.width); b.writeFloat(p.height); b.writeFloat(p.range);
         b.writeByte(p.parts); b.writeBoolean(p.finished); b.writeLong(p.seed);
         b.writeBoolean(p.area != null);
         if (p.area != null) {
-            Vec3.STREAM_CODEC.encode(b, p.area.direction());
+            b.writeDouble(p.area.direction().x).writeDouble(p.area.direction().y).writeDouble(p.area.direction().z);
             b.writeDouble(p.area.first().radius()); b.writeDouble(p.area.first().minimumDot());
             b.writeDouble(p.area.second().radius()); b.writeDouble(p.area.second().minimumDot());
         }
@@ -49,10 +49,10 @@ public final class DarkmatterVisualPacket extends Packet<ClientPacketListener, D
         if (kind >= Kind.values().length) throw new IllegalArgumentException("Invalid matter effect kind");
         int entity = ByteBufCodecs.VAR_INT.decode(b);
         boolean active = b.readBoolean();
-        var position = Vec3.STREAM_CODEC.decode(b);
+        var position = new Vec3(b.readDouble(), b.readDouble(), b.readDouble());
         float width = b.readFloat(), height = b.readFloat(), range = b.readFloat();
         int parts = b.readUnsignedByte(); boolean finished = b.readBoolean(); long seed = b.readLong();
-        var area = b.readBoolean() ? new DirectionalArea(position, Vec3.STREAM_CODEC.decode(b),
+        var area = b.readBoolean() ? new DirectionalArea(position, new Vec3(b.readDouble(), b.readDouble(), b.readDouble()),
                 new DirectionalArea.Cone(b.readDouble(), b.readDouble()), new DirectionalArea.Cone(b.readDouble(), b.readDouble())) : null;
         return new DarkmatterVisualPacket(dimension, Kind.values()[kind], entity, active, position,
                 width, height, range, parts, finished, seed, area);

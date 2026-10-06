@@ -439,7 +439,7 @@ public final class EntityMotionGuard {
     }
 
     private static String dimensionId(Entity entity) {
-        return entity.level().dimension().identifier().toString();
+        return entity.level().dimension().location().toString();
     }
 
     private static void noteAttemptedPosition(Entity entity, Vec3 destination) {

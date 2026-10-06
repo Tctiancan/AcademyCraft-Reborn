@@ -10,7 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import net.minecraft.world.entity.player.Input;
+import org.academy.api.common.ability.Input;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -18,6 +18,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.entitycontrol.*;
+import org.academy.api.server.vanilla.PlayerInputTracker;
 import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 
@@ -116,7 +117,7 @@ public final class ImpressionRidingManager {
                 feedback(session.rider, MountResult.SHIFT_TIMEOUT.feedbackKey);
                 continue;
             }
-            var input = Optional.ofNullable(session.rider.getLastClientInput()).orElse(Input.EMPTY);
+            var input = PlayerInputTracker.get(session.rider);
             if (input.shift()) continue;
             activate(session);
         }
@@ -206,7 +207,7 @@ public final class ImpressionRidingManager {
             AcademyCraft.LOGGER.debug(
                     "Impression riding could not control {} for {}",
                     session.mount.getUUID(),
-                    session.rider.getGameProfile().name(),
+                    session.rider.getGameProfile().getName(),
                     exception
             );
             stop(session, false);
@@ -245,7 +246,7 @@ public final class ImpressionRidingManager {
     private static PlayerControlFrame controlFrame(RideSession session) {
         var rider = session.rider;
         var mount = session.mount;
-        var input = Optional.ofNullable(rider.getLastClientInput()).orElse(Input.EMPTY);
+        var input = PlayerInputTracker.get(rider);
         var forward = (input.forward() ? 1.0f : 0.0f) - (input.backward() ? 1.0f : 0.0f);
         var strafe = (input.left() ? 1.0f : 0.0f) - (input.right() ? 1.0f : 0.0f);
         var mode = movementMode(mount, input);
@@ -314,7 +315,7 @@ public final class ImpressionRidingManager {
         } catch (RuntimeException exception) {
             AcademyCraft.LOGGER.error(
                     "Failed to apply impression-riding input to player {}",
-                    player.getGameProfile().name(),
+                    player.getGameProfile().getName(),
                     exception
             );
             stop(session, true);

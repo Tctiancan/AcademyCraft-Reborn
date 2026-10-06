@@ -26,7 +26,7 @@ public final class VacuumVisuals {
         private final Set<ServerPlayer> observers = Collections.newSetFromMap(new IdentityHashMap<>());
         private long nextSync;
         private float radius = -1;
-        public Lease(ServerPlayer owner) { this.owner = owner; level = owner.level(); }
+        public Lease(ServerPlayer owner) { this.owner = owner; level = owner.serverLevel(); }
         public void update(float radius) {
             long now = level.getGameTime();
             if (now < nextSync && this.radius == radius) return;
@@ -47,7 +47,7 @@ public final class VacuumVisuals {
             }
         }
         private Update packet(boolean active) {
-            return new Update(level.dimension().identifier(), owner.getId(), owner.getUUID(), owner.position(),
+            return new Update(level.dimension().location(), owner.getId(), owner.getUUID(), owner.position(),
                     Math.max(1, radius), active);
         }
         @Override public void close() {
@@ -67,9 +67,9 @@ public final class VacuumVisuals {
         public static final StreamCodec<ByteBuf, Update> CODEC = StreamCodec.of((b, p) -> {
             ResourceLocation.STREAM_CODEC.encode(b, p.dimension); b.writeInt(p.ownerId);
             b.writeLong(p.owner.getMostSignificantBits()).writeLong(p.owner.getLeastSignificantBits());
-            Vec3.STREAM_CODEC.encode(b, p.position); b.writeFloat(p.radius).writeBoolean(p.active);
+            b.writeDouble(p.position.x).writeDouble(p.position.y).writeDouble(p.position.z); b.writeFloat(p.radius).writeBoolean(p.active);
         }, b -> new Update(ResourceLocation.STREAM_CODEC.decode(b), b.readInt(), new UUID(b.readLong(), b.readLong()),
-                Vec3.STREAM_CODEC.decode(b), b.readFloat(), b.readBoolean()));
+                new Vec3(b.readDouble(), b.readDouble(), b.readDouble()), b.readFloat(), b.readBoolean()));
         public Update(ResourceLocation dimension, int ownerId, UUID owner, Vec3 position, float radius, boolean active) {
             if (!Float.isFinite(radius) || radius < 1 || radius > 12) throw new IllegalArgumentException("Visual radius");
             this.dimension = dimension; this.ownerId = ownerId; this.owner = owner;

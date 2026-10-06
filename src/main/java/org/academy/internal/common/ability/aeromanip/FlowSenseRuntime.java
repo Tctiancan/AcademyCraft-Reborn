@@ -80,13 +80,13 @@ public final class FlowSenseRuntime {
             while (cursor.hasNext() && removed.size() < FlowSensePacket.MAX_BATCH) { removed.add(cursor.next()); cursor.remove(); }
             int lease = (int) Math.clamp(Math.max(60, query.maximumDelayTicks() * 2 + 40
                     + (long) query.trackedCount() * interval * 2 / maximum), 60, 600);
-            new FlowSensePacket(dimension.dimension().identifier(), session, tick, lease, (float) range,
+            new FlowSensePacket(dimension.dimension().location(), session, tick, lease, (float) range,
                     false, updates, removed).sendTo(owner);
             packets++; records += updates.size(); updates.clear();
         }
         @Override public void closed() {
             sent.clear(); updates.clear(); removals.clear();
-            if (!owner.hasDisconnected()) new FlowSensePacket(dimension.dimension().identifier(), session,
+            if (!owner.hasDisconnected()) new FlowSensePacket(dimension.dimension().location(), session,
                     dimension.getGameTime(), 1, (float) range, true, List.of(), List.of()).sendTo(owner);
         }
     }

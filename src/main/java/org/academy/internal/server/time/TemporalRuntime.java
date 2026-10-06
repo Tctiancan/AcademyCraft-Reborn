@@ -288,7 +288,7 @@ public final class TemporalRuntime implements TemporalService {
         );
 
         return new TemporalTickDiagnostics(
-                level.dimension().identifier(),
+                level.dimension().location(),
                 position,
                 level.getGameTime(),
                 level.getDefaultClockTime(),
@@ -1169,13 +1169,13 @@ public final class TemporalRuntime implements TemporalService {
     private static String describeScope(TemporalScope scope) {
         if (scope instanceof TemporalScope.Save) return "save";
         if (scope instanceof TemporalScope.Dimension dimension) {
-            return "dimension " + dimension.dimension().identifier();
+            return "dimension " + dimension.dimension().location();
         }
         if (scope instanceof TemporalScope.Sphere sphere) {
             return String.format(
                     Locale.ROOT,
                     "sphere %s (%.1f, %.1f, %.1f) r=%.1f",
-                    sphere.dimension().identifier(),
+                    sphere.dimension().location(),
                     sphere.center().x,
                     sphere.center().y,
                     sphere.center().z,

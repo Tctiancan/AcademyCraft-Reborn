@@ -17,14 +17,14 @@ import net.minecraft.server.level.ServerLevel;
 public record ChunkVerticalBand(int minBlockY, int maxBlockY) {
     /** The whole vertical extent of {@code level}, used for same-dimension swaps. */
     public static ChunkVerticalBand full(ServerLevel level) {
-        return new ChunkVerticalBand(level.getMinY(), level.getMaxY());
+        return new ChunkVerticalBand(level.getMinBuildHeight(), level.getMaxBuildHeight());
     }
 
     /** The absolute-Y intersection of two levels, used for cross-dimension swaps. */
     public static ChunkVerticalBand overlap(ServerLevel first, ServerLevel second) {
         return new ChunkVerticalBand(
-                Math.max(first.getMinY(), second.getMinY()),
-                Math.min(first.getMaxY(), second.getMaxY()));
+                Math.max(first.getMinBuildHeight(), second.getMinBuildHeight()),
+                Math.min(first.getMaxBuildHeight(), second.getMaxBuildHeight()));
     }
 
     /** True when the levels share no vertical range at all, so nothing could be exchanged. */
@@ -50,6 +50,6 @@ public record ChunkVerticalBand(int minBlockY, int maxBlockY) {
 
     /** Section index of {@code sectionY} inside {@code level}'s section array. */
     public static int sectionIndex(ServerLevel level, int sectionY) {
-        return sectionY - (level.getMinY() >> 4);
+        return sectionY - (level.getMinBuildHeight() >> 4);
     }
 }

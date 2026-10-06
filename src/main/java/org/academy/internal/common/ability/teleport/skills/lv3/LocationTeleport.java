@@ -197,7 +197,7 @@ public final class LocationTeleport extends Skill {
             var data = Server.getData(player);
             if (!addDeathMark(
                     data,
-                    player.level().dimension().identifier().toString(),
+                    player.level().dimension().location().toString(),
                     player.blockPosition(),
                     LocalDateTime.now()
             )) return;
@@ -229,7 +229,7 @@ public final class LocationTeleport extends Skill {
             if (name.length() > 64) name = name.substring(0, 64);
             var pos = packet.useCurrent ? player.blockPosition()
                     : new BlockPos(packet.x, packet.y, packet.z);
-            data.getMarks().add(new Mark(name, player.level().dimension().identifier().toString(),
+            data.getMarks().add(new Mark(name, player.level().dimension().location().toString(),
                     pos.getX(), pos.getY(), pos.getZ()));
             dirtyAndSync(player, data);
         }
@@ -489,9 +489,9 @@ public final class LocationTeleport extends Skill {
                     for (var mark : packet.marks) {
                         ByteBufCodecs.STRING_UTF8.encode(buf, mark.name());
                         ByteBufCodecs.STRING_UTF8.encode(buf, mark.dimension());
-                        ByteBufCodecs.INT.encode(buf, mark.x());
+                        ByteBufCodecs.INT.encode(buf, mark.x);
                         ByteBufCodecs.INT.encode(buf, mark.y());
-                        ByteBufCodecs.INT.encode(buf, mark.z());
+                        ByteBufCodecs.INT.encode(buf, mark.z));
                     }
                     ByteBufCodecs.INT.encode(buf, packet.quickMarkIndex);
                     ByteBufCodecs.INT.encode(buf, packet.defensiveMarkIndex);

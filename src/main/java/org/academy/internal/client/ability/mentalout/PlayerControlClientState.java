@@ -6,7 +6,7 @@ import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Input;
+import org.academy.api.common.ability.Input;
 import net.minecraft.world.phys.Vec2;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.input.InputSystem;
@@ -15,7 +15,6 @@ import org.academy.api.common.entitycontrol.PlayerMovementMode;
 import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
-import org.academy.mixin.client.ClientInputAccessor;
 import org.jspecify.annotations.Nullable;
 import org.misaka.MisakaNetworkClient;
 
@@ -293,8 +292,16 @@ public final class PlayerControlClientState {
     public static void applyAuthorizedInput(LocalPlayer player) {
         if (sessionId == null || player != Minecraft.getInstance().player) return;
         var frame = isInputSubject() ? authorizedFrame : PlayerControlFrame.NEUTRAL;
-        player.input.keyPresses = inputForFrame(frame);
-        ((ClientInputAccessor) player.input).academy$setMoveVector(moveVectorForFrame(frame));
+        var input = inputForFrame(frame);
+        player.input.up = input.forward();
+        player.input.down = input.backward();
+        player.input.left = input.left();
+        player.input.right = input.right();
+        player.input.jumping = input.jump();
+        player.input.shiftKeyDown = input.shift();
+        var movement = moveVectorForFrame(frame);
+        player.input.leftImpulse = movement.x;
+        player.input.forwardImpulse = movement.y;
         if (!isInputSubject()) return;
 
         player.setYRot(frame.yaw());
@@ -449,8 +456,14 @@ public final class PlayerControlClientState {
         var minecraft = Minecraft.getInstance();
         var player = minecraft.player;
         if (player == null || player.input == null) return;
-        player.input.keyPresses = Input.EMPTY;
-        ((ClientInputAccessor) player.input).academy$setMoveVector(Vec2.ZERO);
+        player.input.up = false;
+        player.input.down = false;
+        player.input.left = false;
+        player.input.right = false;
+        player.input.jumping = false;
+        player.input.shiftKeyDown = false;
+        player.input.leftImpulse = 0.0f;
+        player.input.forwardImpulse = 0.0f;
     }
 
     private static int directionMask(Options options) {

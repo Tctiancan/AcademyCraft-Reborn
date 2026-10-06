@@ -60,7 +60,7 @@ public final class SkillVfxRuntime {
             case SkillVfxState.DistortionRing ignored -> 4;
             default -> throw new IllegalArgumentException("Only one-shot VFX may be emitted");
         };
-        var packet = new SkillVfxPacket(level.dimension().identifier(), ++nextId, 1, state);
+        var packet = new SkillVfxPacket(level.dimension().location(), ++nextId, 1, state);
         for (var observer : level.players()) {
             double range = 96 + radius;
             if (observer.distanceToSqr(state.position()) <= range * range) send(observer, packet);
@@ -87,7 +87,7 @@ public final class SkillVfxRuntime {
                 var state = capture(entity, entry, rate, elapsed);
                 boolean changed = entry.last == null || transition || meaningfulChange(entry.last, state);
                 boolean heartbeat = physicalTick - entry.sentAt >= 20;
-                var packet = new SkillVfxPacket(level.dimension().identifier(), entry.id, ++entry.revision, state);
+                var packet = new SkillVfxPacket(level.dimension().location(), entry.id, ++entry.revision, state);
                 // A short-lived beam may fire and disappear between ordinary samples.
                 for (var observer : level.players()) {
                     boolean wasWatching = entry.observers.containsKey(observer.getUUID());
@@ -115,7 +115,7 @@ public final class SkillVfxRuntime {
                 if (changed || heartbeat) entry.sentAt = physicalTick;
             }
             if (entity.isRemoved()) {
-                var end = new SkillVfxPacket(level.dimension().identifier(), entry.id, ++entry.revision,
+                var end = new SkillVfxPacket(level.dimension().location(), entry.id, ++entry.revision,
                         new SkillVfxState.End(entity.position(), false));
                 for (var observer : entry.observers.values()) send(observer, end);
                 iterator.remove();
@@ -127,7 +127,7 @@ public final class SkillVfxRuntime {
             var observer = queued.getKey();
             if (observer.hasDisconnected()) { queues.remove(); continue; }
             queued.getValue().drain(physicalTick, 10, 8, packet -> {
-                if (observer.level().dimension().identifier().equals(packet.dimension)) {
+                if (observer.level().dimension().location().equals(packet.dimension)) {
                     MisakaNetworkServer.send(observer, packet);
                     sentPackets++;
                 }

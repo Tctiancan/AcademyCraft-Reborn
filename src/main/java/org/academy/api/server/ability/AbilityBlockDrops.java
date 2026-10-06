@@ -4,7 +4,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -54,7 +53,7 @@ public final class AbilityBlockDrops {
      */
     public static List<ItemStack> getDrops(ServerPlayer player, BlockState state, ServerLevel level,
                                           BlockPos pos, @Nullable BlockEntity blockEntity,
-                                          @Nullable Entity breaker, ItemInstance tool) {
+                                          @Nullable Entity breaker, ItemStack tool) {
         try (var ignored = capture(player)) {
             return Block.getDrops(state, level, pos, blockEntity, breaker, tool);
         }
@@ -71,7 +70,7 @@ public final class AbilityBlockDrops {
      * Callers remain responsible for skill permissions and distributing the captured stacks.
      */
     public static boolean harvestBlock(ServerLevel level, BlockPos pos, ServerPlayer controller,
-                                       Entity breaker, ItemInstance tool, Consumer<List<ItemStack>> onDrops) {
+                                       Entity breaker, ItemStack tool, Consumer<List<ItemStack>> onDrops) {
         var state = level.getBlockState(pos);
         if (state.isAir()) return false;
         var drops = getDrops(controller, state, level, pos, level.getBlockEntity(pos), breaker, tool);

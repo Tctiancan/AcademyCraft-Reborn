@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
@@ -108,7 +109,7 @@ public final class BreathingBubble extends Skill {
                     InputSystem.InputType.KEYBOARD,
                     InputConstants.KEY_U,
                     InputConstants.RELEASE,
-                    InputConstants.MOD_ALT);
+                    GLFW.GLFW_MOD_ALT);
             var binding = CONFIG.getKeyBindingMigratingDefaults(
                     KEY_NAME_CAST,
                     defaultBinding,

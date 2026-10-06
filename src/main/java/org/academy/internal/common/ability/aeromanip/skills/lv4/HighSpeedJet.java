@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -120,7 +121,7 @@ public final class HighSpeedJet extends Skill {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_H,
                 InputConstants.RELEASE,
-                InputConstants.MOD_SHIFT
+                GLFW.GLFW_MOD_SHIFT
         );
     }
 
@@ -134,12 +135,12 @@ public final class HighSpeedJet extends Skill {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_H,
                 InputSystem.ANY_ACTION,
-                InputConstants.MOD_ALT);
+                GLFW.GLFW_MOD_ALT);
         var placementBinding = Client.CONFIG.getKeyBindingMigratingDefaults(
                 Client.KEY_NAME_PLACE,
                 defaultPlacementBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT));
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT));
         if (placementBinding.action() != InputSystem.ANY_ACTION) {
             placementBinding = new InputSystem.KeyCombination(
                     placementBinding.type(), placementBinding.keys(), InputSystem.ANY_ACTION,
@@ -162,7 +163,7 @@ public final class HighSpeedJet extends Skill {
                 Client.KEY_NAME_ACTIVATE,
                 defaultActivationBinding,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_H,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT));
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT));
         InputSystem.addKeyBinding(
                 Client.KEY_NAME_ACTIVATE,
                 activationBinding,
@@ -245,7 +246,7 @@ public final class HighSpeedJet extends Skill {
                 }
                 var target = updateTarget(event.getPartialTick());
                 if (!(target instanceof BlockPlacement block)) return;
-                var camera = Minecraft.getInstance().gameRenderer.mainCamera().position();
+                var camera = Minecraft.getInstance().gameRenderer.getMainCamera().position();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

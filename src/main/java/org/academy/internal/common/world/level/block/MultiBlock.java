@@ -16,7 +16,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.level.redstone.Orientation;
 import org.academy.internal.common.world.level.block.entity.MultiBlockEntity;
 import org.jspecify.annotations.Nullable;
 
@@ -79,7 +78,7 @@ public abstract class MultiBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, @Nullable Orientation orientation, boolean movedByPiston) {
+    protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block neighborBlock, BlockPos neighborPos, boolean movedByPiston) {
         var blockEntity = level.getBlockEntity(pos);
         if (blockEntity instanceof MultiBlockEntity multiBlockEntity) {
             var blockPosList = getRotatedSubjectBlocks(Objects.requireNonNull(multiBlockEntity.mainPos), state.getValue(BlockStateProperties.HORIZONTAL_FACING), getSubBlocks());

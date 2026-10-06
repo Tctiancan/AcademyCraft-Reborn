@@ -52,7 +52,7 @@ public final class TeleportChunkForceManager {
     private static void acquire(ChunkKey key, ChunkPos pos) {
         var ref = REFS.get(key);
         if (ref == null) {
-            var owned = key.level.setChunkForced(pos.x(), pos.z(), true);
+            var owned = key.level.setChunkForced(pos.x, pos.z, true);
             ref = new Ref(0, owned);
             REFS.put(key, ref);
         }
@@ -72,7 +72,7 @@ public final class TeleportChunkForceManager {
         REFS.remove(key);
         if (ref.owned) {
             var pos = ChunkPos.unpack(key.chunk);
-            key.level.setChunkForced(pos.x(), pos.z(), false);
+            key.level.setChunkForced(pos.x, pos.z, false);
         }
     }
 

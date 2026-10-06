@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.TrapDoorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.material.Fluids;
-import net.minecraft.world.level.redstone.Orientation;
 import net.minecraft.world.phys.BlockHitResult;
 import org.jspecify.annotations.Nullable;
 
@@ -55,7 +54,7 @@ public final class LaboratoryMetalTrapdoorBlock extends TrapDoorBlock {
             Level level,
             BlockPos pos,
             Block neighborBlock,
-            @Nullable Orientation orientation,
+            BlockPos neighborPos,
             boolean movedByPiston
     ) {
         if (level.isClientSide()) {

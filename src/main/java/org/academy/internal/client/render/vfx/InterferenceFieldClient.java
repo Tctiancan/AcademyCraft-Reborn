@@ -22,7 +22,7 @@ public final class InterferenceFieldClient {
 
     public static void accept(DarkmatterVisualPacket packet) {
         resetWorld();
-        if (world == null || !world.dimension().identifier().equals(packet.dimension)) return;
+        if (world == null || !world.dimension().location().equals(packet.dimension)) return;
         if (!packet.active) { FIELDS.remove(packet.entityId); return; }
         if (packet.area == null) return;
         // A large field can be visible before its caster enters entity tracking distance.

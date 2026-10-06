@@ -16,7 +16,6 @@ import net.minecraft.world.entity.projectile.ProjectileUtil;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
@@ -26,7 +25,6 @@ import org.academy.internal.common.world.entity.projectile.MagneticHook;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.function.Consumer;
 
 /** Reusable launcher and recall controller for up to three magnetic hooks. */
 public final class MagneticHookItem extends Item {
@@ -177,15 +175,15 @@ public final class MagneticHookItem extends Item {
     }
 
     @Override
-    public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display,
-                                Consumer<Component> tooltip, TooltipFlag flag) {
-        tooltip.accept(Component.translatable("item.academy.magnetic_hook.tooltip.1")
+    public void appendHoverText(ItemStack stack, TooltipContext context,
+                                List<Component> tooltip, TooltipFlag flag) {
+        tooltip.add(Component.translatable("item.academy.magnetic_hook.tooltip.1")
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("item.academy.magnetic_hook.tooltip.2")
+        tooltip.add(Component.translatable("item.academy.magnetic_hook.tooltip.2")
                 .withStyle(ChatFormatting.GRAY));
-        tooltip.accept(Component.translatable("item.academy.magnetic_hook.tooltip.3")
+        tooltip.add(Component.translatable("item.academy.magnetic_hook.tooltip.3")
                 .withStyle(ChatFormatting.DARK_AQUA));
-        tooltip.accept(Component.translatable("item.academy.magnetic_hook.tooltip.4")
+        tooltip.add(Component.translatable("item.academy.magnetic_hook.tooltip.4")
                 .withStyle(ChatFormatting.DARK_AQUA));
     }
 }

@@ -24,7 +24,7 @@ public final class DarkmatterGraphEffects {
     }
     public static void interference(LivingEntity actor, DirectionalArea area) {
         if (!(actor.level() instanceof ServerLevel level)) return;
-        new DarkmatterVisualPacket(level.dimension().identifier(), Kind.INTERFERENCE, actor.getId(), true,
+        new DarkmatterVisualPacket(level.dimension().location(), Kind.INTERFERENCE, actor.getId(), true,
                 area.origin(), Math.min(32, actor.getBbWidth()), Math.min(64, actor.getBbHeight()),
                 (float) Math.min(512, area.radius()), 0, false,
                 actor.getUUID().getLeastSignificantBits(), area).broadcast(level);
@@ -55,19 +55,19 @@ public final class DarkmatterGraphEffects {
             if (!level.getBlockState(position.relative(face)).isSolidRender()) faces |= 1 << face.ordinal();
         }
         if (faces == 0) return;
-        new DarkmatterVisualPacket(level.dimension().identifier(), Kind.DISASSEMBLE, -1, true,
+        new DarkmatterVisualPacket(level.dimension().location(), Kind.DISASSEMBLE, -1, true,
                 Vec3.atBottomCenterOf(position), 1, 1, 0, faces, true, position.asLong()).broadcast(level);
     }
 
     public static void disassemble(ServerLevel level, Vec3 position, float radius) {
-        new DarkmatterVisualPacket(level.dimension().identifier(), Kind.DISASSEMBLE, -1, true,
+        new DarkmatterVisualPacket(level.dimension().location(), Kind.DISASSEMBLE, -1, true,
                 position, Math.clamp(radius * 2, 0.1f, 32), Math.clamp(radius * 2, 0.1f, 64),
                 0, 63, false, BlockPos.containing(position).asLong()).broadcast(level);
     }
 
     private static void attached(LivingEntity actor, Kind kind, boolean active, float range, int parts) {
         if (!(actor.level() instanceof ServerLevel level)) return;
-        new DarkmatterVisualPacket(level.dimension().identifier(), kind, actor.getId(), active, actor.position(),
+        new DarkmatterVisualPacket(level.dimension().location(), kind, actor.getId(), active, actor.position(),
                 Math.min(32, actor.getBbWidth()), Math.min(64, actor.getBbHeight()), Math.clamp(range, 0, 512), parts,
                 !actor.isAlive(), actor.getUUID().getLeastSignificantBits()).broadcast(level);
     }

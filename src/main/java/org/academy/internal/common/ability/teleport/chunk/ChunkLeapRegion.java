@@ -22,7 +22,7 @@ public record ChunkLeapRegion(ResourceKey<Level> dimension, int minChunkX, int m
 
     public static final StreamCodec<ByteBuf, ChunkLeapRegion> STREAM_CODEC = StreamCodec.of(
             (buf, region) -> {
-                ByteBufCodecs.STRING_UTF8.encode(buf, region.dimension.identifier().toString());
+                ByteBufCodecs.STRING_UTF8.encode(buf, region.dimension.location().toString());
                 ByteBufCodecs.VAR_INT.encode(buf, region.minChunkX);
                 ByteBufCodecs.VAR_INT.encode(buf, region.minChunkZ);
                 ByteBufCodecs.VAR_INT.encode(buf, region.width);
@@ -45,10 +45,10 @@ public record ChunkLeapRegion(ResourceKey<Level> dimension, int minChunkX, int m
     }
 
     public static ChunkLeapRegion of(ResourceKey<Level> dimension, ChunkPos from, ChunkPos to) {
-        var minX = Math.min(from.x(), to.x());
-        var minZ = Math.min(from.z(), to.z());
+        var minX = Math.min(from.x, to.x);
+        var minZ = Math.min(from.z, to.z);
         return new ChunkLeapRegion(dimension, minX, minZ,
-                Math.abs(to.x() - from.x()) + 1, Math.abs(to.z() - from.z()) + 1);
+                Math.abs(to.x - from.x) + 1, Math.abs(to.z - from.z) + 1);
     }
 
     public static ChunkLeapRegion ofChunks(ResourceKey<Level> dimension, int minChunkX, int minChunkZ,
@@ -105,7 +105,7 @@ public record ChunkLeapRegion(ResourceKey<Level> dimension, int minChunkX, int m
     }
 
     public boolean contains(ChunkPos pos) {
-        return pos.x() >= minChunkX && pos.x() <= maxChunkX() && pos.z() >= minChunkZ && pos.z() <= maxChunkZ();
+        return pos.x >= minChunkX && pos.x <= maxChunkX() && pos.z >= minChunkZ && pos.z <= maxChunkZ();
     }
 
     /**
@@ -131,8 +131,8 @@ public record ChunkLeapRegion(ResourceKey<Level> dimension, int minChunkX, int m
             }
         }
         // Keep the anchor on the same corner it already occupies.
-        var keepRight = anchor.x() == maxChunkX() && width < this.width;
-        var keepBottom = anchor.z() == maxChunkZ() && height < this.height;
+        var keepRight = anchor.x == maxChunkX() && width < this.width;
+        var keepBottom = anchor.z == maxChunkZ() && height < this.height;
         var newMinX = keepRight ? maxChunkX() - width + 1 : minChunkX;
         var newMinZ = keepBottom ? maxChunkZ() - height + 1 : minChunkZ;
         return new ChunkLeapRegion(dimension, newMinX, newMinZ, width, height);

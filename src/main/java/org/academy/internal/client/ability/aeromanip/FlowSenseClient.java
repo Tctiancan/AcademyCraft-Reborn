@@ -8,8 +8,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
-import net.neoforged.neoforge.client.event.lifecycle.ClientStoppedEvent;
+import net.neoforged.neoforge.event.GameShuttingDownEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.internal.common.ability.Skills;
@@ -31,7 +30,7 @@ public final class FlowSenseClient {
     }
     public static void receive(FlowSensePacket packet) {
         world();
-        if (level != null && level.dimension().identifier().equals(packet.dimension)) CACHE.accept(packet, ticks);
+        if (level != null && level.dimension().location().equals(packet.dimension)) CACHE.accept(packet, ticks);
     }
     @SubscribeEvent public static void tick(ClientTickEvent.Post event) {
         world(); ticks++;
@@ -47,6 +46,6 @@ public final class FlowSenseClient {
     }
     private static void reset() { CACHE.reset(); RENDERER.close(); level = null; }
     @SubscribeEvent public static void logout(ClientPlayerNetworkEvent.LoggingOut event) { reset(); }
-    @SubscribeEvent public static void stopped(ClientStoppedEvent event) { reset(); }
-    @SubscribeEvent public static void resources(ClientResourceLoadFinishedEvent event) { CACHE.clearMarkers(); RENDERER.close(); }
+    @SubscribeEvent public static void stopped(GameShuttingDownEvent event) { reset(); }
+    public static void onClientResourcesReloaded() { CACHE.clearMarkers(); RENDERER.close(); }
 }

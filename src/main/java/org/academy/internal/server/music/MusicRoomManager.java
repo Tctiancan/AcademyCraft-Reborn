@@ -93,7 +93,7 @@ public final class MusicRoomManager {
         }
         boolean hostTransferred;
         synchronized (room) {
-            room.members.put(player.getUUID(), player.getGameProfile().name());
+            room.members.put(player.getUUID(), player.getGameProfile().getName());
             // 原房主未回到服务器时，把房主交给第一个回归的成员，避免房间被离线房主锁死喵.
             hostTransferred = !room.host.equals(player.getUUID())
                     && server.getPlayerList().getPlayer(room.host) == null;
@@ -103,7 +103,7 @@ public final class MusicRoomManager {
         }
         if (hostTransferred) {
             announce(room, Component.translatable(
-                    "message.academy.music_room.host_transferred", player.getGameProfile().name()
+                    "message.academy.music_room.host_transferred", player.getGameProfile().getName()
             ).withStyle(ChatFormatting.GOLD));
         }
         broadcastRoom(room);
@@ -237,10 +237,10 @@ public final class MusicRoomManager {
             return;
         }
         var token = newToken(new PendingAction(
-                PendingAction.Kind.APPLY, room.code, player.getUUID(), player.getGameProfile().name(),
+                PendingAction.Kind.APPLY, room.code, player.getUUID(), player.getGameProfile().getName(),
                 room.host, System.currentTimeMillis()
         ));
-        var applicantName = player.getGameProfile().name();
+        var applicantName = player.getGameProfile().getName();
         var roomName = room.name;
         ChatConfirmLinks.sendChoice(
                 host,
@@ -252,7 +252,7 @@ public final class MusicRoomManager {
         );
         pushPendingNotices(room.host);
         player.sendSystemMessage(Component.translatable(
-                "message.academy.music_room.apply_sent", host.getGameProfile().name()
+                "message.academy.music_room.apply_sent", host.getGameProfile().getName()
         ));
     }
 
@@ -273,14 +273,14 @@ public final class MusicRoomManager {
             return;
         }
         var token = newToken(new PendingAction(
-                PendingAction.Kind.INVITE, room.code, target.getUUID(), target.getGameProfile().name(),
+                PendingAction.Kind.INVITE, room.code, target.getUUID(), target.getGameProfile().getName(),
                 player.getUUID(), System.currentTimeMillis()
         ));
         ChatConfirmLinks.sendChoice(
                 target,
                 Component.translatable(
                         "message.academy.music_room.invite_prompt",
-                        player.getGameProfile().name(), room.name
+                        player.getGameProfile().getName(), room.name
                 ),
                 label("ui.academy.music_room.accept"),
                 COMMAND_ROOT + "accept " + token,
@@ -289,7 +289,7 @@ public final class MusicRoomManager {
         );
         pushPendingNotices(target.getUUID());
         player.sendSystemMessage(Component.translatable(
-                "message.academy.music_room.invite_sent", target.getGameProfile().name()
+                "message.academy.music_room.invite_sent", target.getGameProfile().getName()
         ));
     }
 
@@ -356,7 +356,7 @@ public final class MusicRoomManager {
                 }
                 if (inviter != null) {
                     inviter.sendSystemMessage(Component.translatable(
-                            "message.academy.music_room.invite_declined", player.getGameProfile().name()
+                            "message.academy.music_room.invite_declined", player.getGameProfile().getName()
                     ).withStyle(ChatFormatting.RED));
                 }
             }
@@ -384,8 +384,8 @@ public final class MusicRoomManager {
                 newHostName = room.members.get(nextHost);
             }
             announce(room, offline
-                    ? Component.translatable("message.academy.music_room.member_offline", player.getGameProfile().name())
-                    : Component.translatable("message.academy.music_room.member_left", player.getGameProfile().name()));
+                    ? Component.translatable("message.academy.music_room.member_offline", player.getGameProfile().getName())
+                    : Component.translatable("message.academy.music_room.member_left", player.getGameProfile().getName()));
         }
         if (disbanded) {
             ROOMS.remove(code);
@@ -449,7 +449,7 @@ public final class MusicRoomManager {
             return;
         }
         synchronized (room) {
-            room.channel.playNow(new QueueSnapshot.QueueEntry(entry, player.getGameProfile().name()), gameTime());
+            room.channel.playNow(new QueueSnapshot.QueueEntry(entry, player.getGameProfile().getName()), gameTime());
         }
         broadcastRoom(room);
     }
@@ -515,7 +515,7 @@ public final class MusicRoomManager {
                 sendError(player, "message.academy.music_room.queue_full");
                 return;
             }
-            room.channel.enqueue(new QueueSnapshot.QueueEntry(entry, player.getGameProfile().name()));
+            room.channel.enqueue(new QueueSnapshot.QueueEntry(entry, player.getGameProfile().getName()));
             // 房间空闲时加入即开播，符合"加歌进房间就播"的直觉喵.
             if (room.channel.timeline().isEmpty()) {
                 room.channel.skipToNext(gameTime());
@@ -604,7 +604,7 @@ public final class MusicRoomManager {
         synchronized (room) {
             joined = room.members.size() < maxMembers;
             if (joined) {
-                room.members.put(player.getUUID(), player.getGameProfile().name());
+                room.members.put(player.getUUID(), player.getGameProfile().getName());
             }
         }
         if (!joined) {
@@ -616,7 +616,7 @@ public final class MusicRoomManager {
                 "message.academy.music_room.joined", room.name
         ).withStyle(ChatFormatting.GOLD));
         announce(room, Component.translatable(
-                "message.academy.music_room.member_joined", player.getGameProfile().name()
+                "message.academy.music_room.member_joined", player.getGameProfile().getName()
         ));
         broadcastRoom(room);
         broadcastRoomList();
@@ -653,7 +653,7 @@ public final class MusicRoomManager {
         do {
             code = randomCode();
         } while (ROOMS.containsKey(code));
-        return new Room(code, name, host.getUUID(), host.getGameProfile().name());
+        return new Room(code, name, host.getUUID(), host.getGameProfile().getName());
     }
 
     private static String randomCode() {
@@ -891,7 +891,7 @@ public final class MusicRoomManager {
 
     private static String nameOf(MinecraftServer server, UUID uuid) {
         var player = server.getPlayerList().getPlayer(uuid);
-        if (player != null) return player.getGameProfile().name();
+        if (player != null) return player.getGameProfile().getName();
         return "?";
     }
 

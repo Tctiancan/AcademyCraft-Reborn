@@ -26,7 +26,7 @@ import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import net.neoforged.neoforge.common.NeoForge;
-import net.neoforged.neoforge.event.level.block.BreakBlockEvent;
+import net.neoforged.neoforge.event.level.BlockEvent;
 import org.academy.api.server.ability.AbilityBlockDrops;
 import org.academy.api.server.ability.AbilityEffectPolicy;
 import org.academy.internal.common.ability.meltdowner.skills.lv2.MiningBeam;
@@ -333,7 +333,7 @@ public class LevelUtil {
     }
 
     private static BlockState getBlockStateFast(ChunkAccess chunk, Level level, int x, int y, int z) {
-        if (y < level.getMinY() || y >= level.getMaxY()) {
+        if (y < level.getMinBuildHeight() || y >= level.getMaxBuildHeight()) {
             return Blocks.AIR.defaultBlockState();
         }
         var sectionIndex = level.getSectionIndex(y);

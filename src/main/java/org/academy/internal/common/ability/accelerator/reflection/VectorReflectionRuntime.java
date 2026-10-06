@@ -234,10 +234,10 @@ public final class VectorReflectionRuntime {
         anchor.lastFailureLogNanos = now;
         if (error == null) {
             LOGGER.warn("Vector Reflection could not repair {} for {}",
-                    operation, player.getGameProfile().name());
+                    operation, player.getGameProfile().getName());
         } else {
             LOGGER.warn("Vector Reflection failed to repair {} for {}",
-                    operation, player.getGameProfile().name(), error);
+                    operation, player.getGameProfile().getName(), error);
         }
     }
 

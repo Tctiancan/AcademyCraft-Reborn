@@ -325,7 +325,7 @@ public final class AbilitySystemServer {
                     instance.initialAbilityRecommendations.put(
                             player.getUUID(),
                             recommendation,
-                            player.level().dimension().identifier(),
+                            player.level().dimension().location(),
                             source.cacheKey(),
                             player.level().getGameTime()
                     );
@@ -342,7 +342,7 @@ public final class AbilitySystemServer {
                     || mode == StartLevelDevPacket.Mode.RANDOM) {
                 var recommendation = instance.initialAbilityRecommendations.consume(
                         player.getUUID(),
-                        player.level().dimension().identifier(),
+                        player.level().dimension().location(),
                         source.cacheKey(),
                         player.level().getGameTime()
                 );

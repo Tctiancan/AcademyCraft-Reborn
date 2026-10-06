@@ -1,13 +1,15 @@
 package org.academy.internal.common.ability.mentalout.control;
 
 import com.mojang.serialization.Codec;
+import net.minecraft.nbt.NbtOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.HolderLookup;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.saveddata.SavedData;
-import net.minecraft.world.level.saveddata.SavedDataType;
 import org.academy.AcademyCraft;
 import org.academy.api.common.entitycontrol.BlockWorkRegion;
 import org.academy.api.common.entitycontrol.WorkSettings;
@@ -92,14 +94,29 @@ public final class WorkOrderData extends SavedData {
         if (version < 1 || version > 2) throw new IllegalArgumentException("Unsupported work order version: " + version);
         return new WorkOrderData(entries);
     }));
-    public static final SavedDataType<WorkOrderData> TYPE = new SavedDataType<>(
-            AcademyCraft.academy("mental_work_orders"), WorkOrderData::new, CODEC);
+    public static SavedData.Factory<WorkOrderData> getType() {
+        return new SavedData.Factory<>(WorkOrderData::new, WorkOrderData::load);
+    }
+
+    private static WorkOrderData load(CompoundTag tag, HolderLookup.Provider registries) {
+        return CODEC.parse(registries.createSerializationContext(NbtOps.INSTANCE), tag)
+                .result().orElseGet(WorkOrderData::new);
+    }
+
+    @Override
+    public CompoundTag save(CompoundTag tag, HolderLookup.Provider registries) {
+        CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), this)
+                .result().ifPresent(data -> tag.merge((CompoundTag) data));
+        return tag;
+    }
+
     private final LinkedHashMap<String, Entry> orders = new LinkedHashMap<>();
     private final Map<String, Map<UUID, LinkedHashSet<String>>> byController = new HashMap<>();
     public WorkOrderData() {}
     private WorkOrderData(List<Entry> entries) { entries.forEach(this::put); }
     public static WorkOrderData get(MinecraftServer server) {
-        return server.overworld().getDataStorage().computeIfAbsent(TYPE);
+        return server.overworld().getDataStorage()
+                .computeIfAbsent(getType(), AcademyCraft.academy("mental_work_orders").toString());
     }
     public List<Entry> entries() { return List.copyOf(orders.values()); }
     public int size() { return orders.size(); }

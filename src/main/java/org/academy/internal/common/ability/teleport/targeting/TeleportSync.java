@@ -7,7 +7,7 @@ import org.academy.internal.common.ability.teleport.network.InstantTeleportSyncP
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Relative;
+import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
@@ -22,8 +22,8 @@ import java.util.WeakHashMap;
  */
 public final class TeleportSync {
     private static final double CLIENT_SNAP_RANGE_SQUARED = 256.0 * 256.0;
-    static final Set<Relative> PRESERVED_VIEW_ROTATION =
-            Set.of(Relative.Y_ROT, Relative.X_ROT);
+    static final Set<RelativeMovement> PRESERVED_VIEW_ROTATION =
+            Set.of(RelativeMovement.Y_ROT, RelativeMovement.X_ROT);
     private static final Set<Entity> PENDING_ABSOLUTE_SYNCS =
             Collections.newSetFromMap(new WeakHashMap<>());
 
@@ -78,8 +78,7 @@ public final class TeleportSync {
                 destination.z,
                 preserveViewRotation ? PRESERVED_VIEW_ROTATION : Set.of(),
                 yaw,
-                pitch,
-                false
+                pitch
         )) {
             synchronized (PENDING_ABSOLUTE_SYNCS) {
                 PENDING_ABSOLUTE_SYNCS.remove(entity);
@@ -89,7 +88,7 @@ public final class TeleportSync {
         if (!preserveViewRotation && entity instanceof LivingEntity living) {
             living.setYHeadRot(yaw);
         }
-        entity.needsSync = true;
+        entity.hasImpulse = true;
         var packet = new InstantTeleportSyncPacket(
                 entity.getId(), entity.position(), entity.getYRot(), entity.getXRot(),
                 preserveViewRotation);

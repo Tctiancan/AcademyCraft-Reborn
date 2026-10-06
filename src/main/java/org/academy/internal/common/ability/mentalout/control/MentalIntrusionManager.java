@@ -369,7 +369,7 @@ public final class MentalIntrusionManager {
                 PERCEPTION_PRIORITY,
                 session.afterimageUntil,
                 List.of(new ControlDirective.MoveTo(new ControlDestination.Position(
-                        session.target.level().dimension().identifier(),
+                        session.target.level().dimension().location(),
                         session.afterimagePosition
                 )))
         ));
@@ -617,7 +617,7 @@ public final class MentalIntrusionManager {
 
     @PacketTarget(ThreadType.SERVER)
     public static final class TogglePacket extends Packet<ServerGamePacketListenerImpl, TogglePacket> {
-        public static final StreamCodec<ByteBuf, TogglePacket> CODEC = ByteBufCodecs.LONG.map(
+        public static final StreamCodec<ByteBuf, TogglePacket> CODEC = ByteBufCodecs.VAR_LONG.map(
                 TogglePacket::new,
                 packet -> packet.sequence
         );
@@ -635,7 +635,7 @@ public final class MentalIntrusionManager {
 
     @PacketTarget(ThreadType.SERVER)
     public static final class DistortionPacket extends Packet<ServerGamePacketListenerImpl, DistortionPacket> {
-        public static final StreamCodec<ByteBuf, DistortionPacket> CODEC = ByteBufCodecs.LONG.map(
+        public static final StreamCodec<ByteBuf, DistortionPacket> CODEC = ByteBufCodecs.VAR_LONG.map(
                 DistortionPacket::new,
                 packet -> packet.sequence
         );

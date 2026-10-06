@@ -8,8 +8,8 @@ import mezz.jei.api.gui.widgets.IRecipeExtrasBuilder;
 import mezz.jei.api.helpers.IGuiHelper;
 import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
+import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.AbstractRecipeCategory;
-import mezz.jei.api.recipe.types.IRecipeType;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -26,8 +26,9 @@ import java.util.List;
 
 public final class OmniCraftingRecipeCategory
         extends AbstractRecipeCategory<OmniCraftingRecipeCategory.DisplayRecipe> {
-    public static final IRecipeType<DisplayRecipe> TYPE = IRecipeType.create(
-            AcademyCraft.academy("omni_crafting"),
+    public static final RecipeType<DisplayRecipe> TYPE = RecipeType.create(
+            AcademyCraft.MOD_ID,
+            "omni_crafting",
             DisplayRecipe.class
     );
     public static final DisplayRecipe ABILITY_DEVELOPER = new DisplayRecipe(
@@ -92,7 +93,7 @@ public final class OmniCraftingRecipeCategory
     }
 
     @Override
-    public ResourceLocation getIdentifier(DisplayRecipe recipe) {
+    public ResourceLocation getRegistryName(DisplayRecipe recipe) {
         return recipe.id();
     }
 

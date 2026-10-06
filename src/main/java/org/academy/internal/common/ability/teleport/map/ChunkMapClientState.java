@@ -204,7 +204,7 @@ public final class ChunkMapClientState {
         if (packet.success()) {
             // Drop stale tiles so the next view request repaints the swapped areas.
             for (var region : packet.affected()) {
-                var affectedMap = map(region.dimension().identifier().toString());
+                var affectedMap = map(region.dimension().location().toString());
                 synchronized (affectedMap) {
                     for (var x = region.minChunkX(); x <= region.maxChunkX(); x++) {
                         for (var z = region.minChunkZ(); z <= region.maxChunkZ(); z++) {
@@ -282,7 +282,7 @@ public final class ChunkMapClientState {
 
     /** Chunks in {@code region} whose tiles have not arrived; drives the loading gate. */
     public static int missingTileCount(ResourceKey<Level> dimension, ChunkLeapRegion region) {
-        var map = map(dimension.identifier().toString());
+        var map = map(dimension.location().toString());
         var missing = 0;
         synchronized (map) {
             for (var x = region.minChunkX(); x <= region.maxChunkX(); x++) {

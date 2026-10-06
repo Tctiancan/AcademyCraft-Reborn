@@ -2,6 +2,7 @@ package org.academy.internal.common.ability.electromaster.skills.lv1;
 
 import org.academy.api.common.damage.DamageComposition;
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.network.codec.StreamCodec;
@@ -69,10 +70,10 @@ public class ElectricalContact extends Skill {
                 InputSystem.InputType.KEYBOARD, InputConstants.KEY_H, InputConstants.PRESS, 0);
         var previousDefaultBinding = InputSystem.combo(
                 InputSystem.InputType.KEYBOARD, InputConstants.KEY_H,
-                InputConstants.PRESS, InputConstants.MOD_ALT);
+                InputConstants.PRESS, GLFW.GLFW_MOD_ALT);
         var defaultBinding = InputSystem.combo(
                 InputSystem.InputType.KEYBOARD, InputConstants.KEY_Y,
-                InputConstants.PRESS, InputConstants.MOD_ALT);
+                InputConstants.PRESS, GLFW.GLFW_MOD_ALT);
         if (Client.CONFIG.containsKeyBinding(Client.KEY_NAME_TOGGLE)
                 && (legacyBinding.equals(Client.CONFIG.getKeyBinding(Client.KEY_NAME_TOGGLE))
                 || previousDefaultBinding.equals(Client.CONFIG.getKeyBinding(Client.KEY_NAME_TOGGLE)))) {

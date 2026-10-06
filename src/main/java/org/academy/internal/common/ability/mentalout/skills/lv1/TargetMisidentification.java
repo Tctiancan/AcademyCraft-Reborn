@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.mentalout.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -67,7 +68,7 @@ public final class TargetMisidentification extends Skill {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_LEFT,
                         InputConstants.PRESS,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 )
         ), unused533 -> Client.use());
     }
@@ -203,7 +204,7 @@ public final class TargetMisidentification extends Skill {
 
     @PacketTarget(ThreadType.SERVER)
     public static final class UsePacket extends Packet<ServerGamePacketListenerImpl, UsePacket> {
-        public static final StreamCodec<ByteBuf, UsePacket> CODEC = ByteBufCodecs.LONG.map(
+        public static final StreamCodec<ByteBuf, UsePacket> CODEC = ByteBufCodecs.VAR_LONG.map(
                 UsePacket::new,
                 UsePacket::getRequestSequence
         );

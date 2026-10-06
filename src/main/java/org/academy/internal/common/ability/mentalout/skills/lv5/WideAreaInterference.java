@@ -321,7 +321,7 @@ public final class WideAreaInterference extends Skill {
 
             if (packet.action == Action.MOVE) {
                 var destination = new ControlDestination.Position(
-                        controller.level().dimension().identifier(),
+                        controller.level().dimension().location(),
                         Vec3.atBottomCenterOf(packet.first)
                 );
                 var result = CommandPositioning.applyToSubjects(
@@ -351,11 +351,11 @@ public final class WideAreaInterference extends Skill {
             try {
                 command = switch (packet.action) {
                     case WORK -> new GroupControlCommand.Work(new BlockWorkRegion(
-                            controller.level().dimension().identifier(), packet.first, packet.second), packet.workSettings());
+                            controller.level().dimension().location(), packet.first, packet.second), packet.workSettings());
                     case GATHER -> new GroupControlCommand.GatherResources(new BlockWorkRegion(
-                            controller.level().dimension().identifier(), packet.first, packet.second));
+                            controller.level().dimension().location(), packet.first, packet.second));
                     case FARM -> new GroupControlCommand.Farm(new BlockWorkRegion(
-                            controller.level().dimension().identifier(), packet.first, packet.second));
+                            controller.level().dimension().location(), packet.first, packet.second));
                     default -> throw new IllegalArgumentException("Action has no group command");
                 };
             } catch (RuntimeException exception) {
@@ -365,8 +365,8 @@ public final class WideAreaInterference extends Skill {
             if (command instanceof GroupControlCommand.Work work) {
                 if (work.settings().input().filter(pos -> outOfRange(controller, pos)).isPresent()
                         || work.settings().output().filter(pos -> outOfRange(controller, pos)).isPresent()
-                        || work.region().minimum().getY() < controller.level().getMinY()
-                        || work.region().maximum().getY() >= controller.level().getMaxY()
+                        || work.region().minimum().getY() < controller.level().getMinBuildHeight()
+                        || work.region().maximum().getY() >= controller.level().getMaxBuildHeight()
                         || !controller.level().getWorldBorder().isWithinBounds(work.region().minimum())
                         || !controller.level().getWorldBorder().isWithinBounds(work.region().maximum())) {
                     feedback(controller, FeedbackCode.INVALID_REGION, 0, 0, 0);

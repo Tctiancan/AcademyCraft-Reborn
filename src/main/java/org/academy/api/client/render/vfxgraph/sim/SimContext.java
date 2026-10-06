@@ -1,4 +1,4 @@
-package org.academy.api.client.render.vfxgraph.sim;
+﻿package org.academy.api.client.render.vfxgraph.sim;
 
 import org.academy.api.client.render.graph.type.Curve;
 import org.academy.api.client.render.graph.type.Gradient;

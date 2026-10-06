@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.accelerator.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -85,7 +86,7 @@ public final class VectorBlast extends Skill {
         Client.CONFIG = AcademyCraftClient.Config.INSTANCE.getConfig(key);
 
         var blastBinding = InputSystem.combo(InputSystem.InputType.MOUSE,
-                InputConstants.MOUSE_BUTTON_LEFT, InputConstants.RELEASE, InputConstants.MOD_SHIFT);
+                InputConstants.MOUSE_BUTTON_LEFT, InputConstants.RELEASE, GLFW.GLFW_MOD_SHIFT);
         InputSystem.addKeyBinding(
                 Client.KEY_NAME_USE,
                 Client.CONFIG.getKeyBinding(Client.KEY_NAME_USE, blastBinding),

@@ -376,7 +376,7 @@ public final class WideAreaInterferenceClientState {
 
     public static void anchorOrbit(Vec3 pivot, boolean preserveZoom) {
         if (mode != Mode.RTS || pivot == null) return;
-        var position = Minecraft.getInstance().gameRenderer.mainCamera().position();
+        var position = Minecraft.getInstance().gameRenderer.getMainCamera().position();
         var zoomRatio = preserveZoom ? godTargetDistance / godDistance : 1.0;
         godFocus = pivot;
         godDistance = Math.clamp(position.distanceTo(pivot), 0.5, 16384);
@@ -505,7 +505,7 @@ public final class WideAreaInterferenceClientState {
     }
 
     private static void switchCameraEntity(Minecraft minecraft, Entity entity) {
-        var camera = minecraft.gameRenderer.mainCamera();
+        var camera = minecraft.gameRenderer.getMainCamera();
         if (!(camera instanceof CameraSmoothingBridge bridge)) {
             minecraft.setCameraEntity(entity);
             return;

@@ -141,7 +141,7 @@ public final class MentaloutTargeting {
         }
         return blockHit.getType() == HitResult.Type.BLOCK
                 ? new ControlDestination.Position(
-                level.dimension().identifier(),
+                level.dimension().location(),
                 Vec3.atBottomCenterOf(blockHit.getBlockPos().relative(blockHit.getDirection()))
         )
                 : null;

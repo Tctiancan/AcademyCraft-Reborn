@@ -23,7 +23,7 @@ public final class InstantTeleportSyncPacket
     public static final StreamCodec<ByteBuf, InstantTeleportSyncPacket> CODEC = StreamCodec.composite(
             ByteBufCodecs.VAR_INT,
             InstantTeleportSyncPacket::entityId,
-            Vec3.STREAM_CODEC,
+            StreamCodec.of((buf, v) -> buf.writeDouble(v.x).writeDouble(v.y).writeDouble(v.z), buf -> new Vec3(buf.readDouble(), buf.readDouble(), buf.readDouble())),
             InstantTeleportSyncPacket::position,
             ByteBufCodecs.FLOAT,
             InstantTeleportSyncPacket::yRot,

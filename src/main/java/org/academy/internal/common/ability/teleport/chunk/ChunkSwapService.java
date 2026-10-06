@@ -253,8 +253,8 @@ public final class ChunkSwapService {
         while (swap.cursor < swap.source.count()) {
             var posA = swap.source.chunkAt(swap.cursor);
             var posB = swap.target.chunkAt(swap.cursor);
-            var chunkA = swap.levelA.getChunkSource().getChunkNow(posA.x(), posA.z());
-            var chunkB = swap.levelB.getChunkSource().getChunkNow(posB.x(), posB.z());
+            var chunkA = swap.levelA.getChunkSource().getChunkNow(posA.x, posA.z);
+            var chunkB = swap.levelB.getChunkSource().getChunkNow(posB.x, posB.z);
             if (chunkA != null && chunkB != null) {
                 var result = crossDimension
                         ? ChunkRegionSwap.applyAcrossLevels(swap.levelA, chunkA, swap.levelB, chunkB,
@@ -278,7 +278,7 @@ public final class ChunkSwapService {
     }
 
     private static void resendIfLoaded(ServerLevel level, ChunkPos pos) {
-        var chunk = level.getChunkSource().getChunkNow(pos.x(), pos.z());
+        var chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
         if (chunk != null) {
             ChunkRegionSwap.resend(level, chunk);
         }
@@ -365,10 +365,10 @@ public final class ChunkSwapService {
         if (resetCacheCenter) {
             // Required after a dimension respawn (and after any old god-view stream): otherwise the client
             // can reject the centre chunk as outside its current cache window.
-            player.connection.send(new ClientboundSetChunkCacheCenterPacket(center.x(), center.z()));
+            player.connection.send(new ClientboundSetChunkCacheCenterPacket(center.x, center.z));
         }
         for (var pos : carrierResyncOrder(center, CARRIER_RESYNC_RADIUS)) {
-            var chunk = level.getChunkSource().getChunkNow(pos.x(), pos.z());
+            var chunk = level.getChunkSource().getChunkNow(pos.x, pos.z);
             if (chunk != null) {
                 sendWholeChunk(player, level, chunk);
             }
@@ -385,7 +385,7 @@ public final class ChunkSwapService {
             for (var dx = -ring; dx <= ring; dx++) {
                 for (var dz = -ring; dz <= ring; dz++) {
                     if (Math.max(Math.abs(dx), Math.abs(dz)) != ring) continue;
-                    result.add(new ChunkPos(center.x() + dx, center.z() + dz));
+                    result.add(new ChunkPos(center.x + dx, center.z + dz));
                 }
             }
         }
@@ -492,7 +492,7 @@ public final class ChunkSwapService {
     private static void commitPlayerTeleport(ServerPlayer player, ChunkLeap skill, ServerLevel level,
                                              int blockX, int blockZ) {
         var surface = MapTileBuilder.visibleSurfaceY(level, blockX, blockZ);
-        var y = surface >= level.getMinY() ? surface + 1 : level.getMinY();
+        var y = surface >= level.getMinBuildHeight() ? surface + 1 : level.getMinBuildHeight();
         var desired = new Vec3(blockX + 0.5, y, blockZ + 0.5);
         var safe = TeleportSafety.findSafe(player, level, desired);
         if (safe == null) {
@@ -553,7 +553,7 @@ public final class ChunkSwapService {
     /** The exact standing position for a clicked block column. */
     private static Vec3 landingPosition(ServerLevel level, net.minecraft.core.BlockPos target) {
         var surface = MapTileBuilder.visibleSurfaceY(level, target.getX(), target.getZ());
-        var y = surface >= level.getMinY() ? surface + 1 : target.getY();
+        var y = surface >= level.getMinBuildHeight() ? surface + 1 : target.getY();
         return new Vec3(target.getX() + 0.5, y, target.getZ() + 0.5);
     }
 
@@ -726,8 +726,8 @@ public final class ChunkSwapService {
     private static void endGodView(ServerPlayer player, String dimensionId) {
         var streamed = STREAMED.remove(player.getUUID());
         invalidateGodView(player);
-        var centerX = player.chunkPosition().x();
-        var centerZ = player.chunkPosition().z();
+        var centerX = player.chunkPosition().x;
+        var centerZ = player.chunkPosition().z;
         // Hand the cache window back first, so the chunks restored below are in range again.
         player.connection.send(new ClientboundSetChunkCacheCenterPacket(centerX, centerZ));
         if (streamed != null) {
@@ -752,8 +752,8 @@ public final class ChunkSwapService {
         var radius = streamed.cacheRadius;
         for (var dx = -radius; dx <= radius; dx++) {
             for (var dz = -radius; dz <= radius; dz++) {
-                var x = center.x() + dx;
-                var z = center.z() + dz;
+                var x = center.x + dx;
+                var z = center.z + dz;
                 if (!streamed.writtenSlots.contains(slotIndex(x, z, v))) continue;
                 var chunk = level.getChunkSource().getChunkNow(x, z);
                 if (chunk != null) sendWholeChunk(player, level, chunk);
@@ -814,7 +814,7 @@ public final class ChunkSwapService {
     private static void sendPreload(ServerPlayer player, UUID opId, ChunkLeapRegion region,
                                     int loaded, int total, boolean ready) {
         MisakaNetworkServer.send(player, new ChunkLeapPackets.PreloadStatusPacket(
-                opId, region.dimension().identifier().toString(), ready, loaded, total));
+                opId, region.dimension().location().toString(), ready, loaded, total));
     }
 
     /**
@@ -834,8 +834,8 @@ public final class ChunkSwapService {
     private static int countEntities(ServerLevel level, ChunkLeapSelection selection) {
         var count = 0;
         for (var chunk : selection.chunks()) {
-            var aabb = new AABB(chunk.getMinBlockX(), level.getMinY(), chunk.getMinBlockZ(),
-                    chunk.getMaxBlockX() + 1.0, level.getMaxY(), chunk.getMaxBlockZ() + 1.0);
+            var aabb = new AABB(chunk.getMinBlockX(), level.getMinBuildHeight(), chunk.getMinBlockZ(),
+                    chunk.getMaxBlockX() + 1.0, level.getMaxBuildHeight(), chunk.getMaxBlockZ() + 1.0);
             count += level.getEntitiesOfClass(Entity.class, aabb,
                     candidate -> !(candidate instanceof ServerPlayer)).size();
         }

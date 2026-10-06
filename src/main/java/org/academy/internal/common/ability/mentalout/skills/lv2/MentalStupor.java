@@ -163,7 +163,7 @@ public final class MentalStupor extends Skill {
 
     @PacketTarget(ThreadType.SERVER)
     public static final class UsePacket extends Packet<ServerGamePacketListenerImpl, UsePacket> {
-        public static final StreamCodec<ByteBuf, UsePacket> CODEC = ByteBufCodecs.LONG.map(
+        public static final StreamCodec<ByteBuf, UsePacket> CODEC = ByteBufCodecs.VAR_LONG.map(
                 UsePacket::new,
                 UsePacket::getRequestSequence
         );

@@ -420,7 +420,7 @@ public final class ServerAcceleratorProgramRuntime implements AcceleratorProgram
         if (hit.getType() != HitResult.Type.BLOCK) return Optional.empty();
         var block = hit.getBlockPos();
         return Optional.of(new ProgramBlockPosition(
-                level().dimension().identifier(), block.getX(), block.getY(), block.getZ()));
+                level().dimension().location(), block.getX(), block.getY(), block.getZ()));
     }
 
     @Override
@@ -569,8 +569,8 @@ public final class ServerAcceleratorProgramRuntime implements AcceleratorProgram
     }
 
     private void requireEditableBlock(BlockPos position) {
-        if (position.getY() < level().getMinY()
-                || position.getY() >= level().getMaxY()
+        if (position.getY() < level().getMinBuildHeight()
+                || position.getY() >= level().getMaxBuildHeight()
                 || !level().hasChunkAt(position)
                 || !level().getWorldBorder().isWithinBounds(position)
                 || !level().mayInteract(player, position)) {
@@ -607,7 +607,7 @@ public final class ServerAcceleratorProgramRuntime implements AcceleratorProgram
 
     private Vec3 requireLocalPosition(ProgramWorldPosition position) {
         Objects.requireNonNull(position, "position");
-        if (!position.dimension().equals(level().dimension().identifier())) {
+        if (!position.dimension().equals(level().dimension().location())) {
             throw new IllegalArgumentException("Position is in another dimension");
         }
         var value = new Vec3(position.x(), position.y(), position.z());
@@ -622,7 +622,7 @@ public final class ServerAcceleratorProgramRuntime implements AcceleratorProgram
 
     private BlockPos requireLocalBlock(ProgramBlockPosition position) {
         Objects.requireNonNull(position, "position");
-        if (!position.dimension().equals(level().dimension().identifier())) {
+        if (!position.dimension().equals(level().dimension().location())) {
             throw new IllegalArgumentException("Block is in another dimension");
         }
         return new BlockPos(position.x(), position.y(), position.z());
@@ -630,11 +630,11 @@ public final class ServerAcceleratorProgramRuntime implements AcceleratorProgram
 
     private ProgramWorldPosition worldPosition(Vec3 position) {
         return new ProgramWorldPosition(
-                level().dimension().identifier(), position.x, position.y, position.z);
+                level().dimension().location(), position.x, position.y, position.z);
     }
 
     private ServerLevel level() {
-        return player.level();
+        return player.serverLevel();
     }
 
     private static double requireQueryRange(double range) {

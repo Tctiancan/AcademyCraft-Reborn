@@ -49,13 +49,11 @@ public final class JEIPlugin implements IModPlugin {
 
     @Override
     public void registerRecipeCatalysts(IRecipeCatalystRegistration registration) {
-        registration.addCraftingStation(
-                OmniCraftingRecipeCategory.TYPE,
-                Items.OMNI_CRAFTING_TABLE.get()
+        registration.addRecipeCatalyst(
+                Items.OMNI_CRAFTING_TABLE.get(), OmniCraftingRecipeCategory.TYPE
         );
-        registration.addCraftingStation(
-                ImagPhaseFusionRecipeCategory.TYPE,
-                Items.IMAG_PHASE_UNIT.get()
+        registration.addRecipeCatalyst(
+                Items.IMAG_PHASE_UNIT.get(), ImagPhaseFusionRecipeCategory.TYPE
         );
     }
 

@@ -84,7 +84,7 @@ final class StandardMobControlBindings {
                         : new ResolvedDestination(target.position(), target);
             }
             case ControlDestination.Position position ->
-                    mob.level().dimension().identifier().equals(position.dimension())
+                    mob.level().dimension().location().equals(position.dimension())
                             ? new ResolvedDestination(position.value(), null)
                             : null;
         };

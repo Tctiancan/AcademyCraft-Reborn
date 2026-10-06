@@ -158,7 +158,7 @@ public final class AbilityProgramEditorClient {
                 InputSystem.InputType.KEYBOARD,
                 key,
                 InputConstants.PRESS,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
     }
 

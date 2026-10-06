@@ -40,7 +40,7 @@ public final class SkillVfxClient {
         }
         var level = minecraft.level;
         if (level != world) reset(level);
-        if (level == null || !level.dimension().identifier().equals(packet.dimension)) return;
+        if (level == null || !level.dimension().location().equals(packet.dimension)) return;
         boolean terminal = packet.state.oneShot()
                 || (packet.state instanceof SkillVfxState.End end && !end.hidden());
         if (!SEQUENCE.accept(packet.id, packet.revision, terminal)) return;

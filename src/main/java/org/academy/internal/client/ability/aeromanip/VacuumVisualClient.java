@@ -7,7 +7,6 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
-import net.neoforged.neoforge.client.event.ClientResourceLoadFinishedEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
@@ -23,7 +22,7 @@ public final class VacuumVisualClient {
     public static int count() { return ACTIVE.size(); }
     public static void receive(VacuumVisuals.Update packet) {
         world();
-        if (level == null || !level.dimension().identifier().equals(packet.dimension)) return;
+        if (level == null || !level.dimension().location().equals(packet.dimension)) return;
         var previous = ACTIVE.get(packet.owner);
         if (!packet.active) { if (previous != null) previous.effect.stop(); ACTIVE.remove(packet.owner); return; }
         if (previous == null && ACTIVE.size() >= 64) {
@@ -56,5 +55,5 @@ public final class VacuumVisualClient {
         });
     }
     @SubscribeEvent public static void logout(ClientPlayerNetworkEvent.LoggingOut event) { clear(); level = null; }
-    @SubscribeEvent public static void resources(ClientResourceLoadFinishedEvent event) { clear(); }
+    public static void onClientResourcesReloaded() { clear(); }
 }

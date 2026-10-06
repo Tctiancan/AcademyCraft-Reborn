@@ -330,7 +330,7 @@ public final class DarkmatterResourceManager implements AbilitySubsystem, Darkma
         if (current > EPSILON || debt > EPSILON) {
             AcademyCraft.LOGGER.info(
                     "Migrated legacy darkmatter MP ledger for {}: natural={}, created={} from permanent CP debt={}",
-                    player.getGameProfile().name(), Math.max(0.0f, current - created), created, debt);
+                    player.getGameProfile().getName(), Math.max(0.0f, current - created), created, debt);
         }
         return true;
     }

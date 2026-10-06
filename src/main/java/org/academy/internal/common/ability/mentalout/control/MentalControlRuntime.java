@@ -111,8 +111,8 @@ public final class MentalControlRuntime {
                     request.scopeId(),
                     request.priority(),
                     request.expiresAt(),
-                    controller.level().dimension().identifier(),
-                    subject.level().dimension().identifier(),
+                    controller.level().dimension().location(),
+                    subject.level().dimension().location(),
                     directives,
                     selections,
                     guardianRelationLeaseId
@@ -846,9 +846,9 @@ public final class MentalControlRuntime {
                 var controller = server.getPlayerList().getPlayer(lease.controllerId());
                 var subject = findLivingEntity(server, lease.subjectId());
                 if (controller == null || !controller.isAlive()
-                        || !controller.level().dimension().identifier().equals(lease.controllerDimension())
+                        || !controller.level().dimension().location().equals(lease.controllerDimension())
                         || subject == null || !subject.isAlive() || subject.isRemoved()
-                        || !subject.level().dimension().identifier().equals(lease.subjectDimension())
+                        || !subject.level().dimension().location().equals(lease.subjectDimension())
                         || MentalControlProtection.rejectionReason(subject) != null
                         || lease.source().equals(IMPRESSION_GUARD_SOURCE)
                         && !state.leases.hasImpressionAlliance(
@@ -1323,7 +1323,7 @@ public final class MentalControlRuntime {
         switch (destination) {
             case ControlDestination.Entity entity -> validateTarget(server, subject, entity.uuid(), capability);
             case ControlDestination.Position position -> {
-                if (!subject.level().dimension().identifier().equals(position.dimension())) {
+                if (!subject.level().dimension().location().equals(position.dimension())) {
                     throw new ControlApplyException(
                             ControlRejectionReason.INVALID_DIRECTIVE,
                             capability,

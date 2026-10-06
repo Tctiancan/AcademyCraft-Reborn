@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.teleport.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -97,12 +98,12 @@ public final class ThreateningTeleport extends Skill {
         InputSystem.addKeyBinding(Client.KEY_NAME_START, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_START,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_LEFT,
-                        InputConstants.PRESS, InputConstants.MOD_ALT)
+                        InputConstants.PRESS, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.start());
         InputSystem.addKeyBinding(Client.KEY_NAME_END, Client.CONFIG.getKeyBinding(
                 Client.KEY_NAME_END,
                 InputSystem.combo(InputSystem.InputType.MOUSE, InputConstants.MOUSE_BUTTON_LEFT,
-                        InputConstants.RELEASE, InputConstants.MOD_ALT)
+                        InputConstants.RELEASE, GLFW.GLFW_MOD_ALT)
         ), ctx -> Client.end());
     }
 
@@ -181,7 +182,7 @@ public final class ThreateningTeleport extends Skill {
                 }
 
                 var minecraft = Minecraft.getInstance();
-                var camera = minecraft.gameRenderer.mainCamera().position();
+                var camera = minecraft.gameRenderer.getMainCamera().position();
                 var matrices = event.getMatrixStack();
                 matrices.pushPose();
                 matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);
@@ -369,8 +370,8 @@ public final class ThreateningTeleport extends Skill {
                 return false;
             }
             var block = BlockPos.containing(position);
-            return block.getY() >= level.getMinY()
-                    && block.getY() < level.getMaxY()
+            return block.getY() >= level.getMinBuildHeight()
+                    && block.getY() < level.getMaxBuildHeight()
                     && level.getWorldBorder().isWithinBounds(block);
         }
 

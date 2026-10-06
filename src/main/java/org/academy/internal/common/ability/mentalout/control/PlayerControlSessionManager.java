@@ -808,7 +808,7 @@ public final class PlayerControlSessionManager {
         } catch (RuntimeException exception) {
             LOGGER.error(
                     "Failed to apply server-side controlled-player frame to {}",
-                    subject.getGameProfile().name(),
+                    subject.getGameProfile().getName(),
                     exception
             );
             stop(session, EndReason.LIFECYCLE, true);
@@ -1035,8 +1035,8 @@ public final class PlayerControlSessionManager {
         } catch (RuntimeException exception) {
             LOGGER.error(
                     "Failed to send controlled-player view snapshot from {} to {}",
-                    subject.getGameProfile().name(),
-                    session.controller.getGameProfile().name(),
+                    subject.getGameProfile().getName(),
+                    session.controller.getGameProfile().getName(),
                     exception
             );
             stop(session, EndReason.LIFECYCLE, true);
@@ -1379,7 +1379,7 @@ public final class PlayerControlSessionManager {
 
     @PacketTarget(ThreadType.SERVER)
     public static final class TogglePacket extends Packet<ServerGamePacketListenerImpl, TogglePacket> {
-        public static final StreamCodec<ByteBuf, TogglePacket> CODEC = ByteBufCodecs.LONG.map(
+        public static final StreamCodec<ByteBuf, TogglePacket> CODEC = ByteBufCodecs.VAR_LONG.map(
                 TogglePacket::new, packet -> packet.sequence);
         private final long sequence;
 

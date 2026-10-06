@@ -121,7 +121,7 @@ public final class GroupControlNavigation {
         if (!isFinite(candidate)) return false;
         var level = subject.level();
         var block = BlockPos.containing(candidate);
-        if (block.getY() < level.getMinY() || block.getY() >= level.getMaxY() || !level.hasChunkAt(block)) return false;
+        if (block.getY() < level.getMinBuildHeight() || block.getY() >= level.getMaxBuildHeight() || !level.hasChunkAt(block)) return false;
         var moved = subject.getBoundingBox().move(candidate.subtract(subject.position()));
         return level.getWorldBorder().isWithinBounds(moved) && level.noCollision(subject, moved);
     }

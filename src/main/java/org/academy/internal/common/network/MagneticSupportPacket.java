@@ -28,14 +28,14 @@ public final class MagneticSupportPacket extends Packet<ClientPacketListener, Ma
         ByteBufCodecs.VAR_INT.encode(b, p.entityId);
         b.writeBoolean(p.active);
         if (p.active) {
-            Vec3.STREAM_CODEC.encode(b, p.point);
+            b.writeDouble(p.point.x).writeDouble(p.point.y).writeDouble(p.point.z);
             b.writeByte(p.face.ordinal());
         }
     }, b -> {
         var dimension = ResourceLocation.STREAM_CODEC.decode(b);
         int entity = ByteBufCodecs.VAR_INT.decode(b);
         boolean active = b.readBoolean();
-        var point = active ? Vec3.STREAM_CODEC.decode(b) : Vec3.ZERO;
+        var point = active ? new Vec3(b.readDouble(), b.readDouble(), b.readDouble()) : Vec3.ZERO;
         int face = active ? b.readUnsignedByte() : Direction.UP.ordinal();
         if (entity < 0 || face >= Direction.values().length || !Double.isFinite(point.lengthSqr())) {
             throw new IllegalArgumentException("Invalid magnetic support");
@@ -59,7 +59,7 @@ public final class MagneticSupportPacket extends Packet<ClientPacketListener, Ma
 
     public static void broadcast(LivingEntity subject, @Nullable SupportReference support) {
         if (!(subject.level() instanceof ServerLevel level)) return;
-        var packet = new MagneticSupportPacket(level.dimension().identifier(), subject.getId(), support != null,
+        var packet = new MagneticSupportPacket(level.dimension().location(), subject.getId(), support != null,
                 support == null ? Vec3.ZERO : support.closestPoint(), support == null ? Direction.UP : support.face());
         for (var observer : level.players()) {
             if (observer.distanceToSqr(subject) <= 96 * 96) MisakaNetworkServer.send(observer, packet);

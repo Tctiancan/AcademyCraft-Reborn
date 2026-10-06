@@ -27,7 +27,7 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements I
             method = "aiStep",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/neoforged/neoforge/client/ClientHooks;onMovementInputUpdate(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/client/player/ClientInput;)V",
+                    target = "Lnet/neoforged/neoforge/client/ClientHooks;onMovementInputUpdate(Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/client/player/Input;)V",
                     shift = At.Shift.AFTER
             )
     )

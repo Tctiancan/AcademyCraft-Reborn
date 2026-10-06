@@ -70,7 +70,7 @@ public final class GroupControlRuntime {
     public static int activeTasks() { return TASKS.size(); }
 
     public static void blockChanged(ServerLevel level, BlockPos pos) {
-        var chunks = WORK_CHUNKS.get(level.dimension().identifier());
+        var chunks = WORK_CHUNKS.get(level.dimension().location());
         if (chunks == null) return;
         try (var ignored = WorkScheduling.budget(level).measure()) {
             changed(chunks, pos);
@@ -594,7 +594,7 @@ public final class GroupControlRuntime {
             }
             var region = command instanceof GroupControlCommand.GatherResources(var gather)
                     ? gather : ((GroupControlCommand.Farm) command).region();
-            if (!region.dimension().equals(subject.level().dimension().identifier())) {
+            if (!region.dimension().equals(subject.level().dimension().location())) {
                 finish(GroupControlTaskEvent.Status.PATH_FAILED);
                 return;
             }
@@ -638,7 +638,7 @@ public final class GroupControlRuntime {
                 return resolve(destination, controller);
             }
             if (resolvedMovePoint != null) return resolvedMovePoint;
-            if (!dimension.equals(subject.level().dimension().identifier())) return null;
+            if (!dimension.equals(subject.level().dimension().location())) return null;
             if (moveSearch == null) moveSearch = GroupControlNavigation.positionSearch(subject, value);
             var result = moveSearch.poll();
             if (result.status() == GroupControlNavigation.Status.DEFERRED) throw DeferredWork.INSTANCE;
@@ -1004,7 +1004,7 @@ public final class GroupControlRuntime {
 
         private Vec3 resolve(ControlDestination destination, ServerPlayer controller) {
             if (destination instanceof ControlDestination.Position(var dimension, var value)) {
-                return dimension.equals(subject.level().dimension().identifier()) ? value : null;
+                return dimension.equals(subject.level().dimension().location()) ? value : null;
             }
             if (destination instanceof ControlDestination.Entity(var uuid)) {
                 var entity = controller.level().getEntity(uuid);
@@ -1091,7 +1091,7 @@ public final class GroupControlRuntime {
             if (!DestroyBlocksSetting.canDestroyBlocks(controller)
                     || !level.hasChunkAt(pos)
                     || !level.getWorldBorder().isWithinBounds(pos)
-                    || pos.getY() < level.getMinY() || pos.getY() >= level.getMaxY()
+                    || pos.getY() < level.getMinBuildHeight() || pos.getY() >= level.getMaxBuildHeight()
                     || !level.mayInteract(controller, pos)) return false;
             var state = level.getBlockState(pos);
             if (state.isAir() || state.getDestroySpeed(level, pos) < 0.0f
@@ -1710,7 +1710,7 @@ public final class GroupControlRuntime {
         }
 
         private boolean validEntity(Entity entity) {
-            return !entity.isRemoved() && entity.isAlive() && entity.level().dimension().identifier().equals(region.dimension())
+            return !entity.isRemoved() && entity.isAlive() && entity.level().dimension().location().equals(region.dimension())
                     && entity.getX() >= region.minimum().getX() && entity.getX() < region.maximum().getX() + 1.0
                     && entity.getY() >= region.minimum().getY() && entity.getY() < region.maximum().getY() + 1.0
                     && entity.getZ() >= region.minimum().getZ() && entity.getZ() < region.maximum().getZ() + 1.0;

@@ -34,7 +34,7 @@ public final class TeleportSafety {
             for (var i = 0; i < HORIZONTAL_X.length; i++) {
                 var candidate = desired.add(HORIZONTAL_X[i], yOffset, HORIZONTAL_Z[i]);
                 var blockPos = BlockPos.containing(candidate);
-                if (blockPos.getY() < level.getMinY() || blockPos.getY() >= level.getMaxY()) continue;
+                if (blockPos.getY() < level.getMinBuildHeight() || blockPos.getY() >= level.getMaxBuildHeight()) continue;
                 if (!level.hasChunkAt(blockPos)) continue;
 
                 var moved = origin.move(candidate.subtract(position));

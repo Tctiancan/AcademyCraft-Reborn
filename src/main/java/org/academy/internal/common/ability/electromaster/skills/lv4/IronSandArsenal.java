@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -112,18 +113,18 @@ public class IronSandArsenal extends Skill {
             ElectromagneticShield.Client.Config legacy = AcademyCraftClient.Config.INSTANCE.getConfig(Skills.ELECTROMAGNETIC_SHIELD.get().getKey());
             var oldShield = legacy.getKeyBinding(ElectromagneticShield.Client.KEY_NAME_TOGGLE);
             var oldSand = CONFIG.getKeyBinding(KEY_TOGGLE);
-            var oldSandDefault = InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_ALT);
-            var oldShieldDefault = InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.RELEASE, InputConstants.MOD_SHIFT);
+            var oldSandDefault = InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, GLFW.GLFW_MOD_ALT);
+            var oldShieldDefault = InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.RELEASE, GLFW.GLFW_MOD_SHIFT);
             if (oldShield != null && !oldShield.equals(oldShieldDefault) && (oldSand == null || oldSand.equals(oldSandDefault))) {
                 CONFIG.setKeyBinding(KEY_TOGGLE, InputSystem.withAction(oldShield, InputConstants.PRESS));
             }
             legacy.removeKeyBinding(ElectromagneticShield.Client.KEY_NAME_TOGGLE);
             InputSystem.addKeyBinding(KEY_TOGGLE, CONFIG.getKeyBindingMigratingDefaults(KEY_TOGGLE,
-                    InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_SHIFT),
-                    InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_ALT)),
+                    InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, GLFW.GLFW_MOD_SHIFT),
+                    InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, GLFW.GLFW_MOD_ALT)),
                     unused469 -> { if (AbilitySystemClient.canUseSkill(skill)) MisakaNetworkClient.send(TogglePacket.INSTANCE); });
             InputSystem.addMaintainedKeyBinding(KEY_USE, CONFIG.getKeyBinding(KEY_USE,
-                    InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, InputConstants.MOD_ALT)),
+                    InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G, InputConstants.PRESS, GLFW.GLFW_MOD_ALT)),
                     unused470 -> {
                         if (!AbilitySystemClient.canUseSkill(skill) || Minecraft.getInstance().gui.screen() != null) return;
                         activeSequence = ++sequence;

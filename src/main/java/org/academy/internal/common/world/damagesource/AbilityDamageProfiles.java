@@ -27,7 +27,7 @@ public final class AbilityDamageProfiles {
             var profile = Registries.DAMAGE_PROFILES.getValue(id);
             var previous = owners.putIfAbsent(profile.damageType(), id.toString());
             if (previous != null || DamageTypes.isBuiltInType(profile.damageType())) {
-                throw new IllegalStateException("Damage profile " + id + " conflicts on " + profile.damageType().identifier()
+                throw new IllegalStateException("Damage profile " + id + " conflicts on " + profile.damageType().location()
                         + " with " + (previous == null ? "Academy built-in damage rules" : previous));
             }
             result.put(profile.damageType(), profile);
@@ -41,7 +41,7 @@ public final class AbilityDamageProfiles {
 
     public static AbilityDamageProfile require(ResourceKey<AbilityDamageProfile> key) {
         return Registries.DAMAGE_PROFILES.get(key)
-                .orElseThrow(() -> new IllegalStateException("Missing damage profile " + key.identifier())).value();
+                .orElseThrow(() -> new IllegalStateException("Missing damage profile " + key.location())).value();
     }
 
     public static Optional<AbilityDamageProfile> find(ResourceKey<DamageType> type) {
@@ -67,7 +67,7 @@ public final class AbilityDamageProfiles {
         Registries.SKILLS.forEach(skill -> skill.getDamageType().ifPresent(types::add));
         var registry = event.getServer().registryAccess().lookupOrThrow(net.minecraft.core.registries.Registries.DAMAGE_TYPE);
         var missing = types.stream().filter(key -> registry.get(key).isEmpty())
-                .map(key -> key.identifier().toString()).sorted().toList();
+                .map(key -> key.location().toString()).sorted().toList();
         if (!missing.isEmpty()) throw new IllegalStateException("Missing addon DamageType data: " + missing);
     }
 }

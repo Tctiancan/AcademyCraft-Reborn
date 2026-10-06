@@ -38,11 +38,11 @@ final class ExtensionProgramActions {
     void stage(int nodeId, ProgramNodeScope scope, ProgramAction action) {
         Objects.requireNonNull(action);
         var key = Objects.requireNonNull(action.requiredSkill());
-        if (!scope.allowsCategory(category) || !scope.requiredCapabilities().contains(key.identifier())) {
-            throw new IllegalArgumentException("Action skill must be declared in the node's required capabilities: " + key.identifier());
+        if (!scope.allowsCategory(category) || !scope.requiredCapabilities().contains(key.location())) {
+            throw new IllegalArgumentException("Action skill must be declared in the node's required capabilities: " + key.location());
         }
         var skill = Registries.SKILLS.get(key)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown action skill " + key.identifier())).value();
+                .orElseThrow(() -> new IllegalArgumentException("Unknown action skill " + key.location())).value();
         var targets = List.copyOf(action.targets());
         if (targets.size() > 256) throw new IllegalArgumentException("Too many action targets");
         var rawCost = action.cpCost();
@@ -57,7 +57,7 @@ final class ExtensionProgramActions {
                         || !system.getPlayerAbilityCategory(player.getUUID()).getKey().equals(category)
                         || !LearningHelper.isSkillAvailableForCategory(system.getPlayerAbilityCategory(player.getUUID()), skill)
                         || !skill.isEnabled(player)) {
-                    throw new IllegalStateException("Action skill is unavailable: " + key.identifier());
+                    throw new IllegalStateException("Action skill is unavailable: " + key.location());
                 }
                 for (var target : targets) {
                     if (!target.isAlive() || target.isRemoved() || target.level() != player.level()

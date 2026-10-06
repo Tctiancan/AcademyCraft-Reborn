@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.electromaster.skills.lv3;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import io.netty.buffer.ByteBuf;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -99,7 +100,7 @@ public final class MineDetect extends Skill {
                                 InputSystem.InputType.KEYBOARD,
                                 InputConstants.KEY_M,
                                 InputConstants.RELEASE,
-                                InputConstants.MOD_ALT
+                                GLFW.GLFW_MOD_ALT
                         )
                 ),
                 unused459 -> Client.toggle()
@@ -198,7 +199,7 @@ public final class MineDetect extends Skill {
             if (minecraft.level == null || minecraft.player == null) return;
 
             var renderType = Render.RenderTypes.MINE_DETECT_LINES;
-            var cameraPos = minecraft.gameRenderer.mainCamera().position();
+            var cameraPos = minecraft.gameRenderer.getMainCamera().position();
             var matrixStack = event.getMatrixStack();
             var lineWidth = minecraft.getWindow().getAppropriateLineWidth();
 
@@ -223,8 +224,8 @@ public final class MineDetect extends Skill {
             ORE_CACHE.clear();
             minX = center.getX() - radius;
             maxX = center.getX() + radius;
-            minY = Math.max(level.getMinY(), center.getY() - radius);
-            maxY = Math.min(level.getMaxY() - 1, center.getY() + radius);
+            minY = Math.max(level.getMinBuildHeight(), center.getY() - radius);
+            maxY = Math.min(level.getMaxBuildHeight() - 1, center.getY() + radius);
             minZ = center.getZ() - radius;
             maxZ = center.getZ() + radius;
             x = minX;

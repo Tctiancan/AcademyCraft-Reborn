@@ -67,8 +67,8 @@ public final class ImagPhaseDowsingRodItem extends Item {
         BlockPos nearestFluid = null;
         var nearestDistance = Double.MAX_VALUE;
 
-        for (var chunkX = center.x() - radius; chunkX <= center.x() + radius; chunkX++) {
-            for (var chunkZ = center.z() - radius; chunkZ <= center.z() + radius; chunkZ++) {
+        for (var chunkX = center.x - radius; chunkX <= center.x + radius; chunkX++) {
+            for (var chunkZ = center.z - radius; chunkZ <= center.z + radius; chunkZ++) {
                 var chunk = chunkSource.getChunkNow(chunkX, chunkZ);
                 if (chunk == null) continue;
 

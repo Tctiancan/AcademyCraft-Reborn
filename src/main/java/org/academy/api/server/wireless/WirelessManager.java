@@ -96,7 +96,7 @@ public class WirelessManager {
         var oldCfg = data.getNodeConfig(nodePos);
         if (oldCfg == null) {
             LOGGER.warn("Player {} tried to rename nonexistent node at {}",
-                    player.getGameProfile().name(), nodePos);
+                    player.getGameProfile().getName(), nodePos);
             return;
         }
 
@@ -104,12 +104,12 @@ public class WirelessManager {
         if (!data.renameNode(nodePos, newName)) {
             var existingNodePos = data.findNodePositionByName(newName);
             LOGGER.warn("Player {} tried to rename node at {} to '{}', but that name is already taken by node at {}",
-                    player.getGameProfile().name(), nodePos, newName, existingNodePos);
+                    player.getGameProfile().getName(), nodePos, newName, existingNodePos);
             return;
         }
 
         LOGGER.debug("Player {} renamed node at {} from '{}' to '{}'",
-                player.getGameProfile().name(), nodePos, oldName, newName);
+                player.getGameProfile().getName(), nodePos, oldName, newName);
     }
 
     public static void setNodePass(ServerPlayer player,
@@ -124,14 +124,14 @@ public class WirelessManager {
         var cfg = data.getNodeConfig(nodePos);
         if (cfg == null) {
             LOGGER.warn("Player {} tried to change password of nonexistent node at {}",
-                    player.getGameProfile().name(), nodePos);
+                    player.getGameProfile().getName(), nodePos);
             return;
         }
 
         cfg.password = newPass;
         data.setDirty();
         LOGGER.debug("Player {} changed password of node '{}' at {}",
-                player.getGameProfile().name(), cfg.name, nodePos);
+                player.getGameProfile().getName(), cfg.name, nodePos);
     }
 
     public static void handleConnect(ServerPlayer player, ServerLevel level, BlockPos userPos, String targetNodeName, String passwordAttempt) {
@@ -139,7 +139,7 @@ public class WirelessManager {
 
         var nodePos = networkData.findNodePositionByName(targetNodeName);
         if (nodePos == null) {
-            LOGGER.warn("Player {} failed connecting user at {}: Node '{}' not found.", player.getGameProfile().name(), userPos, targetNodeName);
+            LOGGER.warn("Player {} failed connecting user at {}: Node '{}' not found.", player.getGameProfile().getName(), userPos, targetNodeName);
             return;
         }
 
@@ -151,18 +151,18 @@ public class WirelessManager {
         }
 
         if (nodePos.equals(userPos)) {
-            LOGGER.warn("Player {} tried to connect wireless node '{}' to itself.", player.getGameProfile().name(), targetNodeName);
+            LOGGER.warn("Player {} tried to connect wireless node '{}' to itself.", player.getGameProfile().getName(), targetNodeName);
             return;
         }
 
         var userBE = level.getBlockEntity(userPos);
         if (!(userBE instanceof WirelessUser wirelessUser)) {
-            LOGGER.warn("Player {} tried to connect invalid block at {} to node '{}'. Block is not a WirelessUser.", player.getGameProfile().name(), userPos, targetNodeName);
+            LOGGER.warn("Player {} tried to connect invalid block at {} to node '{}'. Block is not a WirelessUser.", player.getGameProfile().getName(), userPos, targetNodeName);
             return;
         }
 
         if (!(level.getBlockEntity(nodePos) instanceof WirelessNode)) {
-            LOGGER.warn("Player {} tried to connect user at {} to missing wireless node '{}' at {}.", player.getGameProfile().name(), userPos, targetNodeName, nodePos);
+            LOGGER.warn("Player {} tried to connect user at {} to missing wireless node '{}' at {}.", player.getGameProfile().getName(), userPos, targetNodeName, nodePos);
             return;
         }
 
@@ -172,7 +172,7 @@ public class WirelessManager {
         }
 
         if (!nodeConfig.checkPassword(passwordAttempt)) {
-            LOGGER.warn("Incorrect password provided by {} for node '{}' from user at {}.", player.getGameProfile().name(), targetNodeName, userPos);
+            LOGGER.warn("Incorrect password provided by {} for node '{}' from user at {}.", player.getGameProfile().getName(), targetNodeName, userPos);
             return;
         }
 
@@ -214,7 +214,7 @@ public class WirelessManager {
     public static void handleDisconnect(@Nullable ServerPlayer player, ServerLevel level, BlockPos userPos) {
         var userBE = level.getBlockEntity(userPos);
         if (!(userBE instanceof WirelessUser wirelessUser)) {
-            var playerName = (player != null) ? player.getGameProfile().name() : "System";
+            var playerName = (player != null) ? player.getGameProfile().getName() : "System";
             LOGGER.warn("{} tried to disconnect invalid block at {}.", playerName, userPos);
             return;
         }

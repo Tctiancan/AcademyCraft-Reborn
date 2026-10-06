@@ -14,7 +14,7 @@ public class LearnSkillPacket extends RequestPacket<ServerGamePacketListenerImpl
     public static final StreamCodec<ByteBuf, LearnSkillPacket> CODEC = StreamCodec.composite(
             ByteBufCodecs.STRING_UTF8,
             LearnSkillPacket::getSkillName,
-            ByteBufCodecs.LONG,
+            ByteBufCodecs.VAR_LONG,
             LearnSkillPacket::getUserPos,
             LearnSkillPacket::new
     );
