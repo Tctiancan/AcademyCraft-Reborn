@@ -542,7 +542,7 @@ public final class Railgun extends Skill {
                     destroyBlocksAlongSegment(resolved.outbound(), player, destructionRadius);
                 }
                 var outboundResult = LinearAttackExecutor.executeOutbound(
-                        player.level(),
+                        player.serverLevel(),
                         resolved,
                         payload
                 );

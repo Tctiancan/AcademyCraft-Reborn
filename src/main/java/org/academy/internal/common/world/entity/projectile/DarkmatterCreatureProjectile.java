@@ -161,7 +161,7 @@ public final class DarkmatterCreatureProjectile extends AbstractArrow implements
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         creatorId = parseUuid(tag.contains("academy_creator", CompoundTag.TAG_STRING) ? tag.getString("academy_creator") : "");
         targetId = parseUuid(tag.contains("academy_target", CompoundTag.TAG_STRING) ? tag.getString("academy_target") : "");
@@ -175,7 +175,7 @@ public final class DarkmatterCreatureProjectile extends AbstractArrow implements
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         if (creatorId != null) tag.putString("academy_creator", creatorId.toString());
         if (targetId != null) tag.putString("academy_target", targetId.toString());

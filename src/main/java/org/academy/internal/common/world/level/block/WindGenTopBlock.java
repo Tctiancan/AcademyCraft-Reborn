@@ -2,8 +2,10 @@ package org.academy.internal.common.world.level.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -29,18 +31,19 @@ import org.academy.internal.common.world.level.block.entity.BlockEntityTypes;
 import org.academy.internal.common.world.level.block.entity.WindGenTopBlockEntity;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
 import java.util.function.Function;
 
 public final class WindGenTopBlock extends BaseEntityBlock {
     public static final MapCodec<WindGenTopBlock> CODEC = simpleCodec(WindGenTopBlock::new);
-    private final Function<BlockState, VoxelShape> shapes;
+    private final Map<BlockState, VoxelShape> shapes;
 
     public WindGenTopBlock(BlockBehaviour.Properties properties) {
         super(properties.noOcclusion());
         shapes = makeShapes();
     }
 
-    private Function<BlockState, VoxelShape> makeShapes() {
+    private Map<BlockState, VoxelShape> makeShapes() {
         var terminal = box(4, 4, 6, 12, 12, 9);
         var axon = box(5, 5, 9, 11, 11, 12);
         var main = box(1, 1, 12, 15, 15, 29);
@@ -57,7 +60,21 @@ public final class WindGenTopBlock extends BaseEntityBlock {
 
         var all = Shapes.or(axon, terminal, main, mainLD, mainL, mainLT, mainRD, mainR, mainRT, tail).move(0, 0, 1 / 8f);
 
-        return getShapeForEachState((blockState) -> Shapes.rotateHorizontal(all.move(0, 0, -1)).get(blockState.getValue(BlockStateProperties.HORIZONTAL_FACING)));
+        return getShapeForEachState(blockState ->
+                rotateShape(Direction.NORTH,
+                        blockState.getValue(BlockStateProperties.HORIZONTAL_FACING), all));
+    }
+
+    private static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {
+        VoxelShape[] buffer = new VoxelShape[]{shape, Shapes.empty()};
+        int times = (to.get2DDataValue() - from.get2DDataValue() + 4) % 4;
+        for (int i = 0; i < times; i++) {
+            buffer[0].forAllBoxes((minX, minY, minZ, maxX, maxY, maxZ) ->
+                    buffer[1] = Shapes.or(buffer[1], Shapes.box(1 - maxZ, minY, minX, 1 - minZ, maxY, maxX)));
+            buffer[0] = buffer[1];
+            buffer[1] = Shapes.empty();
+        }
+        return buffer[0];
     }
 
     @Override
@@ -76,7 +93,7 @@ public final class WindGenTopBlock extends BaseEntityBlock {
     }
 
     @Override
-    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+    protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (level.getBlockEntity(pos) instanceof WindGenTopBlockEntity windGenTopBlockEntity) {
             var stackInHand = player.getItemInHand(hand);
             var stackInSlot = windGenTopBlockEntity.getItem(0);
@@ -84,7 +101,7 @@ public final class WindGenTopBlock extends BaseEntityBlock {
             if (stackInSlot.isEmpty() && stackInHand.getItem() == Items.WIND_GEN_FAN_ITEM.get()) {
                 windGenTopBlockEntity.setItem(0, stackInHand.copyWithCount(1));
                 if (!player.isCreative()) stackInHand.shrink(1);
-                return InteractionResult.CONSUME;
+                return ItemInteractionResult.CONSUME;
             }
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
@@ -112,7 +129,7 @@ public final class WindGenTopBlock extends BaseEntityBlock {
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return shapes.apply(state);
+        return shapes.get(state);
     }
 
     @Override

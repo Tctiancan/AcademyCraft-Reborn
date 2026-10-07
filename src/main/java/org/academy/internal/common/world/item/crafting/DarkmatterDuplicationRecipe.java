@@ -1,5 +1,6 @@
 package org.academy.internal.common.world.item.crafting;
 
+import net.minecraft.core.HolderLookup;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
@@ -39,7 +40,7 @@ public final class DarkmatterDuplicationRecipe extends CustomRecipe {
     }
 
     @Override
-    public ItemStack assemble(CraftingInput input) {
+    public ItemStack assemble(CraftingInput input, HolderLookup.Provider registries) {
         for (var slot = 0; slot < input.size(); slot++) {
             var stack = input.getItem(slot);
             if (DarkmatterItemUtil.isDuplicableMaterial(stack)) {

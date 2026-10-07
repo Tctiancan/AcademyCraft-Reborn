@@ -101,7 +101,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
         holdStill();
         super.tick();
         var face = attachedFace();
-        setPos(Vec3.atCenterOf(blockPos).add(Vec3.atLowerCornerOf(face.getUnitVec3i()).scale(0.52)));
+        setPos(Vec3.atCenterOf(blockPos).add(Vec3.atLowerCornerOf(face.getNormal()).scale(0.52)));
     }
 
     private void tickEntityAttachment() {
@@ -118,7 +118,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
     private void holdStill() {
         setNoPhysics(true);
         setNoGravity(true);
-        setInGround(false);
+        inGround = false;
         setDeltaMovement(Vec3.ZERO);
     }
 
@@ -148,7 +148,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
         entityData.set(ATTACHMENT_TYPE, ATTACHED_TO_BLOCK);
         entityData.set(ATTACHED_BLOCK, result.getBlockPos().immutable());
         entityData.set(ATTACHED_FACE, (byte) result.getDirection().get3DDataValue());
-        setPos(result.getLocation().add(Vec3.atLowerCornerOf(result.getDirection().getUnitVec3i()).scale(0.03)));
+        setPos(result.getLocation().add(Vec3.atLowerCornerOf(result.getDirection().getNormal()).scale(0.03)));
         holdStill();
     }
 
@@ -157,7 +157,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
         var attached = entityId < 0 ? null : level().getEntity(entityId);
         if (attached != null && !attached.isRemoved()) return attached;
         if (!(level() instanceof ServerLevel serverLevel) || attachedEntityUuid == null) return null;
-        attached = serverLevel.getEntityInAnyDimension(attachedEntityUuid);
+        attached = serverLevel.getEntity(attachedEntityUuid);
         if (attached != null && !attached.isRemoved() && attached.level() == level()) {
             entityData.set(ATTACHED_ENTITY_ID, attached.getId());
             return attached;
@@ -229,7 +229,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
         var stack = new ItemStack(Items.MAGNETIC_HOOK.get());
         if (isAttached()) {
             stack.set(DataComponents.CUSTOM_MODEL_DATA,
-                    new CustomModelData(List.of(), List.of(true), List.of(), List.of()));
+                    new CustomModelData(1));
         }
         return stack;
     }
@@ -240,7 +240,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         if (tag.contains("academy_hook_owner", CompoundTag.TAG_STRING)) {
             hookOwnerUuid = parseUuid(tag.getString("academy_hook_owner"));
@@ -261,7 +261,7 @@ public final class MagneticHook extends AbstractArrow implements ItemSupplier, M
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         if (hookOwnerUuid != null) tag.putString("academy_hook_owner", hookOwnerUuid.toString());
         if (attachedEntityUuid != null) tag.putString("academy_attached_entity", attachedEntityUuid.toString());

@@ -2,7 +2,7 @@ package org.academy.internal.common.world.level.block;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.LiquidBlock;
@@ -29,7 +29,7 @@ public final class ImagPhaseLiquidBlock extends LiquidBlock {
 
     @Override
     public ItemStack pickupBlock(
-            @Nullable LivingEntity user,
+            @Nullable Player player,
             LevelAccessor level,
             BlockPos pos,
             BlockState state

@@ -128,8 +128,7 @@ public final class DarkmatterConfigurableBlock extends FallingBlock implements E
 
     @Override
     @Deprecated
-    protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state,
-                                          boolean includeData) {
+    public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
         return configuredStack(profile(level, pos));
     }
 

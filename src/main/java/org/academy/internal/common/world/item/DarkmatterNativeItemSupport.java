@@ -26,7 +26,7 @@ public final class DarkmatterNativeItemSupport {
     }
 
     public static Item.Properties equipmentProperties(Item.Properties properties) {
-        return enchantableProperties(properties).durability(Integer.MAX_VALUE).setNoCombineRepair()
+        return enchantableProperties(properties).durability(Integer.MAX_VALUE).setNoRepair()
                 .component(ItemDataComponents.DARKMATTER_INTEGRITY.get(), DarkmatterIntegrity.FULL)
                 .component(ItemDataComponents.DARKMATTER_SHAPING_PROFILE.get(),
                         DarkmatterShapingProfile.DEFAULT);

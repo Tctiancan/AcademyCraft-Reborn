@@ -75,7 +75,7 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
         boosterUuid = booster.getUUID();
         entityData.set(BOOSTED, true);
         setNoPhysics(false);
-        setInGround(false);
+        inGround = false;
         setNoGravity(true);
         setDeltaMovement(resolvedDirection.scale(BOOSTED_SPEED));
         return true;
@@ -139,7 +139,7 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
         entityData.set(ATTACHMENT_Z, (float) offset.z);
         pickup = Pickup.DISALLOWED;
         setNoPhysics(true);
-        setInGround(false);
+        inGround = false;
         setDeltaMovement(Vec3.ZERO);
     }
 
@@ -166,8 +166,8 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
     }
 
     private void dropAndDiscard() {
-        if (level() instanceof ServerLevel serverLevel) {
-            spawnAtLocation(serverLevel, getDefaultPickupItem(), 0.1f);
+        if (level() instanceof ServerLevel) {
+            spawnAtLocation(getDefaultPickupItem(), 0.1f);
         }
         discard();
     }
@@ -183,7 +183,7 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         if (tag.contains("academy_attached_entity", CompoundTag.TAG_STRING)) {
             attachedEntityUuid = parseUuid(tag.getString("academy_attached_entity"));
@@ -199,7 +199,7 @@ public final class PaperAirplane extends AbstractArrow implements ItemSupplier {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         if (attachedEntityUuid != null) tag.putString("academy_attached_entity", attachedEntityUuid.toString());
         if (boosterUuid != null) tag.putString("academy_booster", boosterUuid.toString());

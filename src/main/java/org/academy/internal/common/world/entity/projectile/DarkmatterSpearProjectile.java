@@ -111,7 +111,7 @@ public final class DarkmatterSpearProjectile extends AbstractArrow implements It
     private void beginReturn() {
         returning = true;
         setNoPhysics(true);
-        setInGround(false);
+        inGround = false;
     }
 
     private void pursueNearby(ServerLevel level, ServerPlayer owner, LivingEntity primary,
@@ -162,7 +162,7 @@ public final class DarkmatterSpearProjectile extends AbstractArrow implements It
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         phaseDamage = (tag.contains("academy_damage_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_damage_milli") : 5000) / 1000.0f;
         penetration = (tag.contains("academy_penetration_milli", CompoundTag.TAG_INT) ? tag.getInt("academy_penetration_milli") : 0) / 1000.0f;
@@ -177,7 +177,7 @@ public final class DarkmatterSpearProjectile extends AbstractArrow implements It
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         tag.putInt("academy_damage_milli", Math.round(phaseDamage * 1000.0f));
         tag.putInt("academy_penetration_milli", Math.round(penetration * 1000.0f));

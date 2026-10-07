@@ -72,7 +72,7 @@ public final class ImagPhaseItemFusion {
         }
 
         var data = item.getPersistentData();
-        var progress = data.getInt(PROGRESS_TAG).orElse(0) + 1;
+        var progress = data.getInt(PROGRESS_TAG) + 1;
         if (progress < rule.intervalTicks()) {
             data.putInt(PROGRESS_TAG, progress);
             return;

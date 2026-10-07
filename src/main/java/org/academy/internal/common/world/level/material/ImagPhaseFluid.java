@@ -95,7 +95,7 @@ public abstract class ImagPhaseFluid extends FlowingFluid {
     }
 
     @Override
-    protected boolean canConvertToSource(ServerLevel level) {
+    protected boolean canConvertToSource(Level level) {
         return false;
     }
 

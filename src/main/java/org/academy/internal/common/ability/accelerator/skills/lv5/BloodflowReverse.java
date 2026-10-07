@@ -401,8 +401,7 @@ public class BloodflowReverse extends Skill {
         private static int getBloodflowStacks(LivingEntity entity) {
             var data = entity.getPersistentData();
             if (data.contains(EFFECT_KEY)) {
-                var val = data.getInt(EFFECT_KEY);
-                if (val.isPresent()) return val.get();
+                return data.getInt(EFFECT_KEY);
             }
             return 0;
         }

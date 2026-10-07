@@ -39,6 +39,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.portal.DimensionTransition;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
@@ -184,13 +185,13 @@ public final class DarkmatterBeetle extends Monster {
     private void configureNavigation() {
         if (torso.equals(DarkmatterCreatureRegistries.TORSO_FLY.toString())) {
             navigation = new FlyingPathNavigation(this, level());
-            moveControl = new FlyingMoveControl<>(this, 35, true);
+            moveControl = new FlyingMoveControl(this, 35, true);
         } else if (torso.equals(DarkmatterCreatureRegistries.TORSO_SWIM.toString())) {
             navigation = new AmphibiousPathNavigation(this, level());
-            moveControl = new MoveControl<>(this);
+            moveControl = new MoveControl(this);
         } else {
             navigation = new GroundPathNavigation(this, level());
-            moveControl = new MoveControl<>(this);
+            moveControl = new MoveControl(this);
         }
     }
 
@@ -311,8 +312,9 @@ public final class DarkmatterBeetle extends Monster {
 
         if (owner.level() != level()) {
             if (owner.level() instanceof ServerLevel destination) {
-                teleportTo(destination, owner.getX(), owner.getY(), owner.getZ(),
-                        Set.of(), getYRot(), getXRot(), false);
+                changeDimension(new DimensionTransition(destination,
+                        new Vec3(owner.getX(), owner.getY(), owner.getZ()), Vec3.ZERO,
+                        getYRot(), getXRot(), false, DimensionTransition.DO_NOTHING));
             }
             return;
         }
@@ -343,7 +345,7 @@ public final class DarkmatterBeetle extends Monster {
             if (head.equals(DarkmatterCreatureRegistries.HEAD_JAW.toString())
                     && tickCount >= nextHeadAttackTick
                     && distanceToSqr(combatTarget) <= meleeReachSqr(combatTarget)) {
-                doHurtTarget(serverLevel, combatTarget);
+                doHurtTarget(combatTarget);
                 nextHeadAttackTick = tickCount + meleeCooldownTicks();
             }
         }
@@ -638,8 +640,9 @@ public final class DarkmatterBeetle extends Monster {
     }
 
     @Override
-    public boolean doHurtTarget(ServerLevel level, Entity entity) {
+    public boolean doHurtTarget(Entity entity) {
         if (!(entity instanceof LivingEntity target)) return false;
+        var level = (ServerLevel) level();
         var owner = getOwnerPlayer();
         if (owner == null || !isCommandedTarget(owner, target)) return false;
         var alpha = alphaPower(headAlpha);
@@ -774,7 +777,7 @@ public final class DarkmatterBeetle extends Monster {
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         if (tag.contains("academy_owner", CompoundTag.TAG_STRING)) {
             try {
@@ -809,7 +812,7 @@ public final class DarkmatterBeetle extends Monster {
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         getOwnerUUID().ifPresent(uuid -> tag.putString("academy_owner", uuid.toString()));
         tag.putInt("academy_blueprint_version", blueprintVersion);
