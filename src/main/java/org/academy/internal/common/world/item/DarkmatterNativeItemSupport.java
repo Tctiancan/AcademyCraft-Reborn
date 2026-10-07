@@ -22,7 +22,7 @@ public final class DarkmatterNativeItemSupport {
     }
 
     public static Item.Properties enchantableProperties(Item.Properties properties) {
-        return properties.enchantable(ENCHANTABILITY);
+        return properties;
     }
 
     public static Item.Properties equipmentProperties(Item.Properties properties) {

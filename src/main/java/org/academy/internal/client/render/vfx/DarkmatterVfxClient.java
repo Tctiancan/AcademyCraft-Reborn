@@ -137,16 +137,16 @@ public final class DarkmatterVfxClient {
             var rotation = new Quaternionf();
             active.setRotation(rotation);
             var inverse = new Quaternionf(rotation).conjugate();
-            var viewPosition = inverse.transform(new Vector3f(camera.getPosition()).sub(origin.toVector3f()));
+            var viewPosition = inverse.transform(new Vector3f(camera.position()).sub(origin.toVector3f()));
             var viewDirection = new Matrix4f(camera.viewRotation()).invert().transformDirection(new Vector3f(0, 0, -1));
             inverse.transform(viewDirection).normalize();
             bones = subject == null ? null : HumanoidSurfacePose.get(subject.getId());
             var root = subject == null ? null : WingAvatarRegistry.entries().get(subject.getId());
             modelRoot = root == null ? null : new Matrix4f(root);
             if (modelRoot != null) {
-                modelRoot.m30(modelRoot.m30() + camera.getPosition().x - (float) origin.x);
-                modelRoot.m31(modelRoot.m31() + camera.getPosition().y - (float) origin.y);
-                modelRoot.m32(modelRoot.m32() + camera.getPosition().z - (float) origin.z);
+                modelRoot.m30(modelRoot.m30() + camera.position().x - (float) origin.x);
+                modelRoot.m31(modelRoot.m31() + camera.position().y - (float) origin.y);
+                modelRoot.m32(modelRoot.m32() + camera.position().z - (float) origin.z);
             }
             float elapsed = (level.getGameTime() - updated + partialTick) / 20f;
             float progress = Math.clamp(elapsed / (state.kind == Kind.CONTACT ? 0.18f : state.kind == Kind.REPAIR ? 0.38f : 0.65f), 0, 1);
@@ -162,8 +162,7 @@ public final class DarkmatterVfxClient {
             graph.setLiveParam("range", Value.of(state.range));
             graph.setLiveParam("seed", Value.of((float) (state.seed & 65535)));
             graph.setLiveParam("light", Value.of(brightness / 15f));
-            float sunAngle = level.environmentAttributes().getValue(net.minecraft.world.attribute.EnvironmentAttributes.SUN_ANGLE, origin, null)
-                    * (float) (Math.PI / 180);
+            float sunAngle = level.getSunAngle(0.0f);
             var sunlight = inverse.transform(new Vector3f((float) Math.sin(sunAngle), (float) Math.cos(sunAngle), 0));
             graph.setLiveParam("sun_direction", Value.of(sunlight));
             graph.setLiveParam("finished", Value.of(state.finished ? 1f : 0));
@@ -236,7 +235,7 @@ public final class DarkmatterVfxClient {
             boolean right = subject.getMainArm() == HumanoidArm.RIGHT;
             if (off && (!main || index % 2 != 0)) right = !right;
             var transform = new Matrix4f(camera.viewRotation()).invert();
-            transform.setTranslation(new Vector3f(camera.getPosition()).sub(origin.toVector3f()));
+            transform.setTranslation(new Vector3f(camera.position()).sub(origin.toVector3f()));
             transform.translate(right ? 0.30f : -0.30f, -0.23f, -0.53f);
             SurfaceSampler.box(5, u, v, new Vector3f(-0.05f, -0.05f, -0.02f),
                     new Vector3f(0.05f, 0.05f, 0.02f), transform, p, n);

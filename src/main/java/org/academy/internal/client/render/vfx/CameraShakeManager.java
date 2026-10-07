@@ -57,8 +57,8 @@ public final class CameraShakeManager {
             var envelope = (float) ((1.0 - progress) * (1.0 - progress));
             var ticks = (now - shake.startNanos) / (double) NANOS_PER_TICK;
             var phase = (shake.seed & 0xffffL) * 0.0017 + ticks * 2.35;
-            yaw += Mth.sin(phase) * shake.amplitude * envelope;
-            pitch += Mth.cos(phase * 1.31 + 0.73) * shake.amplitude * 0.72f * envelope;
+            yaw += Mth.sin((float) phase) * shake.amplitude * envelope;
+            pitch += Mth.cos((float) (phase * 1.31 + 0.73)) * shake.amplitude * 0.72f * envelope;
             cap = Math.max(cap, shake.cap);
         }
         return new Offset(Mth.clamp(yaw, -cap, cap), Mth.clamp(pitch, -cap, cap));

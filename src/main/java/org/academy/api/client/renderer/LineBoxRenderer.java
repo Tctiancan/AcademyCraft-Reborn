@@ -1,5 +1,6 @@
 package org.academy.api.client.renderer;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Direction;
@@ -68,11 +69,13 @@ public final class LineBoxRenderer {
                                  float x1, float y1, float z1, float x2, float y2, float z2,
                                  float r, float g, float b, float a) {
         var lineWidth = 1.0f / (float) Minecraft.getInstance().getWindow().getGuiScale();
+        // 1.21.1 has no per-vertex setLineWidth; set the GL line width directly instead.
+        RenderSystem.lineWidth(lineWidth);
         vc.addVertex(mat, x1, y1, z1)
                 .setColor(r, g, b, a)
-                .setNormal(0, 1, 0).setLineWidth(lineWidth);
+                .setNormal(0, 1, 0);
         vc.addVertex(mat, x2, y2, z2)
                 .setColor(r, g, b, a)
-                .setNormal(0, 1, 0).setLineWidth(lineWidth);
+                .setNormal(0, 1, 0);
     }
 }

@@ -1,5 +1,7 @@
 package org.academy.internal.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -8,19 +10,19 @@ import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
 import net.minecraft.util.Mth;
-import org.academy.internal.client.renderer.entity.state.DarkmatterCreatureRenderState;
+import org.academy.internal.common.world.entity.ability.DarkmatterBeetle;
 
 /**
  * One complete model tree containing every built-in head, torso, limb and additional branch.
  */
-public final class DarkmatterCreatureModel extends EntityModel<DarkmatterCreatureRenderState> {
+public final class DarkmatterCreatureModel extends EntityModel<DarkmatterBeetle> {
     private final ModelPart[] heads = new ModelPart[3];
     private final ModelPart[] torsos = new ModelPart[3];
     private final ModelPart[] limbs = new ModelPart[3];
     private final ModelPart[] additional = new ModelPart[4];
 
     public DarkmatterCreatureModel(ModelPart root) {
-        super(root);
+        super();
         var all = root.getChild("all");
         for (var i = 0; i < heads.length; i++) heads[i] = all.getChild("head_" + i);
         for (var i = 0; i < torsos.length; i++) torsos[i] = all.getChild("torso_" + i);
@@ -75,17 +77,27 @@ public final class DarkmatterCreatureModel extends EntityModel<DarkmatterCreatur
     }
 
     @Override
-    public void setupAnim(DarkmatterCreatureRenderState state) {
-        super.setupAnim(state);
-        select(heads, state.headModel);
-        select(torsos, state.torsoModel);
-        select(limbs, state.limbsModel);
-        select(additional, state.additionalModel);
-        var gait = Mth.sin(state.walkAnimationPos * .9f) * state.walkAnimationSpeed * .2f;
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        for (var part : heads) part.render(poseStack, buffer, packedLight, packedOverlay, color);
+        for (var part : torsos) part.render(poseStack, buffer, packedLight, packedOverlay, color);
+        for (var part : limbs) part.render(poseStack, buffer, packedLight, packedOverlay, color);
+        for (var part : additional) part.render(poseStack, buffer, packedLight, packedOverlay, color);
+    }
+
+    @Override
+    public void setupAnim(DarkmatterBeetle entity, float limbSwing, float limbSwingAmount,
+                          float ageInTicks, float netHeadYaw, float headPitch) {
+        select(heads, entity.headModel());
+        select(torsos, entity.torsoModel());
+        select(limbs, entity.limbsModel());
+        select(additional, entity.additionalModel());
+        var gait = Mth.sin(limbSwing) * limbSwingAmount * .2f;
         for (var part : limbs) part.zRot = gait;
-        if (state.torsoModel == 1) torsos[1].zRot = Mth.sin(state.ageInTicks * .25f) * .04f;
-        if (state.gammaCatalyzed) additional[Math.clamp(state.additionalModel, 0, 3)].yRot
-                = Mth.sin(state.ageInTicks * .12f) * .05f;
+        if (entity.torsoModel() == 1)
+            torsos[1].zRot = Mth.sin(ageInTicks * .25f) * .04f;
+        if (entity.gammaCatalyzed())
+            additional[Math.clamp(entity.additionalModel(), 0, 3)].yRot
+                    = Mth.sin(ageInTicks * .12f) * .05f;
     }
 
     private static void select(ModelPart[] parts, int selected) {

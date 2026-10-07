@@ -188,7 +188,7 @@ public final class DarkmatterFeatherProjectile extends AbstractArrow implements 
     }
 
     @Override
-    protected void readAdditionalSaveData(CompoundTag tag) {
+    public void readAdditionalSaveData(CompoundTag tag) {
         super.readAdditionalSaveData(tag);
         if (tag.contains("academy_target", CompoundTag.TAG_STRING)) {
             try {
@@ -206,7 +206,7 @@ public final class DarkmatterFeatherProjectile extends AbstractArrow implements 
     }
 
     @Override
-    protected void addAdditionalSaveData(CompoundTag tag) {
+    public void addAdditionalSaveData(CompoundTag tag) {
         super.addAdditionalSaveData(tag);
         if (targetId != null) tag.putString("academy_target", targetId.toString());
         tag.putInt("academy_damage_milli", Math.round(damage * 1_000.0f));

@@ -73,7 +73,7 @@ public record SkyStrikeGeometry(
             var angle = random.nextDouble() * Mth.TWO_PI;
             var length = aerialMinLength + random.nextDouble() * aerialLengthRange;
             var vertical = (random.nextDouble() - 0.35) * length * 0.5;
-            var end = start.add(Mth.cos(angle) * length, vertical, Mth.sin(angle) * length);
+            var end = start.add(Mth.cos((float) angle) * length, vertical, Mth.sin((float) angle) * length);
             paths.add(arc(start, end, thunderclap ? 0.38f : 0.28f,
                     thunderclap ? 2.8f : 1.8f, random.nextLong()));
         }
@@ -82,9 +82,9 @@ public record SkyStrikeGeometry(
             var angle = random.nextDouble() * Mth.TWO_PI;
             var radius = 0.8 + random.nextDouble() * 2.7;
             var start = impact.add(
-                    Mth.cos(angle) * radius,
+                    Mth.cos((float) angle) * radius,
                     (random.nextDouble() - 0.35) * 2.0,
-                    Mth.sin(angle) * radius
+                    Mth.sin((float) angle) * radius
             );
             var end = impact.add(gaussian(random) * 0.18, 0.28 + random.nextDouble() * 0.4,
                     gaussian(random) * 0.18);
@@ -97,7 +97,7 @@ public record SkyStrikeGeometry(
             var maxRadius = thunderclap ? 9.0 : 4.5;
             var radius = minRadius + random.nextDouble() * (maxRadius - minRadius);
             var start = impact.add(0, 0.16, 0);
-            var end = impact.add(Mth.cos(angle) * radius, 0.10, Mth.sin(angle) * radius);
+            var end = impact.add(Mth.cos((float) angle) * radius, 0.10, Mth.sin((float) angle) * radius);
             paths.add(arc(start, end, thunderclap ? 0.32f : 0.24f,
                     thunderclap ? 1.8f : 1.1f, random.nextLong()));
         }

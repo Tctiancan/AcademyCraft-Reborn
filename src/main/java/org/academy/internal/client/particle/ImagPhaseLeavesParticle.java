@@ -72,10 +72,9 @@ public final class ImagPhaseLeavesParticle extends TextureSheetParticle {
                 double z,
                 double xSpeed,
                 double ySpeed,
-                double zSpeed,
-                RandomSource random
+                double zSpeed
         ) {
-            return new ImagPhaseLeavesParticle(level, x, y, z, sprites, random);
+            return new ImagPhaseLeavesParticle(level, x, y, z, sprites, level.random);
         }
     }
 }

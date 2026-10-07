@@ -172,10 +172,10 @@ public final class VfxGraphManager {
                     far -> camera.withMinimumFarPlane(far));
             float radius = effect.cullingRadius(budget.effectRadius());
             boolean draw = effect.frameVisible() && (effect.alwaysVisible()
-                    || (budget.shouldRender(effectCamera.getPosition(), effect.cullingCenter(), radius,
+                    || (budget.shouldRender(effectCamera.position(), effect.cullingCenter(), radius,
                             effect.renderDistance(budget.maxRenderDistance()))
                     && budget.sphereInFrustum(effectCamera.projection(), effectCamera.viewRotation(),
-                            effectCamera.getPosition(), effect.cullingCenter(), radius)));
+                            effectCamera.position(), effect.cullingCenter(), radius)));
             effect.setRenderVisible(draw);
             // Analytic callers using frameVisible manage their own presentation clock.
             if (!paused && effect.frameVisible() && budget.canSpawnMore(effect.effect().buffer().count())) {

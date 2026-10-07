@@ -22,10 +22,17 @@ public final class RecipeSerializers {
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DarkmatterDuplicationRecipe>>
             DARKMATTER_DUPLICATION = RECIPE_SERIALIZERS.register("darkmatter_duplication", () ->
-            new RecipeSerializer<>(
-                    MapCodec.unit(DarkmatterDuplicationRecipe::new),
-                    DARKMATTER_DUPLICATION_STREAM_CODEC
-            ));
+            new RecipeSerializer<>() {
+                @Override
+                public MapCodec<DarkmatterDuplicationRecipe> codec() {
+                    return MapCodec.unit(DarkmatterDuplicationRecipe::new);
+                }
+
+                @Override
+                public StreamCodec<RegistryFriendlyByteBuf, DarkmatterDuplicationRecipe> streamCodec() {
+                    return DARKMATTER_DUPLICATION_STREAM_CODEC;
+                }
+            });
 
     static final StreamCodec<RegistryFriendlyByteBuf, DarkmatterCoatingRecipe>
             DARKMATTER_COATING_STREAM_CODEC = StreamCodec.of(
@@ -35,10 +42,17 @@ public final class RecipeSerializers {
 
     public static final DeferredHolder<RecipeSerializer<?>, RecipeSerializer<DarkmatterCoatingRecipe>>
             DARKMATTER_COATING = RECIPE_SERIALIZERS.register("darkmatter_coating", () ->
-            new RecipeSerializer<>(
-                    MapCodec.unit(DarkmatterCoatingRecipe::new),
-                    DARKMATTER_COATING_STREAM_CODEC
-            ));
+            new RecipeSerializer<>() {
+                @Override
+                public MapCodec<DarkmatterCoatingRecipe> codec() {
+                    return MapCodec.unit(DarkmatterCoatingRecipe::new);
+                }
+
+                @Override
+                public StreamCodec<RegistryFriendlyByteBuf, DarkmatterCoatingRecipe> streamCodec() {
+                    return DARKMATTER_COATING_STREAM_CODEC;
+                }
+            });
 
     private RecipeSerializers() {
     }

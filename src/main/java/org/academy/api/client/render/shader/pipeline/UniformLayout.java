@@ -21,6 +21,14 @@ public record UniformLayout(List<Entry> entries, List<SamplerBinding> samplers, 
     }
 
     public UniformLayout(List<GraphParameter> parameters, List<SamplerBinding> samplers) {
+        this(computeEntries(parameters), samplers);
+    }
+
+    private UniformLayout(EntriesAndSize data, List<SamplerBinding> samplers) {
+        this(data.entries(), List.copyOf(samplers), data.totalSize());
+    }
+
+    private static EntriesAndSize computeEntries(List<GraphParameter> parameters) {
         var list = new ArrayList<Entry>();
         list.add(new Entry(GlslGenerator.TIME_MEMBER, ValueType.FLOAT, 0, 4));
         var offset = 4;
@@ -34,7 +42,10 @@ public record UniformLayout(List<Entry> entries, List<SamplerBinding> samplers, 
             list.add(new Entry(GlslNames.uniformName(p.id()), p.type(), offset, size));
             offset += size;
         }
-        this(List.copyOf(list), List.copyOf(samplers), alignUp(offset, 16));
+        return new EntriesAndSize(List.copyOf(list), alignUp(offset, 16));
+    }
+
+    private record EntriesAndSize(List<Entry> entries, int totalSize) {
     }
 
     private static List<SamplerBinding> deriveSamplerBindings(List<GraphParameter> parameters) {

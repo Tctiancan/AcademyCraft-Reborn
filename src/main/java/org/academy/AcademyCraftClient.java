@@ -9,6 +9,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -67,7 +68,6 @@ import org.academy.internal.client.gui.screen.Screens;
 import org.academy.internal.client.hud.HudLayoutConfig;
 import org.academy.internal.client.particle.*;
 import org.academy.internal.client.profiler.ProfilerClientHooks;
-import org.academy.internal.client.render.fluid.ImagPhaseFluidRenderer;
 import org.academy.internal.client.render.vfx.*;
 import org.academy.internal.client.renderer.blockentity.WindGenPillarRenderer;
 import org.academy.internal.client.renderer.entity.layers.CloudroomLayer;
@@ -469,10 +469,11 @@ public final class AcademyCraftClient {
     @SubscribeEvent
     public static void onEntityRenderersAddLayers(EntityRenderersEvent.AddLayers event) {
         for (var skinType : event.getSkins()) {
-            var renderer = event.getPlayerRenderer(skinType);
-            if (renderer != null) {
-                renderer.addLayer(new SkillEffectsLayer(renderer));
-                addAbilityLayers(renderer);
+            var renderer = event.getSkin(skinType);
+            if (renderer instanceof LivingEntityRenderer<?, ?> living) {
+                var playerRenderer = (PlayerRenderer) living;
+                playerRenderer.addLayer(new SkillEffectsLayer(playerRenderer));
+                addAbilityLayers(playerRenderer);
             }
         }
 
@@ -496,7 +497,8 @@ public final class AcademyCraftClient {
     public static void onRegisterParticleProviders(RegisterParticleProvidersEvent event) {
         event.registerSpriteSet(ParticleTypes.IMAG_PHASE_LEAVES.get(), ImagPhaseLeavesParticle.Provider::new);
         event.registerSpriteSet(ParticleTypes.IMAG_PHASE_FLUID.get(), sprites ->
-                (unused19, level, x, y, z, xSpeed, ySpeed, zSpeed, random) -> {
+                (unused19, level, x, y, z, xSpeed, ySpeed, zSpeed) -> {
+                    var random = level.random;
                     var particle = new ImagPhaseFluidParticle(
                             level, sprites, x, y, z, xSpeed, ySpeed, zSpeed, random
                     );

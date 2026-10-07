@@ -12,13 +12,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(EntityRenderDispatcher.class)
 public abstract class MixinEntityRenderDispatcher {
-    @Inject(method = "submit", at = @At("HEAD"))
-    private void academy$captureSurfaceEntity(net.minecraft.client.renderer.entity.state.EntityRenderState state,
-            net.minecraft.client.renderer.state.level.CameraRenderState camera, double x, double y, double z,
-            com.mojang.blaze3d.vertex.PoseStack pose, net.minecraft.client.renderer.SubmitNodeCollector collector,
-            org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci) {
-        org.academy.api.client.render.post.WorldSurfaceMasks.capture(state, camera, x, y, z, pose);
-    }
+    // 1.21.1 无 26.2 的 EntityRenderDispatcher.submit(EntityRenderState, CameraRenderState, ...)。
+    // 原 academy$captureSurfaceEntity 在提交实体时向 WorldSurfaceMasks 捕获表面(配合异常空间斩切后处理)。
+    // 该 API 依赖 26.2 的 render-state 体系(EntityRenderState/CameraRenderState)与节点化提交,
+    // 1.21.1 需改用 EntityRenderDispatcher.render 即时渲染路径适配,此处待定集成。
     @Inject(method = "shouldRender", at = @At("HEAD"), cancellable = true)
     private <E extends Entity> void academy$hideMentalPerceptionTarget(
             E entity,

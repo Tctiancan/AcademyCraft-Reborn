@@ -2,16 +2,17 @@ package org.academy.internal.client.renderer.entity;
 
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
-import org.academy.internal.client.renderer.entity.state.SmokeRenderState;
+import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.internal.common.world.entity.skill.Smoke;
 
-public class SmokeRenderer extends EntityRenderer<Smoke, SmokeRenderState> {
+public class SmokeRenderer extends EntityRenderer<Smoke> {
     public SmokeRenderer(EntityRendererProvider.Context context) {
         super(context);
     }
 
     @Override
-    public SmokeRenderState createRenderState() {
-        return new SmokeRenderState();
+    public ResourceLocation getTextureLocation(Smoke entity) {
+        return MissingTextureAtlasSprite.getLocation();
     }
 }

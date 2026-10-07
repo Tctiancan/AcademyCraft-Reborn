@@ -20,6 +20,14 @@ import java.util.function.Consumer;
 
 /** Cached section-partitioned collision boxes for one immutable structure snapshot. */
 public final class BlockStructureCollisionGeometry {
+    private static final List<Direction.Axis> YXZ_AXIS_ORDER =
+            List.of(Direction.Axis.Y, Direction.Axis.X, Direction.Axis.Z);
+    private static final List<Direction.Axis> YZX_AXIS_ORDER =
+            List.of(Direction.Axis.Y, Direction.Axis.Z, Direction.Axis.X);
+
+    private static List<Direction.Axis> axisStepOrder(Vec3 movement) {
+        return Math.abs(movement.x) < Math.abs(movement.z) ? YZX_AXIS_ORDER : YXZ_AXIS_ORDER;
+    }
     public static final BlockStructureCollisionGeometry EMPTY =
             new BlockStructureCollisionGeometry(List.of());
     private static final double MERGE_EPSILON = 1.0e-7;
@@ -235,7 +243,7 @@ public final class BlockStructureCollisionGeometry {
     ) {
         if (boxes.isEmpty() || colliders.isEmpty()) return requestedMovement;
         var resolvedMovement = Vec3.ZERO;
-        for (var axis : Direction.axisStepOrder(requestedMovement)) {
+        for (var axis : axisStepOrder(requestedMovement)) {
             var axisMovement = requestedMovement.get(axis);
             if (axisMovement == 0.0) continue;
             for (var box : boxes) {

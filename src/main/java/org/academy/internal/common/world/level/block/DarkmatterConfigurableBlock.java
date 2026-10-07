@@ -99,7 +99,7 @@ public final class DarkmatterConfigurableBlock extends FallingBlock implements E
     }
 
     @Override
-    protected void onExplosionHit(BlockState state, ServerLevel level, BlockPos pos,
+    protected void onExplosionHit(BlockState state, Level level, BlockPos pos,
                                   Explosion explosion,
                                   BiConsumer<ItemStack, BlockPos> onHit) {
         if (state.isAir() || explosion.getBlockInteraction()

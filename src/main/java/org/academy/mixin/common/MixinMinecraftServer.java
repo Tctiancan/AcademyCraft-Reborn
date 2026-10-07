@@ -1,7 +1,6 @@
 package org.academy.mixin.common;
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.world.clock.ServerClockManager;
 import org.academy.AcademyCraftServer;
 import org.academy.AcademyCraftConfig;
 import org.academy.api.server.vanilla.MinecraftServerContext;
@@ -12,7 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.function.BooleanSupplier;
@@ -67,22 +65,9 @@ public abstract class MixinMinecraftServer implements MinecraftServerContext {
         if (runtime != null) runtime.finishServerHeartbeat();
     }
 
-    @Redirect(
-            method = "tickChildren",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lnet/minecraft/world/clock/ServerClockManager;tick()V"
-            )
-    )
-    private void academy$dispatchServerClockTicks(ServerClockManager manager) {
-        var runtime = academy$temporalRuntime();
-        if (runtime == null) {
-            manager.tick();
-            return;
-        }
-        runtime.dispatchServerClockTicks(manager::tick);
-    }
-
+    // 1.21.1 无 26.2 的 ServerClockManager。原 @Redirect(target=ServerClockManager.tick)
+    // 用于在 tickChildren 内按逻辑刻度回放服务端时钟，属于时间机器功能。1.21.1 需改用
+    // tickServer 心跳钩子(demo采于上方 academy$beginTemporalHeartbeat 等)驱动，此处待定集成。
     @Inject(method = "waitUntilNextTick", at = @At("RETURN"), require = 0)
     private void academy$compensateTemporalWallClockDebt(CallbackInfo ci) {
         var runtime = academy$temporalRuntime();

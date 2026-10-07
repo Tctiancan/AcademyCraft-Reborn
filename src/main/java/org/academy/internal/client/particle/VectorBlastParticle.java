@@ -57,7 +57,7 @@ public final class VectorBlastParticle extends TextureSheetParticle {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level,
                                        double x, double y, double z,
-                                       double xSpeed, double ySpeed, double zSpeed, RandomSource random) {
+                                       double xSpeed, double ySpeed, double zSpeed) {
             return new VectorBlastParticle(level, x, y, z, xSpeed, ySpeed, zSpeed, sprites);
         }
     }

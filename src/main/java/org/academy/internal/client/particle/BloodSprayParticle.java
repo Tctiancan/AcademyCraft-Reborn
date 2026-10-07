@@ -86,10 +86,9 @@ public final class BloodSprayParticle extends TextureSheetParticle {
         @Override
         public Particle createParticle(SimpleParticleType type, ClientLevel level,
                                        double x, double y, double z,
-                                       double xSpeed, double ySpeed, double zSpeed,
-                                       RandomSource random) {
+                                       double xSpeed, double ySpeed, double zSpeed) {
             return new BloodSprayParticle(
-                    level, x, y, z, xSpeed, ySpeed, zSpeed, sprites, random
+                    level, x, y, z, xSpeed, ySpeed, zSpeed, sprites, level.random
             );
         }
     }

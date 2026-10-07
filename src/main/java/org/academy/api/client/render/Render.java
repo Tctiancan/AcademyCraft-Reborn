@@ -8,6 +8,7 @@ import org.academy.api.client.resources.R;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
+import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
@@ -99,10 +100,17 @@ public final class Render {
      * 供自研 blur shader 在缓存中读取.
      */
     public record BlurUniforms(Vector2f outSize, Vector2f blurDir, int sampleCount, Vector4f[] samples) {
-        public static final int UBO_SIZE = Std140SizeCalculator.prefilled(6 + GaussianSamples.MAX_GAUSSIAN_SAMPLES * 4);
+        public static final int UBO_SIZE;
+        static {
+            var calculator = new Std140SizeCalculator().putVec2().putVec2().putInt();
+            for (var i = 0; i < GaussianSamples.MAX_GAUSSIAN_SAMPLES; i++) {
+                calculator.putVec4();
+            }
+            UBO_SIZE = calculator.get();
+        }
 
         public static byte[] serialize(Vector2f outSize, float dirX, float dirY, float radius) {
-            var samples = getGaussianSamples(radius);
+            var samples = GaussianSamples.getGaussianSamples(radius);
             var builder = org.academy.api.client.render.Std140Builder.allocate(UBO_SIZE);
             builder.putVec2(outSize).putVec2(new Vector2f(dirX, dirY)).putInt(samples.sampleCount());
             for (var sample : samples.samples()) {
@@ -262,7 +270,7 @@ public final class Render {
         public static final RenderPipeline PLATINUM_COSMIC_WING = textured(VertexFormat.Mode.QUADS, "platinum_cosmic_wing");
         public static final RenderPipeline PLATINUM_COSMIC_WING_NO_DEPTH_WRITE = textured(VertexFormat.Mode.QUADS, "platinum_cosmic_wing_no_depth_write");
         public static final RenderPipeline DISTORTION_RING =
-                new RenderPipeline("distortion_ring", List.of(DefaultVertexFormat.POSITION_TEX_NORMAL), VertexFormat.Mode.QUADS, RenderType.gui());
+                new RenderPipeline("distortion_ring", List.of(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL), VertexFormat.Mode.QUADS, RenderType.gui());
         public static final RenderPipeline SPATIAL_DISTORTION = bit("spatial_distortion");
 
         private RenderPipelines() {

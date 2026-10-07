@@ -1,5 +1,7 @@
 package org.academy.internal.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -21,7 +23,7 @@ public class CleaningRobotModel extends EntityModel<CleaningRobot> {
     private final ModelPart bleg;
 
     public CleaningRobotModel(ModelPart root) {
-        super(root);
+        super();
         all = root.getChild("all");
         top = all.getChild("top");
         bottom = all.getChild("bottom");
@@ -32,6 +34,11 @@ public class CleaningRobotModel extends EntityModel<CleaningRobot> {
 
     @Override
     public void setupAnim(CleaningRobot entity, float limbSwing, float limbSwingAmount, float ageInTicks, float netHeadYaw, float headPitch) {
+    }
+
+    @Override
+    public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
+        all.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
     public static LayerDefinition createBodyLayer() {

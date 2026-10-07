@@ -20,7 +20,7 @@ import java.util.concurrent.Executor;
  * 等价物是在 mod 总线 RegisterClientReloadListenersEvent 上注册一个重载监听器，
  * 每次资源(重新)加载完成时都会触发，用于释放能力视觉的临时资源。
  */
-@EventBusSubscriber(Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+@EventBusSubscriber(value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
 public final class ClientResourceReloadListener implements PreparableReloadListener {
 
     @SubscribeEvent

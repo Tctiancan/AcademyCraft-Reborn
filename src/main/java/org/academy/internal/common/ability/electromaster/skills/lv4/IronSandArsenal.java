@@ -76,7 +76,10 @@ public class IronSandArsenal extends Skill {
                     Server.syncData(player);
                     var packet = new SweepVisualPacket(player.getId());
                     for (var observer : player.level().players()) {
-                        if (observer.distanceToSqr(player) <= 128 * 128) MisakaNetworkServer.send(observer, packet);
+                        if (observer.distanceToSqr(player) <= 128 * 128
+                                && observer instanceof ServerPlayer serverObserver) {
+                            MisakaNetworkServer.send(serverObserver, packet);
+                        }
                     }
                 });
     }

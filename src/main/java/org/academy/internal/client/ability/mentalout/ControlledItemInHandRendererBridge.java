@@ -2,7 +2,7 @@ package org.academy.internal.client.ability.mentalout;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
 
 public interface ControlledItemInHandRendererBridge {
@@ -11,7 +11,7 @@ public interface ControlledItemInHandRendererBridge {
             PlayerControlSessionManager.TargetViewState state,
             float partialTick,
             PoseStack poseStack,
-            SubmitNodeCollector collector,
+            MultiBufferSource buffer,
             int packedLight
     );
 }

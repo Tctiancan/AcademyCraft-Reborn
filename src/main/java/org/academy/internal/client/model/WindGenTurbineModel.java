@@ -64,7 +64,7 @@ public class WindGenTurbineModel {
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
         poseStack.pushPose();
         all.translateAndRotate(poseStack);
-        RenderType base = RenderType.entityCutoutCull(R.textures.model.wind_gen);
+        RenderType base = RenderType.entityCutout(R.textures.model.wind_gen);
         main.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
         tip_li.render(poseStack, bufferSource.getBuffer(base), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
         poseStack.popPose();

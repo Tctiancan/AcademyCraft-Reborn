@@ -2,7 +2,6 @@ package org.academy.mixin.client;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.MouseHandler;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.player.LocalPlayer;
 import org.academy.api.client.input.InputSystem;
 import org.academy.internal.client.ability.mentalout.PlayerControlClientState;
@@ -22,9 +21,9 @@ public abstract class MixinMouseHandler {
         InputSystem.handleMouseScroll(xoffset, yoffset, ci);
     }
 
-    @Inject(method = "onButton", at = @At("HEAD"), cancellable = true)
-    private void onButton(long handle, MouseButtonInfo rawButtonInfo, int action, CallbackInfo ci) {
-        InputSystem.handleMouseButton(rawButtonInfo.button(), action, rawButtonInfo.modifiers(), ci);
+    @Inject(method = "onPress", at = @At("HEAD"), cancellable = true)
+    private void onButton(long handle, int button, int action, int modifiers, CallbackInfo ci) {
+        InputSystem.handleMouseButton(button, action, modifiers, ci);
     }
 
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)

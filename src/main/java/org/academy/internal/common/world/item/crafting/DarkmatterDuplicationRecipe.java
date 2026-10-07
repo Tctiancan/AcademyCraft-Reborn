@@ -1,6 +1,7 @@
 package org.academy.internal.common.world.item.crafting;
 
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.CraftingBookCategory;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.CustomRecipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
@@ -8,6 +9,15 @@ import net.minecraft.world.level.Level;
 import org.academy.internal.common.world.item.DarkmatterItemUtil;
 
 public final class DarkmatterDuplicationRecipe extends CustomRecipe {
+    public DarkmatterDuplicationRecipe() {
+        super(CraftingBookCategory.MISC);
+    }
+
+    @Override
+    public boolean canCraftInDimensions(int width, int height) {
+        return width * height >= 2;
+    }
+
     @Override
     public boolean matches(CraftingInput input, Level level) {
         var darkmatterFound = false;

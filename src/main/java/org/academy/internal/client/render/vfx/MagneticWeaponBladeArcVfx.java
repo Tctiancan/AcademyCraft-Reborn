@@ -1,7 +1,7 @@
 package org.academy.internal.client.render.vfx;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.server.level.ParticleStatus;
+import net.minecraft.client.ParticleStatus;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.HumanoidArm;

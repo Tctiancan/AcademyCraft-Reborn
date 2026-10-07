@@ -3,13 +3,11 @@ package org.academy.internal.client.render.vfx;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.util.Mth;
-import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.entity.player.Player;
 import org.academy.api.client.render.vfx.Vfx;
 import org.academy.api.client.render.vfx.VfxFrameContext;
 import org.academy.api.client.render.vfx.VfxSink;
 import org.academy.api.client.resources.R;
-import org.academy.internal.common.ability.electromaster.skills.lv3.magneticweapon.MagneticWeapon;
 import org.academy.internal.common.ability.electromaster.skills.lv4.IronSandArsenal;
 import org.academy.internal.common.attachment.AttachmentTypes;
 import org.joml.Matrix4f;
@@ -19,15 +17,7 @@ import org.joml.Vector4f;
 
 import java.util.List;
 
-import static org.academy.AcademyCraft.academy;
-
 public final class ElectromasterWeaponVfx implements Vfx {
-    public static final ContextKey<MagneticWeapon.Data> MAGNETIC_CONTEXT =
-            new ContextKey<>(academy("magnetic_weapon"));
-    public static final ContextKey<IronSandArsenal.Data> IRON_SAND_CONTEXT =
-            new ContextKey<>(academy("iron_sand_operation"));
-    public static final ContextKey<Integer> ENTITY_ID_CONTEXT =
-            new ContextKey<>(academy("wing_entity_id"));
     public static final int SWEEP_DURATION_TICKS = 10;
     private static final int IRON_SAND_PARTICLES = 24;
     private static final Vector2f UV0 = new Vector2f(0.0f, 0.0f);

@@ -2,12 +2,9 @@ package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.model.Model;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import org.academy.api.client.render.vfx.Vfx;
@@ -21,6 +18,7 @@ import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.lang.reflect.Field;
 
 public final class DarkmatterSixWingsVfx implements Vfx {
     static final int VERTEX_STRIDE = 5 * Float.BYTES;
@@ -109,25 +107,71 @@ public final class DarkmatterSixWingsVfx implements Vfx {
         poseStack.popPose();
     }
 
+    // 26.2 exposes ModelPart.Cube.polygons (public), Polygon.vertices() and Vertex.worldX/Y/Z()
+    // directly. In 1.21.1 those ModelPart internals are package-private, so the geometry is read
+    // reflectively over the stable field names instead.
+    private static final String[] REFLECT_CUBE = {"polygons"};
+    private static final String[] REFLECT_POLYGON = {"vertices"};
+    private static final String[] REFLECT_VERTEX = {"pos", "u", "v"};
+    private static Field cubePolygonsField;
+    private static Field polygonVerticesField;
+    private static Field vertexPosField;
+    private static Field vertexUField;
+    private static Field vertexVField;
+
+    private static void initModelReflection() throws ReflectiveOperationException {
+        if (cubePolygonsField != null) return;
+        cubePolygonsField = declaredField(ModelPart.Cube.class, REFLECT_CUBE[0]);
+        Class<?> polygonClass = cubePolygonsField.getType().getComponentType();
+        polygonVerticesField = declaredField(polygonClass, REFLECT_POLYGON[0]);
+        Class<?> vertexClass = polygonVerticesField.getType().getComponentType();
+        vertexPosField = declaredField(vertexClass, REFLECT_VERTEX[0]);
+        vertexUField = declaredField(vertexClass, REFLECT_VERTEX[1]);
+        vertexVField = declaredField(vertexClass, REFLECT_VERTEX[2]);
+    }
+
+    private static Field declaredField(Class<?> owner, String name) throws ReflectiveOperationException {
+        Field field = owner.getDeclaredField(name);
+        field.setAccessible(true);
+        return field;
+    }
+
     private static void bakeMesh(ModelPart root, PoseStack poseStack, ByteBuffer target) {
         root.visit(poseStack, (pose, path, cubeIndex, cube) -> {
             var matrix = pose.pose();
-            for (var polygon : cube.polygons) {
-                var vertices = polygon.vertices();
-                if (vertices.length < 3) continue;
-                var v0 = transform(vertices[0], matrix);
-                var v1 = transform(vertices[1], matrix);
-                var v2 = transform(vertices[2], matrix);
-                putVertex(target, v0);
-                putVertex(target, v1);
-                putVertex(target, v2);
-                if (vertices.length < 4) continue;
-                var v3 = transform(vertices[3], matrix);
-                putVertex(target, v0);
-                putVertex(target, v2);
-                putVertex(target, v3);
-            }
+            var vertices = bake(cube, matrix);
+            for (var v : vertices) putVertex(target, v);
         });
+    }
+
+    private static float[][] bake(Object cube, Matrix4f matrix) {
+        try {
+            initModelReflection();
+            Object[] polygons = (Object[]) cubePolygonsField.get(cube);
+            var out = new float[polygons.length * 6][];
+            int count = 0;
+            for (var polygon : polygons) {
+                Object[] vs = (Object[]) polygonVerticesField.get(polygon);
+                if (vs.length < 3) continue;
+                float[] v0 = transform(vs[0], matrix);
+                float[] v1 = transform(vs[1], matrix);
+                float[] v2 = transform(vs[2], matrix);
+                out[count++] = v0;
+                out[count++] = v1;
+                out[count++] = v2;
+                if (vs.length < 4) continue;
+                float[] v3 = transform(vs[3], matrix);
+                out[count++] = v0;
+                out[count++] = v2;
+                out[count++] = v3;
+            }
+            if (count == out.length) return out;
+            var trimmed = new float[count][];
+            System.arraycopy(out, 0, trimmed, 0, count);
+            return trimmed;
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("AcademyCraft cannot read wing model geometry", e);
+        }
     }
 
     private static void putVertex(ByteBuffer target, float[] vertex) {
@@ -138,24 +182,29 @@ public final class DarkmatterSixWingsVfx implements Vfx {
         target.putFloat(vertex[4]);
     }
 
-    private static float[] transform(ModelPart.Vertex vertex, Matrix4f matrix) {
-        // worldX/Y/Z already apply ModelPart.Vertex.SCALE_FACTOR (1 / 16). Applying it a second
-        // time collapses each textured face to 1 / 256 model scale, leaving only scattered texels.
-        var position = new Vector3f(
-                vertex.worldX(),
-                vertex.worldY(),
-                vertex.worldZ()
-        ).mulPosition(matrix);
-        return new float[]{
-                position.x,
-                position.y,
-                position.z,
-                vertex.u(),
-                vertex.v()
-        };
+    private static float[] transform(Object vertex, Matrix4f matrix) {
+        try {
+            // worldX/Y/Z already apply ModelPart.Vertex.SCALE_FACTOR (1 / 16). Applying it a second
+            // time collapses each textured face to 1 / 256 model scale, leaving only scattered texels.
+            var pos = (Vector3f) vertexPosField.get(vertex);
+            var position = new Vector3f(
+                    pos.x() / 16.0f,
+                    pos.y() / 16.0f,
+                    pos.z() / 16.0f
+            ).mulPosition(matrix);
+            return new float[]{
+                    position.x,
+                    position.y,
+                    position.z,
+                    vertexUField.getFloat(vertex),
+                    vertexVField.getFloat(vertex)
+            };
+        } catch (ReflectiveOperationException e) {
+            throw new IllegalStateException("AcademyCraft cannot read wing vertex geometry", e);
+        }
     }
 
-    private static final class AvianWingsModel extends Model<PlayerRenderState> {
+    private static final class AvianWingsModel {
         private final ModelPart root;
         private final ModelPart coracoidLeft;
         private final ModelPart humerusLeft;
@@ -167,7 +216,6 @@ public final class DarkmatterSixWingsVfx implements Vfx {
         private final ModelPart carpalsRight;
 
         private AvianWingsModel(ModelPart root) {
-            super(root, RenderTypes::entityTranslucent);
             this.root = root;
             coracoidLeft = root.getChild("coracoidLeft");
             humerusLeft = coracoidLeft.getChild("humerusLeft");

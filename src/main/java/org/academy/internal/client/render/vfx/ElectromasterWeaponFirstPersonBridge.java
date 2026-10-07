@@ -40,7 +40,7 @@ public final class ElectromasterWeaponFirstPersonBridge implements EffectRendere
     private static void submitFirstPersonSandQuad(PoseStack poseStack,
                                                   MultiBufferSource bufferSource, float alpha) {
         var consumer = bufferSource.getBuffer(IRON_SAND_FIRST_PERSON);
-        addFirstPersonQuad(consumer, poseStack.pose(), alpha);
+        addFirstPersonQuad(consumer, poseStack.last().pose(), alpha);
     }
 
     private static void addFirstPersonQuad(VertexConsumer consumer, Matrix4f matrix, float alpha) {

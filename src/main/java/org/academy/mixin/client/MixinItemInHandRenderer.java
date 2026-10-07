@@ -3,7 +3,7 @@ package org.academy.mixin.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.HumanoidArm;
@@ -36,7 +36,7 @@ public abstract class MixinItemInHandRenderer implements ControlledItemInHandRen
             PlayerControlSessionManager.TargetViewState state,
             float partialTick,
             PoseStack poseStack,
-            SubmitNodeCollector collector,
+            MultiBufferSource buffer,
             int packedLight
     ) {
         var previousMainHand = mainHandItem;
@@ -45,7 +45,7 @@ public abstract class MixinItemInHandRenderer implements ControlledItemInHandRen
         offHandItem = state.offhand();
         try {
             var attack = player.getAttackAnim(partialTick);
-            ((ItemInHandRendererInvoker) this).academy$submitArmWithItem(
+            ((ItemInHandRendererInvoker) this).academy$renderArmWithItem(
                     player,
                     partialTick,
                     PlayerControlClientState.controllerViewPitch(),
@@ -54,10 +54,10 @@ public abstract class MixinItemInHandRenderer implements ControlledItemInHandRen
                     mainHandItem,
                     0.0f,
                     poseStack,
-                    collector,
+                    buffer,
                     packedLight
             );
-            ((ItemInHandRendererInvoker) this).academy$submitArmWithItem(
+            ((ItemInHandRendererInvoker) this).academy$renderArmWithItem(
                     player,
                     partialTick,
                     PlayerControlClientState.controllerViewPitch(),
@@ -66,7 +66,7 @@ public abstract class MixinItemInHandRenderer implements ControlledItemInHandRen
                     offHandItem,
                     0.0f,
                     poseStack,
-                    collector,
+                    buffer,
                     packedLight
             );
         } finally {
@@ -80,9 +80,10 @@ public abstract class MixinItemInHandRenderer implements ControlledItemInHandRen
             LivingEntity entity,
             ItemStack stack,
             ItemDisplayContext displayContext,
+            boolean leftHand,
             PoseStack poseStack,
-            SubmitNodeCollector collector,
-            int packedLight,
+            MultiBufferSource buffer,
+            int seed,
             CallbackInfo ci
     ) {
         AbilityControlTabletSpecialRenderer.prepareItemRender(entity, stack, displayContext);

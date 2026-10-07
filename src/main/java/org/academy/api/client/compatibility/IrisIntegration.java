@@ -1,7 +1,7 @@
 package org.academy.api.client.compatibility;
 
 import net.irisshaders.iris.api.v0.IrisApi;
-import net.neoforged.fml.loading.FMLLoader;
+import net.neoforged.fml.ModList;
 
 public final class IrisIntegration {
     private static boolean hasIris;
@@ -10,7 +10,7 @@ public final class IrisIntegration {
     }
 
     public static void init() {
-        hasIris = FMLLoader.getCurrent().getLoadingModList().getModFileById("iris") != null;
+        hasIris = ModList.get().isLoaded("iris");
     }
 
     public static boolean hasIris() {

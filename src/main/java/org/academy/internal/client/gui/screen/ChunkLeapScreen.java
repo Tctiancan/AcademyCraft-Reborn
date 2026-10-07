@@ -630,7 +630,7 @@ public final class ChunkLeapScreen extends UiScreen {
     /** Renders the inspection readout for the hovered chunk, if one has arrived. */
     private int renderInspection(GuiGraphics graphics, int x, int y, int inner) {
         if (hoveredChunk == Long.MIN_VALUE || dimension == null) return y;
-        var chunk = net.minecraft.world.level.ChunkPos.unpack(hoveredChunk);
+        var chunk = new net.minecraft.world.level.ChunkPos(hoveredChunk);
         var report = ChunkMapClientState.inspection(
                 dimension.location().toString(), chunk.x, chunk.z);
         graphics.drawString(font, Component.translatable("chunk_leap.inspect.title"), x, y, DIM);

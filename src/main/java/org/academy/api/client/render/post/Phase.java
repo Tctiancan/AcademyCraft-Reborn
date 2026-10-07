@@ -1,7 +1,10 @@
 package org.academy.api.client.render.post;
 
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
 
 /**
@@ -12,11 +15,15 @@ import net.minecraft.client.renderer.RenderType;
  * 顶点随即丢弃), draw/close 为空操作, 保证调用方 (粒子/实体渲染器) 仍可编译运行但不产生辉光。
  */
 public class Phase {
+    private final BufferBuilder builder;
+
     public Phase(String name) {
+        this.builder = Tesselator.getInstance().begin(
+                VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
     }
 
     public VertexConsumer getBuffer(RenderType renderType) {
-        return Tesselator.getInstance().getBuilder();
+        return builder;
     }
 
     public void draw() {
