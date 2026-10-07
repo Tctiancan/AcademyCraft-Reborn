@@ -16,12 +16,14 @@ public final class HumanoidSurfacePose {
     public static void beginFrame() { POSES.clear(); }
     public static Matrix4f[] get(int entityId) { return POSES.get(entityId); }
 
-    public static void capture(int entityId, HumanoidModel<?> model) {
+    public static void capture(int entityId, HumanoidModel<?> model, ModelPart root) {
         var parts = new ModelPart[]{model.body, model.head, model.rightArm, model.leftArm, model.rightLeg, model.leftLeg};
         var matrices = new Matrix4f[parts.length];
         for (int i = 0; i < parts.length; i++) {
             var pose = new PoseStack();
-            model.root().translateAndRotate(pose);
+            if (root != null) {
+                root.translateAndRotate(pose);
+            }
             parts[i].translateAndRotate(pose);
             matrices[i] = new Matrix4f(pose.last().pose());
         }

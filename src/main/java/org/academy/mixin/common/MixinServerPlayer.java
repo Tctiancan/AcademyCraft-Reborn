@@ -24,7 +24,7 @@ import java.util.Set;
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player implements ImagineBreakerHealthAccess {
     private MixinServerPlayer(Level level, GameProfile gameProfile) {
-        super(level, gameProfile);
+        super(level, net.minecraft.core.BlockPos.ZERO, 0.0f, gameProfile);
     }
 
     @Override
@@ -81,7 +81,7 @@ public abstract class MixinServerPlayer extends Player implements ImagineBreaker
             )
     )
     public boolean redirectHurt(Player instance, DamageSource source, float damage) {
-        var pair = VectorReflection.Server.hurtServer(instance, instance.level(), source, damage);
+        var pair = VectorReflection.Server.hurtServer(instance, ((ServerPlayer) instance).serverLevel(), source, damage);
         if (!pair.getLeft()) {
             if (VectorReflection.Server.usesFullInstanceProtection((ServerPlayer) (Object) this)) return false;
             return super.hurt(source, pair.getRight());

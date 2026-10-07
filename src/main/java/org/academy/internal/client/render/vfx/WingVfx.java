@@ -32,6 +32,9 @@ public final class WingVfx implements Vfx {
     private WingVfx() {
     }
 
+    /** Shared instance used by {@link WingVfxClient}. */
+    public static final WingVfx INSTANCE = new WingVfx();
+
     public static long blackActivationEpoch(int entityId) {
         return -1;
     }

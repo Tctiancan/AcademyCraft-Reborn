@@ -282,7 +282,7 @@ public final class ChunkMapRenderer {
         var info = connection.getPlayerInfo(marker.playerId());
         if (info == null) return null;
         var skin = info.getSkin();
-        return skin == null ? null : skin.body().texturePath();
+        return skin == null ? null : skin.texture();
     }
 
     /**

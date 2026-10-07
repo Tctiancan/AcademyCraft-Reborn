@@ -57,7 +57,6 @@
     "common.MixinProjectile",
     "common.MixinSensing",
     "common.MixinServerAdvancementManager",
-    "common.MixinServerChunkCacheTemporalScaling",
     "common.MixinServerEntity",
     "common.MixinServerGamePacketListenerImpl",
     "common.MixinServerGamePacketListenerTemporal",
@@ -115,7 +114,6 @@
     "client.MixinModelBlockRenderer",
     "client.MixinMouseHandler",
     "client.MixinSoundEngine",
-    "client.MixinTextureAtlas",
     "client.MixinTemporalClientBoundary",
     "client.MixinTemporalInputBoundary",
     "client.MixinThrownTridentRenderer"

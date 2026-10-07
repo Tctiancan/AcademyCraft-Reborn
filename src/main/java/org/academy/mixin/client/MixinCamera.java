@@ -2,7 +2,6 @@ package org.academy.mixin.client;
 
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.world.phys.Vec3;
 import org.academy.internal.client.animation.AbilityDeveloperSleepClient;
 import org.academy.internal.client.ability.mentalout.CameraSmoothingBridge;
@@ -72,20 +71,20 @@ public abstract class MixinCamera implements CameraSmoothingBridge {
         var offset = CameraShakeManager.sample();
         if (offset.isZero()) return;
         var camera = (Camera) (Object) this;
-        academy$setRotation(camera.yRot() + offset.yaw(), camera.xRot() + offset.pitch());
+        academy$setRotation(camera.getYRot() + offset.yaw(), camera.getXRot() + offset.pitch());
     }
 
     @Inject(method = "update", at = @At("TAIL"))
     private void academy$alignWithAbilityDeveloperPod(DeltaTracker deltaTracker, CallbackInfo ci) {
         var camera = (Camera) (Object) this;
-        if (camera.entity() == null) return;
+        if (camera.getEntity() == null) return;
         var adjustment = AbilityDeveloperSleepClient.cameraAdjustment(
                 camera,
                 deltaTracker.getGameTimeDeltaPartialTick(false)
         );
         if (adjustment == null) return;
         academy$setPosition(adjustment.position());
-        academy$setRotation(camera.yRot(), camera.xRot() + adjustment.pitchOffset());
+        academy$setRotation(camera.getYRot(), camera.getXRot() + adjustment.pitchOffset());
     }
 
     @Inject(method = "update", at = @At(value = "INVOKE",
@@ -127,28 +126,5 @@ public abstract class MixinCamera implements CameraSmoothingBridge {
                 || ChunkLeapGodView.shouldOverrideCamera()) {
             cir.setReturnValue(requestedDistance);
         }
-    }
-
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void academy$disableDetachedViewOcclusion(
-            CameraRenderState renderState,
-            float partialTick,
-            CallbackInfo ci
-    ) {
-        if (WideAreaInterferenceClientState.hasCameraOverride()
-                || ChunkLeapGodView.shouldOverrideCamera()) {
-            // Vanilla grants this to spectators inside blocks. These views are equally detached from the
-            // player's body, so section traversal must not stop when their free camera crosses solid terrain.
-            renderState.smartCull = false;
-        }
-    }
-
-    @Inject(method = "extractRenderState", at = @At("TAIL"))
-    private void academy$stabilizeAbilityDeveloperView(
-            CameraRenderState renderState,
-            float partialTick,
-            CallbackInfo ci
-    ) {
-        AbilityDeveloperSleepClient.stabilizeCamera((Camera) (Object) this, renderState);
     }
 }

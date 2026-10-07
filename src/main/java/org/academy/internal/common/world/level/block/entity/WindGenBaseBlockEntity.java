@@ -111,7 +111,7 @@ public final class WindGenBaseBlockEntity extends MultiBlockEntity implements Co
             isDisplayActive = false;
         }
 
-        var elapsedMillis = currentAnimationState.getTimeInMillis(ticks);
+        var elapsedMillis = currentAnimationState.getAccumulatedTime();
         currentAnimationState.stop();
 
         if (elapsedMillis > 0) {

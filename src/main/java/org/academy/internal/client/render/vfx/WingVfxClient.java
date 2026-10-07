@@ -12,6 +12,6 @@ public final class WingVfxClient {
     public static void register() {
         VfxRegistry.register(WingData.class, VfxPhase.WORLD_TRANSLUCENT, new WingRenderer());
         RendererManager.registerEffectRenderer(WingFirstPersonBridge.INSTANCE);
-        VfxManager.INSTANCE.spawn(new WingVfx());
+        VfxManager.INSTANCE.spawn(WingVfx.INSTANCE);
     }
 }

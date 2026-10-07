@@ -273,7 +273,7 @@ public final class MapTileBuilder {
         var pos = new BlockPos.MutableBlockPos();
         return resolveCeilingDimensionColumnY(CEILING_REFERENCE_Y, minY, maxY, y -> {
             var state = level.getBlockState(pos.set(blockX, y, blockZ));
-            return state.getLightDampening() == 0 && !state.is(Blocks.LAVA);
+            return state.getLightBlock(level, pos) == 0 && !state.is(Blocks.LAVA);
         });
     }
 

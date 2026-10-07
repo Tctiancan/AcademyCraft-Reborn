@@ -103,17 +103,17 @@ public abstract class MixinServerLevelTemporalScaling {
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/raid/Raids;tick(Lnet/minecraft/server/level/ServerLevel;)V"
+                    target = "Lnet/minecraft/world/entity/raid/Raids;tick()V"
             )
     )
     private void academy$dispatchRaidTicks(Raids raids, ServerLevel level) {
         var context = (MinecraftServerContext) level.getServer();
         if (!context.hasAcademyCraftServer()) {
-            raids.tick(level);
+            raids.tick();
             return;
         }
         ((TemporalRuntime) context.getAcademyCraftServer().getTemporalService())
-                .dispatchRaidTicks(level, () -> raids.tick(level));
+                .dispatchRaidTicks(level, () -> raids.tick());
     }
 
     @Redirect(
@@ -150,7 +150,7 @@ public abstract class MixinServerLevelTemporalScaling {
                 .getTemporalService();
         if (runtime.dispatchCustomSpawnerTicks(
                 level,
-                () -> level.tickCustomSpawners(spawnEnemies)
+                () -> level.tickCustomSpawners(spawnEnemies, false)
         )) {
             ci.cancel();
         }

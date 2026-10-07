@@ -252,7 +252,7 @@ public final class SkillDamageUtil {
 
         for (var effect : target.getActiveEffects()) {
             try {
-                effect.onMobHurt(level, target, source, inflictedAmount);
+                effect.onMobHurt(target, source, inflictedAmount);
             } catch (Throwable error) {
                 LOGGER.warn(
                         "A direct-damage effect callback failed for {}",
@@ -264,10 +264,7 @@ public final class SkillDamageUtil {
 
         var completion = new DamageContainer(source, originalAmount);
         completion.setNewDamage(inflictedAmount);
-        completion.captureInflictedDamage();
-        completion.setNewDamage(inflictedAmount);
         completion.setPostAttackInvulnerabilityTicks(0);
-        completion.setShouldCauseSideEffects(false);
         try {
             target.onDamageTaken(completion);
         } catch (Throwable error) {

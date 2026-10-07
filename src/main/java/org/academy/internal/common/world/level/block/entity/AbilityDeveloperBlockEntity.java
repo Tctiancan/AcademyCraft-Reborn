@@ -53,7 +53,7 @@ public final class AbilityDeveloperBlockEntity extends MultiBlockEntity implemen
         isOpen = open;
         var currentAnimationState = previousIsOpen ? openingState : closingState;
         var targetAnimationDefinition = open ? AbilityDeveloperAnimation.OPENING : AbilityDeveloperAnimation.CLOSING;
-        var elapsedMillis = currentAnimationState.getTimeInMillis(ticks);
+        var elapsedMillis = currentAnimationState.getAccumulatedTime();
         openingState.stop();
         closingState.stop();
         if (elapsedMillis > 0) {
@@ -89,7 +89,7 @@ public final class AbilityDeveloperBlockEntity extends MultiBlockEntity implemen
         var targetAnimationState = isNearby ? standingState : lyingDownState;
         var targetAnimationDefinition = isNearby ? AbilityDeveloperAnimation.STANDING : AbilityDeveloperAnimation.LYING_DOWN;
 
-        var elapsedMillis = currentAnimationState.getTimeInMillis(ticks);
+        var elapsedMillis = currentAnimationState.getAccumulatedTime();
         currentAnimationState.stop();
 
         if (elapsedMillis > 0) {
@@ -269,13 +269,12 @@ public final class AbilityDeveloperBlockEntity extends MultiBlockEntity implemen
         }
     }
     public float getPodRotationDegrees(float partialTick) {
-        var ageInTicks = ticks + partialTick;
         if (standingState.isStarted()) {
-            var elapsedSeconds = standingState.getTimeInMillis(ageInTicks) / 1000.0f;
+            var elapsedSeconds = standingState.getAccumulatedTime() / 1000.0f;
             return Mth.clamp(elapsedSeconds - 0.5f, 0.0f, 1.0f) * 60.0f;
         }
         if (lyingDownState.isStarted()) {
-            var elapsedSeconds = lyingDownState.getTimeInMillis(ageInTicks) / 1000.0f;
+            var elapsedSeconds = lyingDownState.getAccumulatedTime() / 1000.0f;
             return Mth.clamp(1.0f - elapsedSeconds, 0.0f, 1.0f) * 60.0f;
         }
         return 0.0f;

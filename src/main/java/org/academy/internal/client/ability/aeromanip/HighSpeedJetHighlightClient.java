@@ -93,7 +93,7 @@ public final class HighSpeedJetHighlightClient {
         var minecraft = Minecraft.getInstance();
         var level = minecraft.level;
         if (level == null) return;
-        var camera = minecraft.gameRenderer.getMainCamera().position();
+        var camera = minecraft.gameRenderer.getMainCamera().getPosition();
         var matrices = event.getMatrixStack();
         matrices.pushPose();
         matrices.translate((float) -camera.x, (float) -camera.y, (float) -camera.z);

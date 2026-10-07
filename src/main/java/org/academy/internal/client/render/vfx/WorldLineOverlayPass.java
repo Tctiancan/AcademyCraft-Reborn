@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import org.academy.AcademyCraft;
+import org.academy.api.client.render.LevelRenderEvent;
 import org.academy.api.client.render.MatrixStack;
 import org.academy.api.client.render.Render;
 import org.joml.Matrix4fc;

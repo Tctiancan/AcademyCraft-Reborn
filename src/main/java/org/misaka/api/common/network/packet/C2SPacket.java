@@ -65,7 +65,7 @@ public final class C2SPacket implements net.minecraft.network.protocol.Packet<Se
 
     @Override
     public void handle(ServerGamePacketListenerImpl handler) {
-        handler.server.execute(() -> {
+        handler.getMainThreadEventLoop().execute(() -> {
             var event = new C2SPacketEvent(this);
             NeoForge.EVENT_BUS.post(event);
 

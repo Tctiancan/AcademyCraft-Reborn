@@ -29,7 +29,6 @@ public abstract class MixinBlaze implements DirectMobMovementAccess {
                     Mth.lerp(0.35, movement.z, desired.z)
             );
         }
-        blaze.needsSync = true;
     }
 
     @Override

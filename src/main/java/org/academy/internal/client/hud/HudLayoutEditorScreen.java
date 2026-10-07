@@ -65,13 +65,11 @@ public final class HudLayoutEditorScreen extends Screen {
         extractRenderState(graphics, mouseX, mouseY, partialTick);
     }
 
-    @Override
-    public void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.fill(0, 0, width, height, DIM);
     }
 
-    @Override
-    public void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    private void extractRenderState(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
         graphics.drawCenteredString(font, title.getString(), width / 2, 8, TEXT);
         graphics.drawCenteredString(font,
                 Component.translatable("hud.academy.layout.hint").getString(), width / 2, 20, TEXT_DIM);

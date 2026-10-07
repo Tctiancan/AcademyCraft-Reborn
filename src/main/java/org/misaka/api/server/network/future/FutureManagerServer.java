@@ -80,7 +80,7 @@ public class FutureManagerServer extends AbstractFutureManager {
     @SubscribePacket
     public void handleFutureResponseFromClient(FutureResponsePacket<ServerGamePacketListenerImpl> responsePacket) {
         handleResponse(responsePacket, resPacket ->
-                responsePacket.getPacketListener().server.execute(
+                responsePacket.getPacketListener().getMainThreadEventLoop().execute(
                         () -> executeCallback(
                                 responsePacket.getFutureId(), resPacket
                         )

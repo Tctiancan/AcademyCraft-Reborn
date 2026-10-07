@@ -98,11 +98,11 @@ public final class AdvancedWingSweepPacket extends Packet<ClientPacketListener, 
             WingVfx.clearSweeps();
         }
 
-        private static org.academy.internal.client.render.vfx.WingKind toVfxKind(AdvancedWingSweepPacket.WingKind kind) {
+        private static WingVfx.WingKind toVfxKind(AdvancedWingSweepPacket.WingKind kind) {
             return switch (kind) {
-                case BLACK -> org.academy.internal.client.render.vfx.WingKind.BLACK;
-                case WHITE -> org.academy.internal.client.render.vfx.WingKind.WHITE;
-                case PLATINUM -> org.academy.internal.client.render.vfx.WingKind.PLATINUM;
+                case BLACK -> WingVfx.WingKind.BLACK;
+                case WHITE -> WingVfx.WingKind.WHITE;
+                case PLATINUM -> WingVfx.WingKind.PLATINUM;
             };
         }
     }

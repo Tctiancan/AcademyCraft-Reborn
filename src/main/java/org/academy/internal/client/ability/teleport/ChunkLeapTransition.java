@@ -1,6 +1,7 @@
 package org.academy.internal.client.ability.teleport;
 
 import java.util.function.BooleanSupplier;
+import net.minecraft.Util;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
@@ -37,7 +38,7 @@ public final class ChunkLeapTransition {
 
     /** Called when a map request is sent that may move the player across dimensions. */
     public static void markPossibleTransition() {
-        leapRequestedAt = net.minecraft.util.Util.getMillis();
+        leapRequestedAt = Util.getMillis();
     }
 
     /** Clears attribution, e.g. when the operation finishes without changing dimension. */
@@ -48,7 +49,7 @@ public final class ChunkLeapTransition {
     /** True while a chunk leap transition is plausibly responsible for a dimension change. */
     static boolean isLeapTransition() {
         var requestedAt = leapRequestedAt;
-        if (!withinWindow(requestedAt, net.minecraft.util.Util.getMillis(), ATTRIBUTION_WINDOW_MS)) {
+        if (!withinWindow(requestedAt, Util.getMillis(), ATTRIBUTION_WINDOW_MS)) {
             // Expired (or never armed): stop attributing later transitions to us.
             leapRequestedAt = Long.MIN_VALUE;
             return false;

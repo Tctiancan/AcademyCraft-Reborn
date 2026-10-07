@@ -233,7 +233,7 @@ public final class ChunkTicketLeaseManager {
             if (lease.region != null) {
                 for (var x = lease.region.minChunkX(); x <= lease.region.maxChunkX(); x++) {
                     for (var z = lease.region.minChunkZ(); z <= lease.region.maxChunkZ(); z++) {
-                        desired.add(ChunkPos.pack(x, z));
+                        desired.add(ChunkPos.asLong(x, z));
                     }
                 }
             }

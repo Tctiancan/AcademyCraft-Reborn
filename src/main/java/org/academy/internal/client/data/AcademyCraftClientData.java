@@ -12,7 +12,7 @@ public final class AcademyCraftClientData {
     private AcademyCraftClientData() {
     }
 
-    public static void dataSetup(GatherDataEvent.Client event) {
+    public static void dataSetup(GatherDataEvent event) {
         event.createProvider(AcademyCraftModelProvider::new);
         event.createProvider((output, registries) -> new LootTableProvider(
                 output,

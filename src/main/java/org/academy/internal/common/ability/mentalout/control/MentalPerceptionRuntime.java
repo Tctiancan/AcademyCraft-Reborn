@@ -199,7 +199,7 @@ public final class MentalPerceptionRuntime {
                     MemoryModuleType.NEAREST_VISIBLE_LIVING_ENTITIES,
                     filtered.isEmpty()
                             ? NearestVisibleLivingEntities.empty()
-                            : new NearestVisibleLivingEntities(level, mob, filtered)
+                            : new NearestVisibleLivingEntities(mob, filtered)
             );
         }
         var players = brain.getMemoryInternal(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS);

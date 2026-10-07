@@ -47,11 +47,11 @@ public final class ChunkMapClientState {
 
         /** Tile of {@code texelCount} ARGB values for a chunk, or null when it has not arrived. */
         public synchronized int[] tile(int chunkX, int chunkZ) {
-            return tiles.get(ChunkPos.pack(chunkX, chunkZ));
+            return tiles.get(ChunkPos.asLong(chunkX, chunkZ));
         }
 
         public synchronized boolean hasTile(int chunkX, int chunkZ) {
-            return tiles.containsKey(ChunkPos.pack(chunkX, chunkZ));
+            return tiles.containsKey(ChunkPos.asLong(chunkX, chunkZ));
         }
 
         public synchronized int loaded() {
@@ -116,7 +116,7 @@ public final class ChunkMapClientState {
         var map = map(packet.dimensionId());
         synchronized (map) {
             for (var tile : packet.tiles()) {
-                map.tiles.put(ChunkPos.pack(tile.chunkX(), tile.chunkZ()), tile.texels());
+                map.tiles.put(ChunkPos.asLong(tile.chunkX(), tile.chunkZ()), tile.texels());
             }
         }
         // Patches are queued, not applied: the renderer drains them into its texture incrementally.
@@ -208,7 +208,7 @@ public final class ChunkMapClientState {
                 synchronized (affectedMap) {
                     for (var x = region.minChunkX(); x <= region.maxChunkX(); x++) {
                         for (var z = region.minChunkZ(); z <= region.maxChunkZ(); z++) {
-                            affectedMap.tiles.remove(ChunkPos.pack(x, z));
+                            affectedMap.tiles.remove(ChunkPos.asLong(x, z));
                         }
                     }
                 }

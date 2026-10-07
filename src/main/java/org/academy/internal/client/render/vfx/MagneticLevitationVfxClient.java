@@ -46,7 +46,7 @@ public final class MagneticLevitationVfxClient {
                 return;
             }
         }
-        current.point = packet.point.add(Vec3.atLowerCornerOf(packet.face.getUnitVec3i()).scale(0.015));
+        current.point = packet.point.add(Vec3.atLowerCornerOf(packet.face.getNormal()).scale(0.015));
         current.updated = world.getGameTime();
     }
 

@@ -183,9 +183,9 @@ public final class MentalIntrusionClientState {
     private static void clearInteractionTarget(Minecraft minecraft) {
         minecraft.crosshairPickEntity = null;
         minecraft.hitResult = BlockHitResult.miss(
-                minecraft.gameRenderer.getMainCamera().position(),
+                minecraft.gameRenderer.getMainCamera().getPosition(),
                 Direction.UP,
-                BlockPos.containing(minecraft.gameRenderer.getMainCamera().position())
+                BlockPos.containing(minecraft.gameRenderer.getMainCamera().getPosition())
         );
     }
 

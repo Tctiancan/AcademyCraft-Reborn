@@ -196,7 +196,7 @@ public abstract class MixinLivingEntity {
         }
         if ((Object) this instanceof ServerPlayer player) {
             if (VectorReflection.Server.usesFullInstanceProtection(player)) {
-                var reflection = VectorReflection.Server.hurtServer(player, level, source, damage);
+                var reflection = VectorReflection.Server.hurtServer(player, player.serverLevel(), source, damage);
                 if (reflection.getLeft()) {
                     ci.cancel();
                     var remaining = reflection.getRight();

@@ -163,8 +163,8 @@ final class ChunkRegionSwap {
         }
 
         // 8. Mark dirty immediately so a crash cannot lose the swap; the deferred refresh re-saves too.
-        chunkA.markUnsaved();
-        if (!sameLevel || chunkA != chunkB) chunkB.markUnsaved();
+        chunkA.setUnsaved(true);
+        if (!sameLevel || chunkA != chunkB) chunkB.setUnsaved(true);
         return new Result(moved, List.copyOf(movedPlayers), lightingTask);
     }
 
@@ -264,7 +264,7 @@ final class ChunkRegionSwap {
         for (var entry : tags.entrySet()) {
             var pos = entry.getKey().offset(delta.getX(), delta.getY(), delta.getZ());
             if (!band.contains(pos.getY())) continue;
-            if (!ChunkPos.containing(pos).equals(chunk.getPos())) continue;
+            if (!new ChunkPos(pos).equals(chunk.getPos())) continue;
             var state = level.getBlockState(pos);
             if (!state.hasBlockEntity()) continue;
             var blockEntity = BlockEntity.loadStatic(pos, state, entry.getValue(), registryAccess);
@@ -327,7 +327,7 @@ final class ChunkRegionSwap {
         if (chunk == null) return;
         Heightmap.primeHeightmaps(chunk, existingHeightmapTypes(chunk));
         resend(level, chunk);
-        chunk.markUnsaved();
+        chunk.setUnsaved(true);
     }
 
     /**

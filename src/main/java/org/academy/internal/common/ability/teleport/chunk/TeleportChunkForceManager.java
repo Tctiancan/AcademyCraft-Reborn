@@ -41,7 +41,7 @@ public final class TeleportChunkForceManager {
         for (var x = minX; x <= maxX && keys.size() < 64; x++) {
             for (var z = minZ; z <= maxZ && keys.size() < 64; z++) {
                 var pos = new ChunkPos(x, z);
-                var key = new ChunkKey(level, pos.pack());
+                var key = new ChunkKey(level, pos.toLong());
                 acquire(key, pos);
                 keys.add(key);
             }
@@ -71,7 +71,7 @@ public final class TeleportChunkForceManager {
         if (--ref.count > 0) return;
         REFS.remove(key);
         if (ref.owned) {
-            var pos = ChunkPos.unpack(key.chunk);
+            var pos = new ChunkPos(ChunkPos.getX(key.chunk), ChunkPos.getZ(key.chunk));
             key.level.setChunkForced(pos.x, pos.z, false);
         }
     }

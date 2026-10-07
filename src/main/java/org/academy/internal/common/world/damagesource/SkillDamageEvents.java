@@ -31,11 +31,11 @@ public final class SkillDamageEvents {
     @SubscribeEvent
     public static void onDamageApplied(LivingDamageEvent.Post event) {
         if (!(event.getSource() instanceof SkillDamageSource)
-                || event.getInflictedDamage() <= 0.0f) return;
+                || event.getNewDamage() <= 0.0f) return;
         PvpSetting.recordSkillDamage(
                 PvpSetting.resolveAttacker(event.getSource()),
                 event.getEntity(),
-                event.getInflictedDamage()
+                event.getNewDamage()
         );
     }
 }

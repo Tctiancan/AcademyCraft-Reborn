@@ -27,13 +27,13 @@ public class CleaningRobotRenderer extends EntityRenderer<CleaningRobot> {
         poseStack.scale(scale, scale, scale);
         poseStack.translate(0.0F, 1.5F, 0.0F);
         CLEANING_ROBOT_MODEL.setupAnim(entity, 0.0F, 0.0F, 0.0F, 0.0F, 0.0F);
-        var vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(R.textures.cleaning_robot));
+        var vertexConsumer = bufferSource.getBuffer(RenderType.entityTranslucent(R.textures.model.cleaning_robot));
         CLEANING_ROBOT_MODEL.renderToBuffer(poseStack, vertexConsumer, packedLight, OverlayTexture.NO_OVERLAY, 1.0F, 1.0F, 1.0F, 1.0F);
         poseStack.popPose();
     }
 
     @Override
     public ResourceLocation getTextureLocation(CleaningRobot entity) {
-        return R.textures.cleaning_robot;
+        return R.textures.model.cleaning_robot;
     }
 }

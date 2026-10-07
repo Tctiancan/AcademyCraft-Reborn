@@ -1350,7 +1350,7 @@ public final class ChunkLeapScreen extends UiScreen {
         if (page != Page.ENTITIES || renderer == null || dimension == null) return;
         var hovered = renderer.hoveredMarker(geometry(), mouseX, mouseY, dimension);
         if (hovered == null) return;
-        graphics.setTooltipForNextFrame(font, entityName(hovered.typeId()), mouseX, mouseY);
+        graphics.renderTooltip(font, entityName(hovered.typeId()), mouseX, mouseY);
     }
 
     /** Names the selected entity and shows where it will be sent. */
@@ -1400,7 +1400,7 @@ public final class ChunkLeapScreen extends UiScreen {
             flash("chunk_leap.status.hover_first", DANGER);
             return;
         }
-        var chunk = ChunkPos.unpack(hoveredChunk);
+        var chunk = new net.minecraft.world.level.ChunkPos(hoveredChunk);
         MisakaNetworkClient.send(new ChunkLeapPackets.GodViewRequestPacket(
                 dimension.location().toString(),
                 chunk.getMinBlockX() + 8, chunk.getMinBlockZ() + 8, true));
@@ -1490,7 +1490,7 @@ public final class ChunkLeapScreen extends UiScreen {
             flash("chunk_leap.validate.committing", DANGER);
             return;
         }
-        var chunk = ChunkPos.unpack(hoveredChunk);
+        var chunk = new net.minecraft.world.level.ChunkPos(hoveredChunk);
         // Aim at the block under the cursor, not the chunk corner, so the landing spot matches the click.
         var r = canvasRect();
         var targetX = blockXAt(lastMouseX);

@@ -28,7 +28,7 @@ public abstract class MixinMouseHandler {
 
     @Inject(method = "onMove", at = @At("HEAD"), cancellable = true)
     private void onMove(long handle, double xpos, double ypos, CallbackInfo ci) {
-        if (handle == Minecraft.getInstance().getWindow().handle()) {
+        if (handle == Minecraft.getInstance().getWindow().getWindow()) {
             InputSystem.handleMouseMove(xpos, ypos, ci);
         }
     }

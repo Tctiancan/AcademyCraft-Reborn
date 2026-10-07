@@ -75,7 +75,7 @@ public final class TeleportCursorRenderer {
         var player = minecraft.player;
         if (player == null) return;
 
-        var camera = minecraft.gameRenderer.getMainCamera().position();
+        var camera = minecraft.gameRenderer.getMainCamera().getPosition();
         var playerPosition = player.getPosition(event.getPartialTick());
         var toPlayerX = playerPosition.x - feetPosition.x;
         var toPlayerZ = playerPosition.z - feetPosition.z;
@@ -88,7 +88,7 @@ public final class TeleportCursorRenderer {
 
         event.submitPoseGeometry(Render.RenderTypes.TELEPORT_CURSOR, (pose, consumer) -> {
             var poseStack = new PoseStack();
-            poseStack.last().set(pose);
+            poseStack.last().set(pose.last());
             poseStack.translate(
                     feetPosition.x - camera.x,
                     feetPosition.y - camera.y,
