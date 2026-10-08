@@ -4,8 +4,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityTypes;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.animal.Cow;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.storage.ServerLevelData;
@@ -57,7 +58,7 @@ public final class AeromanipAreaClientSmoke {
 
     @SubscribeEvent public static void discardPreviousFixtures(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
         if (Boolean.getBoolean("academy.aeromanipAreaSmoke") && event.loadedFromDisk()
-                && event.getEntity().entityTags().contains("academy_area_smoke")) event.setCanceled(true);
+                && event.getEntity().getTags().contains("academy_area_smoke")) event.setCanceled(true);
     }
 
     @SubscribeEvent public static void client(ClientTickEvent.Post event) throws Exception {
@@ -69,8 +70,7 @@ public final class AeromanipAreaClientSmoke {
             if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) if (widget instanceof net.minecraft.client.gui.components.Button button
                         && button.getMessage().getString().equals("Proceed to main menu")) {
-                    button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                            new net.minecraft.client.input.MouseButtonInfo(0, 0))); break;
+                    button.onPress(); break;
                 }
             }
             if (!opened && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
@@ -86,8 +86,7 @@ public final class AeromanipAreaClientSmoke {
             server(p -> {
                 owner = p;
                 p.setGameMode(GameType.CREATIVE); p.getAbilities().flying = true; p.onUpdateAbilities();
-                p.teleportTo(p.level().getServer().getLevel(net.minecraft.world.level.Level.OVERWORLD),
-                        .5, 205, 160.5, Set.of(), 0, 4, false);
+                p.teleportTo(SmokePort.levelOf(p), .5, 205, 160.5, 0, 4);
                 var system = AbilitySystemServer.getSystem(p);
                 system.interruptActiveSkills(p);
                 system.setPlayerAbilityCategory(p.getUUID(), AbilityCategories.AEROMANIP.get());
@@ -100,7 +99,7 @@ public final class AeromanipAreaClientSmoke {
                 data.setAcademyMaxCp(1000); data.getCpData().setMaxCP(1000); data.getCpData().setAvailableCP(1000);
                 data.getCpData().setCurrMP(128);
                 for (var entity : p.level().getEntitiesOfClass(net.minecraft.world.entity.LivingEntity.class,
-                        p.getBoundingBox().inflate(80), entity -> entity.entityTags().contains("academy_area_smoke"))) entity.discard();
+                        p.getBoundingBox().inflate(80), entity -> entity.getTags().contains("academy_area_smoke"))) entity.discard();
                 for (int x = -15; x <= 15; x++) for (int y = 203; y <= 210; y++)
                     p.level().setBlock(new BlockPos(x, y, 166), Blocks.STONE.defaultBlockState(), 2);
                 spawn(p, 96);
@@ -172,7 +171,7 @@ public final class AeromanipAreaClientSmoke {
         }
         if (ticks == 330) server(p -> {
             require(BreathingBubble.Server.protects(p), "Active breathing bubble protects its owner");
-            var wolf = new net.minecraft.world.entity.animal.wolf.Wolf(EntityTypes.WOLF, p.level());
+            var wolf = new net.minecraft.world.entity.animal.Wolf(EntityType.WOLF, p.level());
             wolf.setPos(p.getX() + 1, p.getY(), p.getZ()); wolf.tame(p); wolf.setNoAi(true); wolf.setNoGravity(true);
             wolf.addTag("academy_area_smoke"); p.level().addFreshEntity(wolf);
             require(BreathingBubble.Server.protects(wolf), "Nearby own pet is protected at milestone three");
@@ -208,8 +207,7 @@ public final class AeromanipAreaClientSmoke {
                 Skills.FLOW_SENSE.get().toggle(p);
             });
         }
-        if (ticks == 940) server(p -> p.teleportTo(p.level().getServer().getLevel(net.minecraft.world.level.Level.NETHER),
-                .5, 205, 160.5, Set.of(), 0, 4, false));
+        if (ticks == 940) server(p -> SmokePort.tpInto(p, p.level().getServer().getLevel(net.minecraft.world.level.Level.NETHER), .5, 205, 160.5, 0, 4));
         if (ticks == 980) {
             require(mc.level.dimension().equals(net.minecraft.world.level.Level.NETHER) && FlowSenseClient.markerCount() == 0,
                     "Changing dimension clears old observations");
@@ -227,7 +225,7 @@ public final class AeromanipAreaClientSmoke {
     }
     private static void spawn(ServerPlayer p, int maximum) {
         for (int i = TARGETS.size(); i < maximum; i++) {
-            var mob = new Cow(EntityTypes.COW, p.level()) {
+            var mob = new Cow(EntityType.COW, p.level()) {
                 @Override public boolean isPushable() { return false; }
             };
             mob.setPos((i % 24 - 12) * .7, 205 + (i / 24 % 16) * .5 - 4, 170 + i / 384);
@@ -249,11 +247,11 @@ public final class AeromanipAreaClientSmoke {
                 previousHealth = health;
             }
             if (ticks >= 500 && ticks < 790) {
-                var metrics = AreaQueryService.metrics(owner.level());
+                var metrics = AreaQueryService.metrics(SmokePort.levelOf(owner));
                 require(metrics.candidates() <= AreaQueryService.MAX_CANDIDATES && metrics.effects() <= AreaQueryService.MAX_EFFECTS
                         && metrics.probes() <= AreaQueryService.MAX_PROBES, "Actual skill must obey shared hard budgets");
                 serviceTimes.add(metrics.nanos());
-                indexTimes.add(AreaQueryService.indexNanos(owner.level()));
+                indexTimes.add(AreaQueryService.indexNanos(SmokePort.levelOf(owner)));
             }
             if (matrix != null && !matrixDone) matrix.advance();
         } catch (Throwable problem) { failure = problem; }
@@ -273,7 +271,7 @@ public final class AeromanipAreaClientSmoke {
             var ids = new HashSet<Integer>(); for (int i = 0; i < count; i++) ids.add(TARGETS.get(i).getId());
             for (int i = 0; i < users; i++) {
                 var covered = new HashSet<Integer>(); seen.add(covered);
-                sessions.add(AreaQueryService.open(player.level(), player, AreaQueryService.Point.BOUNDS_CENTER, new AreaQueryService.Effect() {
+                sessions.add(AreaQueryService.open(SmokePort.levelOf(player), player, AreaQueryService.Point.BOUNDS_CENTER, new AreaQueryService.Effect() {
                     public boolean matches(net.minecraft.world.entity.LivingEntity target) { return ids.contains(target.getId()); }
                     public void apply(net.minecraft.world.entity.LivingEntity target, long tick) { covered.add(target.getId()); }
                 }));
@@ -286,7 +284,7 @@ public final class AeromanipAreaClientSmoke {
                     clock.setGameTime(++virtualTick);
                     for (var session : sessions) session.update(player.position(), radii[scenario / 12], 2, 96);
                     AreaQueryService.tick(new LevelTickEvent.Post(() -> true, level));
-                    var metrics = AreaQueryService.metrics(level); samples.add(metrics.nanos()); age++;
+                    var metrics = AreaQueryService.metrics((net.minecraft.server.level.ServerLevel) level); samples.add(metrics.nanos()); age++;
                     require(metrics.candidates() <= 256 && metrics.effects() <= 96 && metrics.probes() <= 4096, "Matrix hard budget");
                     int count = counts[scenario % 4];
                     if (seen.stream().allMatch(targets -> targets.size() == count)) {
@@ -322,9 +320,8 @@ public final class AeromanipAreaClientSmoke {
     private static void require(boolean value, String message) { if (!value) throw new IllegalStateException(message); }
     private static Path output() { return Path.of(System.getProperty("academy.aeromanipAreaOutput")); }
     private static void capture(String name) {
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) { Files.createDirectories(output()); image.writeToFile(output().resolve(name + ".png")); }
-            catch (Exception problem) { throw new IllegalStateException(problem); }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output()); image.writeToFile(output().resolve(name + ".png"));
+        } catch (Exception problem) { throw new IllegalStateException(problem); }
     }
 }

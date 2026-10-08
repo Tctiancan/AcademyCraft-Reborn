@@ -1,17 +1,17 @@
 package org.academy.desktop.grapheditor.preview;
 
 import com.mojang.authlib.GameProfile;
+import com.mojang.blaze3d.platform.NativeImage;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.client.tutorial.TutorialSteps;
 import net.minecraft.network.Connection;
 import net.minecraft.network.protocol.PacketFlow;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.level.GameType;
@@ -34,7 +34,6 @@ import org.academy.internal.common.attachment.AttachmentTypes;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.UUID;
 
 /** Isolated real-client render/network smoke; editor source set only, never shipped in the mod. */
@@ -77,8 +76,7 @@ public final class BlackWingClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new MouseButtonEvent(0, 0,
-                                new MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -92,7 +90,7 @@ public final class BlackWingClientSmoke {
         }
         if (mc.player == null || mc.getSingleplayerServer() == null) return;
         mc.options.pauseOnLostFocus = false;
-        if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+        mc.options.hideGui = true;
         float yaw = ticks >= 345 && ticks < 370 ? 0 : 180;
         mc.player.setYRot(yaw); mc.player.setXRot(ticks < 180 ? 0 : 5);
         mc.player.yBodyRot = yaw; mc.player.yBodyRotO = yaw;
@@ -107,7 +105,7 @@ public final class BlackWingClientSmoke {
                 var level = player.level(); level.getChunk(0, 10);
                 double y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, 0, 175) + 28;
                 center = new Vec3(0, y, 175);
-                player.teleportTo(level, center.x, center.y, center.z, Set.of(), 180, 0, false);
+                SmokePort.tp(player, center.x, center.y, center.z, 180, 0);
                 enable(player);
                 server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set noon");
                 System.out.println("[black-wing-smoke] ready");
@@ -128,17 +126,16 @@ public final class BlackWingClientSmoke {
                 var server = mc.getSingleplayerServer(); var viewer = server.getPlayerList().getPlayer(id);
                 BlackWing.Server.forceDeactivate(viewer);
                 viewer.setGameMode(GameType.SPECTATOR);
-                viewer.teleportTo(viewer.level(), center.x, center.y + 4, center.z + 42, Set.of(), 180, 5, false);
+                SmokePort.tp(viewer, center.x, center.y + 4, center.z + 42, 180, 5);
                 for (int i = 0; i < 8; i++) {
                     var profile = new GameProfile(UUID.randomUUID(), "wing-probe-" + i);
                     var cookie = CommonListenerCookie.createInitial(profile, false);
-                    var actor = new ServerPlayer(server, viewer.level(), profile, cookie.clientInformation()) { };
+                    var actor = new ServerPlayer(server, (ServerLevel) viewer.level(), profile, cookie.clientInformation()) { };
                     var connection = new Connection(PacketFlow.SERVERBOUND);
                     new EmbeddedChannel(connection); NetworkRegistry.configureMockConnection(connection);
                     server.getPlayerList().placeNewPlayer(connection, actor, cookie);
-                    actor.connection.markClientLoaded();
-                    actor.teleportTo(viewer.level(), center.x + (i % 4 - 1.5) * 11,
-                            center.y, center.z - (i / 4) * 14, Set.of(), 0, 0, false);
+                    SmokePort.tp(actor, center.x + (i % 4 - 1.5) * 11,
+                            center.y, center.z - (i / 4) * 14, 0, 0);
                     enable(actor); actors.add(actor);
                 }
                 System.out.println("[black-wing-smoke] eight tracked server players ready");
@@ -180,10 +177,9 @@ public final class BlackWingClientSmoke {
     private static void capture(String name) {
         var mc = Minecraft.getInstance();
         var path = Path.of(System.getProperty("academy.blackWingSmokeOutput"), name + ".png");
-        Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget(), image -> {
-            try (image) { Files.createDirectories(path.getParent()); image.writeToFile(path); }
-            catch (Exception failure) { throw new IllegalStateException(failure); }
-            System.out.println("[black-wing-smoke] captured " + name);
-        });
+        NativeImage image = Screenshot.takeScreenshot(mc.getMainRenderTarget());
+        try (image) { Files.createDirectories(path.getParent()); image.writeToFile(path); }
+        catch (Exception failure) { throw new IllegalStateException(failure); }
+        System.out.println("[black-wing-smoke] captured " + name);
     }
 }

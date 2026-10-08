@@ -18,6 +18,8 @@ import org.academy.desktop.grapheditor.container.VfxContainerModel
 import org.academy.desktop.grapheditor.container.VfxContainerModelRef
 import org.academy.desktop.grapheditor.preview.VfxPreview.Companion.LOOP_RESTART_INTERVAL_NS
 import org.academy.desktop.grapheditor.viewport.EditorGlow
+import org.academy.desktop.platform.getColorTextureView
+import org.academy.desktop.platform.getDepthTextureView
 
 /**
  * VFX 实时预览：支持两种模型——扁平（[GraphEditorModel] → [VfxSimulator]，过渡期兼容）与
@@ -193,8 +195,6 @@ class VfxPreview(
             renderer!!.setArcBuffer(active.arcBuffer())
             val surfaces = collectSurfaces(containerModel)
             renderer!!.render(
-                color,
-                depth,
                 active.buffer(),
                 camera,
                 true,
@@ -221,7 +221,7 @@ class VfxPreview(
                 sim.step(dt)
             }
         }
-        renderer!!.render(color, depth, sim.buffer(), camera, true, specs)
+        renderer!!.render(sim.buffer(), camera, true, specs)
         if (specs.any { it.blend() == RenderSpec.Blend.GLOW }) {
             glow!!.render(color, depth, sim.buffer(), null, camera, specs, target.width, target.height)
         }

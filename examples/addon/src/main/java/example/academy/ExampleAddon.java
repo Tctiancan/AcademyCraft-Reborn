@@ -2,7 +2,7 @@ package example.academy;
 
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
-import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageType;
@@ -38,8 +38,8 @@ public final class ExampleAddon {
             net.minecraft.core.registries.Registries.DAMAGE_TYPE, id("direct_frost"));
     public static final ResourceKey<DamageType> TRUE_TYPE = ResourceKey.create(
             net.minecraft.core.registries.Registries.DAMAGE_TYPE, id("true_frost"));
-    public static final Identifier ENTRY_ID = id("program/cryokinesis/entry/on_cast");
-    public static final Identifier ACTION_ID = id("program/cryokinesis/action/focus");
+    public static final ResourceLocation ENTRY_ID = id("program/cryokinesis/entry/on_cast");
+    public static final ResourceLocation ACTION_ID = id("program/cryokinesis/action/focus");
 
     public static final DeferredHolder<AbilityDamageProfile, AbilityDamageProfile> FROST =
             CONTENT.damageProfiles().register("frost", () -> AbilityDamageProfile.builder(DAMAGE_TYPE)
@@ -53,14 +53,14 @@ public final class ExampleAddon {
     public static final DeferredHolder<AbilityCategory, AbilityCategory> CATEGORY =
             CONTENT.categories().register("cryokinesis", () -> AbilityCategory.builder()
                     .translationKey("ability.academy_api_example.cryokinesis")
-                    .icon(Identifier.withDefaultNamespace("textures/item/snowball.png"))
+                    .icon(ResourceLocation.withDefaultNamespace("textures/item/snowball.png"))
                     .defaultDamageProfile(FROST.getKey())
                     .program(ProgramProfile.standard(ENTRY_ID)).build());
 
     public static final DeferredHolder<Skill, ExampleSkill> PRIMARY =
             CONTENT.skills().register("frost_bolt", () -> new ExampleSkill(Skill.Builder.of(CATEGORY_KEY)
                     .level(AbilityLevel.LEVEL1).cpCost(5).proficiencyProfile(SkillProficiencyProfile.NONE)
-                    .stateType(CAST_COUNT).icon(Identifier.withDefaultNamespace("textures/item/snowball.png"))));
+                    .stateType(CAST_COUNT).icon(ResourceLocation.withDefaultNamespace("textures/item/snowball.png"))));
     // Same Java implementation, registered through the native path, with a deferred dependency.
     public static final DeferredRegister<Skill> NATIVE_SKILLS = DeferredRegister.create(Registries.Keys.SKILLS, MOD_ID);
     public static final DeferredHolder<Skill, ExampleSkill> SECONDARY =
@@ -69,7 +69,7 @@ public final class ExampleAddon {
                     .optionallyDependsOn(ResourceKey.create(Registries.Keys.SKILLS, id("optional_missing")))
                     .damageType(DamageTypes.MAGIC)
                     .proficiencyProfile(SkillProficiencyProfile.NONE).stateType(CAST_COUNT)
-                    .icon(Identifier.withDefaultNamespace("textures/item/snowball.png"))));
+                    .icon(ResourceLocation.withDefaultNamespace("textures/item/snowball.png"))));
 
     static {
         CONTENT.programNodes().register("program/cryokinesis/entry/on_cast", () -> ProgramNodes.manualEntry(CATEGORY_KEY));
@@ -81,12 +81,12 @@ public final class ExampleAddon {
         NATIVE_SKILLS.register(modBus);
     }
 
-    public static Identifier id(String path) { return Identifier.fromNamespaceAndPath(MOD_ID, path); }
+    public static ResourceLocation id(String path) { return ResourceLocation.fromNamespaceAndPath(MOD_ID, path); }
 
     public static final class ExampleSkill extends Skill {
         public ExampleSkill(Builder builder) { super(builder); }
         public boolean hit(ServerPlayer player, LivingEntity target) {
-            return executeActive(player, (_, _) ->
+            return executeActive(player, (ignored, ignored_) ->
                     AbilityDamageService.apply(player, target, this, AbilityDamageService.Request.of(4)));
         }
     }
@@ -97,7 +97,7 @@ public final class ExampleAddon {
         @Override public ProgramNodeRole role() { return ProgramNodeRole.ACTION; }
         @Override public ProgramNodePurity purity() { return ProgramNodePurity.ACTION; }
         @Override public ProgramNodeScope scope() {
-            return new ProgramNodeScope(Set.of(CATEGORY_KEY.identifier()), Set.of(SECONDARY.getId()));
+            return new ProgramNodeScope(Set.of(CATEGORY_KEY.location()), Set.of(SECONDARY.getId()));
         }
         @Override public ProgramNodeSchema schema(Integer configuration) {
             return new ProgramNodeSchema(List.of(ProgramPortDefinition.requiredInput("flow", ProgramValueTypes.FLOW)),
@@ -110,7 +110,7 @@ public final class ExampleAddon {
                     "node.academy_api_example.focus", "screen.academy.program.port.", true, Map.of());
         }
         @Override public ProgramNodeExecution<Integer> execution() {
-            return (context, ticks, _) -> {
+            return (context, ticks, ignored) -> {
                 var caster = (LivingEntity) context.targetResolver().orElseThrow().caster();
                 context.submit(new ProgramAction() {
                     @Override public ResourceKey<Skill> requiredSkill() { return SECONDARY.getKey(); }

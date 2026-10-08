@@ -1,9 +1,11 @@
 package org.academy.desktop.grapheditor.preview;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
@@ -29,7 +31,6 @@ import org.misaka.MisakaNetworkClient;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in isolated in-game validation. Never included in the mod jars. */
@@ -53,8 +54,7 @@ public final class AbilityVfxClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -73,12 +73,12 @@ public final class AbilityVfxClientSmoke {
             configured = true;
             mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            mc.options.hideGui = true;
             server(p -> {
                 for (int x = -16; x <= 16; x++) for (int z = 160; z <= 245; z++) {
                     p.level().setBlock(new BlockPos(x, 80, z), Blocks.SMOOTH_STONE.defaultBlockState(), 3);
                 }
-                p.teleportTo(p.level(), 0, 81, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(p, 0, 81, 174.5, 0, 0);
                 p.setGameMode(GameType.CREATIVE);
                 learn(p, Skills.PLASMA_GENERATION.get(), Skills.VECTOR_BLAST.get());
                 for (var old : p.level().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(80))) old.discard();
@@ -106,8 +106,8 @@ public final class AbilityVfxClientSmoke {
             pitch = 0;
             server(p -> {
                 var level = p.level();
-                var zombie = new net.minecraft.world.entity.monster.zombie.Zombie(net.minecraft.world.entity.EntityTypes.ZOMBIE, level);
-                var cow = new net.minecraft.world.entity.animal.cow.Cow(net.minecraft.world.entity.EntityTypes.COW, level);
+                var zombie = new net.minecraft.world.entity.monster.Zombie(net.minecraft.world.entity.EntityType.ZOMBIE, level);
+                var cow = new net.minecraft.world.entity.animal.Cow(net.minecraft.world.entity.EntityType.COW, level);
                 zombie.setPos(0, 81, 183); cow.setPos(0, 81, 188);
                 for (var mob : java.util.List.of(zombie, cow)) {
                     mob.setNoAi(true); mob.setNoGravity(true);
@@ -149,16 +149,16 @@ public final class AbilityVfxClientSmoke {
         if (ticks == 161) {
             yaw = -90; pitch = 4;
             mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-            server(p -> p.teleportTo(p.level(), -36, 86, 206.5, Set.of(), -90, 4, false));
+            server(p -> SmokePort.tp(p, -36, 86, 206.5, -90, 4));
         }
-        if (ticks == 165) server(p -> SpawnVfxGraphPacket.broadcast(p.level(), AcademyCraft.academy("vfxgraph/vector_blast"),
+        if (ticks == 165) server(p -> SpawnVfxGraphPacket.broadcast((ServerLevel) p.level(), AcademyCraft.academy("vfxgraph/vector_blast"),
                 new Vec3(0, 82.6, 174.5), new Vec3(0, 0, 1), -1, 1f, 0.65f,
                 Map.of("length", 64f, "width", 1f, "seed", 42f)));
         if (ticks == 168) { require("vector_blast"); capture("client_vector_blast_side"); }
         if (ticks == 172) {
             yaw = 0; pitch = 0;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            server(p -> p.teleportTo(p.level(), 0, 81, 174.5, Set.of(), 0, 0, false));
+            server(p -> SmokePort.tp(p, 0, 81, 174.5, 0, 0));
         }
         if (ticks == 175) server(p -> DarkmatterGraphEffects.interference(p, 24));
         if (ticks == 178) { require(org.academy.internal.client.render.vfx.InterferenceFieldClient.activeCount() == 1, "Interference range shader active"); capture("client_darkmatter_interference"); }
@@ -170,7 +170,7 @@ public final class AbilityVfxClientSmoke {
         if (ticks == 240) server(p -> {
             p.setGameMode(GameType.SURVIVAL);
             learn(p, Skills.MAGNET_MANIPULATION.get());
-            p.teleportTo(p.level(), 0, 83, 174.5, Set.of(), 0, 0, false);
+            SmokePort.tp(p, 0, 83, 174.5, 0, 0);
             require(MagneticFieldRuntime.toggle(p), "Levitation starts");
         });
         if (ticks == 265) {
@@ -180,11 +180,11 @@ public final class AbilityVfxClientSmoke {
         if (ticks == 268) { mc.options.setCameraType(CameraType.FIRST_PERSON); pitch = 70; }
         if (ticks == 272) { require("magnetic_levitation_support"); capture("client_magnetic_support_first_person"); }
         if (ticks == 274) { mc.options.setCameraType(CameraType.THIRD_PERSON_BACK); pitch = 0; }
-        if (ticks == 275) server(p -> p.teleportTo(p.level(), 3, 83, 180, Set.of(), 0, 0, false));
+        if (ticks == 275) server(p -> SmokePort.tp(p, 3, 83, 180, 0, 0));
         if (ticks == 285) { require("magnetic_levitation_support"); capture("client_magnetic_support_moved"); }
         if (ticks == 290) server(MagneticFieldRuntime::toggle);
         if (ticks == 305) require(find("magnetic_levitation_support") == null, "Stopping levitation clears arcs");
-        if (ticks == 315) server(p -> SpawnVfxGraphPacket.broadcast(p.level(), AcademyCraft.academy("vfxgraph/aeromanip_mist_vortex"),
+        if (ticks == 315) server(p -> SpawnVfxGraphPacket.broadcast((ServerLevel) p.level(), AcademyCraft.academy("vfxgraph/aeromanip_mist_vortex"),
                 p.position().add(0, 1, 3), -1, 2f, Map.of()));
         if (ticks == 320) { require("aeromanip_mist_vortex"); capture("client_aeromanip"); }
         if (ticks == 390) {
@@ -242,9 +242,8 @@ public final class AbilityVfxClientSmoke {
     }
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.abilityVfxOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) { Files.createDirectories(output.getParent()); image.writeToFile(output); }
-            catch (Exception exception) { throw new IllegalStateException(exception); }
-        });
+        NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
+        try (image) { Files.createDirectories(output.getParent()); image.writeToFile(output); }
+        catch (Exception exception) { throw new IllegalStateException(exception); }
     }
 }

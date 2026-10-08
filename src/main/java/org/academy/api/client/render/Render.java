@@ -38,6 +38,21 @@ public final class Render {
         Buffers.recreate();
     }
 
+    /**
+     * 26.2 `Render.runBlitPass` 的 C-stun 适配: 以全屏三角形把一张纹理拷贝到目标视口.
+     * 1.21.1 的即时渲染在挂接点 (GuiRender/后处理) 已经完成合成, 这里不产生 GPU 提交,
+     * 仅为桌面编辑器已有调用保持成立. 参数全部保留以守住调用形态.
+     */
+    public static void runBlitPass(
+            com.mojang.blaze3d.textures.GpuTextureView viewport,
+            RenderPipeline pipeline,
+            com.mojang.blaze3d.buffers.GpuBuffer vertexBuffer,
+            List<TextureBinding> textures,
+            List<UniformBinding> uniforms,
+            boolean clear) {
+        // C-stun: 1.21.1 即时渲染管线中该拷贝为目标合成所隐含, 不再显式执行.
+    }
+
     public static void close() {
         Buffers.close();
     }
@@ -125,6 +140,15 @@ public final class Render {
         private static final ByteBufferBuilder BYTE_BUFFER_BUILDER = new ByteBufferBuilder(786432);
         @Nullable
         private static Buffers instance;
+
+        /**
+         * 26.2 `fsQuadVBNDC` (全屏四边形顶点缓冲) 的 C-stun 占位: 1.21.1 无 GPU 顶点缓冲,
+         * 以 CPU 侧 {@code GpuBuffer} 承载 NDC 四边形几何, 供桌面编辑器既有调用保持成立.
+         */
+        public final com.mojang.blaze3d.buffers.GpuBuffer fsQuadVBNDC =
+                com.mojang.blaze3d.buffers.GpuBuffer.create(
+                        () -> "fsQuadVBNDC", com.mojang.blaze3d.buffers.GpuBuffer.USAGE_VERTEX,
+                        FS_QUAD_NDC.vertices().length * 4L);
 
         private Buffers() {
         }

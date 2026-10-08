@@ -5,8 +5,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.Container;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
@@ -43,8 +42,8 @@ public final class MentalWorkClientSmoke {
 
     @SubscribeEvent public static void discardOldFixtures(net.neoforged.neoforge.event.entity.EntityJoinLevelEvent event) {
         if (Boolean.getBoolean("academy.mentalWorkSmoke") && event.loadedFromDisk()
-                && (event.getEntity().entityTags().contains("academy_work_smoke")
-                || event.getEntity().entityTags().contains("academy_area_smoke"))) event.setCanceled(true);
+                && (event.getEntity().getTags().contains("academy_work_smoke")
+                || event.getEntity().getTags().contains("academy_area_smoke"))) event.setCanceled(true);
     }
 
     @SubscribeEvent public static void client(ClientTickEvent.Post event) throws Exception {
@@ -61,8 +60,7 @@ public final class MentalWorkClientSmoke {
             if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) if (widget instanceof net.minecraft.client.gui.components.Button button
                         && button.getMessage().getString().equals("Proceed to main menu")) {
-                    button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                            new net.minecraft.client.input.MouseButtonInfo(0, 0))); break;
+                    button.onPress(); break;
                 }
             }
             if (!opened && mc.screen instanceof net.minecraft.client.gui.screens.TitleScreen) {
@@ -94,7 +92,7 @@ public final class MentalWorkClientSmoke {
         }
         for (var entry : data.entries()) data.remove(entry.key());
         player.setGameMode(GameType.CREATIVE);
-        player.teleportTo(level, 28.5, 207, -2.5, Set.of(), 0, 15, false);
+        SmokePort.tp(player, 28.5, 207, -2.5, 0, 15);
         org.academy.api.server.ability.AbilitySystemServer.getSystem(player).interruptActiveSkills(player);
         player.getAbilities().flying = true; player.onUpdateAbilities();
         for (int x = -2; x < 66; x++) for (int z = -2; z < 20; z++) {
@@ -102,7 +100,7 @@ public final class MentalWorkClientSmoke {
         }
         for (int group = 0; group < 4; group++) {
             var first = new BlockPos(group * 16 + 8, 204, 8);
-            var region = new BlockWorkRegion(level.dimension().identifier(), first, first.offset(7, 7, 7));
+            var region = new BlockWorkRegion(level.dimension().location(), first, first.offset(7, 7, 7));
             REGIONS.add(region);
             for (var pos : BlockPos.betweenClosed(region.minimum(), region.maximum())) level.setBlock(pos, Blocks.DIRT.defaultBlockState(), 2);
             var output = new BlockPos(group * 16 + 2, 204, 6);
@@ -110,7 +108,7 @@ public final class MentalWorkClientSmoke {
             level.setBlock(output, Blocks.CHEST.defaultBlockState(), 2);
             var workers = new ArrayList<LivingEntity>();
             for (int i = 0; i < 16; i++) {
-                var worker = EntityTypes.VILLAGER.create(level, EntitySpawnReason.COMMAND);
+                var worker = EntityType.VILLAGER.create(level);
                 worker.setPos(group * 16 + 1.5 + i % 4, 204, 1.5 + i / 4);
                 worker.setSilent(true); worker.setInvulnerable(true); worker.addTag("academy_work_smoke"); level.addFreshEntity(worker);
                 MentalControlMemory.remember(player, worker);
@@ -123,7 +121,7 @@ public final class MentalWorkClientSmoke {
             require(result.applied() == 16, "All workers must accept the order");
         }
         for (int i = 0; i < 4160; i++) {
-            var mob = EntityTypes.COW.create(level, EntitySpawnReason.COMMAND);
+            var mob = EntityType.COW.create(level);
             mob.setPos(-10 + i % 64 * 1.3, 205, 24 + i / 64 * 1.3);
             mob.setNoAi(true); mob.setNoGravity(true); mob.setSilent(true); mob.setInvulnerable(true);
             mob.addTag("academy_work_smoke"); level.addFreshEntity(mob);
@@ -184,7 +182,7 @@ public final class MentalWorkClientSmoke {
             if (age == 120) GroupControlApi.pauseWork(event.getServer(), owner.getUUID(), Set.of(WORKERS.getFirst().getUUID()), false);
             if (age == 250) {
                 event.getServer().saveEverything(false, true, true);
-                owner.level().getDataStorage().saveAndJoin();
+                ((net.minecraft.server.level.ServerLevel) owner.level()).getDataStorage().save();
                 require(!WorkOrderData.get(event.getServer()).isDirty(), "Work orders remained dirty after disk save");
             }
             if (age == 300) GroupControlRuntime.clear();

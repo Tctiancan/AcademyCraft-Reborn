@@ -4,8 +4,14 @@ import com.google.gson.JsonParser
 import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
-import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Screenshot
+import org.academy.desktop.platform.DesktopApplication
+import org.academy.desktop.platform.DesktopEnvironment
+import org.academy.desktop.platform.EditorApp
+import org.academy.desktop.platform.executePendingTasks
+import org.academy.desktop.platform.getColorTextureView
+import org.academy.desktop.platform.getDepthTextureView
+import org.academy.desktop.platform.textureTarget
 import org.academy.api.client.gui.widget.FrameLayoutWidget
 import org.academy.api.client.gui.widget.WidgetContainer
 import org.academy.api.client.render.graph.model.GraphNode
@@ -20,9 +26,6 @@ import org.academy.api.client.render.vfxgraph.render.WorldTransform
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec
 import org.academy.api.client.render.vfxgraph.sim.VfxSystemSimulator
 import org.academy.desktop.grapheditor.viewport.EditorGlow
-import org.academy.desktop.platform.DesktopApplication
-import org.academy.desktop.platform.DesktopEnvironment
-import org.academy.desktop.platform.EditorApp
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.nio.file.Files
@@ -56,13 +59,13 @@ private class AbilityVfxCaptureApp(private val root: Path, private val environme
     }
 
     init { VfxBlocks.registerAll(metadata, blocks) }
-    override fun onFrame(partialTick: Float) { RenderSystem.executePendingTasks() }
+    override fun onFrame(partialTick: Float) { executePendingTasks() }
     override fun createRoot(): WidgetContainer = FrameLayoutWidget()
     override fun quitRequested() = index >= shots.size && !waiting
 
     override fun renderBackground(windowTarget: RenderTarget) {
         if (++warmup < 5 || waiting || quitRequested()) return
-        if (target == null) target = TextureTarget("Ability VFX capture", 1280, 720, true, GpuFormat.RGBA8_UNORM)
+        if (target == null) target = textureTarget("Ability VFX capture", 1280, 720, true, GpuFormat.RGBA8_UNORM)
         if (renderer == null) { renderer = VfxGraphRenderer(environment::loadTexture); glow = EditorGlow(renderer!!) }
         val shot = shots[index]
         val assetPath = if (shot.baseline) "build/ability-vfx-baseline/${shot.asset}.json"
@@ -93,14 +96,15 @@ private class AbilityVfxCaptureApp(private val root: Path, private val environme
         val outputTarget = target!!
         val color = outputTarget.getColorTextureView() ?: return
         renderer!!.setArcBuffer(sim.arcBuffer())
-        renderer!!.render(color, outputTarget.getDepthTextureView(), sim.buffer(), camera, true, specs, WorldTransform.identity(), false)
+        renderer!!.render(sim.buffer(), camera, true, specs, WorldTransform.identity(), false)
         glow!!.render(color, outputTarget.getDepthTextureView(), sim.buffer(), sim.arcBuffer(), camera, specs,
             outputTarget.width, outputTarget.height)
         val output = root.resolve("docs/vfx/ability_update/preview_${shot.asset}${shot.suffix}.png")
         Files.createDirectories(output.parent)
         waiting = true
-        Screenshot.takeScreenshot(outputTarget) { image ->
-            image.use { it.writeToFile(output) }
+        val image = Screenshot.takeScreenshot(outputTarget)
+        image.use {
+            it.writeToFile(output)
             println("[ability-vfx-capture] $output particles=${sim.buffer().count()} arcs=${sim.arcBuffer().count()}")
             index++
             waiting = false

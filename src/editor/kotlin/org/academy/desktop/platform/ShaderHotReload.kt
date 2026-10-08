@@ -1,6 +1,6 @@
 package org.academy.desktop.platform
 
-import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.systems.GpuDevice
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap
@@ -30,7 +30,7 @@ class ShaderHotReload(private val root: Path) {
         mtimes.putAll(snapshot)
         if (changed) {
             try {
-                RenderSystem.getDevice().clearPipelineCache()
+                GpuDevice.instance().clearPipelineCache()
                 println("[shader-hot-reload] shaders changed, pipeline cache cleared")
             } catch (_: Exception) {
             }

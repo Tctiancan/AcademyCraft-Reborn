@@ -50,8 +50,7 @@ public final class ElectromasterExtensionClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -70,7 +69,7 @@ public final class ElectromasterExtensionClientSmoke {
             configured = true;
             mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            if (mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            mc.options.hideGui = false;
             server(player -> {
                 var level = player.level();
                 for (int x = -20; x <= 20; x++) {
@@ -83,7 +82,7 @@ public final class ElectromasterExtensionClientSmoke {
                 player.setGameMode(GameType.CREATIVE);
                 player.getAbilities().flying = true;
                 player.onUpdateAbilities();
-                player.teleportTo(level, 0, 81, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(player, 0, 81, 174.5, 0, 0);
                 var system = org.academy.api.server.ability.AbilitySystemServer.getSystem(player);
                 var id = player.getUUID();
                 system.setPlayerAbilityCategory(id, AbilityCategories.ELECTROMASTER.get());
@@ -154,7 +153,7 @@ public final class ElectromasterExtensionClientSmoke {
         if (ticks == 605) { verifyShield(); capture("shield_first_person"); }
         if (ticks == 610) mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
         if (ticks == 620) { verifyShield(); capture("shield_third_person"); }
-        if (ticks == 625) { yaw = 40; server(p -> p.teleportTo(p.level(), 4, 81, 174.5, Set.of(), 40, 0, false)); }
+        if (ticks == 625) { yaw = 40; server(p -> SmokePort.tp(p, 4, 81, 174.5, 40, 0)); }
         if (ticks == 640) { verifyShield(); capture("shield_following"); }
         if (ticks == 650) server(p -> { if (Skills.ELECTROMAGNETIC_SHIELD.get().isEnabled(p)) Skills.ELECTROMAGNETIC_SHIELD.get().toggle(p); });
         if (ticks == 665 && find("electromagnetic_shield") != null) throw new IllegalStateException("Shield survived disable");
@@ -162,8 +161,8 @@ public final class ElectromasterExtensionClientSmoke {
             yaw = 0;
             mc.options.setCameraType(CameraType.FIRST_PERSON);
             server(p -> {
-                p.teleportTo(p.level(), 0, 81, 174.5, Set.of(), 0, 0, false);
-                ElectromasterArcEffects.spawnShieldInterceptRing(p.level(), new Vec3(0, 82.5, 178), new Vec3(0, 0, -1));
+                SmokePort.tp(p, 0, 81, 174.5, 0, 0);
+                ElectromasterArcEffects.spawnShieldInterceptRing(SmokePort.levelOf(p), new Vec3(0, 82.5, 178), new Vec3(0, 0, -1));
             });
         }
         if (ticks >= 671 && ticks < 680 && !shieldObserved && find("electromagnetic_shield") != null) {
@@ -179,7 +178,7 @@ public final class ElectromasterExtensionClientSmoke {
             data.getCpData().setAvailableCP(10_000);
             p.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND, new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_SWORD));
             // A marked passive target survives the isolated save's Peaceful difficulty.
-            var target = new net.minecraft.world.entity.animal.pig.Pig(net.minecraft.world.entity.EntityTypes.PIG, p.level());
+            var target = new net.minecraft.world.entity.animal.Pig(net.minecraft.world.entity.EntityType.PIG, p.level());
             target.setPos(3, 81.5, 179); target.setNoAi(true); target.setNoGravity(true);
             target.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1024);
             target.setHealth(1024);
@@ -277,8 +276,8 @@ public final class ElectromasterExtensionClientSmoke {
         p.setData(AttachmentTypes.DESTROY_BLOCKS_ENABLED.get(), true);
         p.level().setBlock(new net.minecraft.core.BlockPos(0, 82, 198), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 3);
         p.level().setBlock(new net.minecraft.core.BlockPos(2, 82, 198), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState(), 3);
-        inside = new net.minecraft.world.entity.animal.pig.Pig(net.minecraft.world.entity.EntityTypes.PIG, p.level());
-        outside = new net.minecraft.world.entity.animal.pig.Pig(net.minecraft.world.entity.EntityTypes.PIG, p.level());
+        inside = new net.minecraft.world.entity.animal.Pig(net.minecraft.world.entity.EntityType.PIG, p.level());
+        outside = new net.minecraft.world.entity.animal.Pig(net.minecraft.world.entity.EntityType.PIG, p.level());
         inside.setPos(1.3, 82, 193); outside.setPos(3, 82, 193);
         for (var target : java.util.List.of(inside, outside)) { target.setNoGravity(true); ((net.minecraft.world.entity.Mob) target).setNoAi(true); p.level().addFreshEntity(target); }
     }
@@ -296,8 +295,8 @@ public final class ElectromasterExtensionClientSmoke {
     private static void verifyCharge(boolean right) {
         var effect = require("railgun_charge");
         var mc = Minecraft.getInstance();
-        var relative = effect.position().sub(mc.gameRenderer.mainCamera().position().toVector3f(), new org.joml.Vector3f());
-        relative.rotate(new org.joml.Quaternionf(mc.gameRenderer.mainCamera().rotation()).conjugate());
+        var relative = effect.position().sub(mc.gameRenderer.getMainCamera().getPosition().toVector3f(), new org.joml.Vector3f());
+        relative.rotate(new org.joml.Quaternionf(mc.gameRenderer.getMainCamera().rotation()).conjugate());
         if (Math.abs(relative.x - (right ? 0.30f : -0.30f)) > 0.08f || Math.abs(relative.z + 0.46f) > 0.08f)
             throw new IllegalStateException("Hand anchor drifted: " + relative);
     }
@@ -327,12 +326,10 @@ public final class ElectromasterExtensionClientSmoke {
 
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.electromasterExtensionOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-                System.out.println("[electric-extension] capture " + output);
-            } catch (Exception e) { throw new IllegalStateException(e); }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+            System.out.println("[electric-extension] capture " + output);
+        } catch (Exception e) { throw new IllegalStateException(e); }
     }
 }

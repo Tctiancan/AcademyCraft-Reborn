@@ -1,22 +1,18 @@
 package org.academy.desktop.platform
 
-import com.mojang.blaze3d.opengl.GlBackend
 import com.mojang.blaze3d.platform.DisplayData
-import com.mojang.blaze3d.platform.MonitorManager
+import com.mojang.blaze3d.platform.Monitor
+import com.mojang.blaze3d.platform.MonitorCreator
+import com.mojang.blaze3d.platform.ScreenManager
 import com.mojang.blaze3d.platform.Window
-import com.mojang.blaze3d.shaders.GpuDebugOptions
-import com.mojang.blaze3d.systems.GpuDevice
-import com.mojang.blaze3d.systems.GpuSurface
 import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.systems.SurfaceException
-import net.minecraft.util.Util
+import net.minecraft.Util
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.text.font.FontRepository
-import org.academy.api.client.render.Render
 import org.lwjgl.glfw.GLFW
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.*
+import java.util.OptionalInt
 
 object DesktopApplication {
     private val LOGGER: Logger = LoggerFactory.getLogger(DesktopApplication::class.java)
@@ -27,7 +23,6 @@ object DesktopApplication {
         UiEnvironment.set(environment)
 
         RenderSystem.initRenderThread()
-        Util.setTimeSource(RenderSystem.initBackendSystem())
 
         ClasspathShaderSource.sourceDir = environment.workingDir.resolve("src").resolve("main").resolve("resources")
 
@@ -37,6 +32,7 @@ object DesktopApplication {
         val host = DesktopUiHost(app, environment)
         val window = Window(
             host,
+            ScreenManager { handle -> Monitor(handle) },
             DisplayData(
                 environment.physicalWidth,
                 environment.physicalHeight,
@@ -45,33 +41,21 @@ object DesktopApplication {
                 false
             ),
             null,
-            false,
             app.title,
-            MonitorManager(),
-            GlBackend()
         )
-
-        val device = window.backend().createDevice(
-            window.handle(),
-            ClasspathShaderSource::read,
-            GpuDebugOptions(0, false, false, false)
-        ) { }
-        RenderSystem.initRenderer(device)
-        val surface = device.createSurface(window.handle())
 
         host.bind(window)
 
-        configureSurface(surface, window)
-        precompilePipelines(device)
-        Render.Buffers.init()
+        // C-stun: 1.21.1 为即时态渲染, 26.2 的 GpuDevice.createDevice / GpuSurface /
+        // Render.Buffers / 管线预编译等启动链路均已移除, 首版跳过 GPU 初始化, 仅驱动帧回调.
         initFonts()
 
-        GLFW.glfwShowWindow(window.handle())
+        GLFW.glfwShowWindow(window.getWindow())
 
-        var lastNanos = Util.getNanos()
+        var lastNanos = 0L
         var lastTitle: String? = null
         while (!window.shouldClose() && !app.quitRequested()) {
-            val now = Util.getNanos()
+            val now = System.nanoTime()
             val partialTick = ((now - lastNanos).toFloat() / NANOS_PER_TICK).coerceIn(0f, 1f)
             lastNanos = now
 
@@ -80,73 +64,23 @@ object DesktopApplication {
                 window.setTitle(app.title)
             }
 
-            RenderSystem.pollEvents()
-
-            if (host.surfaceNeedsReconfigure) {
-                host.surfaceNeedsReconfigure = false
-                try {
-                    configureSurface(surface, window)
-                } catch (e: SurfaceException) {
-                    LOGGER.warn("Couldn't reconfigure surface", e)
-                }
-            }
-
-            if (!window.isMinimized) {
-                try {
-                    surface.acquireNextTexture()
-                } catch (e: SurfaceException) {
-                    LOGGER.warn("Couldn't acquire surface texture", e)
-                }
-            }
+            GLFW.glfwPollEvents()
 
             host.frame(partialTick)
-
-            if (surface.isAcquired) {
-                val color = host.target?.getColorTextureView()
-                if (color != null) {
-                    surface.blitFromTexture(device.createCommandEncoder(), color)
-                }
-            }
-            device.createCommandEncoder().submit()
-            if (surface.isAcquired) {
-                surface.present()
-            }
+            window.updateDisplay()
         }
 
         host.close()
         app.onDispose()
-        try {
-            RenderSystem.shutdownRenderer()
-        } catch (e: Exception) {
-            LOGGER.warn("Failed to shut down renderer cleanly", e)
-        }
         window.close()
     }
 
-    private fun configureSurface(surface: GpuSurface, window: Window) {
-        val presentMode = GpuSurface.PresentMode.getSupportedVsyncMode(surface.supportedPresentModes(), true)
-        surface.configure(GpuSurface.Configuration(window.width, window.height, presentMode))
+    private fun configureSurface(surface: Any, window: Window) {
+        // C-stun: 1.21.1 无 GpuSurface 呈现配置.
     }
 
-    private fun precompilePipelines(device: GpuDevice) {
-        val needed = listOf(
-            Render.RenderPipelines.POS_COLOR,
-            Render.RenderPipelines.IMAGE,
-            Render.RenderPipelines.IMAGE_PREMULTIPLIED_ALPHA,
-            Render.RenderPipelines.IMAGE_CIRCLE,
-            Render.RenderPipelines.IMAGE_MONOCHROME,
-            Render.RenderPipelines.MSDF_TEXT,
-            Render.RenderPipelines.SDF_SHARP_MARGIN,
-            Render.RenderPipelines.SKILL_PROGRESS,
-            Render.RenderPipelines.IMGUI,
-        )
-        for (pipeline in needed) {
-            try {
-                device.precompilePipeline(pipeline, ClasspathShaderSource::read)
-            } catch (e: Exception) {
-                LOGGER.warn("Failed to precompile pipeline {}", pipeline.location, e)
-            }
-        }
+    private fun precompilePipelines(device: Any) {
+        // C-stun: 1.21.1 无编译期管线预编译.
     }
 
     private fun initFonts() {

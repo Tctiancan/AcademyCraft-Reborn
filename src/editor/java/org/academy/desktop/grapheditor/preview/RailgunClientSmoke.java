@@ -40,8 +40,7 @@ public final class RailgunClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -55,7 +54,7 @@ public final class RailgunClientSmoke {
         if (mc.player == null || mc.getSingleplayerServer() == null) return;
         mc.options.pauseOnLostFocus = false;
         boolean hideHud = ticks < 550;
-        if (mc.gui.hud.isHidden() != hideHud) mc.gui.hud.toggle();
+        mc.options.hideGui = hideHud;
         mc.player.setYRot(yaw);
         mc.player.yRotO = yaw;
         mc.player.setXRot(pitch);
@@ -69,7 +68,7 @@ public final class RailgunClientSmoke {
                 var level = server.overworld();
                 var player = server.getPlayerList().getPlayer(id);
                 player.setGameMode(GameType.SPECTATOR);
-                player.teleportTo(level, 35, 84, 195, Set.of(), yaw, pitch, false);
+                SmokePort.tp(player, 35, 84, 195, yaw, pitch);
                 for (int x = -8; x <= 8; x++) {
                     for (int z = 169; z <= 219; z++) {
                         level.setBlock(new net.minecraft.core.BlockPos(x, 80, z),
@@ -126,7 +125,7 @@ public final class RailgunClientSmoke {
             var id = mc.player.getUUID();
             mc.getSingleplayerServer().execute(() -> {
                 var player = mc.getSingleplayerServer().getPlayerList().getPlayer(id);
-                player.teleportTo(player.level(), 0, 80.8, 174.5, Set.of(), yaw, pitch, false);
+                SmokePort.tp(player, 0, 80.8, 174.5, yaw, pitch);
             });
         }
         if (ticks == 280) emit(50, 1, false, false, "ingame_first_person");
@@ -154,7 +153,7 @@ public final class RailgunClientSmoke {
                 player.setGameMode(GameType.CREATIVE);
                 player.getAbilities().flying = true;
                 player.onUpdateAbilities();
-                player.teleportTo(player.level(), 0, 81, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(player, 0, 81, 174.5, 0, 0);
                 player.setItemInHand(net.minecraft.world.InteractionHand.MAIN_HAND,
                         new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.IRON_INGOT, 16));
             });
@@ -205,14 +204,12 @@ public final class RailgunClientSmoke {
 
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.railgunSmokeOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-                System.out.println("[railgun-smoke] capture " + output);
-            } catch (Exception failure) {
-                throw new IllegalStateException(failure);
-            }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+            System.out.println("[railgun-smoke] capture " + output);
+        } catch (Exception failure) {
+            throw new IllegalStateException(failure);
+        }
     }
 }

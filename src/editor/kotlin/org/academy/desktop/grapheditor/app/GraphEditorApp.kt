@@ -111,6 +111,17 @@ class GraphEditorApp(private val environment: DesktopEnvironment) : EditorApp {
     private val metadata: EditorMetadata get() = documents.current().metadata
     private val containerModel: VfxContainerModel get() = containerRef.model
 
+    /**
+     * 预览无 GPU 后端, 沿用 com.mojang 纹理视图契约: 将 UiEnvironment 返回的
+     * {@code org.academy} 视图转换为 com.mojang 视图 (C-stun, 均背书 ResourceLocation).
+     */
+    private fun textureLoaderForPreview(
+        identifier: net.minecraft.resources.ResourceLocation,
+    ): com.mojang.blaze3d.textures.GpuTextureView {
+        val view = environment.loadTexture(identifier)
+        return com.mojang.blaze3d.textures.GpuTextureView(com.mojang.blaze3d.textures.GpuTexture.of(view.location()))
+    }
+
     init {
         try {
             Files.createDirectories(workingDir())
@@ -125,8 +136,8 @@ class GraphEditorApp(private val environment: DesktopEnvironment) : EditorApp {
         canvas = NodeCanvas(modelRef, camera, clipboard)
         containerCanvas = VfxContainerCanvas(containerRef, camera)
         containerCanvas.canvasPalette = ::renderContainerPalette
-        shaderPreview = ShaderPreview(modelRef, registry, glslRegistry, environment::loadTexture)
-        vfxPreview = VfxPreview(modelRef, vfxRegistry, containerRef, blockRegistry, operatorRegistry, environment::loadTexture)
+        shaderPreview = ShaderPreview(modelRef, registry, glslRegistry, ::textureLoaderForPreview)
+        vfxPreview = VfxPreview(modelRef, vfxRegistry, containerRef, blockRegistry, operatorRegistry, ::textureLoaderForPreview)
         palette = NodePalette(registry, modelRef) { canvasCenterGraph() }
         inspector = PropertyInspector(modelRef)
         inspector.onEditCurve = { id -> openCurveEditor(id) }

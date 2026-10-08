@@ -85,9 +85,9 @@ class DesktopEnvironment(
         return javaClass.getResourceAsStream("/assets/$namespace/$path")
     }
 
-    override fun loadTexture(identifier: ResourceLocation): GpuTextureView {
-        val input = openResource(identifier.namespace, identifier.path)
-        return DesktopTextures.load(identifier, input)
+    override fun loadTexture(identifier: ResourceLocation): org.academy.api.client.render.texture.GpuTextureView {
+        // C-stun: 1.21.1 下主模块以 ResourceLocation 背书纹理视图, 直接包装标识.
+        return org.academy.api.client.render.texture.GpuTextureView.of(identifier)
     }
 
     override fun createDynamicTextureSource(identifier: ResourceLocation, bytes: ByteArray): TextureSource {

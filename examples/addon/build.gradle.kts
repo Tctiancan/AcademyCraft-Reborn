@@ -7,15 +7,15 @@ group = "example.academy"
 version = "1.0.0"
 java {
     toolchain {
-        languageVersion.set(JavaLanguageVersion.of(25))
+        languageVersion.set(JavaLanguageVersion.of(21))
         vendor.set(JvmVendorSpec.JETBRAINS)
     }
 }
 
-neoForge { version = "26.2.0.70" }
+neoForge { version = "21.1.252" }
 repositories { mavenCentral() }
 val academyJar = providers.gradleProperty("academyJar")
-    .orElse("../../build/libs/academy-26.2.0-0.0.4-alpha-dev.jar")
+    .orElse("../../build/libs/academy-1.21.1-0.0.4-alpha-release.jar")
 val academyArtifact = file(academyJar.get())
 dependencies {
     compileOnly(files(academyArtifact))

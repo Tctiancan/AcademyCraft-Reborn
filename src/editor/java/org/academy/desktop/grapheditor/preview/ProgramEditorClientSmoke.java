@@ -4,8 +4,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.TitleScreen;
-import net.minecraft.client.input.MouseButtonEvent;
-import net.minecraft.client.input.MouseButtonInfo;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
@@ -58,7 +56,7 @@ public final class ProgramEditorClientSmoke {
                 var continueLabel = FMLTranslations.parseMessage("fml.button.continue.launch");
                 for (var widget : warnings.children()) {
                     if (widget instanceof Button button && button.getMessage().getString().equals(continueLabel)) {
-                        button.onPress(new MouseButtonEvent(0, 0, new MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -202,8 +200,8 @@ public final class ProgramEditorClientSmoke {
         var y = canvasField(screen, "canvasY");
         var width = canvasField(screen, "canvasW");
         var height = canvasField(screen, "canvasH");
-        screen.mouseClicked(new MouseButtonEvent(x + (width - Math.min(220, width - 24)) / 2 + offsetX,
-                y + (height - 110) / 2 + offsetY, new MouseButtonInfo(0, 0)), false);
+        screen.mouseClicked(x + (width - Math.min(220, width - 24)) / 2 + offsetX,
+                y + (height - 110) / 2 + offsetY, 0);
     }
 
     private static int canvasField(ModularProgramScreen screen, String name) {
@@ -232,15 +230,13 @@ public final class ProgramEditorClientSmoke {
         if (target.width <= 1 || target.height <= 1) {
             throw new IllegalStateException("Program editor render target is not ready");
         }
-        Screenshot.takeScreenshot(target, image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-                captures++;
-            } catch (Exception failure) {
-                throw new IllegalStateException("Cannot capture program editor", failure);
-            }
-        });
+        try (var image = Screenshot.takeScreenshot(target)) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+            captures++;
+        } catch (Exception failure) {
+            throw new IllegalStateException("Cannot capture program editor", failure);
+        }
     }
 
     private static final class SmokeSession implements ModularProgramEditorSession {

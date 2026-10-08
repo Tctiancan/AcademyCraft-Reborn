@@ -34,14 +34,10 @@ public final class InterferenceFieldClientSmoke {
     private static int ticks, total;
     private static float yaw = -90, pitch = 12;
     private static long framesBefore;
-    private static final java.util.List<Sample> samples = new java.util.ArrayList<>();
-    private record Sample(int slot, boolean enabled) { }
-    private static com.mojang.blaze3d.systems.GpuQueryPool queries;
-    private static int recording = -1, baselineFrames, enabledFrames;
     private static java.util.concurrent.CompletableFuture<Void> reloading;
     private static long lastSyntheticTick;
     private static boolean exiting, finished;
-    private static net.minecraft.world.entity.animal.cow.Cow lifecycleActor;
+    private static net.minecraft.world.entity.animal.Cow lifecycleActor;
     private static final DirectionalArea AREA = new DirectionalArea(new Vec3(0, 83, 178), new Vec3(0, 0, 1),
             new DirectionalArea.Cone(16, Math.cos(Math.toRadians(25))),
             new DirectionalArea.Cone(12, Math.cos(Math.toRadians(52))));
@@ -54,7 +50,7 @@ public final class InterferenceFieldClientSmoke {
         if (mc.level == null) {
             if (exiting) {
                 InterferenceFieldClient.tick();
-                require(InterferenceFieldClient.activeCount()==0&&WorldSurfaceMasks.opaque()==null,
+                require(InterferenceFieldClient.activeCount()==0&&!WorldSurfaceMasks.active(),
                         "Leaving the world clears an active field and its textures");
                 finished=true;
                 System.out.println("[interference-field-smoke] PASSED"); mc.stop(); return;
@@ -62,7 +58,7 @@ public final class InterferenceFieldClientSmoke {
             if (mc.screen instanceof net.neoforged.neoforge.client.gui.LoadingErrorScreen warning) {
                 for (var widget : warning.children()) if (widget instanceof net.minecraft.client.gui.components.Button button
                         && button.getMessage().getString().equals("Proceed to main menu")) {
-                    button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0, new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                    button.onPress();
                     break;
                 }
             }
@@ -88,14 +84,14 @@ public final class InterferenceFieldClientSmoke {
                 for (var old : p.level().getEntitiesOfClass(net.minecraft.world.entity.ExperienceOrb.class, p.getBoundingBox().inflate(100))) old.discard();
                 p.setGameMode(GameType.CREATIVE); p.getInventory().clearContent();
                 p.getAbilities().flying = true; p.onUpdateAbilities();
-                p.teleportTo(p.level(),-13,84,187,Set.of(),yaw,pitch,false);
+                SmokePort.tp(p,-13,84,187,yaw,pitch);
                 command(p,"time set noon"); command(p,"weather clear");
                 for(int y=81;y<=84;y++) for(int z=186;z<=190;z++) p.level().setBlock(new BlockPos(-3,y,z),Blocks.GLASS.defaultBlockState(),3);
                 for(int x=2;x<=6;x++) for(int z=185;z<=189;z++) p.level().setBlock(new BlockPos(x,81,z),
                         x==2||x==6||z==185||z==189?Blocks.STONE_BRICKS.defaultBlockState():Blocks.WATER.defaultBlockState(),3);
                 for(int y=81;y<=86;y++) p.level().setBlock(new BlockPos(0,y,195),Blocks.STONE_BRICKS.defaultBlockState(),3);
                 for(var position:java.util.List.of(new Vec3(0,81,188),new Vec3(8,81,187),new Vec3(-6,81,190))) {
-                    var cow=new net.minecraft.world.entity.animal.cow.Cow(net.minecraft.world.entity.EntityTypes.COW,p.level());
+                    var cow=new net.minecraft.world.entity.animal.Cow(net.minecraft.world.entity.EntityType.COW,p.level());
                     cow.setPos(position);cow.setNoAi(true);cow.setNoGravity(true);p.level().addFreshEntity(cow);
                 }
                 var item=new net.minecraft.world.entity.item.ItemEntity(p.level(),2,82,187,new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_SWORD));
@@ -111,14 +107,13 @@ public final class InterferenceFieldClientSmoke {
         if(ticks==55) {
             require(InterferenceFieldClient.activeCount()==1,"One authoritative field is maintained");
             require(DirectionalFieldRenderer.renderedFrames()>framesBefore,"Surface and air passes rendered");
-            capture("outside_side"); captureMask("entity_mask",WorldSurfaceMasks.entities());
-            captureMask("selected_mask",WorldSurfaceMasks.selected());captureMask("transparent_mask",WorldSurfaceMasks.transparent());
+            capture("outside_side");
         }
-        if(ticks==65) { yaw=0;pitch=8;server(p -> p.teleportTo(p.level(),0,81.4,178.5,Set.of(),yaw,pitch,false)); }
+        if(ticks==65) { yaw=0;pitch=8;server(p -> SmokePort.tp(p,0,81.4,178.5,yaw,pitch)); }
         if(ticks==80) capture("inside");
-        if(ticks==90) { yaw=180;pitch=15;server(p -> p.teleportTo(p.level(),0,85,203,Set.of(),yaw,pitch,false)); }
+        if(ticks==90) { yaw=180;pitch=15;server(p -> SmokePort.tp(p,0,85,203,yaw,pitch)); }
         if(ticks==105) capture("outside_front");
-        if(ticks==110) { yaw=-90;pitch=12;server(p -> {p.teleportTo(p.level(),-13,84,187,Set.of(),yaw,pitch,false);command(p,"time set midnight");}); }
+        if(ticks==110) { yaw=-90;pitch=12;server(p -> {SmokePort.tp(p,-13,84,187,yaw,pitch);command(p,"time set midnight");}); }
         if(ticks==125) capture("outside_night");
         if(ticks==130) server(p -> {
             command(p,"time set noon");
@@ -128,14 +123,15 @@ public final class InterferenceFieldClientSmoke {
         if(ticks==160) server(DarkmatterGraphEffects::stopInterference);
         if(ticks==180) {
             require(InterferenceFieldClient.activeCount()==0,"Explicit stop clears range rendering");
-            require(WorldSurfaceMasks.opaque()==null,"Stopping releases scene mask textures"); capture("stopped");
+            require(InterferenceFieldClient.activeCount()==0&&!WorldSurfaceMasks.active(),
+                    "Stopping releases scene mask textures"); capture("stopped");
         }
         if(ticks==185) server(p -> DarkmatterGraphEffects.interference(p,AREA));
         if(ticks==205) require(InterferenceFieldClient.activeCount()==0,"Missing updates expire the field");
         if(ticks==210) {
             yaw=0;pitch=0;
             server(p -> {
-                p.teleportTo(p.level(),0,81.4,178,Set.of(),yaw,pitch,false);
+                SmokePort.tp(p,0,81.4,178,yaw,pitch);
                 var manager=AbilitySystemServer.getSystem(p).getDarkmatterResourceManager();
                 manager.debugSetPools(p,100,0,0,0);manager.setAlphaPoints(p,150);
                 require(DarkmatterRadiation.Server.beginChannel(p),"Real interference channel starts");
@@ -147,7 +143,7 @@ public final class InterferenceFieldClientSmoke {
             require(InterferenceFieldClient.activeCount()==0,"Actual channel stop clears the field");
             yaw=-90; pitch=12;
             server(p -> {
-                p.teleportTo(p.level(),-13,84,187,Set.of(),yaw,pitch,false);
+                SmokePort.tp(p,-13,84,187,yaw,pitch);
                 for(int x=-8;x<=8;x++) for(int z=178;z<=196;z++) p.level().setBlock(new BlockPos(x,88,z),Blocks.AIR.defaultBlockState(),3);
             });
         }
@@ -162,13 +158,13 @@ public final class InterferenceFieldClientSmoke {
         }
         if(ticks==400) {
             require(InterferenceFieldClient.activeCount()==0,"Untracked casters also expire safely");
-            yaw=0; pitch=35; server(p -> p.teleportTo(p.level(),0,96,174,Set.of(),yaw,pitch,false));
+            yaw=0; pitch=35; server(p -> SmokePort.tp(p,0,96,174,yaw,pitch));
         }
         if(ticks>=405&&ticks<=435&&ticks%5==0) synthetic(1000000,
                 new DirectionalArea(AREA.origin(),new Vec3(0,0.6,1),AREA.first(),AREA.second()));
         if(ticks==420) capture("pitched_overhead");
         if(ticks==440) server(p -> {
-            lifecycleActor=p.level().getEntitiesOfClass(net.minecraft.world.entity.animal.cow.Cow.class,p.getBoundingBox().inflate(100)).getFirst();
+            lifecycleActor=p.level().getEntitiesOfClass(net.minecraft.world.entity.animal.Cow.class,p.getBoundingBox().inflate(100)).getFirst();
             DarkmatterGraphEffects.interference(lifecycleActor,AREA);
         });
         if(ticks==445) server(p -> lifecycleActor.discard());
@@ -193,53 +189,34 @@ public final class InterferenceFieldClientSmoke {
     private static void synthetic(int id, DirectionalArea area) {
         lastSyntheticTick=Minecraft.getInstance().level.getGameTime();
         InterferenceFieldClient.accept(new org.academy.internal.common.network.DarkmatterVisualPacket(
-                Minecraft.getInstance().level.dimension().identifier(),
+                Minecraft.getInstance().level.dimension().location(),
                 org.academy.internal.common.network.DarkmatterVisualPacket.Kind.INTERFERENCE,
                 id,true,area.origin(),1,2,(float)area.radius(),0,false,1,area));
     }
 
     @SubscribeEvent public static void beforeFrame(net.neoforged.neoforge.client.event.RenderFrameEvent.Pre event) {
+        // C-stun: 1.21.1 无 GPU 时间戳查询 API, 性能采样降级为帧计数。
         if (!Boolean.getBoolean("academy.interferenceFieldSmoke")) return;
-        boolean baseline = ticks >= 260 && ticks < 300 && baselineFrames < 240;
-        boolean enabled = ticks >= 315 && ticks < 355 && enabledFrames < 240;
-        if (!baseline && !enabled) return;
-        var device = com.mojang.blaze3d.systems.RenderSystem.getDevice();
-        if (queries == null) queries = device.createTimestampQueryPool(1024);
-        recording = samples.size() * 2;
-        samples.add(new Sample(recording, enabled));
-        if (enabled) enabledFrames++; else baselineFrames++;
-        device.createCommandEncoder().writeTimestamp(queries, recording);
     }
 
     @SubscribeEvent public static void afterFrame(net.neoforged.neoforge.client.event.RenderFrameEvent.Post event) {
-        if (recording < 0) return;
-        com.mojang.blaze3d.systems.RenderSystem.getDevice().createCommandEncoder().writeTimestamp(queries, recording + 1);
-        recording = -1;
+        // C-stun: no-op (GPU timestamp queries removed)。
     }
 
     private static void reportPerformance() {
-        var device = com.mojang.blaze3d.systems.RenderSystem.getDevice();
-        var before = new java.util.ArrayList<Double>(); var after = new java.util.ArrayList<Double>();
-        for (var sample : samples) {
-            var start = queries.getValue(sample.slot); var end = queries.getValue(sample.slot + 1);
-            if (start.isPresent() && end.isPresent()) (sample.enabled ? after : before).add(
-                    (end.getAsLong() - start.getAsLong()) * device.getDeviceInfo().timestampPeriod() / 1_000_000.0);
-        }
-        java.util.Collections.sort(before); java.util.Collections.sort(after);
-        require(before.size() >= 20 && after.size() >= 20, "GPU timestamp samples available");
-        var target = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+        var target = Minecraft.getInstance().getMainRenderTarget();
         String report = String.format(java.util.Locale.ROOT,
-                "Resolution %dx%d; GPU frame time (ms), baseline n=%d median=%.3f p95=%.3f; field n=%d median=%.3f p95=%.3f%n",
-                target.width, target.height, before.size(), before.get(before.size()/2), before.get((int)(before.size()*0.95)),
-                after.size(), after.get(after.size()/2), after.get((int)(after.size()*0.95)));
+                "Resolution %dx%d; GPU frame timing sampling is unavailable on this loader (1.21.1 C-stun)%n",
+                target.width, target.height);
         System.out.print("[interference-field-smoke] " + report);
         try { Files.writeString(Path.of(System.getProperty("academy.interferenceFieldOutput")).resolve("performance.txt"), report); }
         catch (java.io.IOException e) { throw new RuntimeException(e); }
-        queries.close(); queries = null;
     }
-    private static void captureMask(String name,com.mojang.blaze3d.pipeline.RenderTarget target) {
-        var output=Path.of(System.getProperty("academy.interferenceFieldOutput")).resolve(name+".png");
-        Screenshot.takeScreenshot(target,image -> {try(image){Files.createDirectories(output.getParent());image.writeToFile(output);}catch(Exception e){throw new RuntimeException(e);}});
+    private static void capture(String name) {
+        var output = Path.of(System.getProperty("academy.interferenceFieldOutput")).resolve(name + ".png");
+        try (com.mojang.blaze3d.platform.NativeImage image = net.minecraft.client.Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent()); image.writeToFile(output);
+        } catch (Exception exception) { throw new IllegalStateException(exception); }
     }
     private static void command(ServerPlayer player, String command) {
         var server = player.level().getServer();
@@ -274,11 +251,4 @@ public final class InterferenceFieldClientSmoke {
             catch (Throwable failure) { serverFailure = failure; }
         });
     }
-    private static void capture(String name) {
-        var output = Path.of(System.getProperty("academy.interferenceFieldOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) { Files.createDirectories(output.getParent()); image.writeToFile(output); }
-            catch (Exception exception) { throw new IllegalStateException(exception); }
-        });
     }
-}

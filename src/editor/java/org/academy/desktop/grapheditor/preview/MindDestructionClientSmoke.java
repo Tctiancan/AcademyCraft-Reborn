@@ -4,10 +4,10 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
 import net.neoforged.api.distmarker.Dist;
@@ -51,8 +51,7 @@ public final class MindDestructionClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -71,7 +70,7 @@ public final class MindDestructionClientSmoke {
             configured = true;
             server(player -> {
                 player.setGameMode(GameType.CREATIVE);
-                player.teleportTo(player.level(), 0, 81, 178, Set.of(), 0, 8, false);
+                SmokePort.tp(player, 0, 81, 178, 0, 8);
                 for (int x = -2; x <= 2; x++) for (int z = 177; z <= 185; z++) {
                     player.level().setBlock(new BlockPos(x, 80, z), Blocks.STONE.defaultBlockState(), 3);
                     for (int y = 81; y <= 84; y++) {
@@ -80,7 +79,7 @@ public final class MindDestructionClientSmoke {
                 }
                 for (var old : player.level().getEntitiesOfClass(net.minecraft.world.entity.Mob.class,
                         player.getBoundingBox().inflate(12))) old.discard();
-                var cow = new Cow(EntityTypes.COW, player.level());
+                var cow = new Cow(EntityType.COW, player.level());
                 cow.setPos(0, 81, 183);
                 cow.setNoAi(true);
                 cow.setNoGravity(true);
@@ -106,11 +105,11 @@ public final class MindDestructionClientSmoke {
         if (!ready) return;
         ticks++;
         if (ticks == 30) MisakaNetworkClient.send(new MindDestruction.UsePacket(MentaloutRequestGuard.nextClientSequence()));
-        if (ticks == 56) server(_ -> {
+        if (ticks == 56) server(ignored -> {
             require(target.getHealth() < 20 && !MentalImmunity.isSuppressed(target), "First pulse damages without stripping");
             require(TemporalApi.get(target).effectiveScale(target, TemporalChannel.ENTITY) < 1, "First pulse starts slowdown");
         });
-        if (ticks == 95) server(_ -> {
+        if (ticks == 95) server(ignored -> {
             require(target.isAlive() && target.getHealth() == 1, "Lethal pulse leaves one health");
             require(MentalControlApi.isMentalProtectionSuppressed(target), "Lethal pulse strips immunity");
             require(TemporalApi.get(target).effectiveScale(target, TemporalChannel.ENTITY) == 1, "Cast ending restores reaction speed");
@@ -122,7 +121,7 @@ public final class MindDestructionClientSmoke {
             require(clientTarget instanceof LivingEntity living && living.getHealth() == 1,
                     "Client receives the protected health value");
         }
-        if (ticks == 245) server(_ -> {
+        if (ticks == 245) server(ignored -> {
             require(target.isAlive() && target.getHealth() == 1, "Terminated skill cannot deal later pulses");
             target.discard();
             require(!MentalImmunity.isSuppressed(target), "Leaving the world clears suppression");

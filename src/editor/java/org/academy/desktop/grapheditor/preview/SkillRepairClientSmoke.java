@@ -41,8 +41,7 @@ public final class SkillRepairClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -62,8 +61,8 @@ public final class SkillRepairClientSmoke {
             mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
             mc.options.setCameraType(net.minecraft.client.CameraType.FIRST_PERSON);
             mc.options.guiScale().set(2);
-            mc.resizeGui();
-            if (mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            mc.resizeDisplay();
+            mc.options.hideGui = true;
             AbilitySystemClient.setActiveHUD(true);
             server(player -> {
                 var level = player.level();
@@ -77,7 +76,7 @@ public final class SkillRepairClientSmoke {
                         level.getServer().createCommandSourceStack(), "time set 1000");
                 player.getInventory().clearContent();
                 player.setGameMode(GameType.CREATIVE);
-                player.teleportTo(player.level(), 0, 81, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(player, 0, 81, 174.5, 0, 0);
                 var system = AbilitySystemServer.getSystem(player);
                 system.setPlayerAbilityCategory(player.getUUID(), AbilityCategories.DARKMATTER.get());
                 system.setPlayerLevel(player.getUUID(), 5);
@@ -105,18 +104,18 @@ public final class SkillRepairClientSmoke {
         if (ticks == 120) server(player -> AbilitySystemServer.getSystem(player)
                 .getDarkmatterResourceManager().setAlphaPoints(player, 50));
         if (ticks == 170) capture("phase_20_80_scale2");
-        if (ticks == 190) { mc.options.guiScale().set(3); mc.resizeGui(); }
+        if (ticks == 190) { mc.options.guiScale().set(3); mc.resizeDisplay(); }
         if (ticks == 230) capture("phase_20_80_scale3");
         if (ticks == 260) {
-            mc.options.guiScale().set(2); mc.resizeGui();
+            mc.options.guiScale().set(2); mc.resizeDisplay();
             server(player -> {
                 var profile = new com.mojang.authlib.GameProfile(java.util.UUID.randomUUID(), "ChargeProbe");
                 var cookie = net.minecraft.server.network.CommonListenerCookie.createInitial(profile, false);
-                remote = new ServerPlayer(player.level().getServer(), player.level(), profile, cookie.clientInformation());
+                remote = new ServerPlayer(player.level().getServer(), (net.minecraft.server.level.ServerLevel) player.level(), profile, cookie.clientInformation());
                 var connection = new net.minecraft.network.Connection(net.minecraft.network.protocol.PacketFlow.SERVERBOUND);
                 new io.netty.channel.embedded.EmbeddedChannel(connection);
                 player.level().getServer().getPlayerList().placeNewPlayer(connection, remote, cookie);
-                remote.teleportTo(player.level(), 0, 81, 178, Set.of(), 180, 0, false);
+                SmokePort.tp(remote, 0, 81, 178, 180, 0);
                 remote.setYHeadRot(180); remote.setYBodyRot(180);
                 remote.setData(org.academy.internal.common.attachment.AttachmentTypes.RAILGUN_DATA,
                         new org.academy.internal.common.ability.electromaster.skills.lv4.Railgun.Data(true, true, 40, false, false));
@@ -144,7 +143,7 @@ public final class SkillRepairClientSmoke {
             data.setAcademyMaxCp(1_000_000);
             data.getCpData().setMaxCP(1_000_000);
             data.getCpData().setAvailableCP(1_000_000);
-            subject = net.minecraft.world.entity.EntityTypes.COW.create(player.level(), net.minecraft.world.entity.EntitySpawnReason.COMMAND);
+            subject = net.minecraft.world.entity.EntityType.COW.create(player.level());
             subject.moveTo(0, 81, 177, 123, -12);
             subject.setYHeadRot(123); subject.setYBodyRot(123);
             subject.setPersistenceRequired();
@@ -160,7 +159,7 @@ public final class SkillRepairClientSmoke {
                     org.academy.api.common.entitycontrol.ControlRequest.permanent(player, subject,
                             net.minecraft.resources.ResourceLocation.parse("academy:skill_repair_probe"), 100,
                             new org.academy.api.common.entitycontrol.ControlDirective.ImpressionAlliance()));
-            player.teleportTo(player.level(), subject.getX(), subject.getY(), subject.getZ() - 1, Set.of(), 0, 0, false);
+            SmokePort.tp(player, subject.getX(), subject.getY(), subject.getZ() - 1, 0, 0);
             var result = org.academy.internal.common.ability.mentalout.control.ImpressionRidingManager.requestMount(player, subject);
             if (!result.name().equals("PENDING")) throw new IllegalStateException("Mount: " + result);
         });
@@ -226,12 +225,10 @@ public final class SkillRepairClientSmoke {
     private static void captureImage(String name) {
         var output = Path.of(System.getProperty("academy.skillRepairOutput"))
                 .resolve((reconnected ? "reconnect_" : "") + name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-            } catch (Exception error) { failure = error; }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+        } catch (Exception error) { failure = error; }
         System.out.println("[skill-repair-smoke] captured " + name);
     }
 }

@@ -3,11 +3,13 @@
 import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.PrimitiveTopology
 import com.mojang.blaze3d.buffers.GpuBuffer
-import com.mojang.blaze3d.buffers.Std140Builder
+import org.academy.api.client.render.Std140Builder
 import com.mojang.blaze3d.pipeline.RenderTarget
-import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.systems.GpuDevice
+import com.mojang.blaze3d.systems.SequentialBuffer
 import com.mojang.blaze3d.textures.*
 import net.minecraft.resources.ResourceLocation
+import org.academy.desktop.platform.getColorTextureView
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.graph.compile.DefaultGraphCompiler
 import org.academy.api.client.render.graph.registry.NodeRegistry
@@ -78,7 +80,7 @@ class ShaderPreview(
             }
             val compiledGraph = DefaultGraphCompiler(registry).compile(graph)
             val result = pipeline.compile(graph, compiledGraph)
-            val device = RenderSystem.getDevice()
+            val device = GpuDevice.instance()
             pipeline.precompile(device, result)
 
             fragmentSource = GlslGenerator(glslRegistry).generate(graph, compiledGraph).fragmentSource()
@@ -107,7 +109,7 @@ class ShaderPreview(
         val time = (System.nanoTime() - startNanos) / 1e9f
         writeUniforms(mat, buffer, result, time)
 
-        val device = RenderSystem.getDevice()
+        val device = GpuDevice.instance()
         val encoder = device.createCommandEncoder()
         try {
             val renderPass = encoder.createRenderPass({ "Shader Preview" }, color, Optional.of(Vector4f(0f)))
@@ -118,7 +120,7 @@ class ShaderPreview(
                     it.bindTexture(name, binding.first, binding.second)
                 }
                 it.setVertexBuffer(0, Render.Buffers.getInstance().fsQuadVBNDC.slice())
-                val seq = RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS)
+                val seq = SequentialBuffer.of(PrimitiveTopology.QUADS)
                 it.setIndexBuffer(seq.getBuffer(6), seq.type())
                 it.drawIndexed(6, 1, 0, 0, 0)
             }
@@ -131,7 +133,7 @@ class ShaderPreview(
     private fun rebuildTextureBindings(result: ShaderGraphResult) {
         textureBindings.clear()
         if (result.layout().samplers().isEmpty()) return
-        val device = RenderSystem.getDevice()
+        val device = GpuDevice.instance()
         previewSampler = previewSampler ?: device.createSampler(
             AddressMode.REPEAT, AddressMode.REPEAT,
             FilterMode.LINEAR, FilterMode.LINEAR,
@@ -152,7 +154,7 @@ class ShaderPreview(
     /** 1x1 品红兜底纹理（标识未指定或加载失败时可见）。 */
     private fun ensureFallbackTexture(): GpuTextureView {
         fallbackTexture?.let { return it }
-        val device = RenderSystem.getDevice()
+        val device = GpuDevice.instance()
         val texture = device.createTexture(
             { "Graph Texture Fallback" },
             GpuTexture.USAGE_TEXTURE_BINDING or GpuTexture.USAGE_COPY_DST,
@@ -172,7 +174,7 @@ class ShaderPreview(
             MemoryStack.stackPush().use { stack ->
                 val builder = Std140Builder.onStack(stack, result.layout().totalSize())
                 mat.write(builder, time)
-                RenderSystem.getDevice().createCommandEncoder().writeToBuffer(buffer.slice(), builder.get())
+                GpuDevice.instance().createCommandEncoder().writeToBuffer(buffer.slice(), builder.get())
             }
         } catch (_: Exception) {
             // 忽略逐帧写入错误

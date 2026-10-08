@@ -34,7 +34,7 @@ public final class GpuTextureView {
 
     /**
      * 返回纹理像素宽度. 1.21.1 的真纹理由 {@code ResourceLocation} 背书, 此处通过读取资源图像的
-     * {@link NativeImage} 获取实际尺寸; 读取失败时回退为 1 (保证除以0不安全时使用的最小值).
+     * {@link com.mojang.blaze3d.platform.NativeImage} 获取实际尺寸; 读取失败时回退为 1 (保证除以0不安全时使用的最小值).
      */
     public int getWidth(int mipLevel) {
         return imageWidth();

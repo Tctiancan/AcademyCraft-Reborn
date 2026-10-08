@@ -57,8 +57,7 @@ public final class WingFlightClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -150,12 +149,10 @@ public final class WingFlightClientSmoke {
             if (mc.player.getData(AttachmentTypes.WING_FLIGHT_POSE.get()) != WingFlightPose.Pose.IDLE)
                 throw new IllegalStateException("Flight pose did not finish during stall");
             var imagePath = java.nio.file.Path.of("screenshots", "wing_flight_" + index + ".png");
-            net.minecraft.client.Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget(), image -> {
-                try (image) {
+            try (com.mojang.blaze3d.platform.NativeImage image = net.minecraft.client.Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
                     java.nio.file.Files.createDirectories(imagePath.getParent());
                     image.writeToFile(imagePath);
                 } catch (Exception failure) { throw new IllegalStateException(failure); }
-            });
             switch (index) {
                 case 0 -> MisakaNetworkClient.send(StormWing.TogglePacket.INSTANCE);
                 case 1 -> MisakaNetworkClient.send(BlackWing.TogglePacket.INSTANCE);

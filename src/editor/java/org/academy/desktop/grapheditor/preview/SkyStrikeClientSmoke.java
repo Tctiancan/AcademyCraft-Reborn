@@ -7,8 +7,7 @@ import net.minecraft.client.tutorial.TutorialSteps;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.levelgen.Heightmap;
@@ -55,7 +54,7 @@ public final class SkyStrikeClientSmoke {
         }
         if (mc.player == null || mc.getSingleplayerServer() == null) return;
         mc.options.pauseOnLostFocus = false;
-        if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+        mc.options.hideGui = true;
         mc.player.setYRot(180);
         mc.player.setXRot(-10);
         mc.player.yRotO = 180;
@@ -76,7 +75,7 @@ public final class SkyStrikeClientSmoke {
                 double y = level.getHeight(Heightmap.Types.MOTION_BLOCKING, p.getX(), p.getZ());
                 impact = new Vec3(p.getX() + 0.5, y + 0.1, p.getZ() + 0.5);
                 player.setGameMode(GameType.SPECTATOR);
-                player.teleportTo(level, impact.x, y + 20, impact.z + 72, Set.of(), 180, -10, false);
+                SmokePort.tp(player, impact.x, y + 20, impact.z + 72, 180, -10);
                 server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), "time set midnight");
                 System.out.println("[sky-strike-smoke] ready " + impact);
             });
@@ -110,8 +109,7 @@ public final class SkyStrikeClientSmoke {
                 var offsets = new Vec3[]{new Vec3(radius - 0.25, 0, 0), new Vec3(radius + 0.25, 0, 0),
                         new Vec3(radius * 0.8, 0, radius * 0.8), Vec3.ZERO};
                 for (var offset : offsets) {
-                    var subject = EntityTypes.COW.create(
-                            level, EntitySpawnReason.COMMAND);
+                    var subject = EntityType.COW.create(level);
                     if (subject == null) throw new IllegalStateException("Cannot create radius probe");
                     subject.setPos(center.add(offset));
                     subject.setNoAi(true);
@@ -128,7 +126,7 @@ public final class SkyStrikeClientSmoke {
                             AreaEffectTargets.contains(center, subject.position(), radius)).toList());
                 }
                 float health = subjects.getFirst().getHealth();
-                for (var target : selected) target.hurtServer(level, level.damageSources().generic(), 1f);
+                for (var target : selected) target.hurt(level.damageSources().generic(), 1f);
                 if (subjects.getFirst().getHealth() >= health
                         || subjects.get(1).getHealth() != subjects.get(1).getMaxHealth()
                         || subjects.get(2).getHealth() != subjects.get(2).getMaxHealth()
@@ -151,14 +149,12 @@ public final class SkyStrikeClientSmoke {
     private static void capture(String name) {
         var mc = Minecraft.getInstance();
         var output = Path.of(System.getProperty("academy.skyStrikeSmokeOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(mc.gameRenderer.mainRenderTarget(), image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-                System.out.println("[sky-strike-smoke] capture " + output);
-            } catch (Exception failure) {
-                throw new IllegalStateException(failure);
-            }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+            System.out.println("[sky-strike-smoke] capture " + output);
+        } catch (Exception failure) {
+            throw new IllegalStateException(failure);
+        }
     }
 }

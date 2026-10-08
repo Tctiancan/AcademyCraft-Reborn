@@ -1,11 +1,12 @@
 package org.academy.desktop.grapheditor.preview;
 
+import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.entity.animal.pig.Pig;
+import net.minecraft.world.entity.animal.Pig;
 import net.minecraft.world.level.GameType;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -20,7 +21,6 @@ import org.academy.internal.common.world.entity.skill.ArcEffect;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in real skill/network/rendering and repeated-cast regression in an isolated test save. */
@@ -44,8 +44,7 @@ public final class LightningNovaClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -69,7 +68,7 @@ public final class LightningNovaClientSmoke {
                 p.setGameMode(GameType.CREATIVE);
                 p.getAbilities().flying = true;
                 p.onUpdateAbilities();
-                p.teleportTo(p.level(), 0, 81, 175, Set.of(), 0, 25, false);
+                SmokePort.tp(p, 0, 81, 175, 0, 25);
                 system.setPlayerAbilityCategory(p.getUUID(), AbilityCategories.ELECTROMASTER.get());
                 system.setPlayerLevel(p.getUUID(), 5);
                 var skill = Skills.LIGHTNING_NOVA.get();
@@ -82,7 +81,7 @@ public final class LightningNovaClientSmoke {
                 data.getCpData().setAvailableCP(1000);
                 for (var old : p.level().getEntitiesOfClass(net.minecraft.world.entity.Mob.class,
                         p.getBoundingBox().inflate(64))) old.discard();
-                target = new Pig(EntityTypes.PIG, p.level());
+                target = new Pig(EntityType.PIG, p.level());
                 target.setPos(0, 81, 180); target.setNoAi(true); target.setNoGravity(true);
                 target.getAttribute(Attributes.MAX_HEALTH).setBaseValue(1024);
                 target.getAttribute(Attributes.KNOCKBACK_RESISTANCE).setBaseValue(1);
@@ -151,11 +150,10 @@ public final class LightningNovaClientSmoke {
 
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.lightningNovaOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-            } catch (Exception e) { throw new IllegalStateException(e); }
-        });
+        NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget());
+        try (image) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+        } catch (Exception e) { throw new IllegalStateException(e); }
     }
 }

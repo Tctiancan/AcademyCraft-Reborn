@@ -1,10 +1,9 @@
 package org.academy.desktop.grapheditor.preview
 
 import com.google.gson.JsonParser
+import com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
-import com.mojang.blaze3d.GpuFormat
-import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Screenshot
 import org.academy.api.client.gui.widget.FrameLayoutWidget
 import org.academy.api.client.gui.widget.WidgetContainer
@@ -23,6 +22,10 @@ import org.academy.desktop.grapheditor.viewport.EditorGlow
 import org.academy.desktop.platform.DesktopApplication
 import org.academy.desktop.platform.DesktopEnvironment
 import org.academy.desktop.platform.EditorApp
+import org.academy.desktop.platform.executePendingTasks
+import org.academy.desktop.platform.getColorTextureView
+import org.academy.desktop.platform.getDepthTextureView
+import org.academy.desktop.platform.textureTarget
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.nio.file.Files
@@ -57,12 +60,12 @@ private class SkyStrikeCaptureApp(private val root: Path) : EditorApp {
         VfxBlocks.registerAll(metadata, blocks)
     }
 
-    override fun onFrame(partialTick: Float) { RenderSystem.executePendingTasks() }
+    override fun onFrame(partialTick: Float) { executePendingTasks() }
     override fun createRoot(): WidgetContainer = FrameLayoutWidget()
     override fun quitRequested() = index >= shots.size && !waiting
 
     override fun renderBackground(windowTarget: RenderTarget) {
-        if (capture == null) capture = TextureTarget("Sky strike capture", 768, 1024, true, GpuFormat.RGBA8_UNORM)
+        if (capture == null) capture = textureTarget("Sky strike capture", 768, 1024, true, GpuFormat.RGBA8_UNORM)
         val target = capture!!
         if (++warmup < 5 || waiting || quitRequested()) return
         if (renderer == null) {
@@ -98,7 +101,7 @@ private class SkyStrikeCaptureApp(private val root: Path) : EditorApp {
             Matrix4f().setOrtho(-halfX, halfX, -halfY, halfY, 300f, 0.1f, true))
         renderer!!.setArcBuffer(sim.arcBuffer())
         val color = target.getColorTextureView() ?: return
-        renderer!!.render(color, target.getDepthTextureView(), sim.buffer(), camera, true,
+        renderer!!.render(sim.buffer(), camera, true,
             specs, WorldTransform.identity(), false)
         glow!!.render(color, target.getDepthTextureView(), sim.buffer(), sim.arcBuffer(), camera,
             specs, target.width, target.height)
@@ -106,8 +109,9 @@ private class SkyStrikeCaptureApp(private val root: Path) : EditorApp {
         val output = root.resolve(folder + shot.asset + "_" + shot.view + ".png")
         Files.createDirectories(output.parent)
         waiting = true
-        Screenshot.takeScreenshot(target) { image ->
-            image.use { it.writeToFile(output) }
+        val image = Screenshot.takeScreenshot(target)
+        image.use {
+            it.writeToFile(output)
             println("[sky-strike-capture] " + output + " arcs=" + sim.arcBuffer().count() +
                 " particles=" + sim.buffer().count())
             index++

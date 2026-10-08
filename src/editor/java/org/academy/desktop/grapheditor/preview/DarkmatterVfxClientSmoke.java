@@ -62,8 +62,7 @@ public final class DarkmatterVfxClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -82,13 +81,13 @@ public final class DarkmatterVfxClientSmoke {
             configured = true;
             mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            if (mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            mc.options.hideGui = false;
             server(p -> {
                 for (int x = -16; x <= 16; x++) for (int z = 160; z <= 245; z++) {
                     p.level().setBlock(new BlockPos(x, 80, z), Blocks.SMOOTH_STONE.defaultBlockState(), 3);
                 }
                 for (int x=-8;x<=8;x++) for(int z=170;z<=190;z++) for(int y=81;y<=85;y++) p.level().setBlock(new BlockPos(x,y,z),Blocks.AIR.defaultBlockState(),3);
-                p.teleportTo(p.level(), 0, 81, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(p, 0, 81, 174.5, 0, 0);
                 p.setGameMode(GameType.CREATIVE);
                 p.getInventory().clearContent();
                 p.setHealth(p.getMaxHealth());
@@ -99,7 +98,7 @@ public final class DarkmatterVfxClientSmoke {
                 var manager = AbilitySystemServer.getSystem(p).getDarkmatterResourceManager();
                 manager.reconcile(p); manager.debugSetPools(p, 100, 0, 0, 0); manager.setAlphaPoints(p, 200);
                 for (var old : p.level().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(80))) old.discard();
-                var zombie = new net.minecraft.world.entity.monster.zombie.Zombie(net.minecraft.world.entity.EntityTypes.ZOMBIE, p.level());
+                var zombie = new net.minecraft.world.entity.monster.Zombie(net.minecraft.world.entity.EntityType.ZOMBIE, p.level());
                 zombie.setPos(0, 81, 180); zombie.setNoAi(true); zombie.setNoGravity(true);
                 zombie.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
                 zombie.setItemSlot(net.minecraft.world.entity.EquipmentSlot.HEAD, new ItemStack(net.minecraft.world.item.Items.DIAMOND_HELMET));
@@ -174,7 +173,7 @@ public final class DarkmatterVfxClientSmoke {
                 require(!DarkmatterRepair.Server.tryPulse(p), "Idle repair does no work");
                 require(manager.getView(p).totalMatter() == before, "Idle repair spends no MP");
                 Skills.DARKMATTER_REPAIR.get().toggle(p);
-                var cow = new net.minecraft.world.entity.animal.cow.Cow(net.minecraft.world.entity.EntityTypes.COW, p.level());
+                var cow = new net.minecraft.world.entity.animal.Cow(net.minecraft.world.entity.EntityType.COW, p.level());
                 cow.setPos(0, 81, 178); cow.setNoAi(true); cow.setNoGravity(true);
                 cow.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1000);
                 cow.setHealth(1000); p.level().addFreshEntity(cow); friendly = cow;
@@ -209,11 +208,11 @@ public final class DarkmatterVfxClientSmoke {
         if (ticks == 335) {
             yaw = -22;
             server(p -> {
-            p.teleportTo(p.level(), -3, 81, 174.5, Set.of(), yaw, 0, false);
+            SmokePort.tp(p, -3, 81, 174.5, yaw, 0);
             for(int z=174;z<=190;z++) for(int x=-7;x<=7;x++) p.level().setBlock(new BlockPos(x,84,z),Blocks.AIR.defaultBlockState(),3);
             for (var old : p.level().getEntitiesOfClass(net.minecraft.world.entity.Mob.class, p.getBoundingBox().inflate(40))) old.discard();
-            var target = new net.minecraft.world.entity.animal.cow.Cow(net.minecraft.world.entity.EntityTypes.COW, p.level());
-            var other = new net.minecraft.world.entity.animal.cow.Cow(net.minecraft.world.entity.EntityTypes.COW, p.level());
+            var target = new net.minecraft.world.entity.animal.Cow(net.minecraft.world.entity.EntityType.COW, p.level());
+            var other = new net.minecraft.world.entity.animal.Cow(net.minecraft.world.entity.EntityType.COW, p.level());
             target.setPos(0,81,180); other.setPos(0,81,183);
             for(var mob : java.util.List.of(target,other)) { mob.setNoAi(true); mob.setNoGravity(true); p.level().addFreshEntity(mob); }
             friendly=target; behind=other; targetBefore=target.getHealth(); behindBefore=other.getHealth();
@@ -290,9 +289,8 @@ public final class DarkmatterVfxClientSmoke {
     }
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.darkmatterVfxOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) { Files.createDirectories(output.getParent()); image.writeToFile(output); }
-            catch (Exception exception) { throw new IllegalStateException(exception); }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent()); image.writeToFile(output);
+        } catch (Exception exception) { throw new IllegalStateException(exception); }
     }
 }

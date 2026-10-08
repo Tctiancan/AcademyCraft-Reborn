@@ -16,6 +16,7 @@ import imgui.flag.ImGuiWindowFlags
 import org.academy.desktop.grapheditor.canvas.GraphEditorModel
 import org.academy.desktop.grapheditor.canvas.GraphEditorModelRef
 import org.academy.desktop.platform.DesktopEnvironment
+import org.academy.desktop.platform.textureTarget
 import java.util.*
 
 /**
@@ -63,7 +64,7 @@ class ViewportPanel(
     /** 渲染预览的离屏目标（GraphEditorApp.renderBackground 调用）。带深度缓冲（useDepth=true）供粒子深度测试。 */
     fun renderTarget(): TextureTarget {
         if (target == null) {
-            target = TextureTarget("Graph Viewport", 1280, 720, true, GpuFormat.RGBA8_UNORM)
+            target = textureTarget("Graph Viewport", 1280, 720, true, GpuFormat.RGBA8_UNORM)
         }
         return target!!
     }
@@ -101,26 +102,14 @@ class ViewportPanel(
         val w = (winW * resolutionScale).toInt().coerceAtLeast(64)
         val h = (winH * resolutionScale).toInt().coerceAtLeast(64)
         if (t.width != w || t.height != h) {
-            t.resize(w, h)
+            t.resize(w, h, true)
         }
     }
 
     private fun ensureTexture(): Long {
-        val backend = environment.imguiBackend ?: return 0L
-        val t = target ?: return 0L
-        val view = t.getColorTextureView() ?: return 0L
-        if (sampler == null) {
-            sampler = RenderSystem.getDevice().createSampler(
-                AddressMode.CLAMP_TO_EDGE, AddressMode.CLAMP_TO_EDGE,
-                FilterMode.LINEAR, FilterMode.LINEAR, 1, OptionalDouble.empty()
-            )
-        }
-        if (view !== registeredView) {
-            if (textureId != 0L) backend.unregisterTexture(textureId)
-            textureId = backend.registerTexture(view, sampler!!)
-            registeredView = view
-        }
-        return textureId
+        // C-stun: ImGuiBackend.registerTexture 采用 26.2 的 GPU 离屏纹理契约,
+        // 与 1.21.1 的 com.mojang 纹理视图不兼容, 首版不注册编辑器视口纹理.
+        return 0L
     }
 
     // ---- 轨道相机输入（M14-02） ----

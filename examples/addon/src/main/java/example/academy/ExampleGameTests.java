@@ -13,12 +13,10 @@ import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
-import net.minecraft.server.permissions.PermissionSet;
 import net.minecraft.world.damagesource.DamageTypes;
-import net.minecraft.world.entity.EntityTypes;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -58,7 +56,7 @@ public final class ExampleGameTests {
             nodes.add(new ProgramGraph.Node(i, ExampleAddon.ACTION_ID, 1, config));
             edges.add(new ProgramGraph.Edge(new ProgramGraph.Endpoint(i - 1, "flow"), new ProgramGraph.Endpoint(i, "flow")));
         }
-        return new AbilityProgram(1, UUID.randomUUID(), "Addon API", ExampleAddon.CATEGORY_KEY.identifier(),
+        return new AbilityProgram(1, UUID.randomUUID(), "Addon API", ExampleAddon.CATEGORY_KEY.location(),
                 new ProgramGraph(nodes, edges), ProgramEditorLayout.EMPTY);
     }
 
@@ -66,7 +64,7 @@ public final class ExampleGameTests {
         var server = player.level().getServer();
         try {
             var source = server.createCommandSourceStack().withEntity(player)
-                    .withPermission(PermissionSet.ALL_PERMISSIONS);
+                    .withPermission(4);
             if (server.getCommands().getDispatcher().execute("academy " + command, source) <= 0) {
                 throw new AssertionError("Fixture setup command failed: " + command);
             }
@@ -86,9 +84,8 @@ public final class ExampleGameTests {
         new EmbeddedChannel(connection);
         NetworkRegistry.configureMockConnection(connection);
         server.getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
         var position = helper.absolutePos(new BlockPos(2, 2, 2));
-        player.snapTo(position.getX() + 0.5, position.getY(), position.getZ() + 0.5, 0, 0);
+        player.moveTo(position.getX() + 0.5, position.getY(), position.getZ() + 0.5, 0, 0);
         player.setNoGravity(true);
         var pendingExpiry = new boolean[]{false};
         try {
@@ -141,7 +138,7 @@ public final class ExampleGameTests {
             helper.assertTrue(!AbilityProgramService.execute(player, 0, graph).accepted(), "Level 5 unlock must be enforced");
             command(player, "level 5");
             command(player, "debug cp set @s 1000");
-            var target = helper.spawn(EntityTypes.PIG, new BlockPos(3, 2, 3));
+            var target = helper.spawn(EntityType.PIG, new BlockPos(3, 2, 3));
             helper.assertTrue(SkillDamageSource.of(player, primary).is(ExampleAddon.DAMAGE_TYPE),
                     "Category profile must supply the damage type");
             helper.assertTrue(SkillDamageSource.of(player, secondary).is(DamageTypes.MAGIC),
@@ -151,7 +148,7 @@ public final class ExampleGameTests {
             helper.assertTrue(target.getHealth() < oldHealth, "Registered damage type must reach real settlement");
             target.discard();
             for (var damageProfile : List.of(ExampleAddon.DIRECT.getKey(), ExampleAddon.TRUE.getKey())) {
-                var victim = helper.spawn(EntityTypes.PIG, new BlockPos(3, 2, 3));
+                var victim = helper.spawn(EntityType.PIG, new BlockPos(3, 2, 3));
                 try {
                     victim.getAttribute(Attributes.MAX_ABSORPTION).setBaseValue(6);
                     victim.setAbsorptionAmount(6);

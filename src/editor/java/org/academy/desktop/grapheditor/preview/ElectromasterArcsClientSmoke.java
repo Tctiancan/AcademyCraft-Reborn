@@ -46,8 +46,7 @@ public final class ElectromasterArcsClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -66,7 +65,7 @@ public final class ElectromasterArcsClientSmoke {
             configured = true;
             mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
             mc.options.setCameraType(CameraType.FIRST_PERSON);
-            if (mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            mc.options.hideGui = false;
             server(player -> {
                 var level = player.level();
                 for (int x = -12; x <= 12; x++) {
@@ -79,7 +78,7 @@ public final class ElectromasterArcsClientSmoke {
                 player.setGameMode(GameType.CREATIVE);
                 player.getAbilities().flying = true;
                 player.onUpdateAbilities();
-                player.teleportTo(level, 0, 81, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(player, 0, 81, 174.5, 0, 0);
                 var system = org.academy.api.server.ability.AbilitySystemServer.getSystem(player);
                 var id = player.getUUID();
                 system.setPlayerAbilityCategory(id, AbilityCategories.ELECTROMASTER.get());
@@ -144,9 +143,9 @@ public final class ElectromasterArcsClientSmoke {
         if (ticks == 400 && !lanceCaptured) throw new IllegalStateException("Thunder Lance packet did not produce an effect");
         if (ticks == 420) server(p -> {
             var mirror = new Vec3(0, 82, 195);
-            ElectromasterGraphEffects.spawnBolt(p.level(), new Vec3(-0.4, 82, 175), mirror,
+            ElectromasterGraphEffects.spawnBolt(SmokePort.levelOf(p), new Vec3(-0.4, 82, 175), mirror,
                     ElectromasterGraphEffects.BoltStyle.LANCE);
-            ElectromasterGraphEffects.spawnBolt(p.level(), mirror, new Vec3(7, 82, 183),
+            ElectromasterGraphEffects.spawnBolt(SmokePort.levelOf(p), mirror, new Vec3(7, 82, 183),
                     ElectromasterGraphEffects.BoltStyle.LANCE);
         });
         if (ticks == 425) {
@@ -156,25 +155,25 @@ public final class ElectromasterArcsClientSmoke {
         }
         if (ticks == 445) {
             pitch = 8;
-            server(p -> p.teleportTo(p.level(), 0, 86, 170, Set.of(), 0, 8, false));
-            if (!mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            server(p -> SmokePort.tp(p, 0, 86, 170, 0, 8));
+            if (!mc.options.hideGui) mc.options.hideGui = true;
         }
-        if (ticks == 460) server(p -> ElectromasterArcEffects.spawnSkyStrike(p.level(), new Vec3(3, 81, 192), SkyStrikeProfile.THUNDERCLAP));
+        if (ticks == 460) server(p -> ElectromasterArcEffects.spawnSkyStrike(SmokePort.levelOf(p), new Vec3(3, 81, 192), SkyStrikeProfile.THUNDERCLAP));
         if (ticks == 466) capture("thunderclap");
         if (ticks == 480) { verifyAttachment("sky_strike_thunderclap"); capture("surface_attachment"); }
         if (ticks == 500) {
             pitch = -27;
-            server(p -> p.teleportTo(p.level(), 0, 129, 160, Set.of(), 0, -27, false));
+            server(p -> SmokePort.tp(p, 0, 129, 160, 0, -27));
         }
-        if (ticks == 515) server(p -> ElectromasterArcEffects.spawnSkyStrike(p.level(), new Vec3(3, 81, 192), SkyStrikeProfile.THUNDERCLAP));
+        if (ticks == 515) server(p -> ElectromasterArcEffects.spawnSkyStrike(SmokePort.levelOf(p), new Vec3(3, 81, 192), SkyStrikeProfile.THUNDERCLAP));
         if (ticks == 528) { verifyAttachment("sky_strike_thunderclap"); capture("cloud_attachment"); }
         if (ticks == 537) {
             pitch = 8;
-            server(p -> p.teleportTo(p.level(), 0, 86, 170, Set.of(), 0, 8, false));
+            server(p -> SmokePort.tp(p, 0, 86, 170, 0, 8));
         }
         if (ticks >= 550 && ticks <= 577 && (ticks - 550) % 3 == 0) {
             int n = (ticks - 550) / 3;
-            server(p -> ElectromasterArcEffects.spawnSkyStrike(p.level(),
+            server(p -> ElectromasterArcEffects.spawnSkyStrike(SmokePort.levelOf(p),
                     new Vec3(3 + Math.cos(n * 2.4) * 5, 81, 192 + Math.sin(n * 2.4) * 5), SkyStrikeProfile.LIGHTNING_STORM));
         }
         if (ticks == 581) { verifyAttachment("sky_strike_storm"); capture("storm_attachment"); }
@@ -182,7 +181,7 @@ public final class ElectromasterArcsClientSmoke {
         if (ticks == 660) {
             pitch = 0;
             server(p -> {
-                p.teleportTo(p.level(), 0, 81, 174.5, Set.of(), 0, 0, false);
+                p.teleportTo(SmokePort.levelOf(p), 0, 81, 174.5, 0, 0);
                 p.setData(AttachmentTypes.RAILGUN_DATA, new Railgun.Data(true, false, 20, false, true));
             });
         }
@@ -193,7 +192,7 @@ public final class ElectromasterArcsClientSmoke {
         }
         if (ticks == 672) server(p -> p.removeData(AttachmentTypes.RAILGUN_DATA));
         if (ticks == 680) assertCleared();
-        if (ticks == 700) server(p -> ElectromasterGraphEffects.spawnBolt(p.level(), new Vec3(-0.4, 82, 175),
+        if (ticks == 700) server(p -> ElectromasterGraphEffects.spawnBolt(SmokePort.levelOf(p), new Vec3(-0.4, 82, 175),
                 new Vec3(-0.4, 82, 687), ElectromasterGraphEffects.BoltStyle.ARC));
         if (ticks == 705) { require("arc_generate"); capture("extended_range"); }
         if (ticks == 760) {
@@ -217,8 +216,8 @@ public final class ElectromasterArcsClientSmoke {
     private static void verifyCharge(boolean right) {
         var effect = require("railgun_charge");
         var mc = Minecraft.getInstance();
-        var relative = effect.position().sub(mc.gameRenderer.mainCamera().position().toVector3f(), new org.joml.Vector3f());
-        relative.rotate(new org.joml.Quaternionf(mc.gameRenderer.mainCamera().rotation()).conjugate());
+        var relative = effect.position().sub(mc.gameRenderer.getMainCamera().getPosition().toVector3f(), new org.joml.Vector3f());
+        relative.rotate(new org.joml.Quaternionf(mc.gameRenderer.getMainCamera().rotation()).conjugate());
         if (Math.abs(relative.x - (right ? 0.30f : -0.30f)) > 0.08f || Math.abs(relative.z + 0.46f) > 0.08f)
             throw new IllegalStateException("Hand anchor drifted: " + relative);
     }
@@ -248,12 +247,10 @@ public final class ElectromasterArcsClientSmoke {
 
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.electromasterArcsOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) {
-                Files.createDirectories(output.getParent());
-                image.writeToFile(output);
-                System.out.println("[electric-smoke] capture " + output);
-            } catch (Exception e) { throw new IllegalStateException(e); }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent());
+            image.writeToFile(output);
+            System.out.println("[electric-smoke] capture " + output);
+        } catch (Exception e) { throw new IllegalStateException(e); }
     }
 }

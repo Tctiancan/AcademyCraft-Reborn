@@ -47,8 +47,7 @@ public final class ElectromasterReworkClientSmoke {
                 for (var widget : warning.children()) {
                     if (widget instanceof net.minecraft.client.gui.components.Button button
                             && button.getMessage().getString().equals("Proceed to main menu")) {
-                        button.onPress(new net.minecraft.client.input.MouseButtonEvent(0, 0,
-                                new net.minecraft.client.input.MouseButtonInfo(0, 0)));
+                        button.onPress();
                         break;
                     }
                 }
@@ -67,14 +66,14 @@ public final class ElectromasterReworkClientSmoke {
             configured = true;
             mc.getTutorial().setStep(net.minecraft.client.tutorial.TutorialSteps.NONE);
             mc.options.setCameraType(CameraType.THIRD_PERSON_BACK);
-            if (mc.gui.hud.isHidden()) mc.gui.hud.toggle();
+            mc.options.hideGui = false;
             server(player -> {
                 var level = player.level();
                 player.setGameMode(GameType.SURVIVAL);
                 for (int x = -24; x <= 24; x++) for (int z = 160; z <= 220; z++) {
                     level.setBlock(new net.minecraft.core.BlockPos(x, 80, z), net.minecraft.world.level.block.Blocks.SMOOTH_STONE.defaultBlockState(), 3);
                 }
-                player.teleportTo(level, 0, 83, 174.5, Set.of(), 0, 0, false);
+                SmokePort.tp(player, 0, 83, 174.5, 0, 0);
                 var system = AbilitySystemServer.getSystem(player);
                 var id = player.getUUID();
                 system.setPlayerAbilityCategory(id, AbilityCategories.ELECTROMASTER.get());
@@ -92,7 +91,7 @@ public final class ElectromasterReworkClientSmoke {
                 system.getIronSandResourceService().account(player).recover(10000);
                 org.academy.internal.common.ability.electromaster.skills.lv3.magneticweapon.MagneticWeapon.Server.forceDisable(player);
                 for (var old : level.getEntitiesOfClass(net.minecraft.world.entity.Mob.class, player.getBoundingBox().inflate(64))) old.discard();
-                var pig = new net.minecraft.world.entity.animal.pig.Pig(net.minecraft.world.entity.EntityTypes.PIG, level);
+                var pig = new net.minecraft.world.entity.animal.Pig(net.minecraft.world.entity.EntityType.PIG, level);
                 pig.setPos(0, 83, 181); pig.setNoAi(true); pig.setNoGravity(true);
                 pig.getAttribute(net.minecraft.world.entity.ai.attributes.Attributes.MAX_HEALTH).setBaseValue(1024);
                 pig.setHealth(1024); level.addFreshEntity(pig); target = pig;
@@ -213,7 +212,7 @@ public final class ElectromasterReworkClientSmoke {
             var resource = AbilitySystemServer.getSystem(p).getIronSandResourceService().account(p);
             var mass = resource.current();
             p.invulnerableTime = 0;
-            p.hurtServer(p.level(), p.damageSources().mobAttack(target), 4);
+            p.hurt(p.damageSources().mobAttack(target), 4);
             require(p.getHealth() == hp, "Iron sand absorbs actual health loss");
             require(resource.current() < mass, "Shield only reports paid absorption");
             target.setPos(origin);
@@ -223,7 +222,7 @@ public final class ElectromasterReworkClientSmoke {
             capture(ticks == 46 ? "guard_left" : "guard_right");
         }
         if (ticks == 70) server(p -> {
-            var arrow = new net.minecraft.world.entity.projectile.arrow.Arrow(net.minecraft.world.entity.EntityTypes.ARROW, p.level());
+            var arrow = new net.minecraft.world.entity.projectile.Arrow(net.minecraft.world.entity.EntityType.ARROW, p.level());
             arrow.setPos(p.position().add(-3, 1, 0));
             arrow.setDeltaMovement(2, 0, 0);
             p.level().addFreshEntity(arrow);
@@ -257,9 +256,8 @@ public final class ElectromasterReworkClientSmoke {
     }
     private static void capture(String name) {
         var output = Path.of(System.getProperty("academy.electromasterReworkOutput")).resolve(name + ".png");
-        Screenshot.takeScreenshot(Minecraft.getInstance().gameRenderer.mainRenderTarget(), image -> {
-            try (image) { Files.createDirectories(output.getParent()); image.writeToFile(output); }
-            catch (Exception exception) { throw new IllegalStateException(exception); }
-        });
+        try (com.mojang.blaze3d.platform.NativeImage image = Screenshot.takeScreenshot(Minecraft.getInstance().getMainRenderTarget())) {
+            Files.createDirectories(output.getParent()); image.writeToFile(output);
+        } catch (Exception exception) { throw new IllegalStateException(exception); }
     }
 }

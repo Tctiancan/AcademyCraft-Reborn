@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import net.minecraft.client.InactivityFpsLimit;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.neoforged.api.distmarker.Dist;
@@ -29,6 +28,7 @@ public final class SkillVfxLiveValidationClient {
     private static int ticks, frames, screenshots;
     private static long began, phaseBegan;
     private static TimerQuery gpu;
+    private static TimerQuery.FrameProfile lastProfile;
     private static boolean profiling, ready, finished;
     private SkillVfxLiveValidationClient() {}
     private static Path output() { return Path.of(System.getProperty("academy.vfxValidation.output")); }
@@ -52,9 +52,8 @@ public final class SkillVfxLiveValidationClient {
             mc.options.simulationDistance().set(5);
             mc.options.enableVsync().set(false);
             mc.options.framerateLimit().set(120);
-            mc.options.inactivityFpsLimit().set(InactivityFpsLimit.MINIMIZED);
             mc.options.pauseOnLostFocus = false;
-            write(ROLE + ".ready", mc.player.getGameProfile().name());
+            write(ROLE + ".ready", mc.player.getGameProfile().getName());
             ready = true;
         }
         if (++ticks % 5 != 0) return;
@@ -72,23 +71,23 @@ public final class SkillVfxLiveValidationClient {
         if (ROLE.isEmpty() || finished || Minecraft.getInstance().level == null) return;
         frames++;
         began = System.nanoTime();
-        if (gpu == null) gpu = new TimerQuery();
-        profiling = gpu.getStatus() == TimerQuery.Status.NOT_RECORDING;
-        if (profiling) gpu.beginProfile();
+        if (gpu == null) gpu = TimerQuery.getInstance().orElse(null);
+        lastProfile = null;
+        if (gpu != null) { gpu.beginProfile(); profiling = true; }
     }
 
     @SubscribeEvent
     public static void after(RenderFrameEvent.Post event) {
         if (ROLE.isEmpty() || finished || began == 0 || Minecraft.getInstance().level == null) return;
         long now = System.nanoTime();
-        if (profiling) { gpu.endProfile(); profiling = false; }
+        if (gpu != null && profiling) { lastProfile = gpu.endProfile(); profiling = false; }
         if (!phase.equals(sampledPhase)) {
             sampledPhase = phase; phaseBegan = now; screenshots = 0;
             LOGGER.info("VFX_LIVE_CLIENT {} phase={}", ROLE, phase);
         }
         var stats = VfxGraphManager.INSTANCE.frameStatistics();
         SAMPLES.add(sampledPhase + "," + (now - phaseBegan) / 1e9 + "," + (now - began) / 1e6
-                + "," + gpu.get() / 1e6 + "," + stats.active() + "," + stats.visible() + "," + stats.culled()
+                + "," + (lastProfile == null ? 0 : lastProfile.get()) / 1e6 + "," + stats.active() + "," + stats.visible() + "," + stats.culled()
                 + "," + stats.simulated() + "," + SkillVfxClient.receivedPackets());
         double elapsed = (now - phaseBegan) / 1e9;
         double nextScreenshot = switch (screenshots) { case 0 -> 1.13; case 1 -> 3.17; case 2 -> 6.19; default -> 11.13; };
@@ -96,13 +95,12 @@ public final class SkillVfxLiveValidationClient {
             screenshots++;
             var mc = Minecraft.getInstance();
             Screenshot.grab(output().toFile(), ROLE + "-" + sampledPhase + "-" + screenshots + ".png",
-                    mc.gameRenderer.mainRenderTarget(), 1, message -> LOGGER.info("VFX_CAPTURE {}", message.getString()));
+                    mc.getMainRenderTarget(), message -> LOGGER.info("VFX_CAPTURE {}", message.getString()));
         }
         if (phase.equals("done")) {
             finished = true;
             write(ROLE + "-frames.csv", "phase,phase_seconds,render_cpu_ms,gpu_rolling_ms,active,visible,culled,simulated,received_packets\n"
                     + String.join("\n", SAMPLES) + "\n");
-            gpu.close();
             // Remain connected until the test server finishes its result flush and shuts down.
         }
         began = 0;

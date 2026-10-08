@@ -23,7 +23,7 @@ import org.joml.Vector4f;
  * <p>26.2 版本通过 GPU 命令编码器把"共享四边形 + 每标记实例缓冲 + 屏幕空间扩展"一次性
  * 提交 (GpuBuffer / VertexFormat.builder / GpuCommandEncoder / RenderPipeline); 1.21.1 无这套
  * 即时态设备, 故本实现把每个标记在 CPU 侧解开为一张面向相机的四边形, 以相机相对坐标写入
- * {@link RenderType} 的 {@link BufferBuilder}, 由 {@code RenderSystem} 完成投影.
+ * {@link RenderType} 的 {@link com.mojang.blaze3d.vertex.BufferBuilder}, 由 {@code RenderSystem} 完成投影.
  *
  * <p>尺寸语义保持一致: 标记在屏幕上的像素大小由每标记的 {@code size} 决定 (与距离无关),
  * 颜色为半透明白青 (190,229,235), 深度无关 (不写深度、深度测试恒通过), 半透明混合.

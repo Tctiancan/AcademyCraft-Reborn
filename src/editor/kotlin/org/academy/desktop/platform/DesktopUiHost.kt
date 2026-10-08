@@ -45,12 +45,12 @@ class DesktopUiHost(
 
     fun bind(window: Window) {
         this.window = window
-        environment.clipboardGetter = { GLFW.glfwGetClipboardString(window.handle()) ?: "" }
-        environment.clipboardSetter = { text -> GLFW.glfwSetClipboardString(window.handle(), text) }
-        GLFW.glfwSetCursorPosCallback(window.handle()) { _, x, y -> onCursorPos(x, y) }
-        GLFW.glfwSetMouseButtonCallback(window.handle()) { _, button, action, _ -> onMouseButton(button, action) }
-        GLFW.glfwSetScrollCallback(window.handle()) { _, x, y -> onScroll(x, y) }
-        GLFW.glfwSetKeyCallback(window.handle()) { _, key, scancode, action, mods ->
+        environment.clipboardGetter = { GLFW.glfwGetClipboardString(window.getWindow()) ?: "" }
+        environment.clipboardSetter = { text -> GLFW.glfwSetClipboardString(window.getWindow(), text) }
+        GLFW.glfwSetCursorPosCallback(window.getWindow()) { _, x, y -> onCursorPos(x, y) }
+        GLFW.glfwSetMouseButtonCallback(window.getWindow()) { _, button, action, _ -> onMouseButton(button, action) }
+        GLFW.glfwSetScrollCallback(window.getWindow()) { _, x, y -> onScroll(x, y) }
+        GLFW.glfwSetKeyCallback(window.getWindow()) { _, key, scancode, action, mods ->
             onKey(
                 key,
                 scancode,
@@ -58,11 +58,11 @@ class DesktopUiHost(
                 mods
             )
         }
-        GLFW.glfwSetCharCallback(window.handle()) { _, codepoint -> onChar(codepoint) }
+        GLFW.glfwSetCharCallback(window.getWindow()) { _, codepoint -> onChar(codepoint) }
         framebufferSizeChanged()
         if (app.usesImGui) {
             imGuiBackend = ImGuiBackend(
-                window.handle()
+                window.getWindow()
             ).also { it.init() }
             environment.imguiBackend = imGuiBackend
         }
@@ -70,7 +70,7 @@ class DesktopUiHost(
 
     private fun createTarget() {
         target?.destroyBuffers()
-        target = TextureTarget(
+        target = textureTarget(
             "Editor", environment.physicalWidth, environment.physicalHeight, true, GpuFormat.RGBA8_UNORM
         )
     }
@@ -95,13 +95,13 @@ class DesktopUiHost(
         uiContext.close()
     }
 
-    override fun framebufferSizeChanged() {
+    fun framebufferSizeChanged() {
         val w = window ?: return
-        environment.physicalWidth = w.width
-        environment.physicalHeight = w.height
+        environment.physicalWidth = w.getWidth()
+        environment.physicalHeight = w.getHeight()
         if (!autoTuned) {
             autoTuned = true
-            environment.guiScale = (w.width / TARGET_LOGICAL_WIDTH).coerceIn(0.75f, 4f)
+            environment.guiScale = (w.getWidth() / TARGET_LOGICAL_WIDTH).coerceIn(0.75f, 4f)
         }
         createTarget()
         root.requestLayout()
@@ -109,10 +109,18 @@ class DesktopUiHost(
         surfaceNeedsReconfigure = true
     }
 
-    override fun resizeGui() {
+    override fun resizeDisplay() {
+        framebufferSizeChanged()
+    }
+
+    override fun setWindowActive(windowActive: Boolean) {
+        // C-stun: 编辑器窗口焦点不驱动额外逻辑.
     }
 
     override fun cursorEntered() {
+    }
+
+    fun resizeGui() {
     }
 
     private fun onCursorPos(x: Double, y: Double) {
