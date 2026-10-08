@@ -1,6 +1,7 @@
 package org.academy.api.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -23,9 +24,9 @@ class InputSystemMaintainedBindingTest {
         InputSystem.addMaintainedKeyBinding(
                 BINDING,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G,
-                        InputSystem.ANY_ACTION, InputConstants.MOD_ALT),
-                _ -> starts.incrementAndGet(),
-                _ -> stops.incrementAndGet()
+                        InputSystem.ANY_ACTION, GLFW.GLFW_MOD_ALT),
+                b -> starts.incrementAndGet(),
+                b -> stops.incrementAndGet()
         );
 
         InputSystem.dispatchMaintainedForTesting(BINDING, context(InputConstants.PRESS));
@@ -45,9 +46,9 @@ class InputSystemMaintainedBindingTest {
                 BINDING,
                 InputSystem.combo(InputSystem.InputType.KEYBOARD, InputConstants.KEY_G,
                         InputSystem.ANY_ACTION, 0),
-                _ -> {
+                b -> {
                 },
-                _ -> stops.incrementAndGet()
+                b -> stops.incrementAndGet()
         );
 
         InputSystem.dispatchMaintainedForTesting(BINDING, context(InputConstants.PRESS));
@@ -62,7 +63,7 @@ class InputSystemMaintainedBindingTest {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_G,
                 action,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
     }
 }

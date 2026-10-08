@@ -33,7 +33,7 @@ class PrecisionProgramExecutionBridgeTest {
                 100L,
                 view,
                 transaction,
-                (nodeId, _) -> {
+                (nodeId, inputs) -> {
                     staged.add(nodeId);
                     return () -> ProgramActionTransaction.Undo.NONE;
                 }
@@ -61,7 +61,7 @@ class PrecisionProgramExecutionBridgeTest {
                 100L,
                 view,
                 transaction,
-                (_, _) -> () -> ProgramActionTransaction.Undo.NONE
+                (context, inputs) -> () -> ProgramActionTransaction.Undo.NONE
         );
 
         assertFalse(replay.valid());
@@ -86,7 +86,7 @@ class PrecisionProgramExecutionBridgeTest {
                 100L,
                 view,
                 transaction,
-                (_, _) -> null
+                (context, inputs) -> null
         );
 
         assertFalse(replay.valid());
@@ -112,7 +112,7 @@ class PrecisionProgramExecutionBridgeTest {
                 100L,
                 view,
                 transaction,
-                (_, inputs) -> {
+                (context, inputs) -> {
                     var value = inputs.requireCompatible(
                             "subjects", ProgramValueTypes.ENTITY_SET).value();
                     subjects.addAll((List<?>) value);
@@ -153,7 +153,7 @@ class PrecisionProgramExecutionBridgeTest {
                 100L,
                 view,
                 transaction,
-                (_, _) -> () -> ProgramActionTransaction.Undo.NONE
+                (context, inputs) -> () -> ProgramActionTransaction.Undo.NONE
         );
 
         assertTrue(replay.valid());
@@ -210,7 +210,7 @@ class PrecisionProgramExecutionBridgeTest {
                 new FakeView(caster),
                 resolver,
                 transaction,
-                (_, _) -> () -> ProgramActionTransaction.Undo.NONE
+                (context, inputs) -> () -> ProgramActionTransaction.Undo.NONE
         );
 
         assertTrue(replay.valid(), () -> replay.toString());
@@ -252,7 +252,7 @@ class PrecisionProgramExecutionBridgeTest {
                 new FakeView(caster),
                 new FakeTargetResolver(caster),
                 transaction,
-                (context, kind, _, _) -> {
+                (context, kind, inputs, state) -> {
                     assertEquals(PrecisionGraph.NodeKind.END_INTRUSION, kind);
                     visited.add(context.nodeId());
                     context.attachment(ProgramExecutionFrame.class).orElseThrow().stage(
@@ -330,7 +330,7 @@ class PrecisionProgramExecutionBridgeTest {
                 100L,
                 view,
                 new ProgramActionTransaction(),
-                (_, _) -> () -> ProgramActionTransaction.Undo.NONE
+                (context, inputs) -> () -> ProgramActionTransaction.Undo.NONE
         );
     }
 

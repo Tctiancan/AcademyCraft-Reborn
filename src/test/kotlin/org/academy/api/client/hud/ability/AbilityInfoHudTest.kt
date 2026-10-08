@@ -3,6 +3,7 @@
 import com.google.gson.Gson
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.resources.ResourceLocation
+import org.lwjgl.glfw.GLFW
 import org.academy.api.client.ability.AbilitySystemClient
 import org.academy.api.client.input.InputSystem
 import org.academy.api.common.ability.AbilityCategory
@@ -73,12 +74,12 @@ class AbilityInfoHudTest {
         val config = AbilitySystemClient.Config()
         val name = "test_selected_release"
         config.setKeyBinding(name, InputSystem.combo(
-            InputSystem.InputType.MOUSE, 4, InputConstants.RELEASE, InputConstants.MOD_ALT
+            InputSystem.InputType.MOUSE, 4, InputConstants.RELEASE, GLFW.GLFW_MOD_ALT
         ))
         val actual = getHudBindingMigratingDefaults(config, name, InputConstants.KEY_C, InputSystem.ANY_ACTION)
         assertTrue(actual.type == InputSystem.InputType.MOUSE)
         assertTrue(actual.keys == setOf(4))
-        assertTrue(actual.modifiers == InputConstants.MOD_ALT)
+        assertTrue(actual.modifiers == GLFW.GLFW_MOD_ALT)
         assertTrue(actual.action == InputSystem.ANY_ACTION)
     }
 

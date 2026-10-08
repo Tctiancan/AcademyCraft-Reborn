@@ -41,7 +41,7 @@ class ProgramSessionSchedulerTest {
                 8,
                 0,
                 10,
-                (_, termination) -> terminations.add(termination)
+                (context, termination) -> terminations.add(termination)
         ));
 
         scheduler.tick(0);
@@ -77,7 +77,7 @@ class ProgramSessionSchedulerTest {
                 8,
                 101,
                 10,
-                (_, termination) -> terminations.add(termination)
+                (context, termination) -> terminations.add(termination)
         ));
 
         scheduler.tick(101);
@@ -104,7 +104,7 @@ class ProgramSessionSchedulerTest {
                 2,
                 10,
                 2,
-                (_, termination) -> terminations.add(termination)
+                (context, termination) -> terminations.add(termination)
         ));
         assertFalse(scheduler.start(
                 "session",
@@ -114,7 +114,7 @@ class ProgramSessionSchedulerTest {
                 2,
                 10,
                 2,
-                (_, _) -> {
+                (context, termination) -> {
                 }
         ));
 
@@ -135,17 +135,17 @@ class ProgramSessionSchedulerTest {
         var executions = new AtomicInteger();
         var program = compile(List.of(STOP));
         ProgramExecutorLookup executors = type -> type.equals(STOP)
-                ? (_, _, _) -> {
+                ? (context, inputs, state) -> {
             executions.incrementAndGet();
             return ProgramNodeStep.stop();
         }
                 : null;
         assertTrue(scheduler.start(
                 "first", program, executors, null, 4, 0, 10,
-                (_, _) -> scheduler.cancel("second")
+                (context, termination) -> scheduler.cancel("second")
         ));
         assertTrue(scheduler.start(
-                "second", program, executors, null, 4, 0, 10, (_, _) -> {
+                "second", program, executors, null, 4, 0, 10, (context, termination) -> {
                 }
         ));
 
@@ -160,11 +160,11 @@ class ProgramSessionSchedulerTest {
         var scheduler = new ProgramSessionScheduler<String>();
         var program = compile(List.of(STOP));
         assertTrue(scheduler.start(
-                "first", program, executors()::get, null, 4, 0, 10, (_, _) -> {
+                "first", program, executors()::get, null, 4, 0, 10, (context, termination) -> {
                 }
         ));
         assertTrue(scheduler.start(
-                "second", program, executors()::get, null, 4, 0, 10, (_, _) -> {
+                "second", program, executors()::get, null, 4, 0, 10, (context, termination) -> {
                 }
         ));
 
@@ -205,9 +205,9 @@ class ProgramSessionSchedulerTest {
 
     private static Map<ResourceLocation, ProgramNodeExecutor<?>> executors() {
         return Map.of(
-                YIELD, (_, _, _) -> ProgramNodeStep.yield("flow", 3),
-                LOOP, (_, _, _) -> ProgramNodeStep.next("flow"),
-                STOP, (_, _, _) -> ProgramNodeStep.stop()
+                YIELD, (context, inputs, state) -> ProgramNodeStep.yield("flow", 3),
+                LOOP, (context, inputs, state) -> ProgramNodeStep.next("flow"),
+                STOP, (context, inputs, state) -> ProgramNodeStep.stop()
         );
     }
 

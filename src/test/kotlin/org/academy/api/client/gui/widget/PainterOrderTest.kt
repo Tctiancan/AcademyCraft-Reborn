@@ -1,8 +1,6 @@
 package org.academy.api.client.gui.widget
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.command.PosColorRectDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
@@ -10,8 +8,10 @@ import org.academy.api.client.gui.layout.MeasureSpec
 import org.academy.api.client.gui.render.BatchProcessor
 import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.render.ScissorRect
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.UniformPayload
+import java.nio.ByteBuffer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -69,13 +69,13 @@ class PainterOrderTest {
     }
 
     private object NoopUploader : BatchProcessor.UboUploader {
-        override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): GpuBufferSlice =
+        override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer =
             error("no uniforms expected")
     }
 
     private fun poseAt(x: Float, y: Float): PoseStack.Pose {
         val stack = PoseStack()
-        stack.last().translate(x, y, 0f)
+        stack.translate(x, y, 0f)
         return stack.last()
     }
 

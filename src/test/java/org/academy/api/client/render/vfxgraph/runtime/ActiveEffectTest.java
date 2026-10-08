@@ -34,7 +34,7 @@ class ActiveEffectTest {
             boolean[] visible = {true};
             var path = new org.academy.api.common.arc.ArcPath(new org.academy.api.common.arc.path.LinePath(
                     new Vector3f(), new Vector3f(0, 2, 0)), List.of(), 4, List.of());
-            active.bindArcs("paths", _ -> visible[0] ? List.of(path) : List.of());
+            active.bindArcs("paths", t -> visible[0] ? List.of(path) : List.of());
             active.tick(0.05f);
             assertEquals(2, active.effect().arcBuffer().count());
             active.reload(system);

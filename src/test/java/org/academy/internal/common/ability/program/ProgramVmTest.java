@@ -374,13 +374,13 @@ class ProgramVmTest {
 
     private static Map<ResourceLocation, ProgramNodeExecutor<?>> executors() {
         var result = new HashMap<ResourceLocation, ProgramNodeExecutor<?>>();
-        result.put(LOOP, (context, _, _) -> {
+        result.put(LOOP, (context, inputs, state) -> {
             var counter = context.variable("counter")
                     .map(value -> (Integer) value.value())
                     .orElse(0);
             return ProgramNodeStep.next(counter < 3 ? "body" : "done");
         });
-        result.put(CALL_LOOP, (context, _, _) -> {
+        result.put(CALL_LOOP, (context, inputs, state) -> {
             var counter = context.variable("counter")
                     .map(value -> (Integer) value.value())
                     .orElse(0);
@@ -388,17 +388,17 @@ class ProgramVmTest {
                     ? ProgramNodeStep.call("body", Map.of())
                     : ProgramNodeStep.next("done");
         });
-        result.put(INCREMENT, (context, _, _) -> {
+        result.put(INCREMENT, (context, inputs, state) -> {
             var counter = context.variable("counter")
                     .map(value -> (Integer) value.value())
                     .orElse(0);
             context.setVariable("counter", new ProgramValue<>(ProgramValueTypes.INTEGER, counter + 1));
             return ProgramNodeStep.next("flow");
         });
-        result.put(YIELD, (_, _, _) -> ProgramNodeStep.yield("flow", 3));
-        result.put(CONTINUE_LOOP, (_, _, _) -> ProgramNodeStep.continueLoop());
-        result.put(BREAK_LOOP, (_, _, _) -> ProgramNodeStep.breakLoop());
-        result.put(STOP, (context, _, _) -> {
+        result.put(YIELD, (context, inputs, state) -> ProgramNodeStep.yield("flow", 3));
+        result.put(CONTINUE_LOOP, (context, inputs, state) -> ProgramNodeStep.continueLoop());
+        result.put(BREAK_LOOP, (context, inputs, state) -> ProgramNodeStep.breakLoop());
+        result.put(STOP, (context, inputs, state) -> {
             context.setVariable("stopped", new ProgramValue<>(ProgramValueTypes.BOOLEAN, true));
             return ProgramNodeStep.stop();
         });

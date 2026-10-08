@@ -100,7 +100,7 @@ class ElectricArcVfxTest {
         var sim = simulator("magnetic_weapon");
         var path = new org.academy.api.common.arc.ArcPath(new org.academy.api.common.arc.path.LinePath(
                 new org.joml.Vector3f(2, 3, 4), new org.joml.Vector3f(2, 25, 4)), List.of(), 8, List.of());
-        sim.setArcSource("paths", _ -> java.util.Collections.nCopies(40, path));
+        sim.setArcSource("paths", t -> java.util.Collections.nCopies(40, path));
         for (int frame = 0; frame < 100; frame++) {
             at(sim, frame * 0.016f);
             assertEquals(32, sim.arcBuffer().count());
@@ -111,7 +111,7 @@ class ElectricArcVfxTest {
             assertEquals(0.12f, arc.r());
             assertEquals(0.78f, sim.arcBuffer().arc(1).r());
         }
-        sim.setArcSource("paths", _ -> List.of());
+        sim.setArcSource("paths", t -> List.of());
         at(sim, 2);
         assertEquals(0, sim.arcBuffer().count(), "An inactive blade must not show the editor demo");
     }

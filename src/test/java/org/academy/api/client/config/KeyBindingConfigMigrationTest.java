@@ -3,6 +3,7 @@ package org.academy.api.client.config;
 import com.google.gson.Gson;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.academy.api.client.input.InputSystem;
+import org.lwjgl.glfw.GLFW;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -36,7 +37,7 @@ class KeyBindingConfigMigrationTest {
         assertEquals(InputSystem.InputType.MOUSE, binding.type());
         assertEquals(Set.of(1), binding.keys());
         assertEquals(InputConstants.PRESS, binding.action());
-        assertEquals(InputConstants.MOD_SHIFT | InputConstants.MOD_ALT, binding.modifiers());
+        assertEquals(GLFW.GLFW_MOD_SHIFT | GLFW.GLFW_MOD_ALT, binding.modifiers());
         assertTrue(binding.availableWhenScreen());
 
         var migrated = GSON.toJsonTree(config).getAsJsonObject()
@@ -88,7 +89,7 @@ class KeyBindingConfigMigrationTest {
 
         assertEquals(Set.of(82), binding.keys());
         assertEquals(InputConstants.RELEASE, binding.action());
-        assertEquals(InputConstants.MOD_CONTROL, binding.modifiers());
+        assertEquals(GLFW.GLFW_MOD_CONTROL, binding.modifiers());
     }
 
     @Test
@@ -98,13 +99,13 @@ class KeyBindingConfigMigrationTest {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_X,
                 InputConstants.PRESS,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
         var currentDefault = InputSystem.combo(
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_N,
                 InputConstants.PRESS,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
         config.setKeyBinding(NAME, obsoleteDefault);
 
@@ -209,7 +210,7 @@ class KeyBindingConfigMigrationTest {
 
         assertEquals(InputSystem.ANY_ACTION, binding.action());
         assertEquals(Set.of(71), binding.keys());
-        assertEquals(InputConstants.MOD_ALT, binding.modifiers());
+        assertEquals(GLFW.GLFW_MOD_ALT, binding.modifiers());
         assertFalse(config.containsKeyBinding("legacy_press"));
         assertFalse(config.containsKeyBinding("legacy_release"));
         assertTrue(config.containsKeyBinding("logical_hold"));

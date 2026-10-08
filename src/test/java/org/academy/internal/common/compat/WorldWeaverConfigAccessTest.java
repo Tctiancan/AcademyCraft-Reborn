@@ -52,11 +52,11 @@ class WorldWeaverConfigAccessTest {
             for (var task : tasks) task.get(15, TimeUnit.SECONDS);
         }
         var saved = NbtIo.read(new DataInputStream(new ByteArrayInputStream(encode(root))))
-                .getCompoundOrEmpty("pillars");
+                .getCompound("pillars");
         assertEquals(4000, saved.size());
         for (var worker = 0; worker < 4; worker++) {
-            for (var i = 0; i < 1000; i++) assertEquals(i, saved.getIntOr(worker + "_" + i, -1));
-        }
+                for (var i = 0; i < 1000; i++) assertEquals(i, saved.getInt(worker + "_" + i));
+            }
     }
 
     @Test

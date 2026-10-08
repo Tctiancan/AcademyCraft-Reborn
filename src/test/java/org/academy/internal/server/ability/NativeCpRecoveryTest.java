@@ -129,9 +129,9 @@ class NativeCpRecoveryTest {
         occupations.add(new AbilityData.CpOccupationData(-20, 0, "unknown", true));
         occupations.add(new AbilityData.CpOccupationData(Float.MAX_VALUE, 0, "unknown", true));
         occupations.add(new AbilityData.CpOccupationData(Float.MAX_VALUE, 0, "unknown", true));
-        assertTrue(PlayerCPManager.releaseInvalidOccupations(data, occupations, _ -> false, 100));
+        assertTrue(PlayerCPManager.releaseInvalidOccupations(data, occupations, c -> false, 100));
         assertTrue(occupations.isEmpty());
         assertEquals(100, data.getAvailableCP());
-        assertFalse(PlayerCPManager.releaseInvalidOccupations(data, occupations, _ -> false, 100));
+        assertFalse(PlayerCPManager.releaseInvalidOccupations(data, occupations, c -> false, 100));
     }
 }

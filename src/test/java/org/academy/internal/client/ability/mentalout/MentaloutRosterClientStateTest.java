@@ -113,7 +113,7 @@ class MentaloutRosterClientStateTest {
     @Test
     void eachNewFullChunkExtendsTheTransferDeadline() {
         var requests = new AtomicInteger();
-        MentaloutRosterClientState.setResyncRequester(_ -> requests.incrementAndGet());
+        MentaloutRosterClientState.setResyncRequester(s -> requests.incrementAndGet());
         var firstChunk = Collections.nCopies(64, entry("first"));
         MentaloutRosterClientState.applyFullStart(5L, 2, 65, 30, 20);
 
@@ -128,7 +128,7 @@ class MentaloutRosterClientStateTest {
     @Test
     void revisionGapResyncIsRetriedWhenTheResponseIsLost() {
         var requests = new AtomicInteger();
-        MentaloutRosterClientState.setResyncRequester(_ -> requests.incrementAndGet());
+        MentaloutRosterClientState.setResyncRequester(s -> requests.incrementAndGet());
 
         assertFalse(MentaloutRosterClientState.applyDelta(
                 2L,
@@ -196,7 +196,7 @@ class MentaloutRosterClientStateTest {
     @Test
     void malformedFullShapeCannotLeaveATransferPending() {
         var requests = new AtomicInteger();
-        MentaloutRosterClientState.setResyncRequester(_ -> requests.incrementAndGet());
+        MentaloutRosterClientState.setResyncRequester(s -> requests.incrementAndGet());
 
         MentaloutRosterClientState.applyFullStart(5L, 2, 2, 30, 20);
 

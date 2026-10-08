@@ -51,7 +51,7 @@ class ShaderGraphPipelineTest {
         assertNotNull(result.pipeline());
         assertNotNull(result.layout());
         assertEquals("Time", result.layout().entries().getFirst().name());
-        assertNotNull(result.pipeline().getLocation());
+        assertNotNull(result.pipeline().getName());
     }
 
     @Test
@@ -97,9 +97,9 @@ class ShaderGraphPipelineTest {
         var result = new ShaderGraphPipeline(glslRegistry).compile(graph, compiled);
 
         assertEquals(2, result.layout().samplers().size());
-        var samplerGroup = result.pipeline().getBindGroupLayouts().stream()
-                .filter(g -> !g.getSamplers().isEmpty())
-                .findFirst().orElseThrow();
-        assertEquals(List.of("Sampler0", "Sampler1"), samplerGroup.getSamplers());
+        var samplerNames = result.layout().samplers().stream()
+                .map(s -> s.uniformName())
+                .toList();
+        assertEquals(List.of("Sampler0", "Sampler1"), samplerNames);
     }
 }

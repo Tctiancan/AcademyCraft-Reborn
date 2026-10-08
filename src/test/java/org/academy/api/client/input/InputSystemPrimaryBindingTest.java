@@ -1,6 +1,7 @@
 package org.academy.api.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -45,7 +46,7 @@ class InputSystemPrimaryBindingTest {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_LEFT,
                         InputConstants.RELEASE,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 ),
                 ignored -> {
                 }
@@ -57,7 +58,7 @@ class InputSystemPrimaryBindingTest {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_LEFT,
                         InputConstants.PRESS,
-                        InputConstants.MOD_ALT
+                        GLFW.GLFW_MOD_ALT
                 )
         ));
         assertFalse(InputSystem.matchesKeyBindingGesture(
@@ -66,7 +67,7 @@ class InputSystemPrimaryBindingTest {
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_LEFT,
                         InputConstants.PRESS,
-                        InputConstants.MOD_CONTROL
+                        GLFW.GLFW_MOD_CONTROL
                 )
         ));
     }

@@ -1,6 +1,7 @@
 package org.academy.internal.client.ability.program;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import org.academy.AcademyCraft;
 import org.academy.api.client.input.InputSystem;
 import org.academy.api.common.ability.program.AbilityProgram;
@@ -58,7 +59,7 @@ class AbilityProgramEditorClientTest {
             assertEquals(InputSystem.InputType.KEYBOARD, key.type());
             assertEquals(Set.of(keyCode), key.keys());
             assertEquals(InputConstants.PRESS, key.action());
-            assertEquals(InputConstants.MOD_ALT, key.modifiers());
+            assertEquals(GLFW.GLFW_MOD_ALT, key.modifiers());
             assertFalse(key.availableWhenScreen());
             assertFalse(key.unbound());
         }

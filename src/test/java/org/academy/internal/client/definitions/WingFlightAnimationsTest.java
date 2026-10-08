@@ -10,14 +10,14 @@ class WingFlightAnimationsTest {
     @Test
     void convertsGeckoLibRotationAxesToMinecraftCoordinates() {
         var fastRootRotation = WingFlightAnimations.FLYING_FAST
-                .boneAnimations().get("root").get(1).keyframes()[0].postTarget();
+                .boneAnimations().get("root").get(1).keyframes()[0].target();
         assertEquals((float) Math.toRadians(72.5f), fastRootRotation.x(), EPSILON);
         var fastHeadRotation = WingFlightAnimations.FLYING_FAST
-                .boneAnimations().get("head").get(1).keyframes()[0].postTarget();
+                .boneAnimations().get("head").get(1).keyframes()[0].target();
         assertEquals((float) Math.toRadians(-65.0f), fastHeadRotation.x(), EPSILON);
 
         var slowStartArmRotation = WingFlightAnimations.START_FLYING_SLOW
-                .boneAnimations().get("right_arm").get(1).keyframes()[1].postTarget();
+                .boneAnimations().get("right_arm").get(1).keyframes()[1].target();
         assertEquals((float) Math.toRadians(2.3518f), slowStartArmRotation.y(), EPSILON);
         assertEquals((float) Math.toRadians(24.8632f), slowStartArmRotation.z(), EPSILON);
     }

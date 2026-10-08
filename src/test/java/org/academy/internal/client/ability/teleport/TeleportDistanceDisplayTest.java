@@ -8,9 +8,9 @@ class TeleportDistanceDisplayTest {
     @Test
     void distanceUsesBlockCountWhileExistingSlidersKeepPercentages() {
         var percentage = new SkillSettingsRegistry.FloatRange(
-                "intensity", "", 0, 1, 0.05f, () -> 0.5f, _ -> {}, () -> {});
+                "intensity", "", 0, 1, 0.05f, () -> 0.5f, t -> {}, () -> {});
         var distance = new SkillSettingsRegistry.FloatRange(
-                "distance", "", 0, 64, 1, () -> 12, _ -> {}, () -> {},
+                "distance", "", 0, 64, 1, () -> 12, t -> {}, () -> {},
                 value -> Integer.toString(Math.round(value)));
         assertEquals("50%", percentage.formatValue(0.5f));
         assertEquals("12", distance.formatValue(12));

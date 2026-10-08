@@ -1,17 +1,17 @@
 package org.academy.api.client.gui.render
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice
 import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.renderer.DynamicUniformStorage.DynamicUniform
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.UniformPayload
+import java.nio.ByteBuffer
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 
 class BatchProcessorCullTest {
     private val uploader = object : BatchProcessor.UboUploader {
-        override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): GpuBufferSlice =
+        override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer =
             error("culled commands must not be uploaded")
     }
 

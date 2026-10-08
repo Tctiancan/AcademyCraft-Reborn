@@ -1,6 +1,7 @@
 package org.academy.api.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
@@ -50,9 +51,9 @@ class InputSystemPairedBindingTest {
     @Test
     void unrelatedReleaseBindingIsNotCancelledWithActivePair() {
         var stops = new AtomicInteger();
-        InputSystem.addKeyBinding(START, combo(InputConstants.PRESS), _ -> {});
+        InputSystem.addKeyBinding(START, combo(InputConstants.PRESS), b -> {});
         InputSystem.addKeyBinding(UNRELATED, combo(InputConstants.RELEASE),
-                _ -> stops.incrementAndGet());
+                b -> stops.incrementAndGet());
 
         InputSystem.dispatchPairedForTesting(START, context(InputConstants.PRESS));
         InputSystem.cancelMaintainedKeyBindings();
@@ -61,8 +62,8 @@ class InputSystemPairedBindingTest {
     }
 
     private static void register(AtomicInteger starts, AtomicInteger stops) {
-        InputSystem.addKeyBinding(START, combo(InputConstants.PRESS), _ -> starts.incrementAndGet());
-        InputSystem.addKeyBinding(STOP, combo(InputConstants.RELEASE), _ -> stops.incrementAndGet());
+        InputSystem.addKeyBinding(START, combo(InputConstants.PRESS), b -> starts.incrementAndGet());
+        InputSystem.addKeyBinding(STOP, combo(InputConstants.RELEASE), b -> stops.incrementAndGet());
     }
 
     private static InputSystem.KeyCombination combo(int action) {
@@ -70,7 +71,7 @@ class InputSystemPairedBindingTest {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_G,
                 action,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
     }
 
@@ -79,7 +80,7 @@ class InputSystemPairedBindingTest {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_G,
                 action,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
     }
 }

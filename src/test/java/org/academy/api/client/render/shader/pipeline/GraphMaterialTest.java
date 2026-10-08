@@ -1,6 +1,6 @@
 package org.academy.api.client.render.shader.pipeline;
 
-import com.mojang.blaze3d.buffers.Std140Builder;
+import org.academy.api.client.render.Std140Builder;
 import org.academy.api.client.render.graph.model.GraphParameter;
 import org.academy.api.client.render.graph.type.Curve;
 import org.academy.api.client.render.graph.type.Value;
@@ -15,14 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import com.mojang.blaze3d.buffers.Std140Builder;
 import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.Optional;
-import org.academy.api.client.render.graph.model.GraphParameter;
-import org.academy.api.client.render.graph.type.Value;
-import org.academy.api.client.render.graph.type.ValueType;
-import org.junit.jupiter.api.Test;
 
 class GraphMaterialTest {
     private static GraphParameter param(String id, ValueType type, Value def) {

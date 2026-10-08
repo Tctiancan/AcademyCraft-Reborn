@@ -1,35 +1,41 @@
 package org.academy.internal.coremod.transform;
 
-import net.neoforged.neoforgespi.transformation.ClassProcessor;
-import net.neoforged.neoforgespi.transformation.ClassProcessorIds;
-import net.neoforged.neoforgespi.transformation.ClassProcessorProvider;
+import cpw.mods.modlauncher.api.ITransformer;
 import org.junit.jupiter.api.Test;
-import org.objectweb.asm.Type;
 
-import java.util.ArrayList;
-import java.util.ServiceLoader;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class AcademyCoremodProviderTest {
     @Test
-    void serviceRegistersThreeTargetedProcessorsAfterMixin() {
-        var provider = ServiceLoader.load(ClassProcessorProvider.class).stream()
-                .map(ServiceLoader.Provider::get)
-                .filter(AcademyCoremodProvider.class::isInstance)
-                .findFirst().orElseThrow();
-        var processors = new ArrayList<ClassProcessor>();
-        provider.createProcessors(new ClassProcessorProvider.Context(), processors::add);
+    void serviceRegistersThreeTargetedTransformers() {
+        var provider = new AcademyCoremodProvider();
+        var transformers = provider.transformers();
 
-        assertEquals(3, processors.size());
-        for (var processor : processors) {
-            assertEquals("academy", processor.name().namespace());
-            assertTrue(processor.runsAfter().contains(ClassProcessorIds.MIXIN));
-            assertFalse(processor.handlesClass(new ClassProcessor.SelectionContext(
-                    Type.getObjectType("example/Unrelated"), false)));
-        }
-        assertTrue(processors.stream().anyMatch(processor -> processor.handlesClass(
-                new ClassProcessor.SelectionContext(Type.getObjectType(
-                        "net/minecraft/world/entity/LivingEntity"), false))));
+        assertEquals("academy_coremod", provider.name());
+        assertEquals(3, transformers.size());
+
+        var expectedClasses = Set.of(
+                "net.minecraft.server.level.ServerLevel",
+                "net.minecraft.client.multiplayer.ClientLevel",
+                "net.minecraft.client.KeyboardHandler",
+                "net.minecraft.client.MouseHandler",
+                "org.academy.api.client.input.InputSystem",
+                "net.minecraft.world.level.levelgen.feature.EndSpikeFeature",
+                "net.minecraft.world.level.levelgen.feature.EndSpikeFeature$EndSpike",
+                "net.minecraft.world.level.levelgen.feature.EndPodiumFeature",
+                "net.minecraft.world.entity.LivingEntity"
+        );
+
+        var actual = transformers.stream()
+                .flatMap(transformer -> transformer.targets().stream())
+                .collect(Collectors.toSet());
+        var expected = expectedClasses.stream()
+                .map(ITransformer.Target::targetClass)
+                .collect(Collectors.toSet());
+
+        assertEquals(expected, actual);
     }
 }

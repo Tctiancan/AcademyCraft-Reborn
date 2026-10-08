@@ -18,12 +18,12 @@ class DevConditionTest {
     void dependencyConditionRejectsAnUnlearnedDependency() {
         assertFalse(DevCondition.DependencyCondition.isSatisfied(
                 "academy:darkmatter_shaping",
-                _ -> false
+                s -> false
         ));
     }
 
     @Test
     void legacyConditionWithoutAnIdRemainsNonBlocking() {
-        assertTrue(DevCondition.DependencyCondition.isSatisfied("", _ -> false));
+        assertTrue(DevCondition.DependencyCondition.isSatisfied("", s -> false));
     }
 }

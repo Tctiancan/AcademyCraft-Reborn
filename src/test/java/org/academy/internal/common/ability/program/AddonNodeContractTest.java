@@ -26,7 +26,7 @@ class AddonNodeContractTest {
         @Override public ProgramNodeRole role() { return ProgramNodeRole.VALUE; }
         @Override public ProgramNodePurity purity() { return ProgramNodePurity.PURE; }
         @Override public ProgramNodeScope scope() { return ProgramNodeScope.category(CATEGORY); }
-        @Override public ProgramNodeExecution<Integer> execution() { return (_, _, _) -> ProgramNodeStep.data(Map.of()); }
+        @Override public ProgramNodeExecution<Integer> execution() { return (context, inputs, state) -> ProgramNodeStep.data(Map.of()); }
         @Override public ProgramNodeEditorMetadata editorMetadata() {
             var config = new JsonObject();
             if (valid) config.addProperty("value", 1);

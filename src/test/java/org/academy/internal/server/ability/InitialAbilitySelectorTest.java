@@ -34,10 +34,10 @@ class InitialAbilitySelectorTest {
     @Test
     void zeroValuesTreatAllProfiledCategoriesAsTied() {
         var categories = activeCategories();
-        var best = InitialAbilitySelector.bestCandidates(categories, _ -> 0.0);
+        var best = InitialAbilitySelector.bestCandidates(categories, c -> 0.0);
 
         assertEquals(categories, best);
-        assertTrue(categories.contains(InitialAbilitySelector.choose(categories, _ -> 0.0)));
+        assertTrue(categories.contains(InitialAbilitySelector.choose(categories, c -> 0.0)));
     }
 
     @Test
@@ -45,7 +45,7 @@ class InitialAbilitySelectorTest {
         var profiled = new TestCategory(0.1f, AbilityDevelopmentProfiles.RESERVED_A);
         var categories = List.of(new Level0(), new TestCategory(0.1f, null), profiled);
 
-        assertEquals(List.of(profiled), InitialAbilitySelector.bestCandidates(categories, _ -> 0.0));
+        assertEquals(List.of(profiled), InitialAbilitySelector.bestCandidates(categories, c -> 0.0));
     }
 
     private static List<AbilityCategory> activeCategories() {

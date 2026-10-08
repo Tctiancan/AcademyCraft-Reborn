@@ -28,8 +28,8 @@ class ChunkSwapServiceSyncTest {
         assertEquals(9, order.size());
         assertEquals(9, new HashSet<>(order).size());
         for (var pos : order) {
-            assertTrue(Math.abs(pos.x() - center.x()) <= 1);
-            assertTrue(Math.abs(pos.z() - center.z()) <= 1);
+            assertTrue(Math.abs(pos.x - center.x) <= 1);
+            assertTrue(Math.abs(pos.z - center.z) <= 1);
         }
     }
 

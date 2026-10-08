@@ -1,6 +1,7 @@
 package org.academy.api.client.input;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,11 +25,11 @@ class InputSystemModifierSnapshotTest {
                 InputSystem.InputType.KEYBOARD,
                 InputConstants.KEY_R,
                 InputConstants.PRESS,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
 
         assertEquals(
-                InputConstants.MOD_ALT,
+                GLFW.GLFW_MOD_ALT,
                 InputSystem.modifiersForDispatch(
                         InputSystem.InputType.KEYBOARD,
                         InputConstants.KEY_R,
@@ -44,11 +45,11 @@ class InputSystemModifierSnapshotTest {
                 InputSystem.InputType.MOUSE,
                 InputConstants.MOUSE_BUTTON_RIGHT,
                 InputConstants.PRESS,
-                InputConstants.MOD_ALT
+                GLFW.GLFW_MOD_ALT
         );
 
         assertEquals(
-                InputConstants.MOD_ALT,
+                GLFW.GLFW_MOD_ALT,
                 InputSystem.modifiersForDispatch(
                         InputSystem.InputType.MOUSE,
                         InputConstants.MOUSE_BUTTON_RIGHT,
@@ -61,12 +62,12 @@ class InputSystemModifierSnapshotTest {
     @Test
     void releaseWithoutMatchingPressUsesCurrentModifiers() {
         assertEquals(
-                InputConstants.MOD_SHIFT,
+                GLFW.GLFW_MOD_SHIFT,
                 InputSystem.modifiersForDispatch(
                         InputSystem.InputType.KEYBOARD,
                         InputConstants.KEY_R,
                         InputConstants.RELEASE,
-                        InputConstants.MOD_SHIFT
+                        GLFW.GLFW_MOD_SHIFT
                 )
         );
     }

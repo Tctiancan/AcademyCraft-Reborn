@@ -28,8 +28,8 @@ class SkyStrikeVisualPacketTest {
     @Test
     void unknownProfileFallsBackToLightweightStorm() {
         var buffer = Unpooled.buffer();
-        Vec3.STREAM_CODEC.encode(buffer, Vec3.ZERO);
-        ByteBufCodecs.LONG.encode(buffer, 9L);
+        buffer.writeDouble(Vec3.ZERO.x).writeDouble(Vec3.ZERO.y).writeDouble(Vec3.ZERO.z);
+        ByteBufCodecs.VAR_LONG.encode(buffer, 9L);
         buffer.writeByte(127);
 
         var decoded = SkyStrikeVisualPacket.CODEC.decode(buffer);

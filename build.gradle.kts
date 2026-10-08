@@ -477,8 +477,8 @@ dependencies {
 
 //    apiAndJarJar(libs.misaka)
 
-    apiAndJarJar(libs.jmsdfgen.core)
-    apiAndJarJar(libs.jmsdfgen.ext)
+//    apiAndJarJar(libs.jmsdfgen.core)
+//    apiAndJarJar(libs.jmsdfgen.ext)
 
     testImplementation(platform("org.junit:junit-bom:5.10.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")

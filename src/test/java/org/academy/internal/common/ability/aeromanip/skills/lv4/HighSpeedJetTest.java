@@ -1,6 +1,7 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.Direction;
@@ -92,7 +93,7 @@ class HighSpeedJetTest {
 
         assertEquals(InputSystem.InputType.KEYBOARD, binding.type());
         assertEquals(InputConstants.RELEASE, binding.action());
-        assertEquals(InputConstants.MOD_SHIFT, binding.modifiers());
+        assertEquals(GLFW.GLFW_MOD_SHIFT, binding.modifiers());
         assertEquals(Set.of(InputConstants.KEY_H), binding.keys());
     }
 }

@@ -48,7 +48,7 @@ class BlockStructureSettlementMotionTest {
     void fixedUpperRegionDoesNotDelegateToFallingPolicy() {
         var policy = BlockStructureSettlementPolicy.fixedAbove(
                 20,
-                (_, _, _, _) -> BlockStructureSettlementMode.FALLING
+                (scanner, root, pos, source) -> BlockStructureSettlementMode.FALLING
         );
 
         assertEquals(BlockStructureSettlementMode.FALLING,

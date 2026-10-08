@@ -61,7 +61,7 @@ class QqProviderTest {
         var exception = assertThrows(IOException.class, () ->
                 MusicProviders.downloadFirstSupported(
                         List.of("first", "second"),
-                        _ -> throwFailure()
+                        name -> throwFailure()
                 ));
 
         assertEquals(2, exception.getSuppressed().length);

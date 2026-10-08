@@ -28,7 +28,7 @@ class SkillDataProtectionTest {
     @Test
     void owningCodeSourceCanUpdateItsPersistentListener() throws ReflectiveOperationException {
         var listenerCalled = new AtomicBoolean();
-        var data = protectedData(getClass(), _ -> listenerCalled.set(true));
+        var data = protectedData(getClass(), b -> listenerCalled.set(true));
 
         data.setEnabled(false);
 
@@ -37,7 +37,7 @@ class SkillDataProtectionTest {
     }
 
     private static CommonSkillData protectedData(Class<?> owner) throws ReflectiveOperationException {
-        return protectedData(owner, _ -> {
+        return protectedData(owner, b -> {
         });
     }
 

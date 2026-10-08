@@ -1,9 +1,5 @@
 package org.academy.internal.coremod.transform;
 
-import net.neoforged.neoforgespi.transformation.ClassProcessor;
-import net.neoforged.neoforgespi.transformation.ProcessorName;
-import net.neoforged.neoforgespi.transformation.SimpleClassProcessor;
-import net.neoforged.neoforgespi.transformation.SimpleTransformationContext;
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -19,10 +15,17 @@ import java.lang.invoke.MethodHandles;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-/** Scope probe for replacing an instance-specific dispatch subclass with load-time method guards. */
+/**
+ * Scope probe for replacing an instance-specific dispatch subclass with load-time
+ * method guards. The original test exercised the 26.2 NeoForge transformation SPI;
+ * this port uses minimal local shims that mirror its selection/transformation flow.
+ */
 class PlayerProtectionLoadTimeProbeTest {
     private static final String BASE = PlayerProtectionLoadTimeProbeTest.class.getName() + "$Base";
     private static final String FOREIGN = PlayerProtectionLoadTimeProbeTest.class.getName() + "$ForeignPlayer";
@@ -110,8 +113,8 @@ class PlayerProtectionLoadTimeProbeTest {
                 var node = new ClassNode();
                 new ClassReader(input).accept(node, ClassReader.EXPAND_FRAMES);
                 var type = Type.getObjectType(node.name);
-                if (processor.handlesClass(new ClassProcessor.SelectionContext(type, false))) {
-                    processor.processClass(new ClassProcessor.TransformationContext(
+                if (processor.handlesClass(new SelectionContext(type, false))) {
+                    processor.processClass(new TransformationContext(
                             type, node, false, (message, args) -> {}, () -> new byte[32]));
                 }
                 var writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES | ClassWriter.COMPUTE_MAXS);
@@ -128,7 +131,7 @@ class PlayerProtectionLoadTimeProbeTest {
         private final Set<Target> targets;
 
         private GuardProcessor(Set<String> names) {
-            targets = names.stream().map(Target::new).collect(java.util.stream.Collectors.toSet());
+            targets = names.stream().map(Target::normalize).collect(Collectors.toSet());
         }
 
         @Override
@@ -189,6 +192,50 @@ class PlayerProtectionLoadTimeProbeTest {
         @Override
         public float getHealth() {
             return 0.0f;
+        }
+    }
+
+    // --- Minimal shims replacing the 26.2 NeoForge transformation SPI ---
+
+    private record ProcessorName(String namespace, String value) {
+        @Override
+        public String toString() {
+            return namespace + ":" + value;
+        }
+    }
+
+    private record Target(String internalName) {
+        private static Target normalize(String name) {
+            return new Target(name.replace('.', '/'));
+        }
+    }
+
+    private record SelectionContext(Type type, boolean runtime) {
+    }
+
+    private record TransformationContext(Type type, ClassNode node, boolean runtime,
+                                         BiConsumer<String, Object[]> logger,
+                                         Supplier<byte[]> resource) {
+    }
+
+    private record SimpleTransformationContext() {
+        private static final SimpleTransformationContext INSTANCE = new SimpleTransformationContext();
+    }
+
+    private abstract static class SimpleClassProcessor {
+        public abstract ProcessorName name();
+
+        public abstract Set<Target> targets();
+
+        public abstract void transform(ClassNode input, SimpleTransformationContext context);
+
+        public boolean handlesClass(SelectionContext context) {
+            return targets().stream()
+                    .anyMatch(target -> target.internalName().equals(context.type().getInternalName()));
+        }
+
+        public void processClass(TransformationContext context) {
+            transform(context.node(), SimpleTransformationContext.INSTANCE);
         }
     }
 }
