@@ -40,8 +40,9 @@ public final class AbilityDamageProfiles {
     }
 
     public static AbilityDamageProfile require(ResourceKey<AbilityDamageProfile> key) {
-        return Registries.DAMAGE_PROFILES.get(key)
-                .orElseThrow(() -> new IllegalStateException("Missing damage profile " + key.location())).value();
+        var profile = Registries.DAMAGE_PROFILES.get(key);
+        if (profile == null) throw new IllegalStateException("Missing damage profile " + key.location());
+        return profile;
     }
 
     public static Optional<AbilityDamageProfile> find(ResourceKey<DamageType> type) {

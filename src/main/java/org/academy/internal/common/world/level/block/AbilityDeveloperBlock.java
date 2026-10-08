@@ -84,7 +84,9 @@ public final class AbilityDeveloperBlock extends MultiBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hitResult) {
-        return interact(level, pos, player);
+        return interact(level, pos, player).consumesAction()
+                ? InteractionResult.sidedSuccess(level.isClientSide())
+                : InteractionResult.PASS;
     }
 
     @Override

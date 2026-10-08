@@ -268,7 +268,7 @@ public class IronSandArsenal extends Skill {
         }
 
         private static void broadcast(ServerPlayer player, DefenseVisualPacket packet) {
-            for (var observer : player.level().players()) {
+            for (var observer : player.serverLevel().players()) {
                 if (observer.distanceToSqr(player) <= 64 * 64) MisakaNetworkServer.send(observer, packet);
             }
         }

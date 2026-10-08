@@ -290,7 +290,7 @@ public final class ChunkMapViewService {
             }
             return;
         }
-        var deadline = net.minecraft.util.Util.getMillis() + TILE_TIME_BUDGET_MS;
+        var deadline = net.minecraft.Util.getMillis() + TILE_TIME_BUDGET_MS;
         var texels = new int[MapTileBuilder.texelCount()];
         var tiles = new ArrayList<ChunkLeapPackets.Tile>();
         var attempts = 0;
@@ -306,7 +306,7 @@ public final class ChunkMapViewService {
                 // Still generating: retry instead of dropping, or the tile is lost for good.
                 session.awaiting.putIfAbsent(pos, tick);
             }
-            if (net.minecraft.util.Util.getMillis() >= deadline) break;
+            if (net.minecraft.Util.getMillis() >= deadline) break;
         }
         if (!tiles.isEmpty()) {
             MisakaNetworkServer.send(player, new ChunkLeapPackets.TilesPacket(

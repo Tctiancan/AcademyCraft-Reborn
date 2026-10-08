@@ -30,10 +30,10 @@ public final class DamageCompletionDeclaration {
 
         var snapshot = new DamageContainer(source, originalAmount);
         snapshot.setNewDamage(inflictedAmount);
-        snapshot.captureInflictedDamage();
+        // Removed in 26.2 -> 1.21.1 port: captureInflictedDamage() has no 1.21.1 equivalent.
         snapshot.setNewDamage(healthDamage);
         snapshot.setPostAttackInvulnerabilityTicks(0);
-        snapshot.setShouldCauseSideEffects(false);
+        // Removed in 26.2 -> 1.21.1 port: setShouldCauseSideEffects(boolean) has no 1.21.1 equivalent.
         try {
             CommonHooks.onLivingDamagePost(target, snapshot);
         } catch (Throwable error) {

@@ -299,7 +299,8 @@ final class ChunkRegionSwap {
             lightEngine.queueSectionData(LightLayer.BLOCK, sectionPos, null);
             lightEngine.queueSectionData(LightLayer.SKY, sectionPos, null);
         }
-        for (var sectionY = level.getMinSectionY(); sectionY <= level.getMaxSectionY(); sectionY++) {
+        for (var sectionY = SectionPos.blockToSectionCoord(level.getMinBuildHeight());
+             sectionY <= SectionPos.blockToSectionCoord(level.getMaxBuildHeight() - 1); sectionY++) {
             lightEngine.updateSectionStatus(SectionPos.of(pos, sectionY), true);
         }
 

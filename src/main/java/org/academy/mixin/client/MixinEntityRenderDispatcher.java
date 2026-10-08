@@ -3,8 +3,10 @@ package org.academy.mixin.client;
 import net.minecraft.client.renderer.culling.Frustum;
 import net.minecraft.client.renderer.entity.EntityRenderDispatcher;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.client.ability.mentalout.MentalIntrusionClientState;
 import org.academy.internal.client.ability.teleport.ChunkLeapGodView;
+import org.academy.internal.client.renderer.entity.layers.CloudroomLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -26,6 +28,15 @@ public abstract class MixinEntityRenderDispatcher {
             CallbackInfoReturnable<Boolean> cir
     ) {
         if (MentalIntrusionClientState.isHidden(entity)) cir.setReturnValue(false);
+        // 26.2 的 LevelExtractor.isEntityVisible 额外要求实体所在方块区块已编译可见，
+        // 云室(异常能力透视)目标依赖该处主动放行；1.21.1 无 LevelExtractor，
+        // 此处并入 1.21.1 的可见性门 (shouldRender) 以保留云室透视。
+        if (entity instanceof LivingEntity living
+                && CloudroomLayer.shouldReveal(living)
+                && culler.isVisible(entity.getBoundingBox())) {
+            cir.setReturnValue(true);
+            return;
+        }
         // God view looks down from outside the world; drawing the player from there is an obstruction.
         if (ChunkLeapGodView.isActive() && entity == net.minecraft.client.Minecraft.getInstance().player) {
             cir.setReturnValue(false);

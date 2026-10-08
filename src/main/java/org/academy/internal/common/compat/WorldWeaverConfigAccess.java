@@ -30,7 +30,7 @@ public final class WorldWeaverConfigAccess {
     }
 
     public static <T> Optional<T> read(CompoundTag tag, String key, Codec<T> codec) {
-        return locked(() -> NbtOps.INSTANCE.getTag(tag, key)
+        return locked(() -> Optional.ofNullable(tag.get(key))
                 .flatMap(element -> codec.parse(NbtOps.INSTANCE, element).result()));
     }
 

@@ -41,8 +41,8 @@ final class ExtensionProgramActions {
         if (!scope.allowsCategory(category) || !scope.requiredCapabilities().contains(key.location())) {
             throw new IllegalArgumentException("Action skill must be declared in the node's required capabilities: " + key.location());
         }
-        var skill = Registries.SKILLS.get(key)
-                .orElseThrow(() -> new IllegalArgumentException("Unknown action skill " + key.location())).value();
+        var skill = Registries.SKILLS.get(key);
+        if (skill == null) throw new IllegalArgumentException("Unknown action skill " + key.location());
         var targets = List.copyOf(action.targets());
         if (targets.size() > 256) throw new IllegalArgumentException("Too many action targets");
         var rawCost = action.cpCost();

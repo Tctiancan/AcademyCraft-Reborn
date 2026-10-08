@@ -15,8 +15,6 @@ public final class RegistryProgramNodeLookup implements ProgramNodeLookup {
 
     @Override
     public ProgramNodeType<?> find(ResourceLocation id) {
-        return Registries.PROGRAM_NODE_TYPES.get(id)
-                .map(reference -> reference.value())
-                .orElse(null);
+        return Registries.PROGRAM_NODE_TYPES.get(id);
     }
 }

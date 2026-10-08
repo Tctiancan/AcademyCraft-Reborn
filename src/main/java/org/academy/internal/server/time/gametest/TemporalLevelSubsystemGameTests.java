@@ -14,6 +14,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -58,9 +59,9 @@ public final class TemporalLevelSubsystemGameTests {
         helper.setBlock(6, 1, 1, Blocks.SHULKER_BOX);
         var insideBox = shulkerBox(helper, inside, "inside");
         var outsideBox = shulkerBox(helper, outside, "outside");
-        var weatherData = level.getWeatherData();
+        var weatherData = (ServerLevelData) level.getLevelData();
         var weatherSnapshot = WeatherSnapshot.capture(level);
-        level.getGameRules().set(GameRules.ADVANCE_WEATHER, true, level.getServer());
+        level.getGameRules().getRule(GameRules.RULE_WEATHER_CYCLE).set(true, level.getServer());
         weatherData.setClearWeatherTime(100);
         weatherData.setRainTime(1);
         weatherData.setThunderTime(1);
@@ -140,7 +141,7 @@ public final class TemporalLevelSubsystemGameTests {
             TemporalFieldLease blockEventLease
     ) {
         var level = helper.getLevel();
-        var weatherData = level.getWeatherData();
+        var weatherData = (ServerLevelData) level.getLevelData();
         try {
             helper.assertTrue(
                     weatherData.getClearWeatherTime() < resumedWeatherTime,
@@ -173,22 +174,22 @@ public final class TemporalLevelSubsystemGameTests {
                         TemporalPauseSource.ACADEMY_PAUSE
                 )
         );
-        var pausedAt = level.getDefaultClockTime();
+        var pausedAt = level.getDayTime();
         helper.runAfterDelay(3L, () -> {
             try {
                 helper.assertValueEqual(
-                        level.getDefaultClockTime(),
+                        level.getDayTime(),
                         pausedAt,
                         "Save clock advanced while its temporal channel was paused"
                 );
             } finally {
                 if (lease.isActive()) lease.close();
             }
-            var resumedAt = level.getDefaultClockTime();
+            var resumedAt = level.getDayTime();
             helper.runAfterDelay(3L, () -> {
                 try {
                     helper.assertTrue(
-                            level.getDefaultClockTime() > resumedAt,
+                            level.getDayTime() > resumedAt,
                             "Save clock did not resume after its field closed"
                     );
                 } finally {
@@ -213,23 +214,22 @@ public final class TemporalLevelSubsystemGameTests {
         border.lerpSizeBetween(
                 originalSize,
                 originalSize - 32.0D,
-                20L,
-                level.getGameTime()
+                20L
         );
-        var pausedRemaining = border.getLerpTime();
+        var pausedRemaining = border.getLerpRemainingTime();
         helper.runAfterDelay(3L, () -> {
             try {
                 helper.assertValueEqual(
-                        border.getLerpTime(),
+                        border.getLerpRemainingTime(),
                         pausedRemaining,
                         "World border interpolation advanced during dimension pause"
                 );
                 lease.close();
-                var resumedRemaining = border.getLerpTime();
+                var resumedRemaining = border.getLerpRemainingTime();
                 helper.runAfterDelay(3L, () -> {
                     try {
                         helper.assertTrue(
-                                border.getLerpTime() < resumedRemaining,
+                                border.getLerpRemainingTime() < resumedRemaining,
                                 "World border did not resume after its field closed"
                         );
                         helper.succeed();
@@ -285,26 +285,25 @@ public final class TemporalLevelSubsystemGameTests {
         private static WeatherSnapshot capture(
                 ServerLevel level
         ) {
-            var data = level.getWeatherData();
+            var data = (ServerLevelData) level.getLevelData();
             return new WeatherSnapshot(
                     data.getClearWeatherTime(),
                     data.getRainTime(),
                     data.getThunderTime(),
                     data.isRaining(),
                     data.isThundering(),
-                    level.getGameRules().get(GameRules.ADVANCE_WEATHER)
+                    level.getGameRules().getRule(GameRules.RULE_WEATHER_CYCLE).get()
             );
         }
 
         private void restore(ServerLevel level) {
-            var data = level.getWeatherData();
+            var data = (ServerLevelData) level.getLevelData();
             data.setClearWeatherTime(clearWeatherTime);
             data.setRainTime(rainTime);
             data.setThunderTime(thunderTime);
             data.setRaining(raining);
             data.setThundering(thundering);
-            level.getGameRules().set(
-                    GameRules.ADVANCE_WEATHER,
+            level.getGameRules().getRule(GameRules.RULE_WEATHER_CYCLE).set(
                     advanceWeather,
                     level.getServer()
             );

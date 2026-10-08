@@ -48,7 +48,7 @@ public final class WingFlightNetworkGameTests {
         NetworkRegistry.configureMockConnection(connection);
         var players = helper.getLevel().getServer().getPlayerList();
         players.placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
+        // markClientLoaded() was removed in 26.2 -> 1.21.1 port; no direct equivalent exists
         try {
             var system = org.academy.api.server.ability.AbilitySystemServer.getSystem(player);
             system.setPlayerAbilityCategory(player.getUUID(), org.academy.internal.common.ability.AbilityCategories.ACCELERATOR.get());

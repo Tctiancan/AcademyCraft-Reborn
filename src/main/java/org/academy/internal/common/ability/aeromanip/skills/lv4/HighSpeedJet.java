@@ -270,7 +270,7 @@ public final class HighSpeedJet extends Skill {
             }
 
             private boolean hasTarget() {
-                var partialTick = Minecraft.getInstance().getDeltaTracker()
+                var partialTick = Minecraft.getInstance().getTimer()
                         .getGameTimeDeltaPartialTick(false);
                 return updateTarget(partialTick) != null;
             }

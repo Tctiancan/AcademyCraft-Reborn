@@ -279,7 +279,7 @@ public final class DarkmatterRepair extends Skill {
 
         private static List<ItemStack> findDamagedEquipment(ServerPlayer player) {
             var result = new ArrayList<ItemStack>();
-            for (var stack : player.getInventory().getNonEquipmentItems()) {
+            for (var stack : player.getInventory().items) {
                 if (DarkmatterItemUtil.isNativeEquipment(stack)
                         && DarkmatterItemUtil.integrity(stack) < 0.99999f) result.add(stack);
             }

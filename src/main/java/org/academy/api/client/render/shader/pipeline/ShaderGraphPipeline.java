@@ -1,11 +1,11 @@
 package org.academy.api.client.render.shader.pipeline;
 
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.pipeline.*;
-import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import org.academy.api.client.render.RenderPipeline;
 import org.academy.api.client.render.graph.compile.CompiledGraph;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.shader.codegen.GlslGenerator;
@@ -14,8 +14,11 @@ import org.academy.api.client.render.shader.codegen.GlslNodeRegistry;
 /**
  * Shader 图管线：代码生成 → 动态着色器源注册 → RenderPipeline 构建 → 预编译。
  *
- * <p>全程仅使用图形 API 无关抽象层（PROGRAM.md R1）。预编译经
- * {@link GpuDevice#precompilePipeline(RenderPipeline, com.mojang.blaze3d.shaders.ShaderSource)} 写入管线缓存。</p>
+ * <p>1.21.1 适配：26.2 以图形 API 无关抽象 ({@code GpuDevice/RenderPipeline/BindGroupLayout})
+ * 构建并预编译管线；1.21.1 采用即时态渲染，由 {@code Render.java/VfxPipelines.java} 确立的
+ * 自有 {@link RenderPipeline} + `RenderType` 抽象承载。此处在 {@code buildPipeline} 改走该抽象
+ * ({@code RenderType.gui()} 实化，沿用现有先例) 而非 26.2 的具体管线构造器，预编译经
+ * {@link GpuDevice#precompilePipeline} 垫层包装 (C-stun)。</p>
  */
 public final class ShaderGraphPipeline {
     private final GlslNodeRegistry generators;
@@ -42,25 +45,14 @@ public final class ShaderGraphPipeline {
     }
 
     private static RenderPipeline buildPipeline(ResourceLocation fragment, ResourceLocation vertex, int samplerCount) {
-        var builder = RenderPipeline.builder()
-                .withLocation(ResourceLocation.fromNamespaceAndPath(fragment.getNamespace(), "pipeline/" + fragment.getPath()))
-                .withVertexShader(vertex)
-                .withFragmentShader(fragment)
-                .withBindGroupLayout(BindGroupLayout.builder()
-                        .withUniform(GlslGenerator.UNIFORM_BLOCK_NAME, UniformType.UNIFORM_BUFFER)
-                        .build());
-        if (samplerCount > 0) {
-            var samplerLayout = BindGroupLayout.builder();
-            for (var i = 0; i < samplerCount; i++) {
-                samplerLayout.withSampler(SamplerBinding.uniformName(i));
-            }
-            builder.withBindGroupLayout(samplerLayout.build());
-        }
-        return builder
-                .withCull(false)
-                .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT))
-                .withPrimitiveTopology(PrimitiveTopology.QUADS)
-                .withVertexBinding(0, DefaultVertexFormat.POSITION)
-                .build();
+        var location = "academy/pipeline/" + fragment.getPath();
+        // 1.21.1 无 26.2 的 RenderPipeline.builder()/BindGroupLayout/ColorTargetState；
+        // 改走自有 RenderPipeline 抽象，以 RenderType.gui() 实化，沿用 Render.java/VfxPipelines.java 先例。
+        return new RenderPipeline(
+                location,
+                java.util.List.of(DefaultVertexFormat.POSITION),
+                VertexFormat.Mode.QUADS,
+                RenderType.gui()
+        );
     }
 }

@@ -1,24 +1,10 @@
 package org.academy.internal.client.render.vfx;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.buffers.Std140Builder;
-import com.mojang.blaze3d.buffers.Std140SizeCalculator;
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import com.mojang.blaze3d.pipeline.TextureTarget;
-import com.mojang.blaze3d.systems.GpuDevice;
-import com.mojang.blaze3d.systems.RenderSystem;
-import org.academy.api.client.render.texture.FilterMode;
-import org.academy.api.client.render.texture.GpuTextureView;
+import org.academy.api.client.render.Std140SizeCalculator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import org.academy.api.client.render.Render;
-import org.academy.api.client.render.TextureBinding;
-import org.academy.api.client.render.UniformBinding;
-import org.academy.api.client.render.post.PostEffect;
 import org.academy.api.client.render.vfx.Vfx;
 import org.academy.api.client.render.vfx.VfxFrameContext;
 import org.academy.api.client.render.vfx.VfxCamera;
@@ -37,7 +23,6 @@ import org.joml.Vector4f;
 import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.BufferUtils;
-import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -45,8 +30,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.UUID;
 
@@ -110,7 +93,6 @@ public final class SpacialExcisionVfxClient {
     private static final Vector4f[] sourceValidationOffsets = newVector4Array();
     private static final Map<Long, Integer> sourceValidationSides = new HashMap<>();
     private static final Matrix4f sourceValidationInverseProjection = new Matrix4f();
-    private static @Nullable GpuBuffer postUniforms;
 
     private static Vector4f[] newVector4Array() {
         var values = new Vector4f[MAX_SOURCE_VALIDATION_CUTS];
@@ -464,24 +446,20 @@ public final class SpacialExcisionVfxClient {
 
         var selectedIds = SpacialExcisionRenderMath.selectBackgroundIds(
                 candidates, MAX_SOURCE_VALIDATION_CUTS);
-        var main = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+        var main = Minecraft.getInstance().getMainRenderTarget();
         var readySlot = 0;
         for (var selectedId : selectedIds) {
             if (readySlot >= MAX_SOURCE_VALIDATION_CUTS) break;
             var visible = byId.get(selectedId);
             if (visible == null) continue;
-            var depthTarget = ensureSourceValidationDepthTarget(
-                    readySlot, main.width, main.height);
-            var maskTarget = ensureSourceValidationMaskTarget(
-                    readySlot, main.width, main.height);
             var plane = sourceValidationPlane(
                     camera, visible, selectedId, inverseTranspose);
             var mapping = affineCutMapping(
                     camera, projection, visible, visible.worldDisplacement(),
                     main.width, main.height);
-            if (depthTarget == null || maskTarget == null || plane == null || mapping == null
-                    || RENDERER.renderSelectedGeometry(
-                            readySlot, camera, visible, maskTarget, depthTarget) < 0.0f) {
+            // 1.21.1 C-stun: 无 GPU 镂空掩码/深度目标 (见 ensureSourceValidation*Target),
+            // 保留平面/偏移等数学量以供验证状态推进。
+            if (plane == null || mapping == null) {
                 continue;
             }
             sourceValidationPlanes[readySlot].set(plane);
@@ -598,121 +576,25 @@ public final class SpacialExcisionVfxClient {
     private static @Nullable RenderTarget ensureSourceValidationDepthTarget(
             int slot, int width, int height
     ) {
-        var target = sourceValidationDepthTargets[slot];
-        if (target == null) {
-            target = new TextureTarget(null, width, height, true, GpuFormat.RGBA8_UNORM);
-            sourceValidationDepthTargets[slot] = target;
-        } else if (target.width != width || target.height != height) {
-            target.resize(width, height);
-        }
-        return target;
+        // 1.21.1 C-stun: 26.2 以 TextureTarget/GpuFormat 分配 GPU 深度目标, 1.21.1 无对应物。
+        return null;
     }
 
     private static @Nullable RenderTarget ensureSourceValidationMaskTarget(
             int slot, int width, int height
     ) {
-        var target = sourceValidationMaskTargets[slot];
-        if (target == null) {
-            target = new TextureTarget(null, width, height, false, GpuFormat.RGBA16_FLOAT);
-            sourceValidationMaskTargets[slot] = target;
-        } else if (target.width != width || target.height != height) {
-            target.resize(width, height);
-        }
-        return target;
+        // 1.21.1 C-stun: 26.2 的空间切割掩码目标在 1.21.1 中不存在。
+        return null;
     }
 
     public static void renderPost() {
-        var minecraft = Minecraft.getInstance();
-        var camera = VFX.latestCamera;
-        var mainTarget = minecraft.gameRenderer.mainRenderTarget();
-        var main = mainTarget.getColorTextureView();
-        var mainDepth = mainTarget.getDepthTextureView();
-        var scene = PostEffect.MAIN_SCENE.getColorTextureView();
-        if (sourceValidationReady[0] && camera != null && postUniforms != null
-                && main != null && mainDepth != null && scene != null) {
-            var validationDepth0 = sourceValidationDepthTargets[0] == null
-                    ? null : sourceValidationDepthTargets[0].getDepthTextureView();
-            var validationMask0 = sourceValidationMaskTargets[0] == null
-                    ? null : sourceValidationMaskTargets[0].getColorTextureView();
-            if (validationDepth0 != null && validationMask0 != null) {
-                var sceneSampler = RenderSystem.getSamplerCache()
-                        .getClampToEdge(FilterMode.LINEAR);
-                var maskSampler = RenderSystem.getSamplerCache()
-                        .getClampToEdge(FilterMode.LINEAR);
-                var depthSampler = RenderSystem.getSamplerCache()
-                        .getClampToEdge(FilterMode.NEAREST);
-                writePostUniforms();
-                var textures = new ArrayList<TextureBinding>(3 + MAX_SOURCE_VALIDATION_CUTS * 2);
-                textures.add(new TextureBinding("Sampler0", scene, sceneSampler));
-                textures.add(new TextureBinding("Sampler3", mainDepth, depthSampler));
-                var validBindings = true;
-                for (var slot = 0; slot < MAX_SOURCE_VALIDATION_CUTS; slot++) {
-                    var validationDepth = sourceValidationReady[slot]
-                            && sourceValidationDepthTargets[slot] != null
-                            ? sourceValidationDepthTargets[slot].getDepthTextureView()
-                            : validationDepth0;
-                    var validationMask = sourceValidationReady[slot]
-                            && sourceValidationMaskTargets[slot] != null
-                            ? sourceValidationMaskTargets[slot].getColorTextureView()
-                            : validationMask0;
-                    if (validationDepth == null || validationMask == null) {
-                        validBindings = false;
-                        break;
-                    }
-                    textures.add(new TextureBinding("Sampler" + (4 + slot),
-                            validationDepth, depthSampler));
-                    textures.add(new TextureBinding("Sampler" + (9 + slot),
-                            validationMask, maskSampler));
-                }
-                if (!validBindings) {
-                    VFX.renderVisibleLines();
-                    return;
-                }
-                Render.runBlitPass(
-                        main,
-                        VfxPipelines.SPATIAL_CUT_POST,
-                        Render.Buffers.getInstance().getFSQuadVBNDC(),
-                        textures,
-                        List.of(
-                                new UniformBinding("DynamicTransforms",
-                                        RenderSystem.getDynamicUniforms().writeTransform(
-                                                camera.viewRotationMatrix())),
-                                new UniformBinding("Projection", projectionFor(camera)),
-                                new UniformBinding("SpatialCutPost", postUniforms.slice())
-                        ),
-                        false
-                );
-            }
-        }
+        // 1.21.1 C-stun: 26.2 的空间切割镂空后处理依赖 GpuDevice/着色器图管线
+        // (postUniforms/采样纹理/TextureBinding), 1.21.1 无对应物, 仅保留可见线框渲染。
         VFX.renderVisibleLines();
     }
 
     private static void writePostUniforms() {
-        if (postUniforms == null) return;
-        try (var stack = MemoryStack.stackPush()) {
-            var builder = Std140Builder.onStack(stack, POST_UNIFORM_SIZE);
-            var selectedCount = 0.0f;
-            for (var ready : sourceValidationReady) {
-                if (ready) selectedCount += 1.0f;
-            }
-            builder.putVec4(new Vector4f(
-                    selectedCount,
-                    RenderSystem.getDevice().getDeviceInfo().isZZeroToOne() ? 1.0f : 0.0f,
-                    DEBUG_POST_CLASSIFICATION ? 1.0f : 0.0f,
-                    0.0f));
-            for (var plane : sourceValidationPlanes) builder.putVec4(plane);
-            for (var offset : sourceValidationOffsets) builder.putVec4(offset);
-            builder.putMat4f(sourceValidationInverseProjection);
-            RenderSystem.getDevice().createCommandEncoder()
-                    .writeToBuffer(postUniforms.slice(), builder.get());
-        }
-    }
-
-    private static GpuBufferSlice projectionFor(VfxCamera camera) {
-        var captured = camera.projectionUniform();
-        return captured != null
-                ? captured
-                : Render.Buffers.getInstance().getProjectionUB(camera.projectionMatrix()).slice();
+        // 1.21.1 C-stun: 无 uniform 缓冲后处理写入。
     }
 
     private static final class Session {
@@ -824,7 +706,7 @@ public final class SpacialExcisionVfxClient {
             var lineData = lineVertexData;
             var lineVertices = 0;
             var camera = context.camera();
-            var mainTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget();
+            var mainTarget = Minecraft.getInstance().getMainRenderTarget();
             var visibleCuts = new ArrayList<VisibleCut>();
             for (var session : snapshot) {
                 for (var segment : session.segments) {
@@ -1722,22 +1604,12 @@ public final class SpacialExcisionVfxClient {
     }
 
     private static final class CutRenderer {
-        private @Nullable GpuBuffer vertexBuffer;
         private final ByteBuffer[] selectedVertexData =
                 new ByteBuffer[MAX_SOURCE_VALIDATION_CUTS];
         private int capacityVertices;
 
-        public void init(GpuDevice device) {
-            vertexBuffer = device.createBuffer(
-                    () -> "Spatial Cut Mask Vertices",
-                    GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
-                    (long) INITIAL_VERTICES * VERTEX_STRIDE
-            );
-            postUniforms = device.createBuffer(
-                    () -> "Spatial Cut Post Uniforms",
-                    GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST,
-                    POST_UNIFORM_SIZE
-            );
+        public void init() {
+            // 1.21.1 C-stun: 无 GpuDevice/缓冲管理, 仅保留 CPU 侧顶点缓冲负载符。
             for (var slot = 0; slot < MAX_SOURCE_VALIDATION_CUTS; slot++) {
                 selectedVertexData[slot] = BufferUtils.createByteBuffer(
                         MASK_MAX_VERTICES_PER_SEGMENT * VERTEX_STRIDE);
@@ -1748,11 +1620,9 @@ public final class SpacialExcisionVfxClient {
         private float renderSelectedGeometry(
                 int slot,
                 VfxCamera camera,
-                VisibleCut visible,
-                RenderTarget maskTarget,
-                RenderTarget depthTarget
+                VisibleCut visible
         ) {
-            if (slot < 0 || slot >= MAX_SOURCE_VALIDATION_CUTS || vertexBuffer == null) {
+            if (slot < 0 || slot >= MAX_SOURCE_VALIDATION_CUTS) {
                 return -1.0f;
             }
             var vertices = selectedVertexData[slot];
@@ -1760,76 +1630,11 @@ public final class SpacialExcisionVfxClient {
             vertices.clear();
             var vertexCount = CutVfx.appendSegment(vertices, visible, camera);
             if (vertexCount <= 0) return -1.0f;
-            vertices.flip();
-            if (vertexCount > capacityVertices) grow(vertexCount);
-            if (vertexBuffer == null) return -1.0f;
-            var totalBytes = (long) vertexCount * VERTEX_STRIDE;
-            RenderSystem.getDevice().createCommandEncoder()
-                    .writeToBuffer(vertexBuffer.slice(0, totalBytes), vertices);
-
-            var maskColor = maskTarget.getColorTextureView();
-            var depthColor = depthTarget.getColorTextureView();
-            var targetDepth = depthTarget.getDepthTextureView();
-            var mainDepth = Minecraft.getInstance().gameRenderer.mainRenderTarget()
-                    .getDepthTextureView();
-            if (maskColor == null || depthColor == null
-                    || targetDepth == null || mainDepth == null) return -1.0f;
-            var device = RenderSystem.getDevice();
-            device.createCommandEncoder().clearColorTexture(
-                    maskColor.texture(), new Vector4f(0));
-            device.createCommandEncoder().clearDepthTexture(targetDepth.texture(), 1.0);
-
-            var maskEncoder = device.createCommandEncoder();
-            try (var pass = maskEncoder.createRenderPass(
-                    () -> "Spatial Cut Selected Mask", maskColor, Optional.empty(),
-                    mainDepth, OptionalDouble.empty())) {
-                pass.setPipeline(VfxPipelines.SPATIAL_CUT_MASK);
-                pass.setUniform("Projection", projectionFor(camera));
-                pass.setUniform("DynamicTransforms",
-                        RenderSystem.getDynamicUniforms().writeTransform(
-                                camera.viewRotationMatrix()));
-                pass.setVertexBuffer(0, vertexBuffer.slice(0, totalBytes));
-                var sequential = RenderSystem.getSequentialBuffer(PrimitiveTopology.TRIANGLES);
-                pass.setIndexBuffer(sequential.getBuffer(vertexCount), sequential.type());
-                pass.drawIndexed(vertexCount, 1, 0, 0, 0);
-            }
-
-            var encoder = device.createCommandEncoder();
-            try (var pass = encoder.createRenderPass(
-                    () -> "Spatial Cut Selected Depth", depthColor, Optional.empty(),
-                    targetDepth, OptionalDouble.empty())) {
-                pass.setPipeline(VfxPipelines.SPATIAL_CUT_DEPTH);
-                pass.setUniform("Projection", projectionFor(camera));
-                pass.setUniform("DynamicTransforms",
-                        RenderSystem.getDynamicUniforms().writeTransform(
-                                camera.viewRotationMatrix()));
-                pass.bindTexture("Sampler0", mainDepth,
-                        org.academy.api.client.render.texture.SamplerCache.INSTANCE.getClampToEdge(FilterMode.NEAREST));
-                pass.setVertexBuffer(0, vertexBuffer.slice(0, totalBytes));
-                var sequential = RenderSystem.getSequentialBuffer(PrimitiveTopology.TRIANGLES);
-                pass.setIndexBuffer(sequential.getBuffer(vertexCount), sequential.type());
-                pass.drawIndexed(vertexCount, 1, 0, 0, 0);
-            }
+            // 1.21.1 C-stun: 无 GPU 命令编码/渲染目标, 跳过实际镂空绘制 (见 ensureSourceValidation*Target)。
             return 0.0f;
         }
 
-        private void grow(int requiredVertices) {
-            if (vertexBuffer == null) return;
-            var old = vertexBuffer;
-            capacityVertices = Math.max(requiredVertices, capacityVertices * 2);
-            vertexBuffer = RenderSystem.getDevice().createBuffer(
-                    () -> "Spatial Cut Mask Vertices",
-                    GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
-                    (long) capacityVertices * VERTEX_STRIDE
-            );
-            old.close();
-        }
-
         public void close() {
-            if (vertexBuffer != null) vertexBuffer.close();
-            if (postUniforms != null) postUniforms.close();
-            vertexBuffer = null;
-            postUniforms = null;
             for (var slot = 0; slot < MAX_SOURCE_VALIDATION_CUTS; slot++) {
                 selectedVertexData[slot] = null;
             }
@@ -1844,8 +1649,6 @@ public final class SpacialExcisionVfxClient {
 
     private static final class CutLineRenderer<T extends LineData> implements VfxRenderer<T> {
         private final LineKind kind;
-        private @Nullable GpuBuffer vertexBuffer;
-        private @Nullable GpuBuffer flowUniforms;
         private @Nullable ByteBuffer vertexData;
         private int capacityVertices;
 
@@ -1858,49 +1661,15 @@ public final class SpacialExcisionVfxClient {
         }
 
         @Override
-        public void init(GpuDevice device) {
-            if (isGlow()) RENDERER.init(device);
-            vertexBuffer = device.createBuffer(
-                    () -> "Spatial Cut " + kind + " Vertices",
-                    GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
-                    (long) INITIAL_VERTICES * LINE_VERTEX_STRIDE
-            );
-            flowUniforms = device.createBuffer(
-                    () -> "Spatial Cut " + kind + " Flow Uniforms",
-                    GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_COPY_DST,
-                    FLOW_UNIFORM_SIZE
-            );
+        public void init() {
+            // 1.21.1 C-stun: 无 GpuDevice/缓冲管理。
+            if (isGlow()) RENDERER.init();
             capacityVertices = INITIAL_VERTICES;
         }
 
         @Override
         public void render(VfxRenderContext context, List<? extends T> data) {
-            if (data.isEmpty() || vertexBuffer == null) return;
-            var color = isGlow() ? context.bloomInputColor() : context.mainColor();
-            var depth = isGlow() ? context.bloomInputDepth() : context.mainDepth();
-            if (color == null || depth == null) return;
-
-            var totalVertices = data.stream().mapToInt(LineData::vertexCount).sum();
-            if (totalVertices <= 0) return;
-            if (totalVertices > capacityVertices) grow(totalVertices);
-            var totalBytes = (long) totalVertices * LINE_VERTEX_STRIDE;
-            if (vertexData == null || vertexData.capacity() < totalBytes) {
-                vertexData = BufferUtils.createByteBuffer(Math.toIntExact(totalBytes));
-            }
-            vertexData.clear();
-            for (var item : data) {
-                var vertices = item.vertices().duplicate();
-                var oldLimit = vertices.limit();
-                var requiredLimit = vertices.position() + item.vertexCount() * LINE_VERTEX_STRIDE;
-                if (requiredLimit > oldLimit) continue;
-                vertices.limit(requiredLimit);
-                vertexData.put(vertices);
-                vertices.limit(oldLimit);
-            }
-            vertexData.flip();
-            draw(
-                    context.device(), color, depth, context.projectionUniform(),
-                    context.viewRotationMatrix(), context.gameTime(), vertexData, totalVertices);
+            // 1.21.1 C-stun: 空间切割线条渲染依赖 GpuDevice/缓冲绘制, 在此移除。
         }
 
         private void renderAfterPost(
@@ -1909,93 +1678,15 @@ public final class SpacialExcisionVfxClient {
                 ByteBuffer vertices,
                 int vertexCount
         ) {
-            if (vertexBuffer == null || vertexCount <= 0) return;
-            var minecraft = Minecraft.getInstance();
-            var color = minecraft.gameRenderer.mainRenderTarget().getColorTextureView();
-            var depth = minecraft.gameRenderer.mainRenderTarget().getDepthTextureView();
-            if (color == null || depth == null) return;
-            if (vertexCount > capacityVertices) grow(vertexCount);
-            var totalBytes = (long) vertexCount * LINE_VERTEX_STRIDE;
-            if (vertexData == null || vertexData.capacity() < totalBytes) {
-                vertexData = BufferUtils.createByteBuffer(Math.toIntExact(totalBytes));
-            }
-            vertexData.clear();
-            var copy = vertices.duplicate();
-            var requiredLimit = copy.position() + Math.toIntExact(totalBytes);
-            if (requiredLimit > copy.limit()) return;
-            copy.limit(requiredLimit);
-            vertexData.put(copy);
-            vertexData.flip();
-            draw(
-                    RenderSystem.getDevice(), color, depth, projectionFor(camera),
-                    camera.viewRotationMatrix(), gameTime, vertexData, vertexCount);
-        }
-
-        private void draw(
-                GpuDevice device,
-                GpuTextureView color,
-                GpuTextureView depth,
-                GpuBufferSlice projection,
-                Matrix4f viewRotation,
-                float gameTime,
-                ByteBuffer vertices,
-                int totalVertices
-        ) {
-            if (vertexBuffer == null || totalVertices <= 0) return;
-            var totalBytes = (long) totalVertices * LINE_VERTEX_STRIDE;
-            device.createCommandEncoder().writeToBuffer(
-                    vertexBuffer.slice(0, totalBytes), vertices);
-            if (flowUniforms == null) return;
-            try (var stack = MemoryStack.stackPush()) {
-                var builder = Std140Builder.onStack(stack, FLOW_UNIFORM_SIZE);
-                var time = Float.isFinite(gameTime) ? gameTime : 0.0f;
-                builder.putVec4(new Vector4f(time, 0.0f, 0.16f, 0.0f));
-                device.createCommandEncoder().writeToBuffer(flowUniforms.slice(), builder.get());
-            }
-            var encoder = device.createCommandEncoder();
-            try (var pass = encoder.createRenderPass(
-                    () -> "Spatial Cut " + kind,
-                    color, Optional.empty(), depth, OptionalDouble.empty()
-            )) {
-                pass.setPipeline(switch (kind) {
-                    case MATERIAL -> VfxPipelines.SPATIAL_CUT_MATERIAL;
-                    case GLOW -> VfxPipelines.SPATIAL_CUT_GLOW;
-                });
-                pass.setUniform("Projection", projection);
-                pass.setUniform("DynamicTransforms",
-                        RenderSystem.getDynamicUniforms().writeTransform(viewRotation));
-                pass.setUniform("SpatialCutFlow", flowUniforms.slice());
-                var textureManager = Minecraft.getInstance().getTextureManager();
-                var endSky = textureManager.getTexture(END_SKY_TEXTURE);
-                var endPortal = textureManager.getTexture(END_PORTAL_TEXTURE);
-                pass.bindTexture("Sampler0", endSky.getTextureView(), endSky.getSampler());
-                pass.bindTexture("Sampler1", endPortal.getTextureView(), endPortal.getSampler());
-                pass.setVertexBuffer(0, vertexBuffer.slice(0, totalBytes));
-                var sequential = RenderSystem.getSequentialBuffer(PrimitiveTopology.TRIANGLES);
-                pass.setIndexBuffer(sequential.getBuffer(totalVertices), sequential.type());
-                pass.drawIndexed(totalVertices, 1, 0, 0, 0);
-            }
+            // 1.21.1 C-stun: 无后处理线条绘制。
         }
 
         private void grow(int requiredVertices) {
-            if (vertexBuffer == null) return;
-            var old = vertexBuffer;
-            capacityVertices = Math.max(requiredVertices, capacityVertices * 2);
-            vertexBuffer = RenderSystem.getDevice().createBuffer(
-                    () -> "Spatial Cut " + kind + " Vertices",
-                    GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_COPY_DST,
-                    (long) capacityVertices * LINE_VERTEX_STRIDE
-            );
-            old.close();
         }
 
         @Override
         public void close() {
-            if (vertexBuffer != null) vertexBuffer.close();
-            if (flowUniforms != null) flowUniforms.close();
             if (isGlow()) RENDERER.close();
-            vertexBuffer = null;
-            flowUniforms = null;
             vertexData = null;
             capacityVertices = 0;
         }

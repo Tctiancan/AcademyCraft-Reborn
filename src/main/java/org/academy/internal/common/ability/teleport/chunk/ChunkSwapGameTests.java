@@ -184,12 +184,12 @@ public final class ChunkSwapGameTests {
                             new EmbeddedChannel(connection);
                             playerRef[0] = player;
                             server.getPlayerList().placeNewPlayer(connection, player, cookie);
-                            player.connection.markClientLoaded();
+                            // markClientLoaded() was removed in 26.2 -> 1.21.1 port; no direct equivalent exists
                             player.setNoGravity(true);
                             helper.assertTrue(TeleportSync.teleportInstantly(player, end,
                                             new Vec3(-1.5, 80.0, -70.5), 0.0f, 0.0f),
                                     "preloaded player teleport to the End must succeed");
-                            player.connection.markClientLoaded();
+                            // markClientLoaded() was removed in 26.2 -> 1.21.1 port; no direct equivalent exists
                             ChunkTicketLeaseManager.release(owner);
                         } catch (RuntimeException | Error failure) {
                             cleanup.run();

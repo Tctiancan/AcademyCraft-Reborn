@@ -46,14 +46,14 @@ public final class ImagPhaseFusionRecipeCategory
     ) {
         builder.addInputSlot(3, 7)
                 .setStandardSlotBackground()
-                .add(recipe.input());
+                .addItemStack(recipe.input());
         builder.addSlot(RecipeIngredientRole.CATALYST, 36, 7)
                 .setStandardSlotBackground()
                 .setFluidRenderer(1_000, true, 16, 16)
-                .add(Fluids.IMAG_PHASE.get(), 1_000);
+                .addFluidStack(Fluids.IMAG_PHASE.get(), 1_000);
         builder.addOutputSlot(108, 7)
                 .setOutputSlotBackground()
-                .add(recipe.output());
+                .addItemStack(recipe.output());
     }
 
     @Override

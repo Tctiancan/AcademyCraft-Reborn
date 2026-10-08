@@ -4,10 +4,9 @@ import com.mojang.blaze3d.platform.NativeImage;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
+import net.neoforged.neoforge.client.model.QuadTransformers;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
-
-import java.util.function.Supplier;
 
 /**
  * A single dynamic texture holding the 区块跃迁 map at {@link MapTileBuilder#DETAIL} texels per chunk.
@@ -45,7 +44,7 @@ public final class ChunkMapTexture {
         this.originChunkX = originChunkX;
         this.originChunkZ = originChunkZ;
         this.image = new NativeImage(NativeImage.Format.RGBA, SIZE, SIZE, true);
-        this.texture = new DynamicTexture((Supplier<String>) () -> "academy_chunk_leap_map", image);
+        this.texture = new DynamicTexture(image);
         Minecraft.getInstance().getTextureManager().register(TEXTURE_ID, texture);
     }
 
@@ -62,7 +61,7 @@ public final class ChunkMapTexture {
         var x = (chunkX - originChunkX) * MapTileBuilder.DETAIL + subX;
         var z = (chunkZ - originChunkZ) * MapTileBuilder.DETAIL + subZ;
         if (x < 0 || z < 0 || x >= SIZE || z >= SIZE) return;
-        image.setPixel(x, z, argb);
+        image.setPixelRGBA(x, z, QuadTransformers.toABGR(argb));
         dirty = true;
     }
 
@@ -88,7 +87,7 @@ public final class ChunkMapTexture {
             for (var subX = 0; subX < detail; subX++) {
                 var x = baseX + subX;
                 if (x < 0 || x >= SIZE) continue;
-                image.setPixel(x, z, texels[rowStart + subX]);
+                image.setPixelRGBA(x, z, QuadTransformers.toABGR(texels[rowStart + subX]));
             }
         }
         dirty = true;
@@ -124,7 +123,7 @@ public final class ChunkMapTexture {
 
     private void upload(boolean force) {
         if (!dirty && !force) return;
-        var now = net.minecraft.util.Util.getMillis();
+        var now = net.minecraft.Util.getMillis();
         if (!force && now - lastUploadMs < UPLOAD_INTERVAL_MS) return;
         dirty = false;
         lastUploadMs = now;

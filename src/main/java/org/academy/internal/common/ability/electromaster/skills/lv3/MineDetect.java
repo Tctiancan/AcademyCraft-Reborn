@@ -201,7 +201,9 @@ public final class MineDetect extends Skill {
             var renderType = Render.RenderTypes.MINE_DETECT_LINES;
             var cameraPos = minecraft.gameRenderer.getMainCamera().getPosition();
             var matrixStack = event.getMatrixStack();
-            var lineWidth = minecraft.getWindow().getAppropriateLineWidth();
+            // getAppropriateLineWidth() is a 26.2 GPU API; absent in 1.21.1. Line width is not
+            // applied per-vertex here, so a fixed width is used for the overlay geometry.
+            var lineWidth = 2.0f;
 
             matrixStack.pushPose();
             matrixStack.translate((float) -cameraPos.x, (float) -cameraPos.y, (float) -cameraPos.z);
@@ -340,12 +342,10 @@ public final class MineDetect extends Skill {
                 var second = vertices[edge[1]];
                 consumer.addVertex(matrix, first[0], first[1], first[2])
                         .setColor(color[0], color[1], color[2], color[3])
-                        .setNormal(0, 1, 0)
-                        .setLineWidth(lineWidth);
+                        .setNormal(0, 1, 0);
                 consumer.addVertex(matrix, second[0], second[1], second[2])
                         .setColor(color[0], color[1], color[2], color[3])
-                        .setNormal(0, 1, 0)
-                        .setLineWidth(lineWidth);
+                        .setNormal(0, 1, 0);
             }
         }
 

@@ -77,7 +77,6 @@ public final class BlockStructureEntity extends Entity
     public BlockStructureEntity(EntityType<? extends BlockStructureEntity> type, Level level) {
         super(type, level);
         blocksBuilding = true;
-        setRequiresPrecisePosition(true);
     }
 
     public BlockStructureEntity(ServerLevel level) {
@@ -396,7 +395,8 @@ public final class BlockStructureEntity extends Entity
     }
 
     @Override
-    protected AABB makeBoundingBox(Vec3 position) {
+    protected AABB makeBoundingBox() {
+        var position = position();
         var snapshot = structure;
         if (snapshot == null || snapshot.isEmpty()) {
             return AABB.ofSize(position.add(0.0, 0.5, 0.0), 1.0, 1.0, 1.0);
@@ -415,7 +415,7 @@ public final class BlockStructureEntity extends Entity
     }
 
     private void refreshStructureBounds() {
-        setBoundingBox(makeBoundingBox(position()));
+        setBoundingBox(makeBoundingBox());
         BlockStructureCollisionRuntime.update(this);
     }
 
@@ -435,8 +435,8 @@ public final class BlockStructureEntity extends Entity
     }
 
     @Override
-    public boolean canBeCollidedWith(Entity other) {
-        return other != this && !isRemoved();
+    public boolean canBeCollidedWith() {
+        return !isRemoved();
     }
 
     @Override

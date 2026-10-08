@@ -202,12 +202,9 @@ public final class MentalPerceptionRuntime {
                             : new NearestVisibleLivingEntities(mob, filtered)
             );
         }
-        var players = brain.getMemoryInternal(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS);
-        if (players != null && players.isPresent() && players.get().contains(hidden)) {
-            brain.setMemory(
-                    MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYERS,
-                    players.get().stream().filter(entity -> entity != hidden).toList()
-            );
+        var players = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER);
+        if (players.isPresent() && players.get() == hidden) {
+            brain.eraseMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER);
         }
     }
 

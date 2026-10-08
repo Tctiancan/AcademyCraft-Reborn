@@ -1666,7 +1666,7 @@ public final class MentaloutGameTests {
                 var level = helper.getLevel();
                 var controller = createController(helper);
                 GameType.SURVIVAL.updatePlayerAbilities(controller.getAbilities());
-                controller.connection.markClientLoaded();
+                // markClientLoaded() was removed in 26.2 -> 1.21.1 port; no direct equivalent exists
                 var guardian = helper.spawn(EntityType.ZOMBIE, 1, 2, 1);
                 var villager = helper.spawn(EntityType.VILLAGER, 4, 2, 1);
                 var selfAggressor = helper.spawn(EntityType.SKELETON, 7, 2, 1);
@@ -1876,7 +1876,7 @@ public final class MentaloutGameTests {
                 helper.runAtTickTime(7L, () -> {
                     var angerTarget = neutral.getPersistentAngerTarget();
                     helper.assertTrue(
-                            angerTarget != null && angerTarget.matches(aggressor),
+                            angerTarget != null && angerTarget.equals(aggressor.getUUID()),
                             "Authorized retaliation did not become persistent anger"
                     );
                     helper.assertValueEqual(

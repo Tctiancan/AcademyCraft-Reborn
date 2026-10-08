@@ -1,31 +1,24 @@
 package org.academy.mixin.client;
 
-import com.mojang.blaze3d.buffers.GpuBufferSlice;
-import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
-import net.minecraft.client.renderer.SubmitNodeCollector;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
-import net.minecraft.client.renderer.state.level.LevelRenderState;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.api.client.render.LevelRenderEvent;
 import org.academy.api.client.render.MatrixStack;
+import org.academy.api.client.render.post.DirectionalFieldRenderer;
 import org.academy.api.client.render.post.GlowEffect;
 import org.academy.api.client.render.post.PostEffect;
+import org.academy.api.client.render.post.WorldSurfaceMasks;
 import org.academy.api.client.render.vfx.VfxContexts;
 import org.academy.api.client.render.vfx.VfxManager;
-import org.academy.api.client.render.vfxgraph.render.GraphCamera;
-import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
-import org.academy.internal.client.ability.aeromanip.HighSpeedJetHighlightClient;
-import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
+import org.academy.internal.client.ability.aeromanip.FlowSenseClient;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
+import org.academy.internal.client.render.vfx.InterferenceFieldClient;
 import org.academy.internal.client.render.vfx.SpacialExcisionVfxClient;
 import org.joml.Matrix4f;
-import org.joml.Matrix4fc;
-import org.joml.Vector3f;
-import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -33,82 +26,65 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(LevelRenderer.class)
 public abstract class MixinLevelRenderer {
-    @Inject(method = "render", at = @At("HEAD"))
-    private void academy$beginDirectionalFields(CallbackInfo ci) {
-        org.academy.internal.client.render.vfx.InterferenceFieldClient.beginFrame();
-    }
-    @Inject(
-            // 在 iris$endLevelRender 之后调用以兼容 Iris 喵
-            order = Integer.MAX_VALUE,
-            method = "render",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Lorg/joml/Matrix4fStack;popMatrix()Lorg/joml/Matrix4fStack;"
-            )
-    )
-    private void renderLevel(
-            GraphicsResourceAllocator resourceAllocator,
-            DeltaTracker deltaTracker,
-            boolean renderOutline,
-            CameraRenderState cameraState,
-            Matrix4fc modelViewMatrix,
-            GpuBufferSlice terrainFog,
-            Vector4f fogColor,
-            boolean shouldRenderSky,
+    @Inject(method = "renderLevel", at = @At("HEAD"))
+    private void academy$beginDirectionalFields(
+            DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera,
+            net.minecraft.client.renderer.GameRenderer gameRenderer,
+            net.minecraft.client.renderer.LightTexture lightTexture,
+            Matrix4f frustumMatrix, Matrix4f projectionMatrix,
             CallbackInfo ci
     ) {
-        WideAreaInterferenceClientState.captureRenderCamera(
-                cameraState.pos,
-                cameraState.viewRotationMatrix,
-                cameraState.projectionMatrix
-        );
+        org.academy.internal.client.render.vfx.InterferenceFieldClient.beginFrame();
+    }
+
+    /**
+     * 1.21.1 适配：26.2 的 `LevelRenderer.render(GraphicsResourceAllocator, DeltaTracker, boolean,
+     * CameraRenderState, GpuBufferSlice, Vector4f, boolean)` 与 `submitEntities(PoseStack,
+     * LevelRenderState, SubmitNodeCollector)` 均依赖 1.21.1 不存在的渲染状态与节点收集器。
+     * 改为挂在 1.21.1 `renderLevel(DeltaTracker, boolean, Camera, GameRenderer, LightTexture,
+     * Matrix4f, Matrix4f)` 的 RETURN：
+     * - cameraState.pos/viewRotationMatrix/projectionMatrix → `Camera.getPosition()` + 两个矩阵参数；
+     * - `mainRenderTarget()` → `getMainRenderTarget()`；`Minecraft.getDeltaTracker()` → 方法参数；
+     * - 26.2 经 `VfxGraphManager.renderFrame(GpuTextureView…)` 把 shader 图渲染到主帧缓冲颜色/深度纹理
+     *   视图的后处理，其 `GpuTextureView` 无 1.21.1 等价物，C-stun；
+     * - 26.2 经 `submitEntities` 强制 `shouldShowEntityOutlines` 与 `SubmitNodeCollector` 世界几何提交的
+     *   行为无 1.21.1 对应节点流，跳过；`LevelRenderEvent` 改在此处以 1.21.1 四参构造触发。
+     */
+    @Inject(
+            order = Integer.MAX_VALUE,
+            method = "renderLevel",
+            at = @At("RETURN")
+    )
+    private void renderLevel(
+            DeltaTracker deltaTracker, boolean renderBlockOutline, Camera camera,
+            net.minecraft.client.renderer.GameRenderer gameRenderer,
+            net.minecraft.client.renderer.LightTexture lightTexture,
+            Matrix4f frustumMatrix, Matrix4f projectionMatrix,
+            CallbackInfo ci
+    ) {
+        var viewRotation = new Matrix4f(frustumMatrix);
+        var pos = camera.getPosition();
+        WideAreaInterferenceClientState.captureRenderCamera(pos, viewRotation, projectionMatrix);
+        VfxContexts.submit(deltaTracker, camera);
         VfxManager.INSTANCE.renderFrame();
-        var mainTarget = Minecraft.getInstance().gameRenderer.mainRenderTarget();
-        var target = mainTarget.getColorTextureView();
-        if (target != null) {
-            var graphCamera = GraphCamera.fromGameCamera(
-                    new Vector3f((float) cameraState.pos.x, (float) cameraState.pos.y, (float) cameraState.pos.z),
-                    new Matrix4f(cameraState.viewRotationMatrix),
-                    new Matrix4f(cameraState.projectionMatrix)
-            );
-            VfxGraphManager.INSTANCE.renderFrame(target, mainTarget.getDepthTextureView(), graphCamera);
-        }
         SpacialExcisionVfxClient.prepareSourceValidation();
         PostEffect.pre();
         SpacialExcisionVfxClient.renderPost();
-        org.academy.api.client.render.post.WorldSurfaceMasks.renderEntities();
-        org.academy.api.client.render.post.DirectionalFieldRenderer.render(cameraState.pos,
-                cameraState.viewRotationMatrix, cameraState.projectionMatrix,
+        WorldSurfaceMasks.renderEntities();
+        DirectionalFieldRenderer.render(pos, viewRotation, projectionMatrix,
                 org.academy.internal.client.render.vfx.InterferenceFieldClient.areas());
         GlowEffect.getInstance().process();
         PostEffect.post();
-        org.academy.internal.client.ability.aeromanip.FlowSenseClient.render(
-                cameraState.pos, cameraState.viewRotationMatrix, cameraState.projectionMatrix);
-    }
+        FlowSenseClient.render(pos, viewRotation, projectionMatrix);
 
-    @Inject(method = "submitEntities", at = @At("RETURN"))
-    private void submitEntities(
-            PoseStack poseStack,
-            LevelRenderState levelRenderState,
-            SubmitNodeCollector output,
-            CallbackInfo ci
-    ) {
-        if (WideAreaInterferenceClientState.isRtsView()
-                || MentaloutRosterClientState.hasControlledTargets()
-                || HighSpeedJetHighlightClient.hasEntityHighlights()) {
-            levelRenderState.shouldShowEntityOutlines = true;
-        }
-        VfxContexts.submit(
-                Minecraft.getInstance().getDeltaTracker(),
-                levelRenderState.cameraRenderState
-        );
-        VfxManager.INSTANCE.submitWorldGeometry(poseStack, output);
+        var partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
+        var poseStack = new PoseStack();
+        poseStack.last().pose().set(frustumMatrix);
         var event = new LevelRenderEvent(
-                Minecraft.getInstance().getTimer().getGameTimeDeltaPartialTick(false),
+                partialTick,
                 new MatrixStack().setFrom(poseStack.last()),
                 poseStack,
-                output,
-                levelRenderState.cameraRenderState.pos
+                camera.getPosition()
         );
         NeoForge.EVENT_BUS.post(event);
     }

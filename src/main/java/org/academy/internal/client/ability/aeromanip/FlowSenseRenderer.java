@@ -1,91 +1,88 @@
 package org.academy.internal.client.ability.aeromanip;
 
-import com.mojang.blaze3d.GpuFormat;
-import com.mojang.blaze3d.PrimitiveTopology;
-import com.mojang.blaze3d.buffers.GpuBuffer;
-import com.mojang.blaze3d.buffers.Std140Builder;
-import com.mojang.blaze3d.pipeline.*;
-import com.mojang.blaze3d.shaders.UniformType;
 import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.MappableRingBuffer;
+import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.RenderStateShard;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
-import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
-import net.neoforged.neoforge.client.event.RegisterRenderPipelinesEvent;
 import org.academy.AcademyCraft;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
-import java.nio.ByteBuffer;
-import java.util.Optional;
 
-/** One shared quad, one persistent instance buffer and one draw for depth-independent hollow markers. */
+/**
+ * 移植自 Minecraft 26.2 的 FlowSense 空心标记渲染器, 适配 1.21.1 即时渲染管线.
+ *
+ * <p>26.2 版本通过 GPU 命令编码器把"共享四边形 + 每标记实例缓冲 + 屏幕空间扩展"一次性
+ * 提交 (GpuBuffer / VertexFormat.builder / GpuCommandEncoder / RenderPipeline); 1.21.1 无这套
+ * 即时态设备, 故本实现把每个标记在 CPU 侧解开为一张面向相机的四边形, 以相机相对坐标写入
+ * {@link RenderType} 的 {@link BufferBuilder}, 由 {@code RenderSystem} 完成投影.
+ *
+ * <p>尺寸语义保持一致: 标记在屏幕上的像素大小由每标记的 {@code size} 决定 (与距离无关),
+ * 颜色为半透明白青 (190,229,235), 深度无关 (不写深度、深度测试恒通过), 半透明混合.
+ *
+ * <p>GPU 探针 ({@link #beginGpuProfile()}, {@link #gpuSamples()}) 在 1.21.1 无对应的时间戳
+ * 查询池, 保留符号但返回空结果, 仅作调试占位.
+ */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class FlowSenseRenderer implements AutoCloseable {
-    private static final RenderPipeline PIPELINE = RenderPipeline.builder()
-            .withLocation(AcademyCraft.academy("pipeline/flow_sense"))
-            .withVertexShader(AcademyCraft.academy("core/flow_sense"))
-            .withFragmentShader(AcademyCraft.academy("core/flow_sense"))
-            .withBindGroupLayout(BindGroupLayout.builder().withUniform("FlowView", UniformType.UNIFORM_BUFFER).build())
-            .withVertexBinding(0, VertexFormat.builder(0).addAttribute("UV0", GpuFormat.RG32_FLOAT).build())
-            .withVertexBinding(1, VertexFormat.builder(1).addAttribute("Position", GpuFormat.RGB32_FLOAT)
-                    .addAttribute("Color", GpuFormat.RGBA8_UNORM).addAttribute("MarkerSize", GpuFormat.R32_FLOAT).build())
-            .withPrimitiveTopology(PrimitiveTopology.QUADS).withCull(false)
-            .withColorTargetState(new ColorTargetState(BlendFunction.TRANSLUCENT)).build();
-    private ByteBuffer bytes;
-    private GpuBuffer quad;
-    private MappableRingBuffer vertices, uniform;
+    /** 半透明、深度无关、面向相机的空心标记渲染状态 (位置+颜色, 四边形). */
+    private static final RenderType MARKERS = RenderType.create(
+            "academy_flow_sense_markers",
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormat.Mode.QUADS,
+            786432, false, false,
+            RenderType.CompositeState.builder()
+                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionColorShader))
+                    .setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency",
+                            () -> {
+                                RenderSystem.enableBlend();
+                                RenderSystem.defaultBlendFunc();
+                            },
+                            () -> RenderSystem.disableBlend()))
+                    .setDepthTestState(new RenderStateShard.DepthTestStateShard("no_depth_test", 519))
+                    .setWriteMaskState(new RenderStateShard.WriteMaskStateShard(true, false))
+                    .setCullState(new RenderStateShard.CullStateShard(false))
+                    .createCompositeState(false));
+
     private long lastNanos, prepareNanos, uploadNanos, frames;
     private int drawn;
-    private com.mojang.blaze3d.systems.GpuQueryPool profile;
-    private int profileSlots;
+
     /** Explicit, bounded profiling hook; normal rendering allocates no timestamp queries. */
     public void beginGpuProfile() {
-        if (profile != null) profile.close();
-        profile = RenderSystem.getDevice().createTimestampQueryPool(256); profileSlots = 0;
+        // 1.21.1 无 GPU 时间戳查询池; 调试探针占位 (C-stun).
     }
     public java.util.List<Long> gpuSamples() {
-        var samples = new java.util.ArrayList<Long>();
-        if (profile == null) return samples;
-        double period = RenderSystem.getDevice().getDeviceInfo().timestampPeriod();
-        for (int i = 0; i < profileSlots; i += 2) {
-            var start = profile.getValue(i); var end = profile.getValue(i + 1);
-            if (start.isPresent() && end.isPresent()) samples.add((long) ((end.getAsLong() - start.getAsLong()) * period));
-        }
-        return samples;
+        // 1.21.1 无 GPU 时间戳查询池; 返回空采样 (C-stun).
+        return new java.util.ArrayList<>();
     }
     public long lastNanos() { return lastNanos; }
     public long prepareNanos() { return prepareNanos; }
     public long uploadNanos() { return uploadNanos; }
     public long frames() { return frames; }
     public int drawn() { return drawn; }
-    @SubscribeEvent public static void pipelines(RegisterRenderPipelinesEvent event) { event.registerPipeline(PIPELINE); }
 
     public void render(FlowObservationCache cache, long tick, Vec3 camera, Matrix4fc view, Matrix4fc projection) {
         long start = System.nanoTime();
         var mc = Minecraft.getInstance();
         if (mc.level == null || mc.player == null) return;
-        if (bytes == null) {
-            int capacity = FlowObservationCache.MAX_MARKERS * 20;
-            bytes = MemoryUtil.memAlloc(capacity);
-            vertices = new MappableRingBuffer(() -> "Flow markers", GpuBuffer.USAGE_VERTEX | GpuBuffer.USAGE_MAP_WRITE, capacity);
-            uniform = new MappableRingBuffer(() -> "Flow view", GpuBuffer.USAGE_UNIFORM | GpuBuffer.USAGE_MAP_WRITE, 80);
-            try (var stack = MemoryStack.stackPush()) {
-                var corners = stack.malloc(32);
-                corners.putFloat(-1).putFloat(-1).putFloat(1).putFloat(-1)
-                        .putFloat(1).putFloat(1).putFloat(-1).putFloat(1).flip();
-                quad = RenderSystem.getDevice().createBuffer(() -> "Flow quad", GpuBuffer.USAGE_VERTEX, corners);
-            }
-        }
-        bytes.clear(); drawn = 0;
+        drawn = 0;
         float partial = mc.getTimer().getGameTimeDeltaPartialTick(false);
         var matrix = new Matrix4f(projection).mul(view);
+        var fullInv = new Matrix4f(matrix).invert();
         var clip = new Vector4f();
+        var win = mc.getWindow();
+        float winW = Math.max(1, win.getWidth());
+        float winH = Math.max(1, win.getHeight());
+        var bufferSource = mc.renderBuffers().bufferSource();
+        VertexConsumer builder = bufferSource.getBuffer(MARKERS);
         for (var marker : cache.markers()) {
             if (marker.expiresAt <= tick) continue;
             var entity = mc.level.getEntity(marker.sample.id());
@@ -108,46 +105,52 @@ public final class FlowSenseRenderer implements AutoCloseable {
             float size = (float) Math.clamp(240 * marker.sample.width() / Math.max(1, Math.sqrt(x * x + y * y + z * z)), 5, 18);
             float alpha = (float) Math.min(.68, Math.min((tick + partial - marker.bornAt) / 4,
                     (marker.expiresAt - tick - partial) / 8));
-            bytes.putFloat((float) x).putFloat((float) y).putFloat((float) z);
-            bytes.put((byte) 190).put((byte) 229).put((byte) 235).put((byte) Math.round(Math.clamp(alpha, 0, 1) * 255));
-            bytes.putFloat(size);
+            emitMarker(builder, matrix, fullInv, (float) x, (float) y, (float) z, size, alpha, winW, winH);
             drawn++;
         }
         prepareNanos = System.nanoTime() - start;
         if (drawn == 0) { lastNanos = prepareNanos; uploadNanos = 0; return; }
-        bytes.flip();
-        var encoder = RenderSystem.getDevice().createCommandEncoder();
-        var instanceSlice = vertices.currentBuffer().slice(0, bytes.remaining());
-        try (var mapped = instanceSlice.map(false, true)) { mapped.data().put(bytes); }
-        var uniformSlice = uniform.currentBuffer().slice();
-        var main = mc.gameRenderer.mainRenderTarget();
-        try (var stack = MemoryStack.stackPush()) {
-            var data = Std140Builder.onStack(stack, 80);
-            data.putMat4f(matrix); data.putVec4(2f / main.width, 2f / main.height, 0, 0);
-            try (var mapped = uniformSlice.map(false, true)) { mapped.data().put(data.get()); }
-        }
+        // 以相机旋转矩阵作为模型矩阵; 顶点以相机相对坐标给出, 由 RenderSystem 完成投影.
+        var modelView = RenderSystem.getModelViewStack();
+        modelView.pushMatrix();
+        modelView.set(view);
+        RenderSystem.applyModelViewMatrix();
+        bufferSource.endBatch(MARKERS);
+        modelView.popMatrix();
         uploadNanos = System.nanoTime() - start - prepareNanos;
-        var indices = RenderSystem.getSequentialBuffer(PrimitiveTopology.QUADS);
-        var indexBuffer = indices.getBuffer(6);
-        boolean sampleGpu = profile != null && profileSlots < 256;
-        if (sampleGpu) encoder.writeTimestamp(profile, profileSlots++);
-        try (var pass = encoder.createRenderPass(() -> "Flow sense markers", main.getColorTextureView(), Optional.empty())) {
-            pass.setPipeline(PIPELINE); pass.setUniform("FlowView", uniformSlice);
-            pass.setVertexBuffer(0, quad.slice()); pass.setVertexBuffer(1, instanceSlice);
-            pass.setIndexBuffer(indexBuffer, indices.type());
-            pass.drawIndexed(6, drawn, 0, 0, 0);
-        }
-        if (sampleGpu) encoder.writeTimestamp(profile, profileSlots++);
-        vertices.rotate(); uniform.rotate();
         frames++; lastNanos = System.nanoTime() - start;
     }
+
+    /**
+     * 把单个标记展开为一张面向相机的四边形, 其屏幕像素尺寸恒为 {@code size}.
+     *
+     * <p>算法: 先将标记中心投影到 NDC, 加上 「size/窗口尺寸」 对应的 NDC 偏移得到四个角点
+     * 的 NDC 坐标, 再用逆矩阵反解回相机空间顶点. 由于 NDC 偏移与距离无关, 像素大小恒定.
+     */
+    private static void emitMarker(VertexConsumer builder, Matrix4fc matrix, Matrix4fc fullInv,
+                                   float cx, float cy, float cz, float size, float alpha,
+                                   float winW, float winH) {
+        var clipTmp = new Vector4f(cx, cy, cz, 1f).mul(matrix);
+        float w = clipTmp.w;
+        if (w <= 0) return;
+        float ndcX = clipTmp.x / w;
+        float ndcY = clipTmp.y / w;
+        float ndcZ = clipTmp.z / w;
+        float sx = size * 2f / winW;
+        float sy = size * 2f / winH;
+        float r = 190 / 255f, g = 229 / 255f, b = 235 / 255f;
+        var tl = fullInv.transformPosition(new Vector3f(ndcX - sx, ndcY + sy, ndcZ), new Vector3f());
+        var tr = fullInv.transformPosition(new Vector3f(ndcX + sx, ndcY + sy, ndcZ), new Vector3f());
+        var br = fullInv.transformPosition(new Vector3f(ndcX + sx, ndcY - sy, ndcZ), new Vector3f());
+        var bl = fullInv.transformPosition(new Vector3f(ndcX - sx, ndcY - sy, ndcZ), new Vector3f());
+        builder.addVertex(tl.x, tl.y, tl.z).setColor(r, g, b, alpha);
+        builder.addVertex(tr.x, tr.y, tr.z).setColor(r, g, b, alpha);
+        builder.addVertex(br.x, br.y, br.z).setColor(r, g, b, alpha);
+        builder.addVertex(bl.x, bl.y, bl.z).setColor(r, g, b, alpha);
+    }
+
     @Override public void close() {
-        if (bytes != null) MemoryUtil.memFree(bytes);
-        if (vertices != null) vertices.close();
-        if (quad != null) quad.close();
-        if (uniform != null) uniform.close();
-        if (profile != null) profile.close();
-        profile = null; profileSlots = 0;
-        bytes = null; vertices = uniform = null; quad = null;
+        prepareNanos = uploadNanos = lastNanos = frames = 0;
+        drawn = 0;
     }
 }

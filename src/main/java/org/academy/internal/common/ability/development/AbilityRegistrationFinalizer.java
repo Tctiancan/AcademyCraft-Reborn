@@ -16,7 +16,7 @@ public final class AbilityRegistrationFinalizer {
         var failures = new ArrayList<String>();
         Registries.SKILLS.keySet().stream().sorted(Comparator.comparing(Object::toString)).forEach(id -> {
             try {
-                Registries.SKILLS.getValue(id).resolveRegistration();
+                Registries.SKILLS.get(id).resolveRegistration();
             } catch (RuntimeException exception) {
                 failures.add("skill " + id + ": " + exception.getMessage());
             }

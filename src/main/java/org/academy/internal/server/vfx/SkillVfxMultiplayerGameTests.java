@@ -84,7 +84,6 @@ public final class SkillVfxMultiplayerGameTests {
             var connection = new Connection(PacketFlow.SERVERBOUND);
             channel = new EmbeddedChannel(connection);
             level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-            player.connection.markClientLoaded();
             player.setNoGravity(true);
             move(position);
         }
@@ -131,7 +130,7 @@ public final class SkillVfxMultiplayerGameTests {
             this.helper = helper; this.count = count;
             center = helper.absoluteVec(new Vec3(4, 5, 4));
         }
-        void check(boolean value, String message) { helper.assertTrue(value, Component.literal(message)); }
+        void check(boolean value, String message) { helper.assertTrue(value, message); }
         void guarded(Runnable action) {
             try { action.run(); }
             catch (RuntimeException | Error failure) { close(); throw failure; }

@@ -108,7 +108,7 @@ public final class HostileTargetGameTests {
     }
 
     static void check(GameTestHelper helper, boolean condition, String message) {
-        helper.assertTrue(condition, Component.literal(message));
+        helper.assertTrue(condition, message);
     }
 
     private static LivingEntity pig(GameTestHelper helper) {

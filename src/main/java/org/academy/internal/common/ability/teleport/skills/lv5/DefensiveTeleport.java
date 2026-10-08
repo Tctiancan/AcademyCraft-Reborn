@@ -158,7 +158,7 @@ public final class DefensiveTeleport extends Skill {
                 var camera = minecraft.gameRenderer.getMainCamera();
                 var selectionOffset = selectionOffset(
                         player.getViewVector(partialTick),
-                        new Vec3(camera.forwardVector()),
+                        new Vec3(camera.getLookVector()),
                         camera.getYRot(),
                         minecraft.options.getCameraType().isFirstPerson(),
                         distance
@@ -317,7 +317,7 @@ public final class DefensiveTeleport extends Skill {
                             projectile.setOwner(null);
                             projectile.setDeltaMovement(projectile.getDeltaMovement().scale(0.5));
                         } else if (entity instanceof LivingEntity living) {
-                            living.addEffect(new MobEffectInstance(MobEffects.SLOWNESS, 60, 0));
+                            living.addEffect(new MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 60, 0));
                         }
                     }
                     index++;

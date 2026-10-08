@@ -5,7 +5,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 
 import static org.academy.AcademyCraft.academy;
@@ -18,7 +18,7 @@ import static org.academy.AcademyCraft.academy;
  */
 public class QuantumInterferenceLayer<T extends LivingEntity, M extends EntityModel<T>>
         extends RenderLayer<T, M> {
-    public static final ContextKey<QuantumData> CONTEXT_KEY = new ContextKey<>(academy("quantum"));
+    public static final ResourceLocation CONTEXT_KEY = academy("quantum");
 
     public QuantumInterferenceLayer(RenderLayerParent<T, M> renderer) {
         super(renderer);

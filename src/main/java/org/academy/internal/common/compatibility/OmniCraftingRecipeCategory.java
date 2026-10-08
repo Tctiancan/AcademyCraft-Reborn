@@ -50,8 +50,8 @@ public final class OmniCraftingRecipeCategory
 
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, DisplayRecipe recipe, IFocusGroup focuses) {
-        addItem(builder, 0, 0, net.minecraft.world.item.Items.STAINED_GLASS_PANE.blue());
-        addItem(builder, 1, 0, net.minecraft.world.item.Items.STAINED_GLASS_PANE.blue());
+        addItem(builder, 0, 0, net.minecraft.world.item.Items.BLUE_STAINED_GLASS_PANE);
+        addItem(builder, 1, 0, net.minecraft.world.item.Items.BLUE_STAINED_GLASS_PANE);
         addItem(builder, 2, 0, Items.ABILITY_CONTROL_TABLET.get());
         addItem(builder, 0, 1, Items.WIND_GEN_BASE_SCREEN.get());
         builder.addInputSlot(3 + 18, 3 + 18)
@@ -65,10 +65,10 @@ public final class OmniCraftingRecipeCategory
         builder.addSlot(RecipeIngredientRole.INPUT, 68, 7)
                 .setStandardSlotBackground()
                 .setFluidRenderer(OmniCraftingMenu.SPECIAL_RECIPE_FLUID, true, 16, 16)
-                .add(Fluids.IMAG_PHASE.get(), OmniCraftingMenu.SPECIAL_RECIPE_FLUID);
+                .addFluidStack(Fluids.IMAG_PHASE.get(), OmniCraftingMenu.SPECIAL_RECIPE_FLUID);
         builder.addOutputSlot(137, 22)
                 .setOutputSlotBackground()
-                .add(Items.ABILITY_DEVELOPER.get());
+                .addItemLike(Items.ABILITY_DEVELOPER.get());
     }
 
     @Override
@@ -105,7 +105,7 @@ public final class OmniCraftingRecipeCategory
     ) {
         builder.addInputSlot(3 + column * 18, 3 + row * 18)
                 .setStandardSlotBackground()
-                .add(item);
+                .addItemLike(item);
     }
 
     private static final List<ItemStack> BEDS = BuiltInRegistries.ITEM.stream()

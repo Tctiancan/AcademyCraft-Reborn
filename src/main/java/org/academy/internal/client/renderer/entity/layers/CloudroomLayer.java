@@ -6,7 +6,7 @@ import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.internal.common.ability.Skills;
@@ -23,7 +23,7 @@ import static org.academy.AcademyCraft.academy;
  */
 public final class CloudroomLayer<T extends LivingEntity, M extends EntityModel<T>>
         extends RenderLayer<T, M> {
-    public static final ContextKey<Boolean> VISIBLE = new ContextKey<>(academy("cloudroom_visible"));
+    public static final ResourceLocation VISIBLE = academy("cloudroom_visible");
 
     public CloudroomLayer(RenderLayerParent<T, M> renderer) {
         super(renderer);

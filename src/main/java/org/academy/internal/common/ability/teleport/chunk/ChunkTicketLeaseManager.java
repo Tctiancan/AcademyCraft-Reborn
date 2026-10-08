@@ -123,7 +123,7 @@ public final class ChunkTicketLeaseManager {
                 // Await the same radius ticket acquired above. Using radius zero here creates a second,
                 // untracked NO_TIMEOUT ticket which release(owner) can never remove.
                 level.getChunkSource()
-                        .addRegionTicket(ChunkLeapTickets.MAP_VIEW.get(), pos, lease.radius, Unit.INSTANCE);
+                        .addRegionTicket(ChunkLeapTickets.MAP_VIEW, pos, lease.radius, Unit.INSTANCE);
                 futures[i] = CompletableFuture.completedFuture(
                         ChunkResult.of(level.getChunk(pos.x, pos.z, ChunkStatus.FULL, true)));
             }
@@ -266,7 +266,7 @@ public final class ChunkTicketLeaseManager {
         var key = new ChunkKey(level, pos.toLong(), radius);
         var count = REFS.get(key);
         if (count == null) {
-            level.getChunkSource().addRegionTicket(ChunkLeapTickets.MAP_VIEW.get(), pos, radius, Unit.INSTANCE);
+            level.getChunkSource().addRegionTicket(ChunkLeapTickets.MAP_VIEW, pos, radius, Unit.INSTANCE);
             REFS.put(key, 1);
         } else {
             REFS.put(key, count + 1);
@@ -282,7 +282,7 @@ public final class ChunkTicketLeaseManager {
             return;
         }
         REFS.remove(key);
-        level.getChunkSource().removeRegionTicket(ChunkLeapTickets.MAP_VIEW.get(), pos, radius, Unit.INSTANCE);
+        level.getChunkSource().removeRegionTicket(ChunkLeapTickets.MAP_VIEW, pos, radius, Unit.INSTANCE);
     }
 
     public static synchronized void releaseAll() {

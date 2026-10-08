@@ -205,7 +205,7 @@ public final class TemporalPlayerTickGameTests {
                         "Paralysis must end after ten physical ticks even at two-thirds speed");
                 helper.assertTrue(controlled.getCooldowns().isOnCooldown(dirt.getItem()) == (randomDuration > 10),
                         "Extra cooldown must follow its own duration after base paralysis ends");
-                helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick),
+                helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick.getItem()),
                         "Ending paralysis must preserve a longer pre-existing cooldown");
             }));
             helper.runAfterDelay(randomDuration + 1L, () -> guarded(() -> {
@@ -213,7 +213,7 @@ public final class TemporalPlayerTickGameTests {
                         "Player action freeze must expire on physical time");
                 helper.assertTrue(!controlled.getCooldowns().isOnCooldown(dirt.getItem()),
                         "Extra cooldown must expire on physical time despite player slowdown");
-                helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick),
+                helper.assertTrue(controlled.getCooldowns().isOnCooldown(stick.getItem()),
                         "Extra cooldown expiry must preserve a longer existing cooldown");
             }));
             var monster = helper.spawn(EntityType.ZOMBIE, 3, 2, 5);

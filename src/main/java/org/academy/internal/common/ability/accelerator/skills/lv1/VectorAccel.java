@@ -6,7 +6,7 @@ import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.rendertype.RenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
@@ -277,7 +277,8 @@ public final class VectorAccel extends Skill {
                     movementY -= gravity;
                 }
 
-                var frictionModifier = (float) player.getAttributeValue(Attributes.FRICTION_MODIFIER);
+                // FRICTION_MODIFIER is a 26.2 attribute; absent in 1.21.1, default value is 1.0 (neutral).
+                var frictionModifier = 1.0f;
                 var blockFriction = 1.0f;
                 if (onGround) {
                     var below = BlockPos.containing(position.x, boundingBox.minY - 0.500001, position.z);
@@ -287,7 +288,8 @@ public final class VectorAccel extends Skill {
                     );
                 }
 
-                var airDragModifier = (float) player.getAttributeValue(Attributes.AIR_DRAG_MODIFIER);
+                // AIR_DRAG_MODIFIER is a 26.2 attribute; absent in 1.21.1, default value is 1.0 (neutral).
+                var airDragModifier = 1.0f;
                 var airDrag = modifiedFriction(0.91f, airDragModifier);
                 var horizontalFriction = blockFriction * airDrag;
                 var verticalFriction = modifiedFriction(0.98f, airDragModifier);
@@ -407,7 +409,7 @@ public final class VectorAccel extends Skill {
                 matrixStack.pushPose();
                 matrixStack.translate((float) -camPos.x, (float) -camPos.y, (float) -camPos.z);
 
-                event.submitCustomGeometry(RenderTypes.lightning(), (matrices, consumer) -> {
+                event.submitCustomGeometry(RenderType.lightning(), (matrices, consumer) -> {
                     renderTrajectoryPath(matrices, consumer, camera, renderOffset);
                     renderLandingPoint(matrices, consumer, renderOffset);
                 });

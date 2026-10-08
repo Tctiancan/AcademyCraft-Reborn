@@ -27,7 +27,6 @@ import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.development.AbilityRegistrationFinalizer;
 import org.academy.internal.common.ability.development.AbilityRegistrationValidator;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.teleport.chunk.ChunkLeapTickets;
 import org.academy.internal.common.ability.mentalout.control.*;
 import org.academy.internal.common.ability.program.registry.AbilityProgramNodeTypes;
 import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
@@ -102,7 +101,6 @@ public final class AcademyCraftRegister {
         AbilityCategories.ABILITY_CATEGORIES.register(modEventBus);
         PacketTypes.PACKET_TYPES.register(modEventBus);
         Skills.SKILLS.register(modEventBus);
-        ChunkLeapTickets.TICKET_TYPES.register(modEventBus);
         AbilityProgramNodeTypes.REGISTER.register(modEventBus);
 
         DataTypes.SYNC_DATA_TYPES.register(modEventBus);

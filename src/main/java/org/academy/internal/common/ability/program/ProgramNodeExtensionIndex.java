@@ -56,7 +56,7 @@ public final class ProgramNodeExtensionIndex {
                 if (AbilityProgramDefinitions.find(category) == null) declarationFailures.add(id + " has no program category " + category);
             }
             for (var skill : extension.scope().requiredCapabilities()) {
-                if (Registries.SKILLS.get(skill).isEmpty()) declarationFailures.add(id + " requires missing skill " + skill);
+                if (!Registries.SKILLS.containsKey(skill)) declarationFailures.add(id + " requires missing skill " + skill);
             }
         });
         if (!declarationFailures.isEmpty()) throw new IllegalStateException(String.join("; ", declarationFailures));
@@ -121,8 +121,10 @@ public final class ProgramNodeExtensionIndex {
         var result = new HashMap<ResourceLocation, ProgramNodeType<?>>();
         Registries.PROGRAM_NODE_TYPES.keySet().stream()
                 .sorted(Comparator.comparing(ResourceLocation::toString))
-                .forEach(id -> Registries.PROGRAM_NODE_TYPES.get(id)
-                        .ifPresent(reference -> result.put(id, reference.value())));
+                .forEach(id -> {
+                    var value = Registries.PROGRAM_NODE_TYPES.get(id);
+                    if (value != null) result.put(id, value);
+                });
         return Map.copyOf(result);
     }
 

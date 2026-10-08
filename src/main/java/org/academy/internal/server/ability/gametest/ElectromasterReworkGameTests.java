@@ -110,7 +110,7 @@ public final class ElectromasterReworkGameTests {
     }
 
     private static void check(GameTestHelper helper, boolean condition, String message) {
-        helper.assertTrue(condition, Component.literal(message));
+        helper.assertTrue(condition, message);
     }
 
     private static void close(GameTestHelper helper, double expected, double actual, String message) {

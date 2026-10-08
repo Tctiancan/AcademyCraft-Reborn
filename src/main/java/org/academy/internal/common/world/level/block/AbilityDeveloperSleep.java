@@ -50,7 +50,7 @@ public final class AbilityDeveloperSleep {
         player.startSleeping(sleepPosition);
         ((PlayerSleepCounterAccessor) player).academy$setSleepCounter(0);
         if (canSkipTime(player)) {
-            player.level().updateSleepingPlayerList();
+            ((net.minecraft.server.level.ServerLevel) player.level()).updateSleepingPlayerList();
         }
     }
 
@@ -75,7 +75,7 @@ public final class AbilityDeveloperSleep {
         if (player.tickCount % SP_RECOVERY_INTERVAL_TICKS == 0
                 && isSleepingAtDeveloper(player)
                 && canSkipTime(player)) {
-            player.level().updateSleepingPlayerList();
+            ((net.minecraft.server.level.ServerLevel) player.level()).updateSleepingPlayerList();
         }
     }
 
@@ -131,6 +131,6 @@ public final class AbilityDeveloperSleep {
 
         player.setPose(Pose.SLEEPING);
         player.setDeltaMovement(Vec3.ZERO);
-        player.walkAnimation.stop();
+        player.walkAnimation.setSpeed(0.0F);
     }
 }

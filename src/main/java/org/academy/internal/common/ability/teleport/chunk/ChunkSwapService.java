@@ -185,7 +185,7 @@ public final class ChunkSwapService {
         drainRefreshes();
         drainCarrierResyncs(tick);
         if (ACTIVE_SWAPS.isEmpty()) return;
-        var deadline = net.minecraft.util.Util.getMillis() + SWAP_TIME_BUDGET_MS;
+        var deadline = net.minecraft.Util.getMillis() + SWAP_TIME_BUDGET_MS;
         var iterator = ACTIVE_SWAPS.iterator();
         while (iterator.hasNext()) {
             var swap = iterator.next();
@@ -265,7 +265,7 @@ public final class ChunkSwapService {
                 swap.lightingTasks.add(result.lightingTask());
             }
             swap.cursor++;
-            if (net.minecraft.util.Util.getMillis() >= deadline) return;
+            if (net.minecraft.Util.getMillis() >= deadline) return;
         }
     }
 
@@ -304,13 +304,13 @@ public final class ChunkSwapService {
 
     private static void drainRefreshes() {
         if (REFRESH_QUEUE.isEmpty()) return;
-        var deadline = net.minecraft.util.Util.getMillis() + REFRESH_TIME_BUDGET_MS;
+        var deadline = net.minecraft.Util.getMillis() + REFRESH_TIME_BUDGET_MS;
         var done = 0;
         while (done < REFRESH_BUDGET_PER_TICK && !REFRESH_QUEUE.isEmpty()) {
             var entry = REFRESH_QUEUE.poll();
             ChunkRegionSwap.refreshHeightmapsAndResend(entry.level(), entry.pos());
             done++;
-            if (net.minecraft.util.Util.getMillis() >= deadline) break;
+            if (net.minecraft.Util.getMillis() >= deadline) break;
         }
     }
 

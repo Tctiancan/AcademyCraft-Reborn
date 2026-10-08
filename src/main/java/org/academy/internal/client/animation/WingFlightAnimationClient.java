@@ -1,7 +1,6 @@
 package org.academy.internal.client.animation;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
 import net.minecraft.world.entity.player.Player;
 import org.academy.api.client.input.InputSystem;
 import org.academy.internal.common.ability.accelerator.flight.WingFlightPose;
@@ -24,23 +23,13 @@ public final class WingFlightAnimationClient {
     private WingFlightAnimationClient() {
     }
 
-    public static void prepareRenderState(
-            Player avatar,
-            PlayerRenderState state,
-            float partialTick
-    ) {
+    /**
+     * 1.21.1 适配：26.2 的 3 参 prepareRenderState(Player, PlayerRenderState, F) 依赖不存在的
+     * PlayerRenderState.isVisuallySwimming/swimAmount（仅 26.2 渲染状态可写）。1.21.1 动画播放层
+     * 在 PlayerRenderer.render 中即时取样，视觉游泳的抑制由翼飞行姿态本身承担，此处实体化。
+     */
+    public static void prepareRenderState(Player avatar, float partialTick) {
         sample(avatar, partialTick);
-        if (WingFlightPose.usesCompactCollision(avatar)) {
-            suppressVanillaCompactPoseAnimation(state);
-        }
-    }
-
-    static void suppressVanillaCompactPoseAnimation(PlayerRenderState state) {
-        // FALL_FLYING supplies the one-block collision box. Without vanilla's fall-flying
-        // flag, LivingEntity treats that pose as visual swimming and AvatarRenderer adds
-        // another -90-degree body rotation on top of the authored Gecko animation.
-        state.isVisuallySwimming = false;
-        state.swimAmount = 0.0f;
     }
 
     public static WingFlightAnimationTimeline.Playback sample(

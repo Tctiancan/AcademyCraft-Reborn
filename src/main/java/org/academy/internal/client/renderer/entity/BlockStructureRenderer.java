@@ -28,7 +28,7 @@ public final class BlockStructureRenderer
                        MultiBufferSource bufferSource,
                        int packedLight) {
         var state = new BlockStructureRenderState();
-        state.yawDegrees = entity.getYRot(partialTick);
+        state.yawDegrees = entity.getYRot();
         var snapshot = entity.snapshot();
         state.pivotX = snapshot.pivotX();
         state.pivotZ = snapshot.pivotZ();

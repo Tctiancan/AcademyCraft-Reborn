@@ -7,7 +7,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.util.context.ContextKey;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.renderer.EffectRenderer;
 import org.academy.api.client.resources.R;
 import org.academy.internal.common.attachment.AttachmentTypes;
@@ -16,7 +16,7 @@ import org.joml.Matrix4f;
 import static org.academy.AcademyCraft.academy;
 
 public final class LightShieldEffectRenderer implements EffectRenderer {
-    public static final ContextKey<Boolean> CONTEXT_KEY = new ContextKey<>(academy("light_shield"));
+    public static final ResourceLocation CONTEXT_KEY = academy("light_shield");
     public static final LightShieldEffectRenderer INSTANCE = new LightShieldEffectRenderer();
     private static final float THIRD_PERSON_HALF_SIZE = 1.55f;
     private static final float FIRST_PERSON_HALF_SIZE = 2.25f;
@@ -28,7 +28,7 @@ public final class LightShieldEffectRenderer implements EffectRenderer {
                                      int packedLight, float halfSize) {
         var consumer = bufferSource.getBuffer(
                 RenderType.entityTranslucent(R.textures.light_shield_effect));
-        addDoubleSidedQuad(consumer, poseStack.pose(), packedLight, halfSize);
+        addDoubleSidedQuad(consumer, poseStack.last().pose(), packedLight, halfSize);
     }
 
     private static void addDoubleSidedQuad(VertexConsumer consumer, Matrix4f matrix,

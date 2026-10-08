@@ -555,7 +555,7 @@ public final class Railgun extends Skill {
                             )));
                 }
                 LinearAttackExecutor.executeReturn(
-                        player.level(),
+                        player.serverLevel(),
                         resolved,
                         payload,
                         outboundResult

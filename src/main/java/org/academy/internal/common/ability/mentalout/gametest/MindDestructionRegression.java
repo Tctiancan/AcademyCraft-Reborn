@@ -184,7 +184,8 @@ final class MindDestructionRegression {
             input(player, tick, MentalResistanceManager.INPUT_MASK);
         }
         helper.assertTrue(MentalResistanceManager.isManuallyResistant(player), "Manual resistance setup must break free");
-        player.connection.markClientLoaded();
+        // 1.21.1 C-stun: 26.2 的 ServerGamePacketListenerImpl.markClientLoaded() 不存在，
+        // gametest 中仅用于标记客户端已加载，1.21.1 无等价 API，移除。
         player.setGameMode(net.minecraft.world.level.GameType.SURVIVAL);
         org.academy.internal.common.world.damagesource.PvpSetting.trySetPvpEnabled(controller, true);
         org.academy.internal.common.world.damagesource.PvpSetting.trySetPvpEnabled(player, true);

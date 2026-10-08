@@ -46,8 +46,8 @@ public final class AbilityProgramDefinitions {
             if (result.containsKey(category.getKey())) {
                 throw new IllegalStateException("Duplicate program profile for " + category.getKey());
             }
-            var entry = Registries.PROGRAM_NODE_TYPES.get(profile.entryNode())
-                    .orElseThrow(() -> new IllegalStateException("Missing entry node " + profile.entryNode().location())).value();
+            var entry = Registries.PROGRAM_NODE_TYPES.get(profile.entryNode());
+            if (entry == null) throw new IllegalStateException("Missing entry node " + profile.entryNode().location());
             if (!(entry instanceof ProgramNodeExtension<?> extension)
                     || entry.role() != ProgramNodeRole.ENTRY) {
                 throw new IllegalStateException("Program entry must be a registered ENTRY extension: " + profile.entryNode());

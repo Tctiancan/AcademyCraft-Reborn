@@ -442,7 +442,6 @@ public final class PrecisionOperationClient {
             message.append(Component.translatable(
                     "message.academy.precision_operation.feedback.affected", affectedCount));
         }
-        Minecraft.getInstance().gui.chatListener()
-                .handleSystemMessage(message.withStyle(ChatFormatting.RED), false);
+        Minecraft.getInstance().player.displayClientMessage(message.withStyle(ChatFormatting.RED), false);
     }
 }

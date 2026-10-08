@@ -228,7 +228,6 @@ public class MagneticWeapon extends Skill {
                     && (target.isCreative() || target.isSpectator())) return false;
             return HostileTargets.isMarked(player, entity)
                     || player.getLastHurtByMob() == entity
-                    || player.getLastHurtByPlayer() == entity
                     || entity instanceof Mob mob && mob.getTarget() == player;
         }
 
@@ -392,7 +391,7 @@ public class MagneticWeapon extends Skill {
 
         private void syncData() {
             var hideMainHand = weaponSlot >= 0
-                    && player.getInventory().getSelectedSlot() == weaponSlot
+                    && player.getInventory().selected == weaponSlot
                     && isSupportedWeapon(player.getInventory().getItem(weaponSlot));
             var data = new Data(true, weaponSlot, hideMainHand);
             if (data.equals(player.getData(AttachmentTypes.MAGNETIC_WEAPON_DATA.get()))) return;

@@ -2,43 +2,37 @@ package org.academy.internal.client.animation;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
-import net.minecraft.client.renderer.entity.state.PlayerRenderState;
-import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.util.context.ContextKey;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.Vec3;
 import org.academy.internal.common.world.level.block.AbilityDeveloperSleep;
 import org.joml.Quaternionf;
 import org.jspecify.annotations.Nullable;
 
-import static org.academy.AcademyCraft.academy;
-
 public final class AbilityDeveloperSleepClient {
-    public static final ContextKey<PodPose> CONTEXT_KEY =
-            new ContextKey<>(academy("ability_developer_sleep_pose"));
     private static final double SLEEPING_HEIGHT = 0.6875;
 
     private AbilityDeveloperSleepClient() {
     }
 
-    public static void extract(Player avatar, PlayerRenderState renderState) {
-        var podPose = sample(avatar, renderState.partialTick);
-        renderState.setRenderData(CONTEXT_KEY, podPose);
-        if (podPose == null) return;
-
-        renderState.pose = Pose.SLEEPING;
-        renderState.bedOrientation = podPose.facing().getOpposite();
-        renderState.walkAnimationPos = 0.0f;
-        renderState.walkAnimationSpeed = 0.0f;
-    }
-
-    public static void applyModelTransform(PlayerRenderState renderState, PoseStack poseStack) {
-        var podPose = renderState.getRenderData(CONTEXT_KEY);
+    /**
+     * 1.21.1 适配：
+     * <ul>
+     *   <li>26.2 通过 {@code renderState.setRenderData(ContextKey, PodPose)} 与
+     *       {@code renderState.pose / bedOrientation / walkAnimation*} 表达睡眠姿态，
+     *       依赖不存在的 PlayerRenderState/LivingEntityRenderState；1.21.1 无渲染状态，改为
+     *       在 {@link #applyModelTransform} 内直接做模型变换。</li>
+     *   <li>26.2 的 5 参 {@code setupRotations(PlayerRenderState,...)} 对应 1.21.1 的
+     *       {@code PlayerRenderer.setupRotations(AbstractClientPlayer, PoseStack, F,F,F,F,F)}，
+     *       此处以实体 + partialTick 计算姿态。</li>
+     *   <li>{@code extract(Player, PlayerRenderState)} 与 {@code stabilizeCamera(Camera, CameraRenderState)}
+     *       仅操作 26.2 渲染状态，无 1.21.1 等价物且无调用方，已移除。</li>
+     * </ul>
+     */
+    public static void applyModelTransform(LivingEntity entity, PoseStack poseStack, float partialTick) {
+        var podPose = sample(entity, partialTick);
         if (podPose == null || podPose.angleDegrees() <= 0.0f) return;
 
         var pivotX = podPose.mainPosition().getX() - podPose.sleepingPosition().getX();
@@ -50,7 +44,7 @@ public final class AbilityDeveloperSleepClient {
 
     @Nullable
     public static CameraAdjustment cameraAdjustment(Camera camera, float partialTick) {
-        if (!(camera.entity() instanceof LivingEntity livingEntity)) return null;
+        if (!(camera.getEntity() instanceof LivingEntity livingEntity)) return null;
         var podPose = sample(livingEntity, partialTick);
         if (podPose == null || podPose.angleDegrees() <= 0.0f) return null;
 
@@ -61,17 +55,6 @@ public final class AbilityDeveloperSleepClient {
                 pivot.add(rotatedOffset.x, rotatedOffset.y, rotatedOffset.z),
                 podPose.angleDegrees()
         );
-    }
-
-    public static void stabilizeCamera(Camera camera, CameraRenderState renderState) {
-        if (!(camera.entity() instanceof LivingEntity livingEntity)
-                || !AbilityDeveloperSleep.isSleepingAtDeveloper(livingEntity)) {
-            return;
-        }
-
-        renderState.entityRenderState.isSleeping = true;
-        renderState.entityRenderState.backwardsInterpolatedWalkDistance = 0.0f;
-        renderState.entityRenderState.bob = 0.0f;
     }
 
     @Nullable

@@ -84,7 +84,7 @@ public final class MentalDefenseGameTests {
         var originalTime = level.getGameTime();
         var registry = BuiltInRegistries.ENTITY_TYPE;
         var originalTags = new HashMap<TagKey<EntityType<?>>, List<Holder<EntityType<?>>>>();
-        registry.listTags().forEach(tag -> originalTags.put(tag.key(), tag.stream().toList()));
+        registry.getTags().forEach(tag -> originalTags.put(tag.getFirst(), tag.getSecond().stream().toList()));
         var testTags = new HashMap<>(originalTags);
         testTags.put(MentalControlTags.IMMUNE, List.of(
                 EntityType.COW.builtInRegistryHolder(), EntityType.PIG.builtInRegistryHolder(),
@@ -95,7 +95,7 @@ public final class MentalDefenseGameTests {
         var players = new ArrayList<ServerPlayer>();
         var entities = new ArrayList<LivingEntity>();
         try {
-            registry.prepareTagReload(new TagLoader.LoadResult<>(registry.key(), testTags)).apply();
+            registry.bindTags(testTags);
             var controller = player(helper, feedback);
             players.add(controller);
             var playerSubject = player(helper, new ArrayList<>());
@@ -201,7 +201,7 @@ public final class MentalDefenseGameTests {
             }
             for (var player : players) server.getPlayerList().remove(player);
             ((ServerLevelData) level.getLevelData()).setGameTime(originalTime);
-            registry.prepareTagReload(new TagLoader.LoadResult<>(registry.key(), originalTags)).apply();
+            registry.bindTags(originalTags);
         }
     }
 }

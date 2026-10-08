@@ -358,7 +358,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     private void updateSelectionEnd(double x, double y) {
-        var point = WorkSelection.intersectHorizontal(minecraft.gameRenderer.getMainCamera().position(),
+        var point = WorkSelection.intersectHorizontal(minecraft.gameRenderer.getMainCamera().getPosition(),
                 rayDirection(x, y), selectionPlaneY);
         if (point != null && regionFirst != null) {
             regionLast = new BlockPos(Mth.floor(point.x), regionFirst.getY(), Mth.floor(point.z));
@@ -404,8 +404,8 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             super.renderInternal(context);
             updateLayout();
             var window = minecraft.getWindow();
-            var mouseX = (int) Math.round(minecraft.mouseHandler.getScaledXPos(window));
-            var mouseY = (int) Math.round(minecraft.mouseHandler.getScaledYPos(window));
+            var mouseX = (int) Math.round(minecraft.mouseHandler.xpos() / window.getScreenWidth() * window.getGuiScaledWidth());
+            var mouseY = (int) Math.round(minecraft.mouseHandler.ypos() / window.getScreenHeight() * window.getGuiScaledHeight());
             renderOverlay(new ProgramUiGraphics(context), mouseX, mouseY);
         }
     }
@@ -879,14 +879,14 @@ public final class WideAreaInterferenceScreen extends UiScreen {
                     blurWorkInputs();
                     Arrays.fill(movementKeys, false);
                     Arrays.fill(zoomKeys, false);
-                    return super.mouseClicked(event, doubleClick);
+                    return super.mouseClicked(mouseX, mouseY, button);
                 }
                 if (workPage == 1 && editingVertices) {
                     for (int index = 0; index < workCoordinates.length; index++) if (coordinateBounds(index).contains(x, y)) {
                         blurWorkInputs();
                         Arrays.fill(movementKeys, false);
                         Arrays.fill(zoomKeys, false);
-                        return super.mouseClicked(event, doubleClick);
+                        return super.mouseClicked(mouseX, mouseY, button);
                     }
                 }
                 blurWorkInputs();
@@ -986,7 +986,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             }
             return true;
         }
-        return super.mouseClicked(event, doubleClick);
+        return super.mouseClicked(mouseX, mouseY, button);
     }
 
     @Override
@@ -997,7 +997,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             return true;
         }
         if (dragMode != DragMode.NONE && button == 0) {
-            dragEndX = Mth.clamp(event.x(), display.x, display.right());
+            dragEndX = Mth.clamp(mouseX, display.x, display.right());
             dragEndY = Mth.clamp(mouseY, display.y, display.bottom());
             updateSelectionEnd(dragEndX, dragEndY);
             syncWorldState();
@@ -1013,7 +1013,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             return true;
         }
         if (dragMode != DragMode.NONE && button == 0) {
-            dragEndX = Mth.clamp(event.x(), display.x, display.right());
+            dragEndX = Mth.clamp(mouseX, display.x, display.right());
             dragEndY = Mth.clamp(mouseY, display.y, display.bottom());
             updateSelectionEnd(dragEndX, dragEndY);
             var completed = dragMode;
@@ -1028,7 +1028,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
             syncWorldState();
             return true;
         }
-        return super.mouseReleased(event);
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -1065,8 +1065,8 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     @Override
-    public boolean keyPressed(KeyEvent event) {
-        if (hasFocusedWorkInput()) return super.keyPressed(event);
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (hasFocusedWorkInput()) return super.keyPressed(keyCode, scanCode, modifiers);
         if (keyCode == InputConstants.KEY_ESCAPE) {
             if (armedAction != null || pickingWorkPoint != null || dragMode != DragMode.NONE) {
                 armedAction = null; pickingWorkPoint = null; dragMode = DragMode.NONE; return true;
@@ -1099,12 +1099,12 @@ public final class WideAreaInterferenceScreen extends UiScreen {
                 case InputConstants.KEY_4 -> activateAction(WideAreaInterference.Action.IMPRESSION);
                 case InputConstants.KEY_5 -> activateAction(WideAreaInterference.Action.WORK);
                 default -> {
-                    return super.keyPressed(event);
+                    return super.keyPressed(keyCode, scanCode, modifiers);
                 }
             }
             return true;
         }
-        return super.keyPressed(event);
+        return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
     @Override
@@ -1130,7 +1130,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         var y = display.y + display.height / 2.0;
         var hit = raycastBlockHit(x, y);
         var pivot = hit != null ? hit.getLocation() : WorkSelection.intersectHorizontal(
-                minecraft.gameRenderer.getMainCamera().position(), rayDirection(x, y),
+                minecraft.gameRenderer.getMainCamera().getPosition(), rayDirection(x, y),
                 WideAreaInterferenceClientState.focusPosition().y);
         WideAreaInterferenceClientState.anchorOrbit(pivot, preserveZoom);
     }
@@ -1259,7 +1259,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         if (minecraft.level == null) return null;
         LivingEntity best = null;
         var bestDistance = Double.MAX_VALUE;
-        var camera = minecraft.gameRenderer.getMainCamera().position();
+        var camera = minecraft.gameRenderer.getMainCamera().getPosition();
         for (var entity : visibleEntities()) {
             var bounds = projectBounds(entity.getBoundingBox().inflate(0.20));
             if (bounds == null || !bounds.contains(mouseX, mouseY)) continue;
@@ -1300,7 +1300,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         var renderedDirection = WideAreaInterferenceClientState.rayDirection(mouseX, mouseY, width, height);
         if (renderedDirection != null) return renderedDirection;
         var camera = minecraft.gameRenderer.getMainCamera();
-        var forward = Vec3.directionFromRotation(camera.xRot(), camera.yRot());
+        var forward = Vec3.directionFromRotation(camera.getXRot(), camera.getYRot());
         var right = forward.cross(new Vec3(0.0, 1.0, 0.0)).normalize();
         var up = right.cross(forward).normalize();
         var nx = (mouseX - width / 2.0) / (width / 2.0);
@@ -1313,7 +1313,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
 
     private List<LivingEntity> visibleEntities() {
         if (minecraft.level == null || minecraft.player == null) return List.of();
-        var camera = minecraft.gameRenderer.getMainCamera().position();
+        var camera = minecraft.gameRenderer.getMainCamera().getPosition();
         return minecraft.level.getEntitiesOfClass(
                 LivingEntity.class,
                 new AABB(WideAreaInterferenceClientState.focusPosition(), WideAreaInterferenceClientState.focusPosition())
@@ -1329,7 +1329,7 @@ public final class WideAreaInterferenceScreen extends UiScreen {
         var rendered = WideAreaInterferenceClientState.projectWorld(point, width, height);
         if (rendered != null) return new ScreenPoint(rendered.x(), rendered.y());
         var camera = minecraft.gameRenderer.getMainCamera();
-        var forward = Vec3.directionFromRotation(camera.xRot(), camera.yRot());
+        var forward = Vec3.directionFromRotation(camera.getXRot(), camera.getYRot());
         var right = forward.cross(new Vec3(0.0, 1.0, 0.0)).normalize();
         var up = right.cross(forward).normalize();
         var delta = point.subtract(camera.getPosition());
@@ -1444,19 +1444,19 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     }
 
     private boolean shiftDown() {
-        var window = minecraft.getWindow().handle();
+        var window = minecraft.getWindow().getWindow();
         return GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_SHIFT) == GLFW.GLFW_PRESS
                 || GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_SHIFT) == GLFW.GLFW_PRESS;
     }
 
     private boolean controlDown() {
-        var window = minecraft.getWindow().handle();
+        var window = minecraft.getWindow().getWindow();
         return GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_CONTROL) == GLFW.GLFW_PRESS
                 || GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_CONTROL) == GLFW.GLFW_PRESS;
     }
 
     private boolean altDown() {
-        var window = minecraft.getWindow().handle();
+        var window = minecraft.getWindow().getWindow();
         return GLFW.glfwGetKey(window, GLFW.GLFW_KEY_LEFT_ALT) == GLFW.GLFW_PRESS
                 || GLFW.glfwGetKey(window, GLFW.GLFW_KEY_RIGHT_ALT) == GLFW.GLFW_PRESS;
     }

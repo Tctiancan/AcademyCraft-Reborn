@@ -172,7 +172,7 @@ public class DirStrike extends Skill {
                             () -> player.setDeltaMovement(Vec3.ZERO)
                     );
                     player.hurtMarked = true;
-                    player.fallDistance = 0.0;
+                    player.fallDistance = 0.0f;
                 }
                 return;
             }
@@ -199,7 +199,7 @@ public class DirStrike extends Skill {
                         () -> player.setDeltaMovement(Vec3.ZERO)
                 );
                 player.hurtMarked = true;
-                player.fallDistance = 0.0;
+                player.fallDistance = 0.0f;
                 executeStrike(player, true);
                 return;
             }
@@ -213,7 +213,7 @@ public class DirStrike extends Skill {
                     () -> player.setDeltaMovement(0.0, -DIVE_SPEED, 0.0)
             );
             player.hurtMarked = true;
-            player.fallDistance = 0.0;
+            player.fallDistance = 0.0f;
         }
 
         private static void executeStrike(ServerPlayer player, boolean airborne) {

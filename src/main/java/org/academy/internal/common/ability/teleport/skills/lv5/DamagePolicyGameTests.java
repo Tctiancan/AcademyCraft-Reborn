@@ -93,7 +93,7 @@ public final class DamagePolicyGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         level.getServer().getPlayerList().placeNewPlayer(connection, player, cookie);
-        player.connection.markClientLoaded();
+        // markClientLoaded() was removed in 26.2 -> 1.21.1 port; no direct equivalent exists
         player.setGameMode(GameType.SURVIVAL);
         try {
             for (var type : List.of(DamageTypes.DM_DAMAGE, DamageTypes.AERO_DAMAGE, DamageTypes.ELECTRO_DAMAGE, DamageTypes.MELT_DAMAGE,
@@ -152,9 +152,9 @@ public final class DamagePolicyGameTests {
                     .getMethod("getItem", Player.class).invoke(null, player);
             helper.assertTrue(inventory != null, "Chest Item must attach its actual player inventory");
             inventory.setItem(0, BuiltInRegistries.ITEM
-                    .getValue(ResourceLocation.parse("chest_item:stronger_stone")).getDefaultInstance());
+                    .get(ResourceLocation.parse("chest_item:stronger_stone")).getDefaultInstance());
             inventory.setItem(1, BuiltInRegistries.ITEM
-                    .getValue(ResourceLocation.parse("chest_item:fission_emblem")).getDefaultInstance());
+                    .get(ResourceLocation.parse("chest_item:fission_emblem")).getDefaultInstance());
             var config = (Supplier<?>) Class
                     .forName("com.ytgld.chest_item.items.gold.StrongerStone$ConfigItem")
                     .getField("intValue").get(null);
@@ -245,18 +245,18 @@ public final class DamagePolicyGameTests {
         irradiated.addEffect(new MobEffectInstance(
                 MobEffects.DAMAGE_RESISTANCE, 400, 4));
         irradiated.addEffect(new MobEffectInstance(
-                MobEffects.NAUSEA, 400, 2));
+                MobEffects.CONFUSION, 400, 2));
         SkillDamageUtil.apply(player, irradiated, Skills.SINGLE_HIGH_SPEED_ELECTRON_BEAM.get(),
                 DamageTypes.MELT_DAMAGE, 10);
         helper.assertTrue(Math.abs(irradiated.getHealth() - 990) < 0.01,
                 "Meltdowner must ignore resistance V");
-        for (var effect : List.of(MobEffects.NAUSEA,
+        for (var effect : List.of(MobEffects.CONFUSION,
                 MobEffects.MOVEMENT_SLOWDOWN,
                 MobEffects.DIG_SLOWDOWN,
                 MobEffects.WEAKNESS)) {
             helper.assertTrue(irradiated.hasEffect(effect), "Successful melt hit must apply all radiation effects");
         }
-        helper.assertTrue(irradiated.getEffect(MobEffects.NAUSEA).getAmplifier() == 2,
+        helper.assertTrue(irradiated.getEffect(MobEffects.CONFUSION).getAmplifier() == 2,
                 "Radiation must preserve a stronger existing debuff");
         irradiated.discard();
 
@@ -299,7 +299,7 @@ public final class DamagePolicyGameTests {
         var connection = new Connection(PacketFlow.SERVERBOUND);
         new EmbeddedChannel(connection);
         level.getServer().getPlayerList().placeNewPlayer(connection, defender, cookie);
-        defender.connection.markClientLoaded();
+        // markClientLoaded() was removed in 26.2 -> 1.21.1 port; no direct equivalent exists
         defender.setGameMode(GameType.SURVIVAL);
         try {
             PvpSetting.trySetPvpEnabled(player, true);

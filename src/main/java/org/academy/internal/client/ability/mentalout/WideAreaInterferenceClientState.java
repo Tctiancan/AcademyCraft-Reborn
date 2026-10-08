@@ -1,9 +1,9 @@
 package org.academy.internal.client.ability.mentalout;
 
-import com.mojang.blaze3d.GpuFormat;
+import com.mojang.blaze3d.pipeline.RenderTarget;
 import com.mojang.blaze3d.pipeline.TextureTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import org.academy.api.client.render.texture.GpuTexture;
 import org.academy.api.client.render.texture.GpuTextureView;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -88,7 +88,7 @@ public final class WideAreaInterferenceClientState {
             godYaw = player.getYRot();
         }
         godDistance = godTargetDistance = 24.0;
-        originalHudHidden = minecraft.gui.hud.isHidden();
+        originalHudHidden = minecraft.options.hideGui;
         hudVisibilityCaptured = true;
         ensureHudHidden(minecraft);
         mode = Mode.RTS;
@@ -188,8 +188,8 @@ public final class WideAreaInterferenceClientState {
         capturePass = CapturePass.NONE;
         moveForward = moveRight = velocityForward = velocityRight = 0.0;
         frameCameraValid = false;
-        if (hudVisibilityCaptured && minecraft.gui.hud.isHidden() != originalHudHidden) {
-            minecraft.gui.hud.toggle();
+        if (hudVisibilityCaptured && minecraft.options.hideGui != originalHudHidden) {
+            minecraft.options.hideGui = originalHudHidden;
         }
         hudVisibilityCaptured = false;
     }
@@ -213,12 +213,16 @@ public final class WideAreaInterferenceClientState {
     public static @Nullable GpuTextureView targetFrame(UUID targetUuid) {
         var frame = VIEW_FRAMES.get(targetUuid);
         return frame == null || !frame.captured || frame.target == null
-                ? null : frame.target.getColorTextureView();
+                ? null : textureView(frame.target);
     }
 
     public static @Nullable GpuTextureView playerFrame() {
         return !playerFrameCaptured || playerFrameDisplay == null
-                ? null : playerFrameDisplay.getColorTextureView();
+                ? null : textureView(playerFrameDisplay);
+    }
+
+    private static GpuTextureView textureView(TextureTarget target) {
+        return GpuTextureView.of(AcademyCraft.academy("wide_area_interference/" + System.identityHashCode(target)));
     }
 
     public static boolean hasCameraOverride() {
@@ -345,7 +349,7 @@ public final class WideAreaInterferenceClientState {
     }
 
     private static void ensureHudHidden(Minecraft minecraft) {
-        if (!minecraft.gui.hud.isHidden()) minecraft.gui.hud.toggle();
+        if (!minecraft.options.hideGui) minecraft.options.hideGui = true;
     }
 
     public static void panFromMouse(double deltaX, double deltaY) {
@@ -376,7 +380,7 @@ public final class WideAreaInterferenceClientState {
 
     public static void anchorOrbit(Vec3 pivot, boolean preserveZoom) {
         if (mode != Mode.RTS || pivot == null) return;
-        var position = Minecraft.getInstance().gameRenderer.getMainCamera().position();
+        var position = Minecraft.getInstance().gameRenderer.getMainCamera().getPosition();
         var zoomRatio = preserveZoom ? godTargetDistance / godDistance : 1.0;
         godFocus = pivot;
         godDistance = Math.clamp(position.distanceTo(pivot), 0.5, 16384);
@@ -511,7 +515,7 @@ public final class WideAreaInterferenceClientState {
             return;
         }
 
-        var current = camera.entity();
+        var current = camera.getEntity();
         if (current != null) {
             CAMERA_SMOOTHING_STATES.put(current.getUUID(), bridge.academy$captureSmoothingState());
         }
@@ -530,10 +534,7 @@ public final class WideAreaInterferenceClientState {
         var eyeHeight = entity.getEyeHeight();
         var fovModifier = 1.0f;
         if (entity instanceof AbstractClientPlayer player) {
-            fovModifier = player.getFieldOfViewModifier(
-                    minecraft.options.getCameraType().isFirstPerson(),
-                    minecraft.options.fovEffectScale().get().floatValue()
-            );
+            fovModifier = player.getFieldOfViewModifier();
         }
         return new CameraSmoothingBridge.CameraSmoothingState(
                 eyeHeight,
@@ -547,18 +548,12 @@ public final class WideAreaInterferenceClientState {
         if (mode != Mode.TARGETS || capturePass == CapturePass.NONE) return;
         publishPendingPlayerFrame();
         var minecraft = Minecraft.getInstance();
-        var main = minecraft.gameRenderer.mainRenderTarget();
-        var source = main.getColorTexture();
-        if (source == null) {
-            schedulePlayerCapture(minecraft);
-            return;
-        }
+        var main = minecraft.getMainRenderTarget();
         if (capturePass == CapturePass.PLAYER) {
             if (minecraft.player != null && minecraft.getCameraEntity() == minecraft.player) {
                 ensurePlayerFrameSize(main.width, main.height);
-                var destination = playerFrameCapture == null ? null : playerFrameCapture.getColorTexture();
-                if (destination != null) {
-                    copyFrame(source, destination, main.width, main.height);
+                if (playerFrameCapture != null) {
+                    copyFrame(main, playerFrameCapture, main.width, main.height);
                     playerFramePending = true;
                 }
             }
@@ -570,9 +565,8 @@ public final class WideAreaInterferenceClientState {
         if (frame != null && !frame.invalid && minecraft.getCameraEntity() != null
                 && minecraft.getCameraEntity().getId() == captureTargetEntityId) {
             frame.ensureSize(main.width, main.height);
-            var destination = frame.target == null ? null : frame.target.getColorTexture();
-            if (destination != null) {
-                copyFrame(source, destination, main.width, main.height);
+            if (frame.target != null) {
+                copyFrame(main, frame.target, main.width, main.height);
                 frame.captured = true;
             }
         }
@@ -582,18 +576,14 @@ public final class WideAreaInterferenceClientState {
     private static void ensurePlayerFrameSize(int width, int height) {
         if (playerFrameDisplay == null || playerFrameCapture == null) {
             destroyPlayerFrames();
-            playerFrameDisplay = new TextureTarget(
-                    "WideAreaInterference player background display",
-                    width, height, false, GpuFormat.RGBA8_UNORM);
-            playerFrameCapture = new TextureTarget(
-                    "WideAreaInterference player background capture",
-                    width, height, false, GpuFormat.RGBA8_UNORM);
+            playerFrameDisplay = new TextureTarget(width, height, false, Minecraft.ON_OSX);
+            playerFrameCapture = new TextureTarget(width, height, false, Minecraft.ON_OSX);
             playerFrameCaptured = false;
             playerFramePending = false;
         } else if (playerFrameDisplay.width != width || playerFrameDisplay.height != height
                 || playerFrameCapture.width != width || playerFrameCapture.height != height) {
-            playerFrameDisplay.resize(width, height);
-            playerFrameCapture.resize(width, height);
+            playerFrameDisplay.resize(width, height, Minecraft.ON_OSX);
+            playerFrameCapture.resize(width, height, Minecraft.ON_OSX);
             playerFrameCaptured = false;
             playerFramePending = false;
         }
@@ -618,13 +608,17 @@ public final class WideAreaInterferenceClientState {
     }
 
     private static void copyFrame(
-            GpuTexture source,
-            GpuTexture destination,
+            RenderTarget source,
+            RenderTarget destination,
             int width,
             int height
     ) {
-        RenderSystem.getDevice().createCommandEncoder().copyTextureToTexture(
-                source, destination, 0, 0, 0, 0, 0, width, height);
+        RenderSystem.assertOnRenderThreadOrInit();
+        GlStateManager._glBindFramebuffer(36008, source.frameBufferId);
+        GlStateManager._glBindFramebuffer(36009, destination.frameBufferId);
+        GlStateManager._glBlitFrameBuffer(0, 0, width, height, 0, 0, width, height, 16384, 9728);
+        GlStateManager._glBindFramebuffer(36009, 0);
+        GlStateManager._glBindFramebuffer(36008, 0);
     }
 
     private static void rebuildHiddenBounds() {
@@ -632,15 +626,23 @@ public final class WideAreaInterferenceClientState {
     }
 
     private static void rebuild(@Nullable Bounds bounds) {
-        var level = Minecraft.getInstance().level;
+        var minecraft = Minecraft.getInstance();
+        var level = minecraft.level;
         if (level == null || bounds == null) return;
-        level.setSectionRangeDirty(
-                SectionPos.blockToSectionCoord(bounds.minimum.getX()),
-                SectionPos.blockToSectionCoord(bounds.minimum.getY()),
-                SectionPos.blockToSectionCoord(bounds.minimum.getZ()),
-                SectionPos.blockToSectionCoord(bounds.maximum.getX()),
-                SectionPos.blockToSectionCoord(bounds.maximum.getY()),
-                SectionPos.blockToSectionCoord(bounds.maximum.getZ()));
+        var renderer = minecraft.levelRenderer;
+        var minX = SectionPos.blockToSectionCoord(bounds.minimum.getX());
+        var minY = SectionPos.blockToSectionCoord(bounds.minimum.getY());
+        var minZ = SectionPos.blockToSectionCoord(bounds.minimum.getZ());
+        var maxX = SectionPos.blockToSectionCoord(bounds.maximum.getX());
+        var maxY = SectionPos.blockToSectionCoord(bounds.maximum.getY());
+        var maxZ = SectionPos.blockToSectionCoord(bounds.maximum.getZ());
+        for (var sectionX = minX; sectionX <= maxX; sectionX++) {
+            for (var sectionY = minY; sectionY <= maxY; sectionY++) {
+                for (var sectionZ = minZ; sectionZ <= maxZ; sectionZ++) {
+                    renderer.setSectionDirty(sectionX, sectionY, sectionZ);
+                }
+            }
+        }
     }
 
     @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
@@ -697,7 +699,8 @@ public final class WideAreaInterferenceClientState {
         }
 
         @SubscribeEvent
-        public static void onLevelRendered(RenderLevelStageEvent.AfterLevel event) {
+        public static void onLevelRendered(RenderLevelStageEvent event) {
+            if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_LEVEL) return;
             var minecraft = Minecraft.getInstance();
             if (minecraft.screen instanceof WideAreaInterferenceScreen) captureCurrentFrame();
         }
@@ -706,8 +709,8 @@ public final class WideAreaInterferenceClientState {
         public static void onResizeDisplay(ResizeDisplayEvent event) {
             for (var frame : VIEW_FRAMES.values()) frame.resize(event.getWidth(), event.getHeight());
             if (playerFrameDisplay != null && playerFrameCapture != null) {
-                playerFrameDisplay.resize(event.getWidth(), event.getHeight());
-                playerFrameCapture.resize(event.getWidth(), event.getHeight());
+                playerFrameDisplay.resize(event.getWidth(), event.getHeight(), Minecraft.ON_OSX);
+                playerFrameCapture.resize(event.getWidth(), event.getHeight(), Minecraft.ON_OSX);
                 playerFrameCaptured = false;
                 playerFramePending = false;
             }
@@ -726,17 +729,16 @@ public final class WideAreaInterferenceClientState {
 
         private void ensureSize(int width, int height) {
             if (target == null) {
-                target = new TextureTarget(
-                        "WideAreaInterference target feed", width, height, false, GpuFormat.RGBA8_UNORM);
+                target = new TextureTarget(width, height, false, Minecraft.ON_OSX);
             } else if (target.width != width || target.height != height) {
-                target.resize(width, height);
+                target.resize(width, height, Minecraft.ON_OSX);
                 captured = false;
             }
         }
 
         private void resize(int width, int height) {
             if (target != null) {
-                target.resize(width, height);
+                target.resize(width, height, Minecraft.ON_OSX);
                 captured = false;
             }
         }

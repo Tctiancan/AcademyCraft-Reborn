@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
+import net.minecraft.server.packs.resources.ResourceManager;
+import net.minecraft.util.profiling.ProfilerFiller;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -38,17 +40,21 @@ public final class VfxGraphAssetLoader implements PreparableReloadListener {
 
     @SubscribeEvent
     public static void onAddReloadListener(RegisterClientReloadListenersEvent event) {
-        event.addListener(AcademyCraft.academy("vfx_graph_assets"), INSTANCE);
+        // 1.21.1 的 RegisterClientReloadListenersEvent 仅有单参 registerReloadListener，
+        // 无 26.2 的 addListener(ResourceLocation, IReloadListener) 签名。
+        event.registerReloadListener(INSTANCE);
     }
 
     @Override
     public CompletableFuture<Void> reload(
-            SharedState currentReload,
-            Executor taskExecutor,
             PreparationBarrier preparationBarrier,
-            Executor reloadExecutor
+            ResourceManager resourceManager,
+            ProfilerFiller preparationsProfiler,
+            ProfilerFiller reloadProfiler,
+            Executor backgroundExecutor,
+            Executor gameExecutor
     ) {
-        var resources = currentReload.resourceManager().listResources(DIRECTORY,
+        var resources = resourceManager.listResources(DIRECTORY,
                 path -> path.getPath().endsWith(".json") && !path.getPath().endsWith(".editor.json"));
         return CompletableFuture.supplyAsync(() -> {
                     // 后台线程：只解析，不改任何管理器状态
@@ -61,7 +67,7 @@ public final class VfxGraphAssetLoader implements PreparableReloadListener {
                         }
                     }
                     return parsed;
-                }, taskExecutor)
+                })
                 .thenCompose(preparationBarrier::wait)
                 .thenAccept(VfxGraphAssetLoader::applyOnMainThread);
     }

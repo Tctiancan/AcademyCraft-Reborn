@@ -240,7 +240,7 @@ final class WingFlightSupport {
                 -24.0f + random.nextFloat() * 48.0f,
                 -8.0f + random.nextFloat() * 16.0f
         );
-        for (var other : player.level().players()) {
+        for (var other : player.serverLevel().players()) {
             if (other.distanceToSqr(player) <= 128.0 * 128.0) {
                 MisakaNetworkServer.send(other, packet);
             }
@@ -249,7 +249,7 @@ final class WingFlightSupport {
 
     static void broadcastBlackToWhiteTransition(ServerPlayer player) {
         var packet = new AdvancedWingTransitionPacket(player.getId());
-        for (var other : player.level().players()) {
+        for (var other : player.serverLevel().players()) {
             if (other.distanceToSqr(player) <= 128.0 * 128.0) {
                 MisakaNetworkServer.send(other, packet);
             }

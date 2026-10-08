@@ -29,7 +29,7 @@ public final class MentalControlMemory {
     }
 
     public static boolean wasControlledBy(Mob subject, UUID controllerId) {
-        return subject != null && controllerId != null && subject.entityTags().contains(tag(controllerId));
+        return subject != null && controllerId != null && subject.getTags().contains(tag(controllerId));
     }
 
     public static String tag(UUID controllerId) {

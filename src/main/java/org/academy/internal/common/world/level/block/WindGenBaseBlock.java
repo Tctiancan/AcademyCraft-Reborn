@@ -29,6 +29,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import org.academy.AcademyCraft;
 import org.academy.api.common.util.MathUtil;
@@ -126,14 +127,14 @@ public final class WindGenBaseBlock extends MultiBlock {
     @Override
     protected ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
         if (stack.is(Items.WIND_GEN_PILLAR.get())) {
-            return ItemInteractionResult.PASS;
+            return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         return super.useItemOn(stack, state, level, pos, player, hand, hitResult);
     }
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
-        return state.getValue(TYPE) == MultiBlockType.SUBJECT ? cube(8.8692435136, 16, 8.8692435136) : super.getShape(state, level, pos, context);
+        return state.getValue(TYPE) == MultiBlockType.SUBJECT ? Shapes.box(3.5653782432, 0.0, 3.5653782432, 12.4346217568, 16.0, 12.4346217568) : super.getShape(state, level, pos, context);
     }
 
     @Override

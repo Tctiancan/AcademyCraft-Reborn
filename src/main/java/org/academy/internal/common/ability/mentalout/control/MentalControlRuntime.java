@@ -1543,7 +1543,7 @@ public final class MentalControlRuntime {
     private static @Nullable LivingEntity getRawTarget(Mob mob) {
         return mob instanceof MentalControlMobAccess access
                 ? access.academy$getRawMentalControlTarget()
-                : mob.getTargetUnchecked();
+                : mob.getTarget();
     }
 
     private static ServerState state(MinecraftServer server) {

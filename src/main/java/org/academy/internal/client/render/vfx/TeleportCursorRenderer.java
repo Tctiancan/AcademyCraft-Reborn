@@ -88,7 +88,8 @@ public final class TeleportCursorRenderer {
 
         event.submitPoseGeometry(Render.RenderTypes.TELEPORT_CURSOR, (pose, consumer) -> {
             var poseStack = new PoseStack();
-            poseStack.last().set(pose.last());
+            poseStack.last().pose().set(pose.last().pose());
+            poseStack.last().normal().set(pose.last().normal());
             poseStack.translate(
                     feetPosition.x - camera.x,
                     feetPosition.y - camera.y,

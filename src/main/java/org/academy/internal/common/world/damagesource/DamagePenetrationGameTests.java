@@ -367,7 +367,7 @@ public final class DamagePenetrationGameTests {
                     "Mentally protected targets still use the stupor action gate after electrical damage");
         } finally {
             settings.paralysisDamageEnabled = previousEnabled;
-            registry.prepareTagReload(new net.minecraft.tags.TagLoader.LoadResult<>(registry.key(), originalTags)).apply();
+            registry.bindTags(originalTags);
             target.discard();
         }
     }

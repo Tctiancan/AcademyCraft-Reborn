@@ -72,9 +72,9 @@ public final class ChunkLeapGodView {
         active = true;
         // Hide the HUD
 // for the duration, the same way F1 does, so the terrain is not covered by bars.
-        var hud = Minecraft.getInstance().gui.hud;
-        hudWasHidden = hud.isHidden();
-        if (!hudWasHidden) hud.toggle();
+        var options = Minecraft.getInstance().options;
+        hudWasHidden = options.hideGui;
+        if (!hudWasHidden) options.hideGui = true;
     }
 
     /**
@@ -94,8 +94,8 @@ public final class ChunkLeapGodView {
         active = false;
         // Give the HUD flag back exactly as it was found, including
 // if the player had it hidden already.
-        var hud = Minecraft.getInstance().gui.hud;
-        if (hud.isHidden() != hudWasHidden) hud.toggle();
+        var options = Minecraft.getInstance().options;
+        if (options.hideGui != hudWasHidden) options.hideGui = hudWasHidden;
     }
 
     public static boolean isActive() {
