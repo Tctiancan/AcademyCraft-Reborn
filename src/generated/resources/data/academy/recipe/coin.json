@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
-    "N": "minecraft:iron_nugget"
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
   },
   "pattern": [
     "NN",
     "NN"
   ],
   "result": {
+    "count": 1,
     "id": "academy:coin"
   }
 }

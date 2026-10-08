@@ -1,8 +1,13 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
-    "I": "academy:imag_phase_ingot",
-    "P": "academy:imag_phase_plate"
+    "I": {
+      "item": "academy:imag_phase_ingot"
+    },
+    "P": {
+      "item": "academy:imag_phase_plate"
+    }
   },
   "pattern": [
     " P ",
@@ -10,6 +15,7 @@
     "P P"
   ],
   "result": {
+    "count": 1,
     "id": "academy:wind_gen_fan"
   }
 }

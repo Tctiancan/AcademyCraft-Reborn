@@ -1,14 +1,31 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
-    "C": "minecraft:crafting_table",
-    "F": "minecraft:furnace",
-    "I": "academy:imag_phase_ingot",
-    "O": "minecraft:observer",
-    "P": "academy:imag_phase_plate",
-    "R": "academy:imag_phase_circuit",
-    "S": "academy:wind_gen_base_screen",
-    "U": "academy:empty_unit"
+    "C": {
+      "item": "minecraft:crafting_table"
+    },
+    "F": {
+      "item": "minecraft:furnace"
+    },
+    "I": {
+      "item": "academy:imag_phase_ingot"
+    },
+    "O": {
+      "item": "minecraft:observer"
+    },
+    "P": {
+      "item": "academy:imag_phase_plate"
+    },
+    "R": {
+      "item": "academy:imag_phase_circuit"
+    },
+    "S": {
+      "item": "academy:wind_gen_base_screen"
+    },
+    "U": {
+      "item": "academy:empty_unit"
+    }
   },
   "pattern": [
     "UPS",
@@ -16,6 +33,7 @@
     "IRI"
   ],
   "result": {
+    "count": 1,
     "id": "academy:omni_crafting_table"
   }
 }

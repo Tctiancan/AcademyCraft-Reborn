@@ -1,11 +1,22 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
-    "C": "academy:imag_phase_circuit",
-    "I": "academy:imag_phase_ingot",
-    "P": "academy:imag_phase_plate",
-    "Q": "minecraft:comparator",
-    "S": "academy:wind_gen_base_screen"
+    "C": {
+      "item": "academy:imag_phase_circuit"
+    },
+    "I": {
+      "item": "academy:imag_phase_ingot"
+    },
+    "P": {
+      "item": "academy:imag_phase_plate"
+    },
+    "Q": {
+      "item": "minecraft:comparator"
+    },
+    "S": {
+      "item": "academy:wind_gen_base_screen"
+    }
   },
   "pattern": [
     "PQS",
@@ -13,6 +24,7 @@
     "IPP"
   ],
   "result": {
+    "count": 1,
     "id": "academy:ability_control_tablet"
   }
 }

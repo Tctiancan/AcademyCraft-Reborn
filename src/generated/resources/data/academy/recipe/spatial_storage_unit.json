@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "C": "academy:imag_phase_circuit",
-    "E": "minecraft:ender_pearl",
-    "P": "academy:imag_phase_plate",
-    "U": "academy:empty_unit"
+    "C": {
+      "item": "academy:imag_phase_circuit"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "P": {
+      "item": "academy:imag_phase_plate"
+    },
+    "U": {
+      "item": "academy:empty_unit"
+    }
   },
   "pattern": [
     "PEP",
@@ -13,6 +21,7 @@
     "PEP"
   ],
   "result": {
+    "count": 1,
     "id": "academy:spatial_storage_unit"
   }
 }

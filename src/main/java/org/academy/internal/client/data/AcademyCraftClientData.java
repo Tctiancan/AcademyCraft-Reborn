@@ -13,7 +13,8 @@ public final class AcademyCraftClientData {
     }
 
     public static void dataSetup(GatherDataEvent event) {
-        event.createProvider(AcademyCraftModelProvider::new);
+        event.createProvider(output ->
+                new AcademyCraftModelProvider(output, event.getExistingFileHelper()));
         event.createProvider((output, registries) -> new LootTableProvider(
                 output,
                 Set.of(),

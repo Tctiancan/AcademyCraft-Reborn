@@ -1,6 +1,6 @@
 {
-  "model": {
-    "type": "minecraft:model",
-    "model": "academy:item/darkmatter_feather"
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "academy:item/darkmatter_feather"
   }
 }

@@ -2,8 +2,12 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "D": "academy:darkmatter",
-    "N": "minecraft:netherite_chestplate"
+    "D": {
+      "item": "academy:darkmatter"
+    },
+    "N": {
+      "item": "minecraft:netherite_chestplate"
+    }
   },
   "pattern": [
     "DND",
@@ -11,6 +15,7 @@
     "DDD"
   ],
   "result": {
+    "count": 1,
     "id": "academy:dark_matter_chestplate"
   }
 }

@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "N": "minecraft:iron_nugget"
+    "N": {
+      "item": "minecraft:iron_nugget"
+    }
   },
   "pattern": [
     "N",
@@ -10,6 +12,7 @@
     "N"
   ],
   "result": {
+    "count": 1,
     "id": "academy:needle"
   }
 }

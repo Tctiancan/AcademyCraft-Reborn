@@ -2,7 +2,9 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "I": "minecraft:iron_ingot"
+    "I": {
+      "item": "minecraft:iron_ingot"
+    }
   },
   "pattern": [
     " I ",
@@ -10,6 +12,7 @@
     " I "
   ],
   "result": {
+    "count": 1,
     "id": "academy:magnetic_hook"
   }
 }

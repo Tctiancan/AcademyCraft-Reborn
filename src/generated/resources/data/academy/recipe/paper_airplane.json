@@ -1,9 +1,13 @@
 {
   "type": "minecraft:crafting_shapeless",
+  "category": "misc",
   "ingredients": [
-    "minecraft:paper"
+    {
+      "item": "minecraft:paper"
+    }
   ],
   "result": {
+    "count": 1,
     "id": "academy:paper_airplane"
   }
 }

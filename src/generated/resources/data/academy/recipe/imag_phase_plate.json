@@ -1,13 +1,17 @@
 {
   "type": "minecraft:crafting_shaped",
+  "category": "misc",
   "key": {
-    "P": "academy:imag_phase_polymer"
+    "P": {
+      "item": "academy:imag_phase_polymer"
+    }
   },
   "pattern": [
     "PP",
     "PP"
   ],
   "result": {
+    "count": 1,
     "id": "academy:imag_phase_plate"
   }
 }

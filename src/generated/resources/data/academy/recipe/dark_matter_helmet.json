@@ -2,14 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "equipment",
   "key": {
-    "D": "academy:darkmatter",
-    "N": "minecraft:netherite_helmet"
+    "D": {
+      "item": "academy:darkmatter"
+    },
+    "N": {
+      "item": "minecraft:netherite_helmet"
+    }
   },
   "pattern": [
     "DDD",
     "DND"
   ],
   "result": {
+    "count": 1,
     "id": "academy:dark_matter_helmet"
   }
 }

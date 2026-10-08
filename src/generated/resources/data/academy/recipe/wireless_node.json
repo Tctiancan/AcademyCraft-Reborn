@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "C": "academy:imag_phase_crystal",
-    "E": "minecraft:ender_pearl",
-    "I": "academy:imag_phase_ingot",
-    "R": "academy:imag_phase_circuit"
+    "C": {
+      "item": "academy:imag_phase_crystal"
+    },
+    "E": {
+      "item": "minecraft:ender_pearl"
+    },
+    "I": {
+      "item": "academy:imag_phase_ingot"
+    },
+    "R": {
+      "item": "academy:imag_phase_circuit"
+    }
   },
   "pattern": [
     "IEI",
@@ -13,6 +21,7 @@
     "IRI"
   ],
   "result": {
+    "count": 1,
     "id": "academy:wireless_node"
   }
 }

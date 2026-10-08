@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "B": "minecraft:bread",
-    "C": "minecraft:cooked_cod",
-    "I": "minecraft:iron_ingot",
-    "R": "minecraft:redstone"
+    "B": {
+      "item": "minecraft:bread"
+    },
+    "C": {
+      "item": "minecraft:cooked_cod"
+    },
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
   },
   "pattern": [
     "B B",
@@ -13,6 +21,7 @@
     "IRI"
   ],
   "result": {
+    "count": 1,
     "id": "academy:cat_engine"
   }
 }

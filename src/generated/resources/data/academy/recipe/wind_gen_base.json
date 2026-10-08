@@ -2,10 +2,18 @@
   "type": "minecraft:crafting_shaped",
   "category": "redstone",
   "key": {
-    "C": "academy:imag_phase_circuit",
-    "I": "academy:imag_phase_ingot",
-    "P": "academy:imag_phase_plate",
-    "S": "academy:wind_gen_base_screen"
+    "C": {
+      "item": "academy:imag_phase_circuit"
+    },
+    "I": {
+      "item": "academy:imag_phase_ingot"
+    },
+    "P": {
+      "item": "academy:imag_phase_plate"
+    },
+    "S": {
+      "item": "academy:wind_gen_base_screen"
+    }
   },
   "pattern": [
     " S ",
@@ -13,6 +21,7 @@
     "III"
   ],
   "result": {
+    "count": 1,
     "id": "academy:wind_gen_base"
   }
 }
