@@ -29,7 +29,7 @@ public final class VectorProjectileStateAdapter {
             accessor.academy$setFinalTarget(target);
             var direction = accessor.academy$getCurrentMoveDirection();
             accessor.academy$selectNextMoveDirection(
-                    direction == null ? null : direction.getAxis(), target);
+                    direction == null ? null : direction.getAxis());
         }
         VectorProjectileTargeting.retargetAfterRedirect(projectile, previousOwner);
     }

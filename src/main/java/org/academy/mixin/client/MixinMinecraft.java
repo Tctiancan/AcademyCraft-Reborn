@@ -87,7 +87,7 @@ public abstract class MixinMinecraft {
     /**
      * For ResizeDisplayEvent
      */
-    @Inject(method = "resizeGui", at = @At("TAIL"))
+    @Inject(method = "resizeDisplay", at = @At("TAIL"))
     private void resize(CallbackInfo ci) {
         var event = new ResizeDisplayEvent(window.getWidth(), window.getHeight());
         NeoForge.EVENT_BUS.post(event);

@@ -48,8 +48,8 @@ public abstract class MixinWitherBoss implements DirectMobMovementAccess {
     }
 
     @Inject(method = "customServerAiStep", at = @At("HEAD"))
-    private void academy$filterMentalControlHeadsBeforeAttack(ServerLevel level, CallbackInfo ci) {
-        clearDeniedHeads((WitherBoss) (Object) this, level);
+    private void academy$filterMentalControlHeadsBeforeAttack(CallbackInfo ci) {
+        clearDeniedHeads((WitherBoss) (Object) this, (ServerLevel) ((WitherBoss) (Object) this).level());
     }
 
     @Inject(method = "aiStep", at = @At("HEAD"))
@@ -68,7 +68,7 @@ public abstract class MixinWitherBoss implements DirectMobMovementAccess {
     }
 
     @Inject(method = "customServerAiStep", at = @At("TAIL"))
-    private void academy$maintainMentalControlHeads(ServerLevel level, CallbackInfo ci) {
+    private void academy$maintainMentalControlHeads(CallbackInfo ci) {
         var wither = (WitherBoss) (Object) this;
         if (MentalControlRuntime.isFrozen(wither)) {
             clearHeads(wither);
@@ -82,6 +82,6 @@ public abstract class MixinWitherBoss implements DirectMobMovementAccess {
             for (var head = 0; head < 3; head++) wither.setAlternativeTarget(head, controlledTarget.getId());
             return;
         }
-        clearDeniedHeads(wither, level);
+        clearDeniedHeads(wither, (ServerLevel) wither.level());
     }
 }

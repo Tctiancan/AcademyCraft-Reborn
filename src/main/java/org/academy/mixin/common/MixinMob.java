@@ -1,6 +1,5 @@
 package org.academy.mixin.common;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
@@ -23,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(Mob.class)
 public abstract class MixinMob implements MentalControlMobAccess {
     @Inject(method = "doHurtTarget", at = @At("HEAD"), cancellable = true)
-    private void academy$blockElectricalAttack(ServerLevel level, Entity target,
+    private void academy$blockElectricalAttack(Entity target,
                                                CallbackInfoReturnable<Boolean> cir) {
         if (CategoryDamageRuntime.blocksMobAttack((Mob) (Object) this)) {
             cir.setReturnValue(false);
@@ -69,7 +68,7 @@ public abstract class MixinMob implements MentalControlMobAccess {
     }
 
     @Shadow
-    protected abstract void customServerAiStep(ServerLevel level);
+    protected abstract void customServerAiStep();
 
     @Override
     public @Nullable LivingEntity academy$getRawMentalControlTarget() {
@@ -107,38 +106,8 @@ public abstract class MixinMob implements MentalControlMobAccess {
         academy$maintainForcedTarget(mob);
     }
 
-    @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
-    private void academy$allowForcedMentalTarget(
-            LivingEntity target,
-            CallbackInfoReturnable<Boolean> cir
-    ) {
-        var decision = MentalControlRuntime.attackDecision((Mob) (Object) this, target);
-        if (decision == AttackDecision.ALLOW) cir.setReturnValue(true);
-        if (decision == AttackDecision.DENY) cir.setReturnValue(false);
-    }
-
-    @Inject(method = "asValidTarget", at = @At("HEAD"), cancellable = true)
-    private void academy$acceptForcedMentalTarget(
-            LivingEntity target,
-            CallbackInfoReturnable<LivingEntity> cir
-    ) {
-        if (target == null) return;
-        var decision = MentalControlRuntime.attackDecision((Mob) (Object) this, target);
-        if (decision == AttackDecision.ALLOW) cir.setReturnValue(target);
-        if (decision == AttackDecision.DENY) cir.setReturnValue(null);
-    }
-
     @Inject(method = "getTarget", at = @At("HEAD"), cancellable = true)
     private void academy$getForcedMentalTarget(CallbackInfoReturnable<LivingEntity> cir) {
-        var target = MentalControlRuntime.getForcedTarget((Mob) (Object) this);
-        if (target == null) target = MentalControlRuntime.getGuardTarget((Mob) (Object) this);
-        if (target != null) {
-            cir.setReturnValue(target);
-        }
-    }
-
-    @Inject(method = "getTargetUnchecked", at = @At("HEAD"), cancellable = true)
-    private void academy$getUncheckedForcedMentalTarget(CallbackInfoReturnable<LivingEntity> cir) {
         var target = MentalControlRuntime.getForcedTarget((Mob) (Object) this);
         if (target == null) target = MentalControlRuntime.getGuardTarget((Mob) (Object) this);
         if (target != null) {
@@ -212,12 +181,12 @@ public abstract class MixinMob implements MentalControlMobAccess {
             method = "serverAiStep",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/Mob;customServerAiStep(Lnet/minecraft/server/level/ServerLevel;)V"
+                    target = "Lnet/minecraft/world/entity/Mob;customServerAiStep()V"
             )
     )
-    private void academy$suppressEntitySpecificActions(Mob instance, ServerLevel level) {
+    private void academy$suppressEntitySpecificActions(Mob instance) {
         if (!MentalControlRuntime.suppressesAutonomousActions(instance)) {
-            customServerAiStep(level);
+            customServerAiStep();
         }
     }
 

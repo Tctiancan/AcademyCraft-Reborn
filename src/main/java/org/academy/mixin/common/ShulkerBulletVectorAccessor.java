@@ -17,8 +17,5 @@ public interface ShulkerBulletVectorAccessor {
     @Nullable Direction academy$getCurrentMoveDirection();
 
     @Invoker("selectNextMoveDirection")
-    void academy$selectNextMoveDirection(
-            Direction.@Nullable Axis avoidAxis,
-            @Nullable Entity target
-    );
+    void academy$selectNextMoveDirection(Direction.@Nullable Axis avoidAxis);
 }

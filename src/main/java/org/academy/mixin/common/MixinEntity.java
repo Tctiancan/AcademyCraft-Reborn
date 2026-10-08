@@ -34,7 +34,8 @@ public abstract class MixinEntity {
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/world/entity/EntityType;canSerialize()Z"
-            )
+            ),
+            require = 0
     )
     private boolean academy$allowImpressionControlledPlayerVehicle(
             boolean serializable,
@@ -72,8 +73,8 @@ public abstract class MixinEntity {
         if (EntityMotionGuard.shouldBlockVelocity((Entity) (Object) this)) ci.cancel();
     }
 
-    @Inject(method = "lerpMotion", at = @At("HEAD"), cancellable = true)
-    private void academy$guardInterpolatedVelocity(Vec3 velocity, CallbackInfo ci) {
+    @Inject(method = "lerpMotion(DDD)V", at = @At("HEAD"), cancellable = true)
+    private void academy$guardInterpolatedVelocity(double x, double y, double z, CallbackInfo ci) {
         if (EntityMotionGuard.shouldBlockVelocity((Entity) (Object) this)) ci.cancel();
     }
 
@@ -144,7 +145,7 @@ public abstract class MixinEntity {
                 (Entity) (Object) this, new Vec3(x, y, z))) ci.cancel();
     }
 
-    @Inject(method = "absSnapTo(DDDFF)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "absMoveTo(DDDFF)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardAbsolutePositionAndRotation(
             double x, double y, double z, float yRot, float xRot, CallbackInfo ci
     ) {
@@ -152,7 +153,7 @@ public abstract class MixinEntity {
                 (Entity) (Object) this, new Vec3(x, y, z))) ci.cancel();
     }
 
-    @Inject(method = "absSnapTo(DDD)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "absMoveTo(DDD)V", at = @At("HEAD"), cancellable = true)
     private void academy$guardAbsolutePosition(double x, double y, double z, CallbackInfo ci) {
         if (EntityMotionGuard.shouldBlockPositionSnap(
                 (Entity) (Object) this, new Vec3(x, y, z))) ci.cancel();
@@ -263,7 +264,7 @@ public abstract class MixinEntity {
     }
 
     @Inject(method = "kill", at = @At("HEAD"), cancellable = true)
-    private void academy$protectVectorReflectionKill(ServerLevel level, CallbackInfo ci) {
+    private void academy$protectVectorReflectionKill(CallbackInfo ci) {
         if ((Object) this instanceof LivingEntity living
                 && SurvivalDefense.protects(living, SurvivalDefenseAspect.DEATH_STATE)) {
             SurvivalDefense.repairNow(living);
@@ -286,8 +287,8 @@ public abstract class MixinEntity {
     }
 
 
-    @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true, name = "damage")
-    private float academy$amplifyQuantumDamage(float damage, DamageSource source) {
+    @ModifyVariable(method = "hurt", at = @At("HEAD"), argsOnly = true)
+    private float academy$amplifyQuantumDamage(float damage) {
         if (damage <= 0) return damage;
         if ((Object) this instanceof LivingEntity self) {
             if (self.level().isClientSide()) return damage;

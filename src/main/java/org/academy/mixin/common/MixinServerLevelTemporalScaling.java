@@ -6,6 +6,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.raid.Raids;
 import net.minecraft.world.level.BlockEventData;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.border.WorldBorder;
 import net.minecraft.world.level.dimension.end.EndDragonFight;
@@ -106,7 +107,8 @@ public abstract class MixinServerLevelTemporalScaling {
                     target = "Lnet/minecraft/world/entity/raid/Raids;tick()V"
             )
     )
-    private void academy$dispatchRaidTicks(Raids raids, ServerLevel level) {
+    private void academy$dispatchRaidTicks(Raids raids) {
+        var level = (ServerLevel) (Object) this;
         var context = (MinecraftServerContext) level.getServer();
         if (!context.hasAcademyCraftServer()) {
             raids.tick();
@@ -141,6 +143,7 @@ public abstract class MixinServerLevelTemporalScaling {
     )
     private void academy$dispatchCustomSpawnerTicks(
             boolean spawnEnemies,
+            boolean spawnFriendlies,
             CallbackInfo ci
     ) {
         var level = (ServerLevel) (Object) this;
@@ -150,7 +153,7 @@ public abstract class MixinServerLevelTemporalScaling {
                 .getTemporalService();
         if (runtime.dispatchCustomSpawnerTicks(
                 level,
-                () -> level.tickCustomSpawners(spawnEnemies, false)
+                () -> level.tickCustomSpawners(spawnEnemies, spawnFriendlies)
         )) {
             ci.cancel();
         }
@@ -227,12 +230,12 @@ public abstract class MixinServerLevelTemporalScaling {
             method = "tickChunk",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/level/material/FluidState;randomTick(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V"
+                    target = "Lnet/minecraft/world/level/material/FluidState;randomTick(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/util/RandomSource;)V"
             )
     )
     private void academy$dispatchRandomFluidTick(
             FluidState state,
-            ServerLevel level,
+            Level level,
             BlockPos position,
             RandomSource random
     ) {
@@ -242,7 +245,7 @@ public abstract class MixinServerLevelTemporalScaling {
             return;
         }
         ((TemporalRuntime) context.getAcademyCraftServer().getTemporalService())
-                .dispatchRandomFluidTick(state, level, position, random);
+                .dispatchRandomFluidTick(state, (ServerLevel) level, position, random);
     }
 
     @Redirect(

@@ -4,7 +4,7 @@ import org.academy.internal.common.ability.mentalout.control.CubeMobMoveControlA
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 
-@Mixin(targets = "net.minecraft.world.entity.monster.AbstractCubeMob$CubeMobMoveControl")
+@Mixin(targets = "net.minecraft.world.entity.monster.Slime$SlimeMoveControl")
 public abstract class MixinCubeMobMoveControl implements CubeMobMoveControlAccess {
     @Shadow
     public abstract void setDirection(float yRot, boolean aggressive);

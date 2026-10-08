@@ -29,7 +29,6 @@ public abstract class MixinPlayerMentalPerception {
     private void academy$rejectHiddenInteraction(
             Entity target,
             InteractionHand hand,
-            Vec3 location,
             CallbackInfoReturnable<InteractionResult> cir
     ) {
         if ((Object) this instanceof ServerPlayer observer

@@ -22,17 +22,11 @@ public interface LivingEntityDamageInvoker {
     @Invoker("playHurtSound")
     void academy$playHurtSound(DamageSource source);
 
-    @Invoker("playSecondaryHurtSound")
-    void academy$playSecondaryHurtSound(DamageSource source);
-
     @Invoker("getDeathSound")
     SoundEvent academy$getDeathSound();
 
     @Invoker("getSoundVolume")
     float academy$getSoundVolume();
-
-    @Invoker("handleKillingBlow")
-    void academy$handleKillingBlow();
 
     @Invoker("dropAllDeathLoot")
     void academy$dropAllDeathLoot(ServerLevel level, DamageSource source);

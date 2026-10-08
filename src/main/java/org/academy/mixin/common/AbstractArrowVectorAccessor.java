@@ -8,13 +8,13 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 
 @Mixin(AbstractArrow.class)
 public interface AbstractArrowVectorAccessor {
-    @Invoker("isInGround")
+    @Accessor("inGround")
     boolean academy$isInGround();
 
     @Invoker("tryPickup")
     boolean academy$tryPickup(Player player);
 
-    @Invoker("setInGround")
+    @Accessor("inGround")
     void academy$setInGround(boolean inGround);
 
     @Accessor("life")

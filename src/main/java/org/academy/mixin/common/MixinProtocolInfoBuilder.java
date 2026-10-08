@@ -1,4 +1,4 @@
-package org.misaka.mixin.common;
+package org.academy.mixin.common;
 
 import net.minecraft.network.ConnectionProtocol;
 import net.minecraft.network.codec.StreamCodec;

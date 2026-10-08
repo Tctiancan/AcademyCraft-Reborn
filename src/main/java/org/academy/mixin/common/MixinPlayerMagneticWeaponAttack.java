@@ -16,7 +16,7 @@ public abstract class MixinPlayerMagneticWeaponAttack {
             method = "attack",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/Entity;hurtOrSimulate(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
+                    target = "Lnet/minecraft/world/entity/Entity;hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z"
             )
     )
     private void academy$prepareMagneticWeaponDamage(Args args) {

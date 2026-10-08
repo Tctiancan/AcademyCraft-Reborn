@@ -14,7 +14,7 @@ public abstract class MixinThrownTridentVectorPickup {
             method = "playerTouch",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/world/entity/projectile/arrow/ThrownTrident;ownedBy(Lnet/minecraft/world/entity/Entity;)Z"
+                    target = "Lnet/minecraft/world/entity/projectile/ThrownTrident;ownedBy(Lnet/minecraft/world/entity/Entity;)Z"
             )
     )
     private boolean academy$allowOriginalOwnerPickup(

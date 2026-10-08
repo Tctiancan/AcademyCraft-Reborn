@@ -6,15 +6,16 @@ import org.academy.internal.common.ability.accelerator.flight.WingFlightPose;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Player.class)
 public abstract class MixinPlayerWingFlightPose {
-    @Inject(method = "getDesiredPose", at = @At("HEAD"), cancellable = true)
-    private void academy$useCompactWingFlightPose(CallbackInfoReturnable<Pose> cir) {
+    @Inject(method = "updatePlayerPose", at = @At("HEAD"), cancellable = true)
+    private void academy$useCompactWingFlightPose(CallbackInfo ci) {
         var player = (Player) (Object) this;
-        if (WingFlightPose.usesCompactCollision(player)) {
-            cir.setReturnValue(Pose.FALL_FLYING);
+        if (player.getForcedPose() == null && WingFlightPose.usesCompactCollision(player)) {
+            player.setPose(Pose.FALL_FLYING);
+            ci.cancel();
         }
     }
 }

@@ -79,11 +79,10 @@
     "common.ShulkerBulletVectorAccessor",
     "common.item.MixinItemEntityDarkmatterFireImmune",
     "common.item.MixinItemStackDarkmatterEnchantment",
-    "common.item.MixinMaceItemAirflowMomentum"
+    "common.item.MixinMaceItemAirflowMomentum",
+    "common.MixinProtocolInfoBuilder"
   ],
   "client": [
-    "client.MixinRenderTypeSurfaceMask",
-    "client.MixinChunkSectionsSurfaceMask",
     "client.AbstractContainerScreenAccessor",
     "client.ItemInHandRendererInvoker",
     "client.MixinArmedEntityRenderState",
@@ -103,20 +102,19 @@
     "client.MixinPlayerModel",
     "client.MixinItemInHandRenderer",
     "client.MixinKeyboardHandler",
-    "client.MixinLevelExtractor",
     "client.MixinLevelRenderer",
     "client.MixinLivingEntityRenderer",
     "client.MixinLocalPlayer",
     "client.MixinPlayerWingFlight",
     "client.MixinMinecraft",
     "client.MixinMinecraftTimeImmunity",
-    "client.MixinModelDiscovery",
     "client.MixinModelBlockRenderer",
     "client.MixinMouseHandler",
     "client.MixinSoundEngine",
     "client.MixinTemporalClientBoundary",
     "client.MixinTemporalInputBoundary",
-    "client.MixinThrownTridentRenderer"
+    "client.MixinThrownTridentRenderer",
+    "client.MixinClientPacketListener"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -277,7 +277,6 @@ public final class SkillDamageUtil {
 
         if (!confirmedLethal) {
             invoker.academy$playHurtSound(source);
-            invoker.academy$playSecondaryHurtSound(source);
             return;
         }
 
@@ -289,7 +288,6 @@ public final class SkillDamageUtil {
         if (deathSound != null) {
             target.playSound(deathSound, invoker.academy$getSoundVolume(), target.getVoicePitch());
         }
-        invoker.academy$playSecondaryHurtSound(source);
         TrueDamageCompatibility.completeLethalDamage(level, target, source);
     }
 }

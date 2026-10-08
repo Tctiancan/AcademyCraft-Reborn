@@ -11,10 +11,4 @@ public interface LivingEntityAttackStateAccessor {
 
     @Accessor("attackStrengthTicker")
     void academy$setAttackStrengthTicker(int value);
-
-    @Accessor("itemSwapTicker")
-    int academy$getItemSwapTicker();
-
-    @Accessor("itemSwapTicker")
-    void academy$setItemSwapTicker(int value);
 }

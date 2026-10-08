@@ -40,9 +40,4 @@ public abstract class MixinLocalPlayer extends AbstractClientPlayer implements I
             this.jumpTriggerTime = 0;
         }
     }
-
-    @Inject(method = "applyInput", at = @At("HEAD"))
-    private void academy$applyAuthorizedPlayerControlInput(CallbackInfo ci) {
-        PlayerControlClientState.applyAuthorizedInput((LocalPlayer) (Object) this);
-    }
 }

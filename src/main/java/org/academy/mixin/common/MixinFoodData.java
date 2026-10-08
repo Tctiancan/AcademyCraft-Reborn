@@ -1,6 +1,6 @@
 package org.academy.mixin.common;
 
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.food.FoodData;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -16,7 +16,7 @@ public abstract class MixinFoodData {
     private boolean academy$naturalRegenerationHealed;
 
     @Inject(method = "tick", at = @At("HEAD"))
-    private void academy$resetNaturalRegenerationResult(ServerPlayer player, CallbackInfo ci) {
+    private void academy$resetNaturalRegenerationResult(Player player, CallbackInfo ci) {
         academy$naturalRegenerationHealed = false;
     }
 
@@ -24,10 +24,10 @@ public abstract class MixinFoodData {
             method = "tick",
             at = @At(
                     value = "INVOKE",
-                    target = "Lnet/minecraft/server/level/ServerPlayer;heal(F)V"
+                    target = "Lnet/minecraft/world/entity/player/Player;heal(F)V"
             )
     )
-    private void academy$trackNaturalRegeneration(ServerPlayer player, float amount) {
+    private void academy$trackNaturalRegeneration(Player player, float amount) {
         var healthBefore = player.getHealth();
         player.heal(amount);
         academy$naturalRegenerationHealed = academy$didHealthIncrease(
@@ -49,7 +49,7 @@ public abstract class MixinFoodData {
     }
 
     @Inject(method = "tick", at = @At("RETURN"))
-    private void academy$clearNaturalRegenerationResult(ServerPlayer player, CallbackInfo ci) {
+    private void academy$clearNaturalRegenerationResult(Player player, CallbackInfo ci) {
         academy$naturalRegenerationHealed = false;
     }
 

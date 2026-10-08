@@ -1,4 +1,4 @@
-package org.misaka.mixin.client;
+package org.academy.mixin.client;
 
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;

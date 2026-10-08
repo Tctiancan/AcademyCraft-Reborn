@@ -53,12 +53,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 @Mixin(LivingEntity.class)
 public abstract class MixinLivingEntity {
     @Inject(
-            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            method = "hurt",
             at = @At("HEAD"),
             cancellable = true
     )
     private void academy$routeDirectSkillDamage(
-            ServerLevel level,
             DamageSource source,
             float damage,
             CallbackInfoReturnable<Boolean> cir
@@ -81,7 +80,7 @@ public abstract class MixinLivingEntity {
                 victim.getUUID(),
                 Skills.AREA_TELEPORT_SELECT.get(),
                 "fall_protection",
-                level.getGameTime()) > 0.0f) {
+                victim.level().getGameTime()) > 0.0f) {
             victim.resetFallDistance();
             cir.setReturnValue(false);
             return;
@@ -98,7 +97,7 @@ public abstract class MixinLivingEntity {
         }
         if (source instanceof SkillDamageSource skillSource && DamageTypes.usesDirectActuallyHurt(source)) {
             cir.setReturnValue(SkillDamageUtil.applyDirectFromHurtServer(
-                    level,
+                    (ServerLevel) victim.level(),
                     (LivingEntity) (Object) this,
                     skillSource,
                     damage
@@ -177,10 +176,10 @@ public abstract class MixinLivingEntity {
     }
 
     @WrapMethod(method = "actuallyHurt")
-    private void academy$blockElectricalHurt(ServerLevel level, DamageSource source, float amount,
+    private void academy$blockElectricalHurt(DamageSource source, float amount,
                                              Operation<Void> original) {
         if (!CategoryDamageRuntime.blocksOutgoingDamage(source)) {
-            original.call(level, source, amount);
+            original.call(source, amount);
         }
     }
 
@@ -219,10 +218,10 @@ public abstract class MixinLivingEntity {
     }
 
     @Inject(
-            method = "actuallyHurt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)V",
+            method = "actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V",
             at = @At("RETURN")
     )
-    private void academy$endDamageContext(ServerLevel level, DamageSource source, float damage, CallbackInfo ci) {
+    private void academy$endDamageContext(DamageSource source, float damage, CallbackInfo ci) {
         OutputControl.popDamageContext();
         PlayerAttributeRuntime.popDamageContext();
         if ((Object) this instanceof ServerPlayer player) {
@@ -285,7 +284,7 @@ public abstract class MixinLivingEntity {
     }
 
     @Inject(method = "kill", at = @At("HEAD"), cancellable = true)
-    private void academy$protectVectorReflectionLivingKill(ServerLevel level, CallbackInfo ci) {
+    private void academy$protectVectorReflectionLivingKill(CallbackInfo ci) {
         var entity = (LivingEntity) (Object) this;
         if (SurvivalDefense.protects(entity, SurvivalDefenseAspect.DEATH_STATE)) {
             SurvivalDefense.repairNow(entity);
@@ -382,9 +381,6 @@ public abstract class MixinLivingEntity {
             double power,
             double x,
             double z,
-            DamageSource source,
-            float damage,
-            boolean comesFromEffect,
             CallbackInfo ci
     ) {
         if ((Object) this instanceof ServerPlayer player
@@ -393,6 +389,16 @@ public abstract class MixinLivingEntity {
                 || DefenseFeedbackSuppression.isSuppressed(player))) {
             ci.cancel();
         }
+    }
+
+    @Inject(method = "canAttack", at = @At("HEAD"), cancellable = true)
+    private void academy$allowForcedMentalTarget(
+            LivingEntity target,
+            CallbackInfoReturnable<Boolean> cir
+    ) {
+        var decision = MentalControlRuntime.attackDecision((LivingEntity) (Object) this, target);
+        if (decision == AttackDecision.ALLOW) cir.setReturnValue(true);
+        if (decision == AttackDecision.DENY) cir.setReturnValue(false);
     }
 
     @Inject(method = "tick", at = @At("TAIL"))
@@ -450,11 +456,10 @@ public abstract class MixinLivingEntity {
     }
 
     @Inject(
-            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
             at = @At("TAIL")
     )
     private void academy$clearSuppressedHurtState(
-            ServerLevel level,
             DamageSource source,
             float damage,
             CallbackInfoReturnable<Boolean> cir
@@ -468,10 +473,10 @@ public abstract class MixinLivingEntity {
     }
 
     @Inject(
-            method = "hurtServer(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)Z",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/damagesource/DamageSource;F)V")
+            method = "hurt(Lnet/minecraft/world/damagesource/DamageSource;F)Z",
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;actuallyHurt(Lnet/minecraft/world/damagesource/DamageSource;F)V")
     )
-    private void academy$onSkillHurt(ServerLevel level, DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
+    private void academy$onSkillHurt(DamageSource source, float damage, CallbackInfoReturnable<Boolean> cir) {
         if (MagneticWeaponAttackContext.onHurt(source, (LivingEntity) (Object) this, damage)) return;
         if (source instanceof SkillDamageSource skillSource) {
             if (skillSource.getEntity() instanceof ServerPlayer player) {

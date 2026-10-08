@@ -14,6 +14,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import org.academy.internal.client.animation.GeckoPlayerModelAdapter;
 import org.academy.internal.client.animation.WingFlightAnimationClient;
@@ -45,11 +46,11 @@ public abstract class MixinHumanoidModel {
     }
 
     @Inject(
-            method = "setupAnim(Lnet/minecraft/world/entity/Entity;FFFFFF)V",
+            method = "setupAnim",
             at = @At("RETURN")
     )
     private void academy$applyWingFlightAnimation(
-            Entity entity,
+            LivingEntity entity,
             float limbSwing,
             float limbSwingAmount,
             float ageInTicks,

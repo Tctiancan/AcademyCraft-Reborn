@@ -1,6 +1,5 @@
 package org.academy.mixin.common;
 
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
 import net.minecraft.world.entity.boss.enderdragon.phases.AbstractDragonPhaseInstance;
@@ -25,7 +24,7 @@ public abstract class MixinDragonStrafePlayerPhase extends AbstractDragonPhaseIn
     }
 
     @Inject(method = "doServerTick", at = @At("HEAD"), cancellable = true)
-    private void academy$stopMentalControlAllyStrafe(ServerLevel level, CallbackInfo ci) {
+    private void academy$stopMentalControlAllyStrafe(CallbackInfo ci) {
         if (attackTarget == null
                 || MentalControlRuntime.attackDecision(dragon, attackTarget) != AttackDecision.DENY) {
             return;

@@ -51,7 +51,7 @@ public abstract class MixinEnderDragon {
     }
 
     @ModifyVariable(
-            method = "hurt(Lnet/minecraft/server/level/ServerLevel;Ljava/util/List;)V",
+            method = "hurt(Ljava/util/List;)V",
             at = @At("HEAD"),
             argsOnly = true,
             ordinal = 0

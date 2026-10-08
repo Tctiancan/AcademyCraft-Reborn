@@ -111,7 +111,7 @@ public abstract class MixinClientLivingEntity {
     }
 
     @Inject(method = "kill", at = @At("HEAD"), cancellable = true)
-    private void academy$protectVectorReflectionKill(ServerLevel level, CallbackInfo ci) {
+    private void academy$protectVectorReflectionKill(CallbackInfo ci) {
         if ((Object) this instanceof LocalPlayer player
                 && VectorReflectionClientRuntime.isProtected(player)) {
             VectorReflectionClientRuntime.sanitize(player);
@@ -133,9 +133,6 @@ public abstract class MixinClientLivingEntity {
             double power,
             double x,
             double z,
-            DamageSource source,
-            float damage,
-            boolean comesFromEffect,
             CallbackInfo ci
     ) {
         if ((Object) this instanceof LocalPlayer player

@@ -29,6 +29,12 @@ public abstract class MixinSoundEngine {
 
     @Inject(method = "reload", at = @At("TAIL"))
     public void reload(CallbackInfo ci) {
-        MusicPlayerBackend.Companion.getInstance().handleContextReset();
+        try {
+            var backend = MusicPlayerBackend.Companion.getInstance();
+            if (backend != null) {
+                backend.handleContextReset();
+            }
+        } catch (IllegalStateException ignored) {
+        }
     }
 }

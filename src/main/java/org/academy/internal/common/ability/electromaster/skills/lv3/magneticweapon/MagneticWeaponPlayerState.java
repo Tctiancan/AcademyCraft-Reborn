@@ -27,7 +27,6 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
     private final LivingEntityAttackStateAccessor attackState;
     private final int originalSelectedSlot;
     private final int originalAttackStrengthTicker;
-    private final int originalItemSwapTicker;
     private final boolean originalSprinting;
     private final double originalFallDistance;
     private final float syntheticFallDistance;
@@ -47,7 +46,6 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
         attackState = (LivingEntityAttackStateAccessor) player;
         originalSelectedSlot = player.getInventory().selected;
         originalAttackStrengthTicker = attackState.academy$getAttackStrengthTicker();
-        originalItemSwapTicker = attackState.academy$getItemSwapTicker();
         originalSprinting = player.isSprinting();
         originalFallDistance = player.fallDistance;
         this.syntheticFallDistance = syntheticFallDistance;
@@ -83,7 +81,6 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
 
         var fullChargeTicks = Math.max(1, Mth.ceil(player.getCurrentItemAttackStrengthDelay()) + 1);
         attackState.academy$setAttackStrengthTicker(fullChargeTicks);
-        attackState.academy$setItemSwapTicker(fullChargeTicks);
     }
 
     private void applyWeaponModifiers() {
@@ -117,7 +114,6 @@ final class MagneticWeaponPlayerState implements AutoCloseable {
         } finally {
             player.getInventory().selected = originalSelectedSlot;
             attackState.academy$setAttackStrengthTicker(originalAttackStrengthTicker);
-            attackState.academy$setItemSwapTicker(originalItemSwapTicker);
             player.fallDistance = (float) originalFallDistance;
             if (syntheticFallDistance >= 0.0f) {
                 player.setDeltaMovement(originalMovement);

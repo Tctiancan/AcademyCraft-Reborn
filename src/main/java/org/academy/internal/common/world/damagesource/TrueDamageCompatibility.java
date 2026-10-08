@@ -206,7 +206,7 @@ public final class TrueDamageCompatibility {
             target.stopUsingItem();
 
             var invoker = (LivingEntityDamageInvoker) target;
-            invoker.academy$handleKillingBlow();
+            invoker.academy$setDead(true);
             target.getCombatTracker().recheckStatus();
 
             var killer = source.getEntity();

@@ -10,7 +10,10 @@ public final class IrisIntegration {
     }
 
     public static void init() {
-        hasIris = ModList.get().isLoaded("iris");
+        var modList = ModList.get();
+        if (modList != null) {
+            hasIris = modList.isLoaded("iris");
+        }
     }
 
     public static boolean hasIris() {

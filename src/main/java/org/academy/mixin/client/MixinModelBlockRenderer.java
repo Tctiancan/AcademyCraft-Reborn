@@ -22,7 +22,7 @@ public abstract class MixinModelBlockRenderer {
     // 1.21.1 为 (BlockAndTintGetter, BakedModel, BlockState, BlockPos, PoseStack, VertexConsumer,
     //          boolean, RandomSource, long, int, ModelData, RenderType)。
     // 目标 neoforge 12 参重载(两条重载路径均委托于此),仅需 BlockPos 判断隐藏。
-    @Inject(method = "tesselateBlock(Lnet/minecraft/client/renderer/block/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/neoforged/neoforge/client/model/data/ModelData;Lnet/minecraft/client/renderer/RenderType;)V", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "tesselateBlock(Lnet/minecraft/world/level/BlockAndTintGetter;Lnet/minecraft/client/resources/model/BakedModel;Lnet/minecraft/world/level/block/state/BlockState;Lnet/minecraft/core/BlockPos;Lcom/mojang/blaze3d/vertex/PoseStack;Lcom/mojang/blaze3d/vertex/VertexConsumer;ZLnet/minecraft/util/RandomSource;JILnet/neoforged/neoforge/client/model/data/ModelData;Lnet/minecraft/client/renderer/RenderType;)V", at = @At("HEAD"), cancellable = true)
     private void academy$hideWideAreaBlock(
             BlockAndTintGetter level,
             BakedModel model,
