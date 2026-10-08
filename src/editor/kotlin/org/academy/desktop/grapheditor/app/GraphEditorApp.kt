@@ -52,6 +52,8 @@ import org.academy.desktop.platform.DesktopEnvironment
 import org.academy.desktop.platform.EditorApp
 import org.academy.desktop.platform.GraphHotReload
 import org.academy.desktop.platform.ShaderHotReload
+import org.com.mojang.blaze3d.textures.GpuTexture
+import org.com.mojang.blaze3d.textures.GpuTextureView
 import java.nio.file.Files
 import java.nio.file.Path
 import imgui.internal.ImGui as ImGuiDock
@@ -117,9 +119,9 @@ class GraphEditorApp(private val environment: DesktopEnvironment) : EditorApp {
      */
     private fun textureLoaderForPreview(
         identifier: net.minecraft.resources.ResourceLocation,
-    ): com.mojang.blaze3d.textures.GpuTextureView {
+    ): GpuTextureView {
         val view = environment.loadTexture(identifier)
-        return com.mojang.blaze3d.textures.GpuTextureView(com.mojang.blaze3d.textures.GpuTexture.of(view.location()))
+        return GpuTextureView(GpuTexture.of(view.location()))
     }
 
     init {

@@ -4,7 +4,8 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
-import org.academy.api.client.resources.R;
+import org.com.mojang.blaze3d.buffers.GpuBuffer;
+import org.com.mojang.blaze3d.textures.GpuTextureView;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector4f;
@@ -12,7 +13,6 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 移植自 Minecraft 26.2 模组渲染后端, 适配 1.21.1 即时渲染管线.
@@ -44,9 +44,9 @@ public final class Render {
      * 仅为桌面编辑器已有调用保持成立. 参数全部保留以守住调用形态.
      */
     public static void runBlitPass(
-            com.mojang.blaze3d.textures.GpuTextureView viewport,
+            GpuTextureView viewport,
             RenderPipeline pipeline,
-            com.mojang.blaze3d.buffers.GpuBuffer vertexBuffer,
+            GpuBuffer vertexBuffer,
             List<TextureBinding> textures,
             List<UniformBinding> uniforms,
             boolean clear) {
@@ -145,9 +145,9 @@ public final class Render {
          * 26.2 `fsQuadVBNDC` (全屏四边形顶点缓冲) 的 C-stun 占位: 1.21.1 无 GPU 顶点缓冲,
          * 以 CPU 侧 {@code GpuBuffer} 承载 NDC 四边形几何, 供桌面编辑器既有调用保持成立.
          */
-        public final com.mojang.blaze3d.buffers.GpuBuffer fsQuadVBNDC =
-                com.mojang.blaze3d.buffers.GpuBuffer.create(
-                        () -> "fsQuadVBNDC", com.mojang.blaze3d.buffers.GpuBuffer.USAGE_VERTEX,
+        public final GpuBuffer fsQuadVBNDC =
+                GpuBuffer.create(
+                        () -> "fsQuadVBNDC", GpuBuffer.USAGE_VERTEX,
                         FS_QUAD_NDC.vertices().length * 4L);
 
         private Buffers() {

@@ -130,7 +130,7 @@ val generateModsToml = tasks.register("generateModsToml") {
         addDep("minecraft", minecraftVersionRange)
         addDep("kotlinforforge", loaderVersionRange)
 //        addDep("misaka_network", misakaVersion)
-        addDep("curios", "[16.0.0,)", "optional")
+        addDep("curios", "[9.5.1,)", "optional")
         addDep("beyonddimensions", "*", "optional")
 
         config.set<MutableList<Config>>(listOf("dependencies", modId), dependencies)
@@ -341,18 +341,18 @@ neoForge {
                 "-Dneoforge.rendernurse.renderdoc.library=${renderDocLibraryFile.absolutePath}"
             )
         }
-//        register("clientData") {
-//            clientData()
-//            programArguments.addAll(
-//                "--mod",
-//                modId,
-//                "--all",
-//                "--output",
-//                file("src/generated/resources/").absolutePath,
-//                "--existing",
-//                file("src/main/resources/").absolutePath
-//            )
-//        }
+        register("data") {
+            data()
+            programArguments.addAll(
+                "--mod",
+                modId,
+                "--all",
+                "--output",
+                file("src/generated/resources/").absolutePath,
+                "--existing",
+                file("src/main/resources/").absolutePath
+            )
+        }
         register("gameTestServer") {
             type.set("gameTestServer")
             environment("IS_DEV", "true")
@@ -381,7 +381,7 @@ neoForge {
 
             systemProperty("mixin.debug.export", "true")
 
-            jvmArgument("-XX:+AllowEnhancedClassRedefinition")
+//            jvmArgument("-XX:+AllowEnhancedClassRedefinition")
             jvmArgument("-Xverify:none")
         }
     }

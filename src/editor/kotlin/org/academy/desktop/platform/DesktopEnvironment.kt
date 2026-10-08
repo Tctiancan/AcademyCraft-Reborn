@@ -1,6 +1,5 @@
 ﻿package org.academy.desktop.platform
 
-import com.mojang.blaze3d.textures.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.texture.IdentifierTextureSource

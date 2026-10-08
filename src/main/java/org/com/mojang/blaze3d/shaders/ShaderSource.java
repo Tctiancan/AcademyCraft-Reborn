@@ -1,4 +1,4 @@
-package com.mojang.blaze3d.shaders;
+package org.com.mojang.blaze3d.shaders;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

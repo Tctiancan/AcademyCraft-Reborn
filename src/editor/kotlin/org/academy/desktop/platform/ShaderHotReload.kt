@@ -1,6 +1,6 @@
 package org.academy.desktop.platform
 
-import com.mojang.blaze3d.systems.GpuDevice
+import org.com.mojang.blaze3d.systems.GpuDevice
 import java.nio.file.Files
 import java.nio.file.Path
 import java.util.concurrent.ConcurrentHashMap

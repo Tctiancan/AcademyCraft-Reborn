@@ -1,7 +1,7 @@
 package org.academy.desktop.grapheditor.preview
 
 import com.google.gson.JsonParser
-import com.mojang.blaze3d.GpuFormat
+import org.com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
 import net.minecraft.client.Screenshot

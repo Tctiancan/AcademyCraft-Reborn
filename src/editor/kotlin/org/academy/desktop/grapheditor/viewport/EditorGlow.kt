@@ -1,6 +1,6 @@
 package org.academy.desktop.grapheditor.viewport
 
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.com.mojang.blaze3d.textures.GpuTextureView
 import org.academy.api.client.render.vfxgraph.arc.ArcBuffer
 import org.academy.api.client.render.vfxgraph.render.GraphCamera
 import org.academy.api.client.render.vfxgraph.render.RenderSpec

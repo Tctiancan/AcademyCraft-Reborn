@@ -1,6 +1,6 @@
 package org.academy.api.client.render.shader.pipeline;
 
-import com.mojang.blaze3d.systems.GpuDevice;
+import org.com.mojang.blaze3d.systems.GpuDevice;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;

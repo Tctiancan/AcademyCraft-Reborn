@@ -1,4 +1,4 @@
-package com.mojang.blaze3d;
+package org.com.mojang.blaze3d;
 
 /**
  * 移植自 Minecraft 26.2 的 {@code com.mojang.blaze3d.GpuFormat}.

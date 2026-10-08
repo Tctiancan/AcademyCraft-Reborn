@@ -5,7 +5,7 @@ import java.util.function.Consumer;
 
 import org.academy.api.client.render.texture.GpuSampler;
 import org.academy.api.client.render.texture.GpuTextureView;
-import com.mojang.blaze3d.PrimitiveTopology;
+import org.com.mojang.blaze3d.PrimitiveTopology;
 
 /**
  * 移植自 Minecraft 26.2 的 {@code com.mojang.blaze3d.systems.RenderPass}.

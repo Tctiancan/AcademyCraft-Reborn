@@ -2,9 +2,9 @@ package org.academy.desktop.platform
 
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
-import com.mojang.blaze3d.GpuFormat
-import com.mojang.blaze3d.textures.GpuTexture
-import com.mojang.blaze3d.textures.GpuTextureView
+import org.com.mojang.blaze3d.GpuFormat
+import org.com.mojang.blaze3d.textures.GpuTexture
+import org.com.mojang.blaze3d.textures.GpuTextureView
 
 /**
  * 编辑器视口 / 后处理对 26.2 {@code RenderTarget / TextureTarget} API 的 1.21.1 适配垫层.

@@ -1,6 +1,6 @@
 package org.academy.desktop.platform
 
-import com.mojang.blaze3d.GpuFormat
+import org.com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.platform.Window
 import com.mojang.blaze3d.platform.WindowEventHandler

@@ -20,6 +20,7 @@ import org.academy.desktop.grapheditor.preview.VfxPreview.Companion.LOOP_RESTART
 import org.academy.desktop.grapheditor.viewport.EditorGlow
 import org.academy.desktop.platform.getColorTextureView
 import org.academy.desktop.platform.getDepthTextureView
+import org.com.mojang.blaze3d.textures.GpuTextureView
 
 /**
  * VFX 实时预览：支持两种模型——扁平（[GraphEditorModel] → [VfxSimulator]，过渡期兼容）与
@@ -32,7 +33,7 @@ class VfxPreview(
     private val containerRef: VfxContainerModelRef,
     private val blockRegistry: VfxBlockRegistry,
     private val operatorRegistry: VfxOperatorRegistry,
-    private val textureLoader: ((net.minecraft.resources.ResourceLocation) -> com.mojang.blaze3d.textures.GpuTextureView)? = null,
+    private val textureLoader: ((net.minecraft.resources.ResourceLocation) -> GpuTextureView)? = null,
 ) {
     private val model: GraphEditorModel get() = modelRef.model
     private val containerModel: VfxContainerModel get() = containerRef.model

@@ -26,8 +26,8 @@ public record TextureBinding(String name, @Nullable ResourceLocation location, i
      * 兼容桌面编辑器 (org.academy.desktop) 使用的 26.2 纹理视图/采样器类型:
      * 从 com.mojang 纹理视图提取资源路径作绑定目标.
      */
-    public TextureBinding(String name, @Nullable com.mojang.blaze3d.textures.GpuTextureView view,
-                          com.mojang.blaze3d.textures.GpuSampler sampler) {
+    public TextureBinding(String name, @Nullable org.com.mojang.blaze3d.textures.GpuTextureView view,
+                          org.com.mojang.blaze3d.textures.GpuSampler sampler) {
         this(name, view == null ? null : view.location(), DEFAULT_SLOT);
     }
 }

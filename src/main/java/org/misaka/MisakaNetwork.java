@@ -6,6 +6,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.registries.NewRegistryEvent;
+import org.academy.AcademyCraft;
 import org.misaka.api.common.network.NetworkSystem;
 import org.misaka.internal.common.network.PacketTypes;
 import org.slf4j.Logger;
@@ -16,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 import static org.misaka.api.common.registries.MisakaNetworkRegistries.PACKET_TYPES;
 
-@Mod(MisakaNetwork.MOD_ID)
+@Mod(AcademyCraft.MOD_ID)
 public final class MisakaNetwork {
     private static final Logger LOGGER = LogUtils.getLogger();
     public static final ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();

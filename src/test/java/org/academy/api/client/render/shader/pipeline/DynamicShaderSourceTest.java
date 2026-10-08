@@ -1,6 +1,6 @@
 package org.academy.api.client.render.shader.pipeline;
 
-import com.mojang.blaze3d.shaders.ShaderType;
+import org.com.mojang.blaze3d.shaders.ShaderType;
 import net.minecraft.resources.ResourceLocation;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;

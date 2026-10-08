@@ -1,13 +1,13 @@
 ﻿package org.academy.desktop.platform
 
 import com.mojang.blaze3d.preprocessor.GlslPreprocessor
-import com.mojang.blaze3d.shaders.ShaderType
+import org.com.mojang.blaze3d.shaders.ShaderType
 import net.minecraft.resources.ResourceLocation
 import java.nio.file.Files
 import java.nio.file.Path
 
 /**
- * Blaze3D [com.mojang.blaze3d.shaders.ShaderSource] that resolves GLSL and expands `#moj_import`
+ * Blaze3D [org.com.mojang.blaze3d.shaders.ShaderSource] that resolves GLSL and expands `#moj_import`
  * with the vanilla [GlslPreprocessor]. Lookup order:
  *  1. [sourceDir] 下的 `assets/<ns>/shaders/<path><ext>`（编辑器源目录 —— **热重载**：改源文件即生效）
  *  2. classpath `assets/<ns>/shaders/<path><ext>`

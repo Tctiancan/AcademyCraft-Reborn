@@ -31,7 +31,7 @@ import org.joml.Vector4f;
  * <p>GPU 探针 ({@link #beginGpuProfile()}, {@link #gpuSamples()}) 在 1.21.1 无对应的时间戳
  * 查询池, 保留符号但返回空结果, 仅作调试占位.
  */
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
+//@EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class FlowSenseRenderer implements AutoCloseable {
     /** 半透明、深度无关、面向相机的空心标记渲染状态 (位置+颜色, 四边形). */
     private static final RenderType MARKERS = RenderType.create(
