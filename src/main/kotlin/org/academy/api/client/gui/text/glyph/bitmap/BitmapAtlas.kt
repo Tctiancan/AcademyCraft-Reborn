@@ -20,7 +20,7 @@ class BitmapAtlas private constructor(private val pageSize: Int) {
                 if (rect != null) return Reservation(candidate, rect)
             }
 
-            val newPage = AtlasPage(pageSize, "bitmap_atlas_page_" + pages.size)
+            val newPage = AtlasPage(pageSize, "bitmap_atlas_page_" + pages.size, bytesPerPixel = 1)
             val newRect = newPage.reserve(width, height)
             if (newRect == null) {
                 newPage.close()

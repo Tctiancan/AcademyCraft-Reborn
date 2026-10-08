@@ -1,9 +1,11 @@
 package org.academy.api.client.gui.text.debug
 
+import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.text.glyph.msdf.MsdfAtlas
+import org.academy.api.client.gui.text.atlas.AtlasPage
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -23,10 +25,26 @@ object MsdfAtlasDebugger {
         }
 
         for (pageIndex in pages.indices) {
-            // C-stun: 1.21.1 的 TextureUtil.writeAsPNG 不接收 GpuTexture, MSDF 图集调试导出暂不执行.
-            logger.warn("MSDF atlas debug dump is disabled in 1.21.1 port (page {})", pageIndex)
+            val prefix = fileNamePrefix + pageIndex
+            dumpPage(pages[pageIndex], outputDir, prefix)
+            written.add(outputDir.resolve(prefix + ".png"))
         }
         return written
+    }
+
+    private fun dumpPage(page: AtlasPage, outputDir: Path, prefix: String) {
+        // 1.21.1: AtlasPage 在 CPU 侧持有 NativeImage (MSDF RGBA8), 直接写 PNG, 无需 26.2 的 GPU 回读.
+        val buffer = page.pixelBuffer() ?: run {
+            logger.warn("Atlas page has not been uploaded yet; skip dump {}", prefix)
+            return
+        }
+        val file = outputDir.resolve(prefix + ".png")
+        try {
+            buffer.writeToFile(file)
+            logger.info("Dumped MSDF atlas page to {}", file)
+        } catch (e: IOException) {
+            logger.error("Failed to dump MSDF atlas page {}", prefix, e)
+        }
     }
 
     fun dumpAtlas(atlas: MsdfAtlas, fileNamePrefix: String) {

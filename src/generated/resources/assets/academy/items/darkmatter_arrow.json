@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
-  "textures": {
-    "layer0": "academy:item/darkmatter_arrow"
+  "model": {
+    "type": "minecraft:model",
+    "model": "academy:item/darkmatter_arrow"
   }
 }

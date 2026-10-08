@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "academy:item/empty_unit"
+  "model": {
+    "type": "minecraft:model",
+    "model": "academy:item/empty_unit"
   }
 }

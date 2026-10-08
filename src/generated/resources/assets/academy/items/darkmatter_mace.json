@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld_mace",
-  "textures": {
-    "layer0": "academy:item/darkmatter_mace"
+  "model": {
+    "type": "minecraft:model",
+    "model": "academy:item/darkmatter_mace"
   }
 }

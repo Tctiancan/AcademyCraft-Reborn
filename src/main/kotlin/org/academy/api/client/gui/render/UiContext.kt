@@ -229,9 +229,22 @@ open class UiContext {
         commands: MutableList<SubmittedCommand>,
         effectiveScale: Float
     ): MutableList<SubmittedCommand> {
-        // 首版 C-stun: 1.21.1 暂未迁移物品图集 (GuiItemAtlas), 物品渲染命令整组跳过;
-        // 非物品命令 (图像/色块/文本/技能进度等) 原样保留.
-        return commands.filterNot { it.command is ItemStackDrawCommand }.toMutableList()
+        // 首版 1.21.1 移植: 物品命令经 ItemStackDrawCommand.resolve 解析为标准图集 Sprite,
+        // 转为带 UV 的 PosTexColorRectDrawCommand 走顶点批处理管线, 无需 26.2 的 GPU 离屏图集.
+        // 解析失败 (模型/图集未就绪) 时略过该物品, 避免空绘制.
+        return commands.mapNotNullTo(mutableListOf()) { submitted ->
+            val itemCommand = submitted.command as? ItemStackDrawCommand
+                ?: return@mapNotNullTo submitted
+            val resolved = itemCommand.resolve()
+                ?: return@mapNotNullTo null
+            SubmittedCommand(
+                resolved,
+                submitted.pose,
+                submitted.scissorRect,
+                submitted.commandIndex,
+                submitted.alphaMul
+            )
+        }
     }
 
     open fun generateCommands(

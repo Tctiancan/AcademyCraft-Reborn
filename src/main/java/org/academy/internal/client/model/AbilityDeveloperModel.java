@@ -1,12 +1,17 @@
 package org.academy.internal.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.animation.AnimationDefinition;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
+import org.academy.api.client.resources.R;
 import org.academy.internal.client.definitions.AbilityDeveloperAnimation;
 import org.academy.internal.client.renderer.blockentity.state.AbilityDeveloperRenderState;
 
@@ -119,5 +124,10 @@ public class AbilityDeveloperModel {
         KeyframeAnimationApplier.animateState(closing, renderState.closingState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(standing, renderState.standingState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(lyingDown, renderState.lyingDownState, renderState.ageInTicks, root);
+    }
+
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        RenderType base = RenderType.entityCutout(R.textures.model.ability_developer);
+        root.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
     }
 }

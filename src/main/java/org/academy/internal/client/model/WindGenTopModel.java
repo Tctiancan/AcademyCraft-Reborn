@@ -1,11 +1,16 @@
 package org.academy.internal.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
+import org.academy.api.client.resources.R;
 import org.academy.internal.client.renderer.blockentity.state.WindGenTopRenderState;
 
 
@@ -37,5 +42,10 @@ public class WindGenTopModel {
                 .texOffs(87, 3).addBox(-8.0F, -5.0F, -6.0F, 3.0F, 3.0F, 16.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, 26.1F, 2.0F, 0.0F, 3.1416F, 0.0F));
 
         return LayerDefinition.create(meshdefinition, 128, 128);
+    }
+
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        RenderType base = RenderType.entityCutout(R.textures.model.wind_gen_top);
+        all.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
     }
 }

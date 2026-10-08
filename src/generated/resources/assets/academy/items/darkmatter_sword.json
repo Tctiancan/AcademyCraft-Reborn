@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/handheld",
-  "textures": {
-    "layer0": "academy:item/darkmatter_sword"
+  "model": {
+    "type": "minecraft:model",
+    "model": "academy:item/darkmatter_sword"
   }
 }

@@ -1,5 +1,10 @@
 package org.academy.internal.client.model;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.LightTexture;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.client.animation.AnimationDefinition;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -7,6 +12,7 @@ import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
+import org.academy.api.client.resources.R;
 import org.academy.internal.client.definitions.SolarGenAnimation;
 import org.academy.internal.client.renderer.blockentity.state.SolarGenRenderState;
 
@@ -54,5 +60,15 @@ public final class SolarGenModel {
     public void setupAnim(SolarGenRenderState renderState) {
         KeyframeAnimationApplier.animateState(folding, renderState.foldingState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(unfolding, renderState.unfoldingState, renderState.ageInTicks, root);
+    }
+
+    public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, int packedOverlay) {
+        poseStack.pushPose();
+        all.translateAndRotate(poseStack);
+        RenderType base = RenderType.entityCutout(R.textures.model.solar_gen);
+        bottom.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
+        panel1.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
+        panel2.render(poseStack, bufferSource.getBuffer(base), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        poseStack.popPose();
     }
 }

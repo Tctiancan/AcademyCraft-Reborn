@@ -181,8 +181,11 @@ class AbilityInfoHud private constructor() {
         }
 
         private fun resolveTexture(): GpuTextureView? {
-            // C-stun: 1.21.1 首版不采样纹理纹理条 (原实现依赖 26.2 getTextureView).
-            return null
+            // 1.21.1 无 26.2 的 textureManager.getTexture(...).getTextureView(); 此处把纹理资源路径
+            // 背书为垫层视图, 其 location 会由 CommandExecutor 经 RenderSystem.setShaderTexture 绑定.
+            val current = textureView
+            if (current != null && !current.isClosed) return current
+            return GpuTextureView.of(R.textures.hud.cp_bar_value).also { textureView = it }
         }
     }
 
@@ -255,8 +258,11 @@ class AbilityInfoHud private constructor() {
         }
 
         private fun resolveTexture(): GpuTextureView? {
-            // C-stun: 1.21.1 首版不采样纹理纹理条 (原实现依赖 26.2 getTextureView).
-            return null
+            // 1.21.1 无 26.2 的 textureManager.getTexture(...).getTextureView(); 此处把纹理资源路径
+            // 背书为垫层视图, 其 location 会由 CommandExecutor 经 RenderSystem.setShaderTexture 绑定.
+            val current = textureView
+            if (current != null && !current.isClosed) return current
+            return GpuTextureView.of(R.textures.SP_BAR_VALUE).also { textureView = it }
         }
     }
 

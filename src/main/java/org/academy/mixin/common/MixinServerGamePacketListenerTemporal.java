@@ -20,7 +20,7 @@ public abstract class MixinServerGamePacketListenerTemporal {
             "Lnet/minecraft/network/protocol/PacketUtils;ensureRunningOnSameThread(Lnet/minecraft/network/protocol/Packet;Lnet/minecraft/network/PacketListener;Lnet/minecraft/server/level/ServerLevel;)V";
 
     @Redirect(
-            method = "tickPlayer",
+            method = "tick",
             at = @At(
                     value = "INVOKE",
                     target = "Lnet/minecraft/server/level/ServerPlayer;doTick()V"
