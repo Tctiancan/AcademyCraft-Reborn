@@ -45,7 +45,7 @@ public final class SolarGenBlockEntity extends BlockEntity implements WirelessUs
         blockEntity.ticks++;
 
         var target = level.getBrightness(LightLayer.SKY, pos) - level.getSkyDarken();
-        var sunAngle = level.getSunAngle(0.0f);
+        var sunAngle = level.getSunAngle(1.0f);
         if (target > 0) {
             var offset = sunAngle < Mth.PI ? 0.0F : Mth.TWO_PI;
             sunAngle += (offset - sunAngle) * 0.2F;
