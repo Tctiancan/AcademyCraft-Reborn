@@ -27,13 +27,22 @@ public final class AcademyCraftModelProvider extends BlockStateProvider {
     @Override
     protected void registerStatesAndModels() {
         // === 全方块单一贴图的方块 (26.2 的 CUBE_ALL 自定义贴图) ===
-        simpleCubeTextured(Blocks.WIRELESS_NODE.get(), "block/break_w");
+        // wireless_node / omni_crafting_table 的物品模型由 src/main/resources 中的手写 builtin/entity
+        // 自定义模型提供 (渲染由各自的 BlockEntityWithoutLevelRenderer 完成), 因此只生成方块模型/blockstate,
+        // 不再调用 simpleBlockWithItem 生成立方体物品模型。
+        simpleBlock(Blocks.WIRELESS_NODE.get(), models().cubeAll(name(Blocks.WIRELESS_NODE.get()), modLoc("block/break_w")));
         simpleCubeTextured(Blocks.WIND_GEN_TOP.get(), "block/break_w");
         simpleCubeTextured(Blocks.WIND_GEN_PILLAR.get(), "block/break_w");
         simpleCubeTextured(Blocks.COMPRESSED_AIR_PLATFORM.get(), "block/break_w");
         simpleCubeTextured(Blocks.WIND_GEN_BASE.get(), "block/break_db");
-        simpleCubeTextured(Blocks.OMNI_CRAFTING_TABLE.get(), "block/break_db");
-        simpleCubeTextured(Blocks.SOLAR_GEN.get(), "block/break_db");
+        simpleBlock(Blocks.OMNI_CRAFTING_TABLE.get(), models().cubeAll(name(Blocks.OMNI_CRAFTING_TABLE.get()), modLoc("block/break_db")));
+        // solar_gen 的物品模型由 src/main/resources 中的手写 builtin/entity 自定义模型提供
+        // (渲染由 SolarGenItemRenderer 的 BlockEntityWithoutLevelRenderer 完成), 因此此处只生成
+        // 方块模型/blockstate, 不再调用 simpleBlockWithItem 生成立方体物品模型。
+        {
+            Block block = Blocks.SOLAR_GEN.get();
+            simpleBlock(block, models().cubeAll(name(block), modLoc("block/break_db")));
+        }
         simpleCubeTextured(Blocks.ABILITY_DEVELOPER.get(), "block/break_db");
         simpleCubeTextured(Blocks.IMAG_PHASE.get(), "block/black");
         simpleCubeTextured(Blocks.DARKMATTER_BLOCK.get(), "block/darkmatter");

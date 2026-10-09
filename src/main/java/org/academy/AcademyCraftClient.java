@@ -7,6 +7,7 @@ import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
+import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
@@ -533,6 +534,31 @@ public final class AcademyCraftClient {
                 return HumanoidModel.ArmPose.CROSSBOW_HOLD;
             }
         }, Items.IMAG_PHASE_DOWSING_ROD.get());
+
+        // 1.21.1 移植: solar_gen 物品使用专属 3D 模型渲染 (26.2 的 special model 渲染在该版本不存在,
+        // 改由 BlockEntityWithoutLevelRenderer 复现方块实体渲染模型)。
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return SolarGenItemRenderer.getInstance();
+            }
+        }, Items.SOLAR_GEN.get());
+
+        // 1.21.1 移植: wireless_node 物品使用专属 3D 模型渲染, 复用无线节点方块实体渲染模型。
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return WirelessNodeItemRenderer.getInstance();
+            }
+        }, Items.WIRELESS_NODE.get());
+
+        // 1.21.1 移植: omni_crafting_table 物品使用专属 3D 模型渲染, 复用巨型工作台多方块模型。
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return OmniCraftingTableItemRenderer.getInstance();
+            }
+        }, Items.OMNI_CRAFTING_TABLE.get());
     }
 
     public static final class Config {
