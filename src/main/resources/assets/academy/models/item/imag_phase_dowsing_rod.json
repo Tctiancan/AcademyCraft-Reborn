@@ -1,9 +1,5 @@
 {
-  "parent": "minecraft:item/generated",
-  "gui_light": "front",
-  "textures": {
-    "layer0": "academy:block/air"
-  },
+  "parent": "minecraft:builtin/entity",
   "display": {
     "thirdperson_righthand": {
       "rotation": [0, 0, 0],

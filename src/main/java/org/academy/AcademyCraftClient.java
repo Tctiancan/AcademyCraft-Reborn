@@ -524,6 +524,8 @@ public final class AcademyCraftClient {
 
     @SubscribeEvent
     public static void onRegisterClientExtensions(RegisterClientExtensionsEvent event) {
+        // 1.21.1 移植: imag_phase_dowsing_rod 使用专属 3D 模型渲染 (26.2 的 special model 渲染在该版本
+        // 不存在, 改由 BlockEntityWithoutLevelRenderer 复现), 同时保留其持握手臂姿态。
         event.registerItem(new IClientItemExtensions() {
             @Override
             public HumanoidModel.ArmPose getArmPose(
@@ -532,6 +534,11 @@ public final class AcademyCraftClient {
                     ItemStack stack
             ) {
                 return HumanoidModel.ArmPose.CROSSBOW_HOLD;
+            }
+
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return ImagPhaseDowsingRodItemRenderer.getInstance();
             }
         }, Items.IMAG_PHASE_DOWSING_ROD.get());
 
@@ -559,6 +566,15 @@ public final class AcademyCraftClient {
                 return OmniCraftingTableItemRenderer.getInstance();
             }
         }, Items.OMNI_CRAFTING_TABLE.get());
+
+        // 1.21.1 移植: ability_control_tablet 物品使用专属 3D 模型渲染 (26.2 的 special model 渲染在该版本
+        // 不存在, 改由 BlockEntityWithoutLevelRenderer 复现, 含主体与自发光屏幕两层)。
+        event.registerItem(new IClientItemExtensions() {
+            @Override
+            public BlockEntityWithoutLevelRenderer getCustomRenderer() {
+                return AbilityControlTabletItemRenderer.getInstance();
+            }
+        }, Items.ABILITY_CONTROL_TABLET.get());
     }
 
     public static final class Config {
