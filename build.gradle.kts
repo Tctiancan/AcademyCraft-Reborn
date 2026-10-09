@@ -376,7 +376,7 @@ neoForge {
             programArguments.add("--project-root=${layout.projectDirectory}")
         }
         configureEach {
-            logLevel.set(Level.INFO)
+            logLevel.set(Level.DEBUG)
             systemProperty("terminal.ansi", "true")
 
             systemProperty("mixin.debug.export", "true")

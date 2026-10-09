@@ -247,6 +247,19 @@ public final class Render {
             );
         }
 
+        /**
+         * 文本管线: 1.21.1 底层 (BufferUploader.drawWithShader + 内置 positionTexColorShader)
+         * 不支持 [GlyphRunDrawCommand] 在 26.2 依赖的两绑定 GPU 实例化布局
+         * (slot0 单位四边形 + slot1 实例数据), 故塌陷为单绑定 POSITION_TEX_COLOR,
+         * 由字形命令直接生成完整四边形(位置+UV+颜色), 与图片命令同一即时上载路径.
+         */
+        private static RenderPipeline textPipeline(String name) {
+            return new RenderPipeline(
+                    name, List.of(DefaultVertexFormat.POSITION_TEX_COLOR), VertexFormat.Mode.QUADS,
+                    RenderType.gui()
+            );
+        }
+
         // ---------------- GUI 管线 ----------------
         public static final RenderPipeline IMAGE = textured(VertexFormat.Mode.QUADS, "image");
         public static final RenderPipeline IMAGE_OPAQUE = textured(VertexFormat.Mode.QUADS, "image_opaque");
@@ -260,8 +273,8 @@ public final class Render {
         public static final RenderPipeline SDF_SHARP_MARGIN = bit("sdf_sharp_margin");
         public static final RenderPipeline SDF_CIRCLE_GLOW = bit("sdf_circle_glow");
         public static final RenderPipeline GLOW_CIRCLE = bit("glow_circle");
-        public static final RenderPipeline BITMAP_TEXT = bit("bitmap_text");
-        public static final RenderPipeline MSDF_TEXT = bit("msdf_text");
+        public static final RenderPipeline BITMAP_TEXT = textPipeline("bitmap_text");
+        public static final RenderPipeline MSDF_TEXT = textPipeline("msdf_text");
         public static final RenderPipeline IMGUI = textured(VertexFormat.Mode.TRIANGLES, "imgui");
 
         // ---------------- 屏面 / 后处理管线 (C-stun) ----------------

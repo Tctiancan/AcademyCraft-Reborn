@@ -1,5 +1,6 @@
 package org.academy.api.client.gui.render
 
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.blaze3d.vertex.MeshData
 import org.academy.api.client.gui.command.ExpandableDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
@@ -20,7 +21,8 @@ object BatchProcessor {
 
     fun process(
         commands: MutableList<SubmittedCommand>,
-        uploader: UboUploader
+        uploader: UboUploader,
+        buffer: ByteBufferBuilder = getByteBufferBuilder()
     ): List<PendingBatch> {
         if (commands.isEmpty()) return mutableListOf()
 
@@ -47,7 +49,7 @@ object BatchProcessor {
             if (resolvedTarget != null) {
                 resolvedTarget.merge(op)
             } else {
-                val batch = DeferredBatch(op, key)
+                val batch = DeferredBatch(op, key, buffer)
                 batches.add(plan.index.coerceIn(0, batches.size), batch)
                 lastByKey[key] = batch
             }
@@ -182,7 +184,11 @@ object BatchProcessor {
     }
 
     /** 一批可合并的 op, 对标 AOSP `MergingOpBatch`. 回放时按批次顺序统一生成顶点. */
-    private class DeferredBatch(first: ResolvedOp, val key: MergeKey) {
+    private class DeferredBatch(
+        first: ResolvedOp,
+        val key: MergeKey,
+        private val buffer: ByteBufferBuilder
+    ) {
         val pipeline: RenderPipeline = first.pipeline
         private val slotCount: Int = first.slotCount
         private val ops = ArrayList<ResolvedOp>()
@@ -226,7 +232,7 @@ object BatchProcessor {
         }
 
         fun build(uploader: UboUploader): PendingBatch? {
-            val state = BatchState(ops.first().submitted)
+            val state = BatchState(ops.first().submitted, buffer)
             for (op in ops) {
                 applyVertices(state, op.submitted)
             }
@@ -353,7 +359,10 @@ object BatchProcessor {
         fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer
     }
 
-    private class BatchState(initialCommand: SubmittedCommand) {
+    private class BatchState(
+        initialCommand: SubmittedCommand,
+        buffer: ByteBufferBuilder
+    ) {
         var pipeline: RenderPipeline
         var textures: List<TextureBinding>
         var uniforms: List<UniformPayload<*>>
@@ -372,10 +381,9 @@ object BatchProcessor {
                 .mapIndexedNotNull { index, format -> if (format != null) index else null }
             slotIndices = activeSlots
 
-            val sharedBuffer = getByteBufferBuilder()
             builders = activeSlots.map { slot ->
                 val format = pipeline.getVertexFormatBinding(slot)!!
-                MeshBuilder(sharedBuffer, pipeline.primitiveTopology, format)
+                MeshBuilder(buffer, pipeline.primitiveTopology, format)
             }
 
             instanceCount = if (activeSlots.size > 1 && innerCommand.isGeometryFixed()) 0 else 1

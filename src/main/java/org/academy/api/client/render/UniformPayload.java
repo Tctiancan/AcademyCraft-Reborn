@@ -13,7 +13,9 @@ public record UniformPayload<T extends DynamicUniform>(
      * 把 payload 序列化为独立 [ByteBuffer] (native 字节序), 供 1.21.1 使用.
      */
     public ByteBuffer toByteBuffer() {
-        ByteBuffer buffer = ByteBuffer.allocate(size).order(java.nio.ByteOrder.nativeOrder());
+        // 必须使用 direct 缓冲: JOML 的 Vector*.get(ByteBuffer) 走 Unsafe 快径,
+        // 会读取 ByteBuffer.address 字段作为写入地址; 堆缓冲该字段恒为 0, 会导致写到地址 0 处而原生崩溃.
+        ByteBuffer buffer = ByteBuffer.allocateDirect(size).order(java.nio.ByteOrder.nativeOrder());
         data.write(buffer);
         buffer.rewind();
         return buffer;

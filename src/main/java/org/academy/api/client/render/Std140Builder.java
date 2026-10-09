@@ -33,9 +33,9 @@ public final class Std140Builder {
         return new Std140Builder(stack.malloc(size));
     }
 
-    /** 分配一块指定大小的缓冲, 兼容 26.2 `allocate`. */
+    /** 分配一块指定大小的缓冲, 兼容 26.2 `allocate`. 必须 direct: JOML 的 vec/mat.get(ByteBuffer) 走 Unsafe 快径, 堆缓冲 address 字段为 0 会导致写到地址 0 处而原生崩溃. */
     public static Std140Builder allocate(int size) {
-        return new Std140Builder(ByteBuffer.allocate(size));
+        return new Std140Builder(ByteBuffer.allocateDirect(size));
     }
 
     /** 将当前缓冲置为可读并拷贝剩余字节, 兼容 26.2 `toArray`. */

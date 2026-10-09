@@ -37,7 +37,14 @@ class CommandExecutor : AutoCloseable {
         if (batches.isEmpty()) return
 
         for (batch in batches) {
-            if (!applyScissor(batch.scissorArea, guiScale)) continue
+            val scissor = batch.scissorArea
+            if (scissor == null) {
+                // 无裁剪批次必须显式清掉上一个批次残留的 scissor, 否则会沿用旧区域把内容裁掉
+                // (后果: 文本整段不可见、配方等只显示残留 scissor 覆盖到的左半边).
+                RenderSystem.disableScissor()
+            } else {
+                if (!applyScissor(scissor, guiScale)) continue
+            }
             drawBatch(batch)
         }
         RenderSystem.disableScissor()

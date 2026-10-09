@@ -2,6 +2,7 @@ package org.academy.api.client.gui.render
 
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import net.minecraft.client.Minecraft
 import org.academy.api.client.gui.command.ItemStackDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
@@ -171,15 +172,24 @@ open class UiContext {
 
         if (commands.isEmpty()) return
 
-        val meshesToDraw = BatchProcessor.process(
-            commands,
-            object : UboUploader {
-                override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer {
-                    return payload.toByteBuffer()
-                }
-            })
+        // 每趟次独立分配领地, 趟末统一释放: 不与其他 UI 层/渲染子系统共享原生缓冲,
+        // 避免 MSDF 字体纹理由后台线程上传期间, 渲染线程仍向同一已释放/复用的缓冲区写入顶点.
+        val buffer = ByteBufferBuilder(786432)
+        try {
+            val meshesToDraw = BatchProcessor.process(
+                commands,
+                object : UboUploader {
+                    override fun <T : DynamicUniform> upload(payload: UniformPayload<T>): ByteBuffer {
+                        return payload.toByteBuffer()
+                    }
+                },
+                buffer
+            )
 
-        commandExecutor.execute(meshesToDraw, effectiveScale)
+            commandExecutor.execute(meshesToDraw, effectiveScale)
+        } finally {
+            buffer.close()
+        }
     }
 
     companion object {
