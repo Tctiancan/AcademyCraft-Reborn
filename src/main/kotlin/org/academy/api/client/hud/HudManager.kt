@@ -1,9 +1,11 @@
 package org.academy.api.client.hud
 
 import net.minecraft.client.Minecraft
+import net.minecraft.resources.ResourceLocation
 import net.neoforged.api.distmarker.Dist
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.fml.common.EventBusSubscriber
+import net.neoforged.neoforge.client.event.RenderGuiEvent
 import org.academy.AcademyCraft
 import org.academy.AcademyCraftClient
 import org.academy.api.client.hud.ability.AbilityInfoHud
@@ -12,6 +14,7 @@ import org.academy.api.client.hud.ability.ToggleStatusHud
 import org.academy.api.client.hud.terminal.TerminalHud
 import org.academy.api.client.gui.imgui.ImGuiUIDebugger
 import org.academy.api.client.gui.widget.WidgetContainer
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.vanilla.MainLoopEvent
 import org.academy.api.common.profiler.AcademyProfiler
 import org.slf4j.Logger
@@ -72,9 +75,33 @@ object HudManager {
     }
 
     fun render() {
-        // C-stun: 1.21.1 首版略去世界级 HUD 合成/模糊后处理.
-        // 原实现依赖 26.2 专属 GPU API (Render.Buffers.getResourcePool /
+        // C-stun: 1.21.1 时 HUD 渲染已在 RenderGuiEvent.Post 挂接点即时绘制 (见 onRenderGui).
+        // 26.2 原实现基于 GPU 离屏目标/模糊妥稿后处理 (Render.Buffers.getResourcePool /
         // RenderTargetDescriptor / GpuFormat / Render.runBlitPass / getColorTextureView 等),
         // 在 1.21.1 均已被移除或重构; 保留方法入口以便后续迁移.
+    }
+
+    /**
+     * 1.21.1 的 HUD 渲染挂接点: 在原生 GUI/准星合成之后, 把各 HUD 控件树即时画到主帧缓冲.
+     * 迁移自 26.2 的 [render] 的调度逻辑, 省去不可迁移的离屏/模糊/模板 blit 后处理.
+     */
+    @SubscribeEvent
+    fun onRenderGui(@Suppress("unused") event: RenderGuiEvent.Post) {
+        if (!AcademyCraftClient.isRenderInitialized()) return
+
+        val mc = Minecraft.getInstance()
+        val main = mc.getMainRenderTarget()
+
+        AbilityInfoHud.instance.render(main)
+        ToggleStatusHud.instance.render(main)
+        ControlledTargetsHud.instance.render(main)
+        val w = mc.getWindow().getGuiScaledWidth()
+        val h = mc.getWindow().getGuiScaledHeight()
+        TerminalHud.INSTANCE.render(
+            w, h,
+            GpuTextureView.of(ResourceLocation.fromNamespaceAndPath("academy", "terminal_hud")),
+            GpuTextureView.of(ResourceLocation.fromNamespaceAndPath("academy", "terminal_hud")),
+            AtomicBoolean()
+        )
     }
 }

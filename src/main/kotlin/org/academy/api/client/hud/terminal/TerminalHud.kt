@@ -211,13 +211,15 @@ class TerminalHud private constructor() {
     ) {
         if (!isActive) return
 
-        // C-stun: 1.21.1 首版略去终端 HUD 的离线合成与 3D 变换 GPU 渲染.
-        // 原实现依赖 26.2 专属 API (RenderTargetDescriptor / GpuFormat /
-        // Render.Buffers.getResourcePool / RenderSystem.getDevice().createCommandEncoder /
-        // RenderSystem.getSequentialBuffer 等), 在 1.21.1 均已被移除或重构.
-        // 保留方法签名以维持既有调用方兼容, 待后续迁移到 1.21.1 即时渲染时再落地.
+        // C-stun: 1.21.1 沿用能力 HUD 的即时渲染路径, 把终端控件树直接画到主帧缓冲.
+        // 原实现基于 26.2 专属 GPU 离屏目标 (RenderTargetDescriptor / GpuFormat /
+        // Render.Buffers.getResourcePool / createCommandEncoder / createRenderPass)
+        // 先离线合成, 再以视角矩阵做 3D 变换 + 模板辉光 blit; 这些 API 在 1.21.1 均被移除或重构,
+        // 故暂时按 2D 布局原样即时绘制, 保留方法签名以兼容既有调用方. 坐标/布局变换由 UiContext 完成,
+        // width/height/color/depth 入参在 1.21.1 即时模式下不参与实际绘制.
         @Suppress("UNUSED_PARAMETER")
-        Unit
+        uiContext.upload(Minecraft.getInstance().getMainRenderTarget(), false)
+        drewStencil.set(false)
     }
 
     private fun calculateViewMatrix(window: Window, fovY: Float): Matrix4f {
