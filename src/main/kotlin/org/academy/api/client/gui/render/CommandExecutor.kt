@@ -1,5 +1,6 @@
 package org.academy.api.client.gui.render
 
+import com.mojang.blaze3d.platform.GlStateManager
 import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.BufferUploader
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
@@ -8,6 +9,7 @@ import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.ShaderInstance
 import org.academy.api.client.gui.environment.UiEnvironment
+import org.academy.api.client.render.RenderPipeline
 import org.academy.api.client.render.TextureBinding
 import kotlin.math.ceil
 import kotlin.math.floor
@@ -51,10 +53,32 @@ class CommandExecutor : AutoCloseable {
     }
 
     private fun drawBatch(batch: PendingBatch) {
+        configureBlend(batch.pipeline)
         bindTextures(batch.textures)
 
         for (mesh in batch.meshDataList) {
             drawMesh(mesh)
+        }
+    }
+
+    /**
+     * 为每个批次设置确定性的混合状态, 避免继承上一个批次 / 原生 GUI 遗留的混合模式.
+     * 本 UI 顶点均以直线(非预乘)RGBA 写出, 故常规管线用 [RenderSystem.defaultBlendFunc]
+     * (SRC_ALPHA, ONE_MINUS_SRC_ALPHA); 否则半透明白色矩形 (r=g=b=1, a<1) 若在上一个
+     * 预乘混合残留下绘制会得到 out = rgb + dst*(1-a) ≈ 白, 表现为整块泛白、文本被淹没.
+     * 名含 "premultiplied" 的管线保持其预乘混合语义不变, 避免回归.
+     */
+    private fun configureBlend(pipeline: RenderPipeline) {
+        RenderSystem.enableBlend()
+        if (pipeline.name.contains("premultiplied")) {
+            RenderSystem.blendFuncSeparate(
+                GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ONE,
+                GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA
+            )
+        } else {
+            RenderSystem.defaultBlendFunc()
         }
     }
 

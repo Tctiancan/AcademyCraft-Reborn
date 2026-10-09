@@ -93,8 +93,11 @@ class AtlasPage(
                         // NativeImage 内部为 ABGR.
                         color = a shl 24 or (b shl 16) or (g shl 8) or r
                     } else {
+                        // 位图字形按覆盖度存储: 覆盖度放入 A, RGB 恒白. position_tex_color 会以
+                        // 纹理RGB(白) × 顶点色(文本颜色) 得字体温色, 并以 纹理A(覆盖度) × 顶点A 作
+                        // 透明度 alpha, 从而经 SRC_ALPHA 混合出正确的单色抗锯齿字形.
                         val v = data[idx].toInt() and 0xFF
-                        color = 0xFF000000.toInt() or (v shl 16) or (v shl 8) or v
+                        color = (v shl 24) or 0xFFFFFF
                     }
                     backing.setPixelRGBA(rect.x + x, rect.y + y, color)
                     idx += bytesPerPixel

@@ -56,7 +56,8 @@ object GlyphExpander {
             val msdf = MsdfGlyphCache.of(font)
             val runBitmap = decideBitmap(run.glyphIndices, run.charIndices, msdf, rasterPx, revealCodeUnits)
 
-            if (runBitmap && rasterPx > RasterPathPolicy.BITMAP_PX_THRESHOLD) {
+            if (!runBitmap && rasterPx > RasterPathPolicy.BITMAP_PX_THRESHOLD) {
+                // 端口强制走位图(decideBitmap 恒真), MSDF 路径不再使用, 故不再预热 MSDF 字形.
                 for (g in run.glyphIndices.indices) {
                     val charIndex = run.charIndices[g]
                     if (charIndex >= revealCodeUnits) continue
@@ -157,16 +158,10 @@ object GlyphExpander {
         rasterPx: Float,
         revealCodeUnits: Int
     ): Boolean {
-        if (rasterPx <= RasterPathPolicy.BITMAP_PX_THRESHOLD) return true
-        var allReady = true
-        for (g in glyphIndices.indices) {
-            if (charIndices[g] >= revealCodeUnits) continue
-            if (!msdf.isReady(glyphIndices[g])) {
-                allReady = false
-                break
-            }
-        }
-        return !allReady
+        // 1.21.1 端口未提供 MSDF shader: MSDF 字形在 position_tex_color 下会把距离场纹理的
+        // RGBA 通道直接采样为颜色, 导致大字号文本出现红/绿/蓝/白糅合的乱码. 这里强制走位图
+        // 覆盖度栅格, 由 position_tex_color 正确渲染为单色字形.
+        return true
     }
 
     private fun lineFor(blob: TextBlob, charIndex: Int): TextLine? {
