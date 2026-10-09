@@ -2,6 +2,9 @@ package org.academy.api.client.hud.terminal
 
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.platform.Window
+import com.mojang.blaze3d.vertex.PoseStack
+import org.academy.api.client.gui.command.DrawCommand
+import org.academy.api.client.gui.render.VertexWriter
 import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Std140Builder
@@ -20,7 +23,6 @@ import org.academy.api.client.gui.animation.*
 import org.academy.api.client.gui.animation.ObjectAnimator.Companion.ofFloat
 import org.academy.api.client.gui.animation.ValueAnimator.Companion.ofFloat
 import org.academy.api.client.gui.command.LocalBounds
-import org.academy.api.client.gui.command.PosTexRectDrawCommand
 import org.academy.api.client.gui.event.*
 import org.academy.api.client.gui.event.KeyEvent
 import org.academy.api.client.gui.event.MouseEvent.Companion.createDragEvent
@@ -36,7 +38,6 @@ import org.academy.api.client.gui.text.model.Ellipsize
 import org.academy.api.client.gui.widget.*
 import org.academy.api.client.input.*
 import org.academy.api.client.render.Render
-import org.academy.api.client.render.UniformPayload
 import org.academy.api.client.resources.R
 import org.academy.api.client.thread.MainThread
 import org.academy.api.client.util.ClientUtil
@@ -53,7 +54,10 @@ import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 import kotlin.concurrent.Volatile
 import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.math.sin
 import kotlin.math.tan
 
 class TerminalHud private constructor() {
@@ -114,46 +118,24 @@ class TerminalHud private constructor() {
                 run {
                     context.pose().translate(xPos.toFloat(), yPos.toFloat())
 
-                    var sdfData = SDFData(Vector4f(0f, 0f, 0f, 0.75f), 0.5f, 0.5f)
-
-                    context.pose().pushPose()
-                    run {
-                        context.pose().translate(-2f, -2f)
-                        submitGlowCommand(context, 4f, sdfData)
-                    }
-                    context.pose().popPose()
-
-                    context.pose().pushPose()
-                    run {
-                        context.pose().translate(-1.5f, -1.5f)
-                        sdfData = SDFData(Vector4f(1f, 1f, 1f, 1f), 0.5f, 0.25f)
-                        submitGlowCommand(context, 3f, sdfData)
-                    }
-                    context.pose().popPose()
+                    // 光标辉光: 无法在 1.21.1 即时后端注册 SDF_CIRCLE_GLOW 自定义着色器/Uniform,
+                    // 改用 POS_COLOR 顶点色圆网格, 把径向衰减辉光烘焙进顶点色, 走既有管线绘制.
+                    submitGlowCommand(context, 3.4f, 0f, 0f, 0f, 0.7f)
+                    submitGlowCommand(context, 1.8f, 1f, 1f, 1f, 1f)
                 }
                 context.pose().popPose()
             }
 
-            fun submitGlowCommand(context: Canvas, size: Float, sdfData: SDFData) {
-                val glowCommand: PosTexRectDrawCommand = object : PosTexRectDrawCommand(
-                    Render.RenderPipelines.SDF_CIRCLE_GLOW,
-                    size,
-                    size,
-                    0f,
-                    0f,
-                    1f,
-                    1f,
-                    mutableListOf(),
-                    listOf(
-                        UniformPayload(
-                            "GlowUniforms", SDFData::class.java, sdfData, SDFData.UBO_SIZE
-                        )
+            fun submitGlowCommand(context: Canvas, radius: Float, r: Float, g: Float, b: Float, alpha: Float) {
+                context.submit(
+                    GlowCircleDrawCommand(
+                        radius,
+                        (r * 255).toInt().coerceIn(0, 255),
+                        (g * 255).toInt().coerceIn(0, 255),
+                        (b * 255).toInt().coerceIn(0, 255),
+                        alpha
                     )
-                ) {
-                    // SDF 辉光会画到标称尺寸之外, 保守起见视为无界 (不参与合并).
-                    override fun localBounds(): LocalBounds? = null
-                }
-                context.submit(glowCommand)
+                )
             }
         }
     }
@@ -460,6 +442,63 @@ class TerminalHud private constructor() {
         val type: InputSystem.InputType,
         val input: Int
     )
+
+    /**
+     * 顶点点色圆网格辉光: 以同心圆环 + 扇形划分网格, 将径向衰减的 alpha 烘焙进每个顶点的颜色,
+     * 通过内置 POS_COLOR (POSITION_COLOR / QUADS) 管线绘制. 用于替代 26.2 的 SDF_CIRCLE_GLOW
+     * 自定义着色器路径, 后者在 1.21.1 即时渲染后端没有对应着色器/Uniform 注册.
+     */
+    private class GlowCircleDrawCommand(
+        radius: Float,
+        private val red: Int,
+        private val green: Int,
+        private val blue: Int,
+        alpha: Float
+    ) : DrawCommand(Render.RenderPipelines.POS_COLOR, listOf(), listOf()) {
+
+        private val radius = radius.coerceAtLeast(0.0001f)
+        private val baseAlpha: Int = (alpha * 255).toInt().coerceIn(0, 255)
+
+        override fun localBounds(): LocalBounds {
+            val r = radius + 1f
+            return LocalBounds(-r, -r, r, r)
+        }
+
+        override fun generateVertices(writer: VertexWriter, pose: PoseStack.Pose, alphaMul: Float) {
+            val matrix = pose.pose()
+            val dest = Vector3f()
+            val segments = 20
+            val rings = 8
+            val effectiveAlpha = (baseAlpha * alphaMul).toInt().coerceIn(0, 255)
+
+            fun emit(a: Float, x: Float, y: Float) {
+                matrix.transformPosition(x, y, 0f, dest)
+                writer.beginVertex()
+                writer.putVec3f(dest.x, dest.y, dest.z)
+                val va = (effectiveAlpha * a).toInt().coerceIn(0, 255)
+                writer.putColor(red, green, blue, va)
+            }
+
+            for (ring in 0 until rings) {
+                val r0 = radius * (ring.toFloat() / rings)
+                val r1 = radius * ((ring + 1).toFloat() / rings)
+                val a0 = 1f - r0 / radius
+                val a1 = 1f - r1 / radius
+                for (j in 0 until segments) {
+                    val th0 = (j.toFloat() / segments) * 2f * Math.PI.toFloat()
+                    val th1 = ((j + 1).toFloat() / segments) * 2f * Math.PI.toFloat()
+                    val c0 = cos(th0)
+                    val s0 = sin(th0)
+                    val c1 = cos(th1)
+                    val s1 = sin(th1)
+                    emit(a0, c0 * r0, s0 * r0)
+                    emit(a0, c1 * r0, s1 * r0)
+                    emit(a1, c1 * r1, s1 * r1)
+                    emit(a1, c0 * r1, s0 * r1)
+                }
+            }
+        }
+    }
 
     inner class Context : WidgetContext {
         private var main = FrameLayoutWidget()

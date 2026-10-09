@@ -14,9 +14,11 @@ import org.academy.api.client.hud.ability.ToggleStatusHud
 import org.academy.api.client.hud.terminal.TerminalHud
 import org.academy.api.client.gui.imgui.ImGuiUIDebugger
 import org.academy.api.client.gui.widget.WidgetContainer
+import org.academy.api.client.render.Render
 import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.vanilla.MainLoopEvent
 import org.academy.api.common.profiler.AcademyProfiler
+import org.academy.internal.client.profiler.ProfilerClientHooks
 import org.slf4j.Logger
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -82,8 +84,11 @@ object HudManager {
     }
 
     /**
-     * 1.21.1 的 HUD 渲染挂接点: 在原生 GUI/准星合成之后, 把各 HUD 控件树即时画到主帧缓冲.
-     * 迁移自 26.2 的 [render] 的调度逻辑, 省去不可迁移的离屏/模糊/模板 blit 后处理.
+     * 1.21.1 的 HUD 渲染挂接点: 在原生 GUI/准星合成之后, 即时绘制各 HUD 控件树.
+     * 迁移自 26.2 的 [render] 的调度逻辑, 保留了剖析/叠层/调试 HUD 等即时过程;
+     * 终端 3D 透视变换+模板辉光+离屏合成 (Render.Buffers.getResourcePool /
+     * RenderTargetDescriptor / GpuFormat / createRenderPass / BlurEffect / runBlitPass 等)
+     * 依赖 26.2 专属 GPU 延迟渲染 API, 在 1.21.1 均已被移除或重构, 故按 2D 布局原样绘制 (C-stun).
      */
     @SubscribeEvent
     fun onRenderGui(@Suppress("unused") event: RenderGuiEvent.Post) {
@@ -91,17 +96,26 @@ object HudManager {
 
         val mc = Minecraft.getInstance()
         val main = mc.getMainRenderTarget()
+        val width = main.width
+        val height = main.height
 
+        AcademyProfiler.push("academy.hud.terminal")
+        AcademyProfiler.popPush("academy.hud.ability")
         AbilityInfoHud.instance.render(main)
+        AcademyProfiler.popPush("academy.hud.toggle")
         ToggleStatusHud.instance.render(main)
         ControlledTargetsHud.instance.render(main)
-        val w = mc.getWindow().getGuiScaledWidth()
-        val h = mc.getWindow().getGuiScaledHeight()
         TerminalHud.INSTANCE.render(
-            w, h,
+            width, height,
             GpuTextureView.of(ResourceLocation.fromNamespaceAndPath("academy", "terminal_hud")),
             GpuTextureView.of(ResourceLocation.fromNamespaceAndPath("academy", "terminal_hud")),
             AtomicBoolean()
         )
+        AcademyProfiler.pop()
+
+        ProfilerClientHooks.renderOverlay()
+        if (ImGuiUIDebugger.enabled) {
+            ImGuiUIDebugger.renderHud(main, inspectableRoots())
+        }
     }
 }
