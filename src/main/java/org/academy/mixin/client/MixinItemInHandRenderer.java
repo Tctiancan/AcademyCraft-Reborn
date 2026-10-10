@@ -2,6 +2,7 @@ package org.academy.mixin.client;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.ItemInHandRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.InteractionHand;
@@ -10,6 +11,7 @@ import net.minecraft.world.entity.HumanoidArm;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import org.academy.api.client.renderer.RendererManager;
 import org.academy.internal.client.ability.mentalout.ControlledItemInHandRendererBridge;
 import org.academy.internal.client.ability.mentalout.PlayerControlClientState;
 import org.academy.internal.client.renderer.special.AbilityControlTabletSpecialRenderer;
@@ -73,6 +75,18 @@ public abstract class MixinItemInHandRenderer implements ControlledItemInHandRen
             mainHandItem = previousMainHand;
             offHandItem = previousOffHand;
         }
+    }
+
+    @Inject(method = "renderHandsWithItems", at = @At("HEAD"))
+    private void academy$renderEffectFirstPerson(
+            float partialTicks,
+            PoseStack poseStack,
+            MultiBufferSource.BufferSource buffer,
+            LocalPlayer player,
+            int combinedLight,
+            CallbackInfo ci
+    ) {
+        RendererManager.renderEffectFirstPerson(poseStack, buffer, player, combinedLight, partialTicks);
     }
 
     @Inject(method = "renderItem", at = @At("HEAD"), cancellable = true)
