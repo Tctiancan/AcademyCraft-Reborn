@@ -1,7 +1,5 @@
 package org.academy.api.common.arc.modifier;
 
-import java.util.Objects;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,6 +15,7 @@ import org.joml.Vector3fc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record TargetSeekModifier(Vector3fc target, AttributeCurve force) implements PathModifier {
     public static final StreamCodec<ByteBuf, TargetSeekModifier> CODEC = StreamCodec.composite(

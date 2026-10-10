@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.accelerator.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -45,6 +44,7 @@ import org.academy.internal.common.network.SpawnVfxGraphPacket;
 import org.academy.internal.common.world.damagesource.CTADamageUtil;
 import org.academy.internal.common.world.damagesource.DamageTypes;
 import org.academy.internal.common.world.damagesource.SkillDamageUtil;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

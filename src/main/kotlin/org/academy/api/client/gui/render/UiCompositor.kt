@@ -1,8 +1,8 @@
 package org.academy.api.client.gui.render
 
 import com.mojang.blaze3d.pipeline.RenderTarget
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.render.post.BackdropBlurEngine
+import org.academy.api.client.render.texture.GpuTextureView
 import org.joml.Vector4f
 
 /**

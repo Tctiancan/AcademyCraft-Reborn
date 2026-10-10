@@ -1,12 +1,10 @@
 package org.academy.internal.common.ability.teleport.effect;
 
-import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
-
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.Event;
+import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
 
 /** Posted only after {@link TeleportSync#teleportInstantly} has moved an entity successfully. */
 public final class TeleportCompletedEvent extends Event {

@@ -1,7 +1,6 @@
 package org.academy.internal.client.ability.program;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import org.academy.AcademyCraft;
 import org.academy.api.client.input.InputSystem;
 import org.academy.api.common.ability.program.AbilityProgram;

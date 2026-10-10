@@ -1,10 +1,10 @@
 package org.academy.api.client.gui.dsl
 
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuSampler
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.animation.TimeInterpolator
 import org.academy.api.client.gui.widget.*
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
 import java.util.function.Consumer
 
 fun ImageWidget.texture(id: ResourceLocation?): ImageWidget {

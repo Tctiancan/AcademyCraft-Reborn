@@ -1,11 +1,9 @@
 package org.academy.internal.common.ability.electromaster;
 
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
-
-
 import com.google.gson.JsonParser;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.server.ability.AreaEffectTargets;
+import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;

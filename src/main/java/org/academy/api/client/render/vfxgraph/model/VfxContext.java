@@ -1,7 +1,8 @@
 package org.academy.api.client.render.vfxgraph.model;
 
-import java.util.List;
 import org.jspecify.annotations.Nullable;
+
+import java.util.List;
 
 /**
  * VFX context 容器（M23）。固定阶段（{@link VfxContextType}）+ 画布坐标 + 内部块列表。

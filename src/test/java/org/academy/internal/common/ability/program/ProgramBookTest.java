@@ -1,16 +1,14 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.migration.PrecisionProgramBookMigrator;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
-
-
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramBook;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 import org.academy.internal.common.ability.mentalout.skills.lv5.PrecisionOperation;
+import org.academy.internal.common.ability.program.migration.PrecisionProgramBookMigrator;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

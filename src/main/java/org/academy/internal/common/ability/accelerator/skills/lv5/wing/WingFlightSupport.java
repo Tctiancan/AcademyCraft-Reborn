@@ -15,19 +15,15 @@ import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.api.common.util.ViewTargetScanner;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
+import org.academy.internal.common.ability.accelerator.flight.WingFlightPose;
+import org.academy.internal.common.ability.accelerator.flight.WingFlightRuntime;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileRedirects;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileStateAdapter;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorRedirectKind;
-import org.academy.internal.common.ability.accelerator.flight.WingFlightPose;
-import org.academy.internal.common.ability.accelerator.flight.WingFlightRuntime;
+import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 import org.academy.internal.common.attachment.AttachmentTypes;
 import org.academy.internal.common.entitycontrol.EntityControlApi;
-import org.academy.internal.common.world.damagesource.CTADamageUtil;
-import org.academy.internal.common.world.damagesource.CTAEntityActuallyHurt;
-import org.academy.internal.common.world.damagesource.CtaFriendlyFireWhitelist;
-import org.academy.internal.common.world.damagesource.DamageTypes;
-import org.academy.internal.common.world.damagesource.SkillDamageUtil;
+import org.academy.internal.common.world.damagesource.*;
 import org.misaka.MisakaNetworkServer;
 
 final class WingFlightSupport {

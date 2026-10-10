@@ -1,10 +1,10 @@
 package org.academy.internal.common.ability.accelerator.reflection.compat;
 
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.projectile.Projectile;
-import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.entity.projectile.AbstractArrow;
 import net.minecraft.world.entity.projectile.AbstractHurtingProjectile;
+import net.minecraft.world.entity.projectile.Projectile;
+import net.minecraft.world.entity.projectile.ShulkerBullet;
 import net.minecraft.world.phys.Vec3;
 import org.academy.mixin.common.AbstractArrowVectorAccessor;
 import org.academy.mixin.common.ShulkerBulletVectorAccessor;

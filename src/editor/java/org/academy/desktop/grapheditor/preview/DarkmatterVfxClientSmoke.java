@@ -5,28 +5,26 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.Vec3;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
-import org.academy.internal.client.render.vfx.DarkmatterVfxClient;
-import org.academy.internal.common.ability.darkmatter.skills.lv3.DarkmatterRadiation;
-import org.academy.internal.common.ability.darkmatter.skills.lv4.DarkmatterRepair;
-import org.academy.internal.common.ability.darkmatter.skills.lv1.DarkmatterDisassemble;
-import org.academy.internal.common.world.item.DarkmatterItemUtil;
-import net.minecraft.world.item.ItemStack;
 import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.DarkmatterGraphEffects;
+import org.academy.internal.client.render.vfx.DarkmatterVfxClient;
 import org.academy.internal.common.ability.Skills;
+import org.academy.internal.common.ability.darkmatter.skills.lv1.DarkmatterDisassemble;
+import org.academy.internal.common.ability.darkmatter.skills.lv3.DarkmatterRadiation;
+import org.academy.internal.common.ability.darkmatter.skills.lv4.DarkmatterRepair;
+import org.academy.internal.common.world.item.DarkmatterItemUtil;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in isolated in-game validation. Never included in the mod jars. */

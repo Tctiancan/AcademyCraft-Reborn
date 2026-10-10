@@ -4,8 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import org.academy.api.common.vfx.RepairVisualParts;
 import org.academy.api.common.vfx.DirectionalArea;
+import org.academy.api.common.vfx.RepairVisualParts;
 import org.academy.internal.common.network.DarkmatterVisualPacket;
 import org.academy.internal.common.network.DarkmatterVisualPacket.Kind;
 

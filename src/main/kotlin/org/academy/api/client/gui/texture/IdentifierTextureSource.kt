@@ -1,10 +1,10 @@
 ﻿package org.academy.api.client.gui.texture
 
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.environment.UiEnvironment
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 /**
  * 以 [Identifier] 为来源的纹理源: 静态资源文件, 或 texture manager 中已注册的动态纹理 key.

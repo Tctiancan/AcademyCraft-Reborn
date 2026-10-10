@@ -5,7 +5,10 @@ import com.google.gson.JsonPrimitive;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.data.SkillStateType;
-import org.academy.internal.common.skilldata.*;
+import org.academy.internal.common.skilldata.CodecSkillData;
+import org.academy.internal.common.skilldata.CommonSkillData;
+import org.academy.internal.common.skilldata.SkillData;
+import org.academy.internal.common.skilldata.UnknownSkillData;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

@@ -2,11 +2,11 @@ package org.academy.internal.common.ability.meltdowner.beam;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.Mth;
+import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
 import org.academy.internal.common.ability.shared.linear.LinearAttackPayload;
 import org.academy.internal.common.ability.shared.linear.LinearReflectionResolver;
 import org.academy.internal.common.ability.shared.linear.LinearSegment;
 import org.academy.internal.common.ability.shared.linear.ResolvedLinearAttack;
-import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
 
 import java.util.UUID;
 

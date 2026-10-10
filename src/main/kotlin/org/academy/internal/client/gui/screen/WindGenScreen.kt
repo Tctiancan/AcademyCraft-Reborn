@@ -13,7 +13,9 @@ import org.academy.api.client.gui.screen.ContainerUiScreen
 import org.academy.api.client.gui.util.attributeRow
 import org.academy.api.client.gui.util.infoArea
 import org.academy.api.client.gui.util.infoRow
-import org.academy.api.client.gui.widget.*
+import org.academy.api.client.gui.widget.FrameLayoutWidget
+import org.academy.api.client.gui.widget.RadioButtonWidget
+import org.academy.api.client.gui.widget.RadioGroupWidget
 import org.academy.api.client.resources.R
 import org.academy.internal.common.world.inventory.WindGenMenu
 import org.academy.internal.common.world.level.block.entity.WindGenBaseBlockEntity

@@ -2,7 +2,6 @@ package org.academy.api.client.render.vfxgraph.runtime;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import org.academy.api.client.render.texture.GpuTextureView;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
@@ -11,6 +10,7 @@ import org.academy.api.client.render.graph.assets.GraphAssets;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.registry.SimpleNodeRegistry;
 import org.academy.api.client.render.graph.serialize.JsonGraphCodec;
+import org.academy.api.client.render.texture.GpuTextureView;
 import org.academy.api.client.render.vfxgraph.model.VfxSystem;
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlockRegistry;
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlocks;

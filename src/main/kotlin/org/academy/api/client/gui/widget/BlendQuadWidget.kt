@@ -1,17 +1,11 @@
 package org.academy.api.client.gui.widget
 
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.command.PosTexRectDrawCommand
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.Canvas
-import org.academy.api.client.render.DynamicUniform
-import org.academy.api.client.render.Render
-import org.academy.api.client.render.Std140Builder
-import org.academy.api.client.render.Std140SizeCalculator
-import org.academy.api.client.render.UniformPayload
+import org.academy.api.client.render.*
+import org.academy.api.client.render.texture.FilterMode
 import org.academy.api.client.resources.R
 import org.joml.Vector2f
 import org.joml.Vector4f

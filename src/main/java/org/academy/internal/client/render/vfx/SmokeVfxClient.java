@@ -2,21 +2,22 @@ package org.academy.internal.client.render.vfx;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.neoforged.neoforge.client.event.ClientTickEvent;
-import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
-import org.academy.api.common.vfx.SkillVfxState;
-import java.util.Map;
-import java.util.IdentityHashMap;
+import net.minecraft.resources.ResourceLocation;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.client.render.graph.type.Value;
+import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
+import org.academy.api.common.vfx.SkillVfxState;
 import org.academy.internal.common.world.entity.skill.Smoke;
-import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
+
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class SmokeVfxClient {

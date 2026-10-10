@@ -3,10 +3,10 @@ package org.academy.internal.client.render.vfx;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.LivingEntity;
-import org.academy.api.common.vfx.DirectionalArea;
-import org.academy.internal.common.network.DarkmatterVisualPacket;
 import org.academy.api.client.render.post.DirectionalFieldRenderer;
 import org.academy.api.client.render.post.WorldSurfaceMasks;
+import org.academy.api.common.vfx.DirectionalArea;
+import org.academy.internal.common.network.DarkmatterVisualPacket;
 
 import java.util.LinkedHashMap;
 import java.util.List;

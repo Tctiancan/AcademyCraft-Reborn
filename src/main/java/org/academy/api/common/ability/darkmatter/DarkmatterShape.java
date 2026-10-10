@@ -1,7 +1,8 @@
 package org.academy.api.common.ability.darkmatter;
 
-import java.util.Locale;
 import org.jspecify.annotations.Nullable;
+
+import java.util.Locale;
 
 /**
  * Built-in shape catalogue. The GUI is populated from this catalogue instead of fixed buttons.

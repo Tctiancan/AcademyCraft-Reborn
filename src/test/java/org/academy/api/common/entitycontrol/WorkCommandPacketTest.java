@@ -5,8 +5,12 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import org.academy.internal.common.ability.mentalout.skills.lv5.WideAreaInterference;
 import org.junit.jupiter.api.Test;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WorkCommandPacketTest {
     @Test void workPacketPreservesSettingsAndTargetOrder() {

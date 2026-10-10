@@ -4,8 +4,8 @@ import com.mojang.blaze3d.pipeline.RenderTarget
 import net.minecraft.client.Minecraft
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ScreenEvent
-import net.neoforged.neoforge.event.GameShuttingDownEvent
 import net.neoforged.neoforge.common.NeoForge
+import net.neoforged.neoforge.event.GameShuttingDownEvent
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.UiContext

@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.electromaster.skills.lv4;
 
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
-import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
-
-import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -20,12 +16,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingIncomingDamageEvent;
 import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.academy.AcademyCraft;
-import org.academy.AcademyCraftClient;
-import org.academy.AcademyCraftConfig;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.config.KeyBindingConfig;
-import org.academy.api.client.hud.ability.ToggleStatusHud;
-import org.academy.api.client.input.InputSystem;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityLevel;
 import org.academy.api.common.ability.DevCondition;
@@ -36,9 +28,12 @@ import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.ElectromasterGraphEffects;
 import org.academy.api.server.team.TeamRelations;
 import org.academy.api.server.vanilla.MinecraftServerContext;
-import org.academy.internal.common.ability.*;
-import org.academy.internal.common.ability.electromaster.arc.ElectromasterArcEffects;
+import org.academy.internal.common.ability.AbilityCategories;
+import org.academy.internal.common.ability.SkillNames;
+import org.academy.internal.common.ability.Skills;
+import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 import org.academy.internal.common.ability.electromaster.skills.lv3.MagnetManipulation;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.attribute.PlayerAttributeRuntime;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.skilldata.ElectromagneticShieldData;

@@ -1,7 +1,6 @@
 package org.academy.api.common.ability.program;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonNull;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;

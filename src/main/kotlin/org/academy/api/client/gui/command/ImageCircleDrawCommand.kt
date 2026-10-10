@@ -1,9 +1,9 @@
 package org.academy.api.client.gui.command
 
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.TextureBinding
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 class ImageCircleDrawCommand : PosTexColorRectDrawCommand {
     constructor(

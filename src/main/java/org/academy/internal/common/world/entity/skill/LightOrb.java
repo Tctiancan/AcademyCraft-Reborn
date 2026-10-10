@@ -8,7 +8,6 @@ import net.minecraft.world.level.Level;
 import org.academy.internal.common.world.entity.EntityTypes;
 import org.academy.internal.common.world.entity.RenderOnlyEntity;
 import org.joml.Vector3f;
-import org.joml.Vector3fc;
 import org.jspecify.annotations.Nullable;
 
 public class LightOrb extends RenderOnlyEntity {

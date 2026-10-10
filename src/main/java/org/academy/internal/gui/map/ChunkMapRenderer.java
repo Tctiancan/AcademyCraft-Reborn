@@ -1,17 +1,12 @@
 package org.academy.internal.gui.map;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.level.Level;
 import org.academy.internal.client.ability.teleport.ChunkMapTexture;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapPackets;
-import org.academy.internal.common.ability.teleport.chunk.ChunkLeapRegion;
 import org.academy.internal.common.ability.teleport.map.ChunkMapClientState;
 import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
-
-import java.util.List;
 
 /**
  * Draws the 区块跃迁 map: the chunk raster, the chunk grid, selection rectangles and entity markers.

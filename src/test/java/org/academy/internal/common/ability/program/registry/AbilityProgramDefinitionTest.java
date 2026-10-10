@@ -1,14 +1,12 @@
 package org.academy.internal.common.ability.program.registry;
 
-import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
-import org.academy.internal.common.ability.program.migration.PrecisionProgramAliases;
-
-
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
+import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
+import org.academy.internal.common.ability.program.migration.PrecisionProgramAliases;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

@@ -1,21 +1,19 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
-import org.academy.internal.common.ability.teleport.map.ChunkMapClientState;
-import org.academy.internal.common.ability.teleport.map.ChunkMapViewService;
-import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
-
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceKey;
-import org.jspecify.annotations.Nullable;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
-import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.academy.internal.client.ability.teleport.ChunkLeapGodViewClient;
+import org.academy.internal.common.ability.teleport.map.ChunkMapClientState;
+import org.academy.internal.common.ability.teleport.map.ChunkMapViewService;
+import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
 import org.academy.internal.common.network.PacketTypes;
+import org.jspecify.annotations.Nullable;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

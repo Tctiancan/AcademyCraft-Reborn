@@ -16,7 +16,10 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.academy.api.common.entitycontrol.*;
-import org.academy.internal.common.ability.mentalout.control.*;
+import org.academy.internal.common.ability.mentalout.control.GroupControlRuntime;
+import org.academy.internal.common.ability.mentalout.control.MentalControlMemory;
+import org.academy.internal.common.ability.mentalout.control.WorkOrderData;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;

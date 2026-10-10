@@ -1,17 +1,18 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.LearningHelper;
-import org.academy.api.common.ability.program.*;
+import org.academy.api.common.ability.program.ProgramAction;
+import org.academy.api.common.ability.program.ProgramNodeScope;
+import org.academy.api.common.ability.program.ProgramTargetResolver;
 import org.academy.api.common.registries.Registries;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.program.ProgramActionContext;
-import org.academy.internal.common.world.damagesource.PvpSetting;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
 import org.academy.internal.common.world.damagesource.FriendlyFireSetting;
+import org.academy.internal.common.world.damagesource.PvpSetting;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

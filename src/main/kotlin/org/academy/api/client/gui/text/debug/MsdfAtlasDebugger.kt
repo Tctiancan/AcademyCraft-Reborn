@@ -1,11 +1,10 @@
 package org.academy.api.client.gui.text.debug
 
-import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import org.academy.AcademyCraft
-import org.academy.api.client.gui.text.glyph.msdf.MsdfAtlas
 import org.academy.api.client.gui.text.atlas.AtlasPage
+import org.academy.api.client.gui.text.glyph.msdf.MsdfAtlas
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.Path

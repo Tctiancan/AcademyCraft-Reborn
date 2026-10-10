@@ -1,7 +1,5 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
@@ -18,8 +16,8 @@ import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.entitycontrol.AttackDecision;
-import org.academy.internal.common.ability.mentalout.*;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationRuntime;
+import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
 import org.academy.internal.common.ability.mentalout.skills.lv5.MindDestruction;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)

@@ -1,7 +1,10 @@
 package org.academy.internal.client.model;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.animation.*;
+import net.minecraft.client.animation.AnimationChannel;
+import net.minecraft.client.animation.AnimationDefinition;
+import net.minecraft.client.animation.Keyframe;
+import net.minecraft.client.animation.KeyframeAnimations;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.CubeDeformation;

@@ -1,11 +1,9 @@
 package org.academy.internal.common.ability;
 
-import org.academy.internal.common.ability.proficiency.ProficiencySkillSettings;
-
-
 import org.academy.AcademyCraftServer;
 import org.academy.api.server.wireless.WirelessManager;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationManager;
+import org.academy.internal.common.ability.proficiency.ProficiencySkillSettings;
 import org.academy.internal.common.ability.program.AbilityProgramManager;
 import org.academy.internal.common.network.MusicSyncPackets;
 import org.academy.internal.common.world.damagesource.DestroyBlocksSetting;

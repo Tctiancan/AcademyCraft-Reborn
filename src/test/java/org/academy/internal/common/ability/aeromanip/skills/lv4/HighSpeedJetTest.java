@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.Direction;
@@ -9,12 +8,11 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.client.input.InputSystem;
 import org.junit.jupiter.api.Test;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class HighSpeedJetTest {
     @Test

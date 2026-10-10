@@ -4,26 +4,13 @@ import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
-import org.academy.api.common.ability.program.ProgramExecutionContext;
-import org.academy.api.common.ability.program.ProgramInputView;
-import org.academy.api.common.ability.program.ProgramNodeEditorMetadata;
-import org.academy.api.common.ability.program.ProgramNodeExecution;
-import org.academy.api.common.ability.program.ProgramNodeExtension;
-import org.academy.api.common.ability.program.ProgramNodePurity;
-import org.academy.api.common.ability.program.ProgramNodeRole;
-import org.academy.api.common.ability.program.ProgramNodeSchema;
-import org.academy.api.common.ability.program.ProgramNodeScope;
-import org.academy.api.common.ability.program.ProgramNodeStep;
-import org.academy.api.common.ability.program.ProgramNodeType;
+import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class ProgramNodeExtensionIndexTest {
     private static final ResourceLocation CATEGORY = AcademyCraft.academy("accelerator");

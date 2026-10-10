@@ -2,10 +2,6 @@ package org.academy.api.client.hud.ability
 
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.platform.InputConstants
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.neoforged.bus.api.SubscribeEvent
@@ -27,6 +23,9 @@ import org.academy.api.client.gui.widget.*
 import org.academy.api.client.input.InputSystem
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.TextureBinding
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.resources.R
 import org.academy.api.client.vanilla.ResizeDisplayEvent
 import org.academy.api.common.ability.AbilityCategory

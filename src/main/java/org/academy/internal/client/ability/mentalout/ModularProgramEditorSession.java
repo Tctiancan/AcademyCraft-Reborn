@@ -7,8 +7,8 @@ import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 import org.academy.internal.common.ability.program.ProgramRunTrace;
 import org.jspecify.annotations.Nullable;
 
-import java.util.Set;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Category-specific storage and policy adapter for the shared modular program editor.

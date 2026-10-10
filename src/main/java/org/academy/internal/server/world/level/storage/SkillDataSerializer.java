@@ -3,11 +3,11 @@ package org.academy.internal.server.world.level.storage;
 import com.google.gson.*;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
+import org.academy.api.common.ability.data.SkillStateType;
+import org.academy.internal.common.skilldata.CodecSkillData;
 import org.academy.internal.common.skilldata.CommonSkillData;
 import org.academy.internal.common.skilldata.SkillData;
-import org.academy.internal.common.skilldata.CodecSkillData;
 import org.academy.internal.common.skilldata.UnknownSkillData;
-import org.academy.api.common.ability.data.SkillStateType;
 import org.slf4j.Logger;
 
 import java.lang.reflect.Type;

@@ -1,9 +1,10 @@
 package org.academy.api.common.entitycontrol;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
-import org.jspecify.annotations.Nullable;
 
 public sealed interface ControlDirective permits ControlDirective.TakeoverAi, ControlDirective.ForceTarget,
         ControlDirective.FreezeAi, ControlDirective.ImpressionAlliance, ControlDirective.MoveTo,

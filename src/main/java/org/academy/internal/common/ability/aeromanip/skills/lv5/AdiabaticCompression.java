@@ -1,11 +1,10 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
@@ -32,23 +31,24 @@ import org.academy.api.common.ability.AbilityLevel;
 import org.academy.api.common.ability.DevCondition;
 import org.academy.api.common.ability.Skill;
 import org.academy.api.common.damage.SkillDamageSource;
-import org.academy.api.server.ability.AreaEffectTargets;
 import org.academy.api.common.gson.TypeHandler;
 import org.academy.api.server.ability.AbilitySystemServer;
+import org.academy.api.server.ability.AreaEffectTargets;
 import org.academy.api.server.ability.ServerContext;
 import org.academy.api.server.vanilla.MinecraftServerContext;
 import org.academy.internal.common.ability.AbilityCategories;
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.accelerator.skills.lv5.BloodflowReverse;
 import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
+import org.academy.internal.common.ability.aeromanip.skills.lv4.VortexPull;
 import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
 import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
-import org.academy.internal.common.ability.aeromanip.skills.lv4.VortexPull;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.world.damagesource.DamageTypes;
 import org.academy.internal.server.ability.AeromanipResourceManager;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;
@@ -58,11 +58,7 @@ import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
 
 import java.lang.ref.WeakReference;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /** Maintained aimed compression field with exact movement suppression and unbounded damage stacks. */
 public final class AdiabaticCompression extends Skill {

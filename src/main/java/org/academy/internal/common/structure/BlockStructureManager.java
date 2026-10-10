@@ -5,37 +5,19 @@ import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.phys.Vec3;
-import org.academy.api.common.structure.BlockStructure;
-import org.academy.api.common.structure.BlockStructureCaptureOptions;
-import org.academy.api.common.structure.BlockStructureCaptureResult;
-import org.academy.api.common.structure.BlockStructureGridAlignment;
-import org.academy.api.common.structure.BlockStructurePlacementPolicy;
-import org.academy.api.common.structure.BlockStructureRestoreResult;
-import org.academy.api.common.structure.BlockStructureSelectionResult;
-import org.academy.api.common.structure.BlockStructureSettlementResult;
-import org.academy.api.common.structure.BlockStructureSettlementMode;
-import org.academy.api.common.structure.BlockStructureSnapshot;
+import org.academy.api.common.structure.*;
 import org.academy.internal.common.world.entity.structure.BlockStructureEntity;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Predicate;
 
-import static net.minecraft.world.level.block.Block.UPDATE_CLIENTS;
-import static net.minecraft.world.level.block.Block.UPDATE_KNOWN_SHAPE;
-import static net.minecraft.world.level.block.Block.UPDATE_SUPPRESS_DROPS;
+import static net.minecraft.world.level.block.Block.*;
 
 /** Server-authoritative capture and restoration transactions. */
 public final class BlockStructureManager {

@@ -5,7 +5,6 @@ import org.academy.api.client.gui.animation.ObjectAnimator
 import org.academy.api.client.gui.dsl.*
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.SizeMode
-import org.academy.api.client.gui.text.model.TextShapingOptions
 import org.academy.api.client.gui.widget.LinearLayoutWidget
 import org.academy.api.client.gui.widget.TextInputWidget
 import org.academy.api.client.gui.widget.TextWidget

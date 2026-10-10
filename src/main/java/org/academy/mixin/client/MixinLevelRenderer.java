@@ -17,7 +17,6 @@ import org.academy.api.client.render.vfx.VfxManager;
 import org.academy.api.client.renderer.RendererManager;
 import org.academy.internal.client.ability.aeromanip.FlowSenseClient;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
-import org.academy.internal.client.render.vfx.InterferenceFieldClient;
 import org.academy.internal.client.render.vfx.SpacialExcisionVfxClient;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;

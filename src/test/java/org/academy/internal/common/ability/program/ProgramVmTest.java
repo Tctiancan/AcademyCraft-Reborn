@@ -1,23 +1,17 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.compile.CompiledProgram;
-import org.academy.internal.common.ability.program.compile.ProgramCompiler;
-import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
-
-
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.program.compile.CompiledProgram;
+import org.academy.internal.common.ability.program.compile.ProgramCompiler;
+import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

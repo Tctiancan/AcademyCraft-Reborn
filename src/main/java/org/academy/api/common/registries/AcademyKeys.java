@@ -1,7 +1,7 @@
 package org.academy.api.common.registries;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.Skill;
 

@@ -1,7 +1,6 @@
 package org.academy.desktop.grapheditor.preview
 
 import com.google.gson.JsonParser
-import org.com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.RenderTarget
 import com.mojang.blaze3d.pipeline.TextureTarget
 import net.minecraft.client.Screenshot
@@ -19,13 +18,8 @@ import org.academy.api.client.render.vfxgraph.render.WorldTransform
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec
 import org.academy.api.client.render.vfxgraph.sim.VfxSystemSimulator
 import org.academy.desktop.grapheditor.viewport.EditorGlow
-import org.academy.desktop.platform.DesktopApplication
-import org.academy.desktop.platform.DesktopEnvironment
-import org.academy.desktop.platform.EditorApp
-import org.academy.desktop.platform.executePendingTasks
-import org.academy.desktop.platform.getColorTextureView
-import org.academy.desktop.platform.getDepthTextureView
-import org.academy.desktop.platform.textureTarget
+import org.academy.desktop.platform.*
+import org.com.mojang.blaze3d.GpuFormat
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.nio.file.Files

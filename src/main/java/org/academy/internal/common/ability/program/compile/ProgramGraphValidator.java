@@ -1,10 +1,8 @@
 package org.academy.internal.common.ability.program.compile;
 
-import org.academy.internal.common.ability.program.registry.ProgramNodeLookup;
-
-
 import com.mojang.serialization.JsonOps;
 import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.program.registry.ProgramNodeLookup;
 
 import java.util.*;
 

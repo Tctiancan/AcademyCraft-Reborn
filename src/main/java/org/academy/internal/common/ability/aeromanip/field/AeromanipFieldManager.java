@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.aeromanip.field;
 
-import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
-import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
-
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.neoforged.bus.api.SubscribeEvent;
@@ -14,6 +10,8 @@ import org.academy.AcademyCraft;
 import org.academy.api.common.ability.Skill;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.ServerContext;
+import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
+import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
 import org.academy.internal.common.sounds.SoundEvents;
 
 import java.util.Map;

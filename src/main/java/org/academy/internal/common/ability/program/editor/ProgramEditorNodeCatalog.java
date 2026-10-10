@@ -1,12 +1,5 @@
 package org.academy.internal.common.ability.program.editor;
 
-import org.academy.internal.common.ability.program.ProgramTriggers;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
-import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
-import org.academy.internal.common.ability.program.registry.ProgramNodeLookup;
-
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.mojang.serialization.JsonOps;
@@ -15,6 +8,11 @@ import org.academy.api.common.ability.program.ProgramNodeRole;
 import org.academy.api.common.ability.program.ProgramNodeSchema;
 import org.academy.api.common.ability.program.ProgramNodeType;
 import org.academy.api.common.ability.program.ProgramValueTypes;
+import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
+import org.academy.internal.common.ability.program.ProgramTriggers;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
+import org.academy.internal.common.ability.program.registry.ProgramNodeLookup;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;

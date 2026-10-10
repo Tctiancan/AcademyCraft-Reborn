@@ -1,9 +1,6 @@
 package org.academy.internal.common.ability.accelerator.skills.lv5.wing;
 
 import io.netty.buffer.ByteBuf;
-
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -17,6 +14,9 @@ import org.misaka.api.common.network.annotation.PacketTarget;
 import org.misaka.api.common.network.annotation.SubscribePacket;
 import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /** Server-selected pattern and fixed world targets, shared by the attacker and observers. */
 @PacketTarget(ThreadType.CLIENT)

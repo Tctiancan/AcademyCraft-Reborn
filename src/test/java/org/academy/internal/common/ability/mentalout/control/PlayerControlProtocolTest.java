@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import org.academy.internal.common.ability.mentalout.control.MentalIntrusionManager;
-import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
-
-
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.world.InteractionHand;

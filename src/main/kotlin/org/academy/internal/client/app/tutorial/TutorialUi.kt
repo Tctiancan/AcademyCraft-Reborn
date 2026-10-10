@@ -1,6 +1,5 @@
 package org.academy.internal.client.app.tutorial
 
-import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.world.level.ItemLike
 import org.academy.api.client.gui.drawable.ColorDrawable
 import org.academy.api.client.gui.drawable.StateListDrawable
@@ -11,6 +10,7 @@ import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
 import org.academy.api.client.gui.widget.*
+import org.academy.api.client.render.texture.FilterMode
 import org.academy.api.client.resources.R
 import org.academy.api.common.util.L10n
 import java.util.function.Consumer

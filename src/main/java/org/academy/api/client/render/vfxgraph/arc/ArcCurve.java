@@ -1,7 +1,8 @@
 package org.academy.api.client.render.vfxgraph.arc;
 
-import java.util.Arrays;
 import org.jspecify.annotations.Nullable;
+
+import java.util.Arrays;
 
 /**
  * 单条电弧（M22-Rev2）：控制点序列 + 每点宽度 + 分支层级 + 颜色 + 生命周期。

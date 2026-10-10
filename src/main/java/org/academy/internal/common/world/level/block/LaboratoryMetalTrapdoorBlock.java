@@ -12,7 +12,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockSetType;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
-import org.jspecify.annotations.Nullable;
 
 public final class LaboratoryMetalTrapdoorBlock extends TrapDoorBlock {
     public static final MapCodec<LaboratoryMetalTrapdoorBlock> CODEC =

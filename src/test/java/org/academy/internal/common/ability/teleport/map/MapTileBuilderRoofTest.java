@@ -1,15 +1,10 @@
 package org.academy.internal.common.ability.teleport.map;
 
-import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
-
-
 import org.junit.jupiter.api.Test;
 
 import java.util.function.IntPredicate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Roof handling, on the two pure functions that production code uses.

@@ -11,11 +11,7 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.academy.api.common.structure.BlockStructureCollision;
 import org.academy.api.common.structure.BlockStructureSnapshot;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.OptionalDouble;
+import java.util.*;
 import java.util.function.Consumer;
 
 /** Cached section-partitioned collision boxes for one immutable structure snapshot. */

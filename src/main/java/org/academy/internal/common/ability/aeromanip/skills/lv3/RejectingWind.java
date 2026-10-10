@@ -28,8 +28,8 @@ import org.academy.api.common.structure.BlockStructure;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.ServerContext;
 import org.academy.api.server.vanilla.MinecraftServerContext;
+import org.academy.internal.client.ability.aeromanip.AeromanipChargeHud;
 import org.academy.internal.common.ability.AbilityCategories;
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.aeromanip.charge.AeromanipChargeContext;
@@ -37,7 +37,7 @@ import org.academy.internal.common.ability.aeromanip.charge.AeromanipChargeTier;
 import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
 import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
 import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
-import org.academy.internal.client.ability.aeromanip.AeromanipChargeHud;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.sounds.SoundEvents;
@@ -49,11 +49,7 @@ import org.misaka.api.common.network.annotation.SubscribePacket;
 import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /** Radial compressed-air rejection with escalating lift and low-drag control. */
 public final class RejectingWind extends Skill {

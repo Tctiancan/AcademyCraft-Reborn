@@ -1,6 +1,5 @@
 package org.academy.desktop.platform
 
-import org.com.mojang.blaze3d.GpuFormat
 import com.mojang.blaze3d.pipeline.TextureTarget
 import com.mojang.blaze3d.platform.Window
 import com.mojang.blaze3d.platform.WindowEventHandler
@@ -9,6 +8,7 @@ import org.academy.api.client.gui.frame.UiFrame
 import org.academy.api.client.gui.render.UiContext
 import org.academy.api.client.gui.widget.WidgetContainer
 import org.academy.internal.client.gui.imgui.ImGuiBackend
+import org.com.mojang.blaze3d.GpuFormat
 import org.lwjgl.glfw.GLFW
 
 class DesktopUiHost(

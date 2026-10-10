@@ -1,11 +1,11 @@
 package org.academy.internal.common.ability.mentalout.control;
 
 import com.mojang.serialization.Codec;
-import net.minecraft.nbt.NbtOps;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.item.ItemStack;
@@ -14,8 +14,8 @@ import org.academy.AcademyCraft;
 import org.academy.api.common.entitycontrol.BlockWorkRegion;
 import org.academy.api.common.entitycontrol.WorkSettings;
 
-import java.util.*;
 import java.nio.charset.StandardCharsets;
+import java.util.*;
 
 /** Durable orders; navigation handles and target claims are reconstructed after loading. */
 public final class WorkOrderData extends SavedData {

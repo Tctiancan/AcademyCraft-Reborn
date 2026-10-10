@@ -1,9 +1,6 @@
 package org.academy.internal.client.gui.screen
 
 import com.mojang.blaze3d.platform.InputConstants
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.client.Minecraft
 import net.minecraft.locale.Language
 import net.minecraft.network.chat.Component
@@ -22,14 +19,16 @@ import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.screen.UiScreen
 import org.academy.api.client.gui.util.wirelessPanel
 import org.academy.api.client.gui.widget.*
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.resources.R
 import org.academy.api.client.resources.R.textures.gui.developer.*
 import org.academy.api.common.ability.*
 import org.academy.api.common.util.L10n
 import org.academy.api.common.wireless.GetCurrentNodePacket
 import org.academy.internal.common.ability.development.AbilityDevelopmentAccess
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy
 import org.academy.internal.common.ability.level0.Level0
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy
 import org.academy.internal.common.world.item.AbilityControlTabletItem
 import org.academy.internal.common.world.item.Items
 import org.academy.internal.common.world.level.block.entity.AbilityDeveloperBlockEntity

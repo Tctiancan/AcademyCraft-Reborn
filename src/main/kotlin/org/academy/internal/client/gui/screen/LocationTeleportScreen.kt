@@ -12,7 +12,6 @@ import org.academy.internal.client.gui.layout.buildLocationTeleportLayout
 import org.academy.internal.common.ability.teleport.skills.lv3.LocationTeleport
 import org.academy.internal.common.skilldata.LocationTeleportData.Mark
 import org.misaka.MisakaNetworkClient
-import java.util.ArrayList
 import kotlin.math.roundToInt
 
 class LocationTeleportScreen : UiScreen(Component.translatable("skill.academy.location_teleport")) {

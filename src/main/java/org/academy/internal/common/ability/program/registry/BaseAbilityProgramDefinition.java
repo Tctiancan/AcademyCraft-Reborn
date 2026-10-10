@@ -1,13 +1,11 @@
 package org.academy.internal.common.ability.program.registry;
 
-import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
-
-
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
 
 import java.util.List;
 import java.util.Map;

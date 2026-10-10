@@ -24,20 +24,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.Level;
-import org.academy.api.server.time.TemporalApi;
-import org.academy.api.server.time.TemporalChannel;
-import org.academy.api.server.time.TemporalField;
-import org.academy.api.server.time.TemporalPauseSource;
-import org.academy.api.server.time.TemporalScale;
-import org.academy.api.server.time.TemporalScope;
+import org.academy.api.server.time.*;
 import org.academy.internal.server.time.TemporalRuntime;
 import org.academy.internal.server.time.TemporalTickDiagnostics;
 
-import java.util.EnumSet;
-import java.util.LinkedHashSet;
-import java.util.Locale;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 

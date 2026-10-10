@@ -1,9 +1,5 @@
 ﻿package org.academy.api.client.gui.widget
 
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FastColor
 import org.academy.api.client.gui.command.DrawCommand
@@ -12,6 +8,9 @@ import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.texture.GpuTextureViewSource
 import org.academy.api.client.gui.texture.IdentifierTextureSource
 import org.academy.api.client.gui.texture.TextureSource
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 open class ImageWidget : AbstractWidget {
     var textureSource: TextureSource? = null

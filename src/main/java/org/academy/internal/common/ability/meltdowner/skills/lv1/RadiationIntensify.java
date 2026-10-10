@@ -16,9 +16,9 @@ import org.academy.api.common.ability.DevCondition;
 import org.academy.api.common.ability.Skill;
 import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.meltdowner.targeting.MeltdownerTargeting;
 import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 import org.academy.internal.common.ability.meltdowner.beam.MeltdownerBeamDamage;
+import org.academy.internal.common.ability.meltdowner.targeting.MeltdownerTargeting;
 
 import java.util.List;
 

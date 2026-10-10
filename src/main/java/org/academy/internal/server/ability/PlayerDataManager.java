@@ -1,6 +1,5 @@
 package org.academy.internal.server.ability;
 
-import net.minecraft.core.Holder;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraft;

@@ -2,7 +2,6 @@ package org.academy.desktop.grapheditor.preview;
 
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.Screenshot;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.GameType;
@@ -20,9 +19,9 @@ import org.academy.api.server.ability.DarkmatterGraphEffects;
 import org.academy.internal.client.render.vfx.InterferenceFieldClient;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.darkmatter.skills.lv3.DarkmatterRadiation;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Reproducible GPU and gameplay checks in the existing isolated VFX test world. */

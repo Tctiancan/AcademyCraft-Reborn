@@ -1,11 +1,10 @@
 package org.academy.api.client.gui.widget
 
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.Canvas
+import org.academy.api.client.render.texture.FilterMode
 
 /**
  * 九宫格控件喵. 把纹理按四边分割为 9 块: 四角原尺寸, 四边与中心拉伸,

@@ -4,7 +4,8 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 import org.joml.Vector4f;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class RtsOrbitGeometryTest {
     @Test void pivotProjectsToViewportCenterThroughRotationAndZoom() {

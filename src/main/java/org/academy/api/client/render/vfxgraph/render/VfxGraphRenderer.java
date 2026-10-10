@@ -1,16 +1,15 @@
 package org.academy.api.client.render.vfxgraph.render;
 
-import java.nio.ByteBuffer;
-import java.util.List;
-import java.util.function.Function;
-
 import net.minecraft.resources.ResourceLocation;
-
 import org.academy.api.client.render.vfxgraph.arc.ArcBuffer;
 import org.academy.api.client.render.vfxgraph.arc.CurveToMeshBuilder;
 import org.academy.api.client.render.vfxgraph.sim.ParticleBuffer;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
+
+import java.nio.ByteBuffer;
+import java.util.List;
+import java.util.function.Function;
 
 /**
  * C-stun: 26.2 GPU 延迟渲染管线实现（{@code GpuDevice}/{@code GpuTextureView}/{@code RenderPass} 等）

@@ -1,6 +1,5 @@
 ﻿package org.academy.api.client.gui.widget
 
-import org.academy.api.client.input.PreeditEvent
 import net.minecraft.util.FastColor
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.drawable.ColorDrawable
@@ -11,15 +10,16 @@ import org.academy.api.client.gui.event.KeyEvent
 import org.academy.api.client.gui.event.MouseEvent
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.render.Canvas
-import org.academy.api.client.gui.text.model.TextBlob
 import org.academy.api.client.gui.text.edit.TextEditCommand
 import org.academy.api.client.gui.text.edit.TextEditingState
 import org.academy.api.client.gui.text.edit.TextInputKeymap
-import org.academy.api.client.gui.text.shape.TextMeasurer
+import org.academy.api.client.gui.text.model.TextBlob
+import org.academy.api.client.gui.text.model.TextShapingOptions
 import org.academy.api.client.gui.text.record.TextPainter
 import org.academy.api.client.gui.text.shape.CaretGeometry
 import org.academy.api.client.gui.text.shape.ShapingCache
-import org.academy.api.client.gui.text.model.TextShapingOptions
+import org.academy.api.client.gui.text.shape.TextMeasurer
+import org.academy.api.client.input.PreeditEvent
 import java.util.function.Consumer
 import java.util.function.Predicate
 import kotlin.math.max

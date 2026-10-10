@@ -1,10 +1,10 @@
 package org.academy.api.client.gui.widget
 
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.ImageCircleDrawCommand
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 class CircleImageWidget(texture: ResourceLocation) : ImageWidget(texture) {
     override fun generateDrawCommand(

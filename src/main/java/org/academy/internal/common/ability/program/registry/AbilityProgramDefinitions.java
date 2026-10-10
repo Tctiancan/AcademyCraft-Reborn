@@ -1,8 +1,5 @@
 package org.academy.internal.common.ability.program.registry;
 
-import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
-
-
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.ProgramNodeExtension;
 import org.academy.api.common.ability.program.ProgramNodeRole;
@@ -13,6 +10,7 @@ import org.academy.internal.common.ability.darkmatter.program.DarkmatterProgramD
 import org.academy.internal.common.ability.electromaster.program.ElectromasterProgramDefinition;
 import org.academy.internal.common.ability.meltdowner.program.MeltdownerProgramDefinition;
 import org.academy.internal.common.ability.mentalout.precision.MentaloutProgramDefinition;
+import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
 import org.academy.internal.common.ability.teleport.program.TeleportProgramDefinition;
 import org.jspecify.annotations.Nullable;
 

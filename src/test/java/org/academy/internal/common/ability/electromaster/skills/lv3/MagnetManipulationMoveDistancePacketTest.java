@@ -3,7 +3,7 @@ package org.academy.internal.common.ability.electromaster.skills.lv3;
 import io.netty.buffer.Unpooled;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class MagnetManipulationMoveDistancePacketTest {
     @Test

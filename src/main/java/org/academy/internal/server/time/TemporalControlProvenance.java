@@ -1,12 +1,11 @@
 package org.academy.internal.server.time;
 
-import java.util.Map;
-import java.util.HashMap;
-import java.lang.invoke.MethodType;
+import org.academy.AcademyCraft;
 import org.spongepowered.asm.mixin.transformer.meta.MixinMerged;
 
-import org.academy.AcademyCraft;
-
+import java.lang.invoke.MethodType;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 

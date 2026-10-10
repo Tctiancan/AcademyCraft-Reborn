@@ -1,14 +1,12 @@
 package org.academy.internal.common.ability.program.compile;
 
-import org.academy.internal.common.ability.program.editor.PrecisionProgramImporter;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-
-
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramDiagnostic;
 import org.academy.api.common.ability.program.ProgramDiagnosticCode;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
+import org.academy.internal.common.ability.program.editor.PrecisionProgramImporter;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
 
 import java.util.List;
 import java.util.Set;

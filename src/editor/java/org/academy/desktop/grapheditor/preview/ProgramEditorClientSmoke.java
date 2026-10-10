@@ -12,26 +12,22 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.i18n.FMLTranslations;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.gui.LoadingErrorScreen;
+import org.academy.api.client.gui.screen.ScreenDispatcher;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
-import org.academy.api.client.gui.screen.ScreenDispatcher;
 import org.academy.internal.client.ability.mentalout.ModularProgramEditorSession;
 import org.academy.internal.client.ability.mentalout.ModularProgramScreen;
 import org.academy.internal.client.ability.program.ProgramStarterTemplates;
 import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
 import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
 import org.academy.internal.server.world.level.storage.Player;
 import org.academy.internal.server.world.level.storage.WorldData;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /** Opt-in rendering probe for the real program editor; excluded from the shipped mod. */
 @EventBusSubscriber(modid = "academy", value = Dist.CLIENT)

@@ -1,8 +1,5 @@
 package org.academy.internal.common.ability.darkmatter.targeting;
 
-import org.academy.internal.common.ability.darkmatter.Darkmatter;
-
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,8 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.api.server.ability.HostileTargets;
 import org.academy.api.server.team.TeamRelations;
-import org.academy.internal.common.world.entity.ability.DarkmatterBeetle;
+import org.academy.internal.common.ability.darkmatter.Darkmatter;
 import org.academy.internal.common.world.damagesource.PvpSetting;
+import org.academy.internal.common.world.entity.ability.DarkmatterBeetle;
 
 import java.util.UUID;
 

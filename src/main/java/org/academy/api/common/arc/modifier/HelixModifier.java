@@ -1,7 +1,5 @@
 package org.academy.api.common.arc.modifier;
 
-import java.util.Objects;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,6 +14,7 @@ import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record HelixModifier(float radius, float turns, float phaseOffset) implements PathModifier {
     public static final StreamCodec<ByteBuf, HelixModifier> CODEC = StreamCodec.composite(

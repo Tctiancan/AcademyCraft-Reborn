@@ -1,16 +1,10 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
-import org.academy.internal.common.ability.teleport.map.ChunkMapViewService;
-import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
-import org.academy.internal.common.ability.teleport.targeting.TeleportSafety;
-import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
-
-
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.protocol.game.ClientboundLevelChunkWithLightPacket;
 import net.minecraft.network.protocol.game.ClientboundSetChunkCacheCenterPacket;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -20,16 +14,14 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.ability.Skills;
+import org.academy.internal.common.ability.teleport.map.ChunkMapViewService;
+import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
 import org.academy.internal.common.ability.teleport.skills.lv5.ChunkLeap;
+import org.academy.internal.common.ability.teleport.targeting.TeleportSafety;
+import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
 import org.misaka.MisakaNetworkServer;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
 import java.util.concurrent.ConcurrentHashMap;

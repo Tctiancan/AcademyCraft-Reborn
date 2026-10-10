@@ -1,6 +1,5 @@
 package org.academy.internal.common.world.damagesource;
 
-import org.academy.api.common.damage.DamageComposition;
 import net.minecraft.advancements.CriteriaTriggers;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
@@ -12,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.neoforged.neoforge.common.damagesource.DamageContainer;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.Skill;
+import org.academy.api.common.damage.DamageComposition;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.internal.common.ability.darkmatter.targeting.DarkmatterTargeting;
 import org.academy.internal.common.attribute.PlayerAttributeRuntime;

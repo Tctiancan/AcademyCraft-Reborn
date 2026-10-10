@@ -8,7 +8,7 @@ import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramBook;
 import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
-import org.academy.internal.common.ability.program.*;
+import org.academy.internal.common.ability.program.AbilityProgramManager;
 import org.academy.internal.common.ability.program.compile.ProgramBookCodec;
 import org.academy.internal.common.ability.program.editor.PrecisionProgramExporter;
 import org.academy.internal.common.ability.program.migration.PrecisionProgramAliases;

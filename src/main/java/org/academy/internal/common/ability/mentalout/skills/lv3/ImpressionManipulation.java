@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.mentalout.skills.lv3;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -28,6 +27,7 @@ import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGua
 import org.academy.internal.common.ability.mentalout.skills.lv1.MentalIntervention;
 import org.academy.internal.common.ability.mentalout.skills.lv1.TargetMisidentification;
 import org.academy.internal.common.network.PacketTypes;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

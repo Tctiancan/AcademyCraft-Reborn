@@ -1,9 +1,5 @@
 package org.academy.internal.client.render.vfx;
 
-import java.util.ArrayList;
-import java.util.IdentityHashMap;
-import java.util.Map;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -15,15 +11,19 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
 import org.academy.AcademyCraft;
-import org.academy.api.common.vfx.PlasmaChargeVisuals;
 import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
+import org.academy.api.common.vfx.PlasmaChargeVisuals;
 import org.academy.internal.common.ability.accelerator.skills.lv5.PlasmaGeneration;
 import org.academy.internal.common.world.entity.skill.Plasma;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
+
+import java.util.ArrayList;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class PlasmaVfxClient {

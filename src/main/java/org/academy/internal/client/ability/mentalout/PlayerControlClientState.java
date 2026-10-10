@@ -6,15 +6,15 @@ import net.minecraft.client.Options;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
-import org.academy.api.common.ability.Input;
 import net.minecraft.world.phys.Vec2;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.input.InputSystem;
+import org.academy.api.common.ability.Input;
 import org.academy.api.common.entitycontrol.PlayerControlFrame;
 import org.academy.api.common.entitycontrol.PlayerMovementMode;
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.jspecify.annotations.Nullable;
 import org.misaka.MisakaNetworkClient;
 

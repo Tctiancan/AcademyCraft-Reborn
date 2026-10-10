@@ -2,11 +2,9 @@ package org.academy.internal.server.vfx;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.channel.embedded.EmbeddedChannel;
-import java.util.UUID;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
@@ -21,6 +19,8 @@ import org.academy.internal.common.world.entity.EntityTypes;
 import org.academy.internal.common.world.entity.skill.HighSpeedElectronBeam;
 import org.academy.internal.common.world.entity.skill.KineticShockwave;
 import org.academy.internal.common.world.entity.skill.Plasma;
+
+import java.util.UUID;
 
 /** Exercises actual entity joins, packet dispatch and retirement on a dedicated game-test server. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)

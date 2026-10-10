@@ -1,12 +1,13 @@
 package org.academy.internal.common.ability.aeromanip.vfx;
 
-import java.util.Map;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.network.SpawnVfxGraphPacket;
+
+import java.util.Map;
 
 public final class AeromanipVfx {
     private static final Vec3 UP = new Vec3(0, 1, 0);

@@ -3,13 +3,11 @@ package org.academy.internal.client.gui.screen
 import net.minecraft.client.Minecraft
 import net.minecraft.network.chat.Component
 import net.minecraft.util.Mth
-import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.drawable.ColorDrawable
 import org.academy.api.client.gui.dsl.*
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
-import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.screen.UiScreen
 import org.academy.api.client.gui.widget.FrameLayoutWidget
 import org.academy.api.client.gui.widget.LinearLayoutWidget

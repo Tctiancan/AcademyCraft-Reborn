@@ -3,7 +3,6 @@
 import com.google.gson.Gson
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.resources.ResourceLocation
-import org.lwjgl.glfw.GLFW
 import org.academy.api.client.ability.AbilitySystemClient
 import org.academy.api.client.input.InputSystem
 import org.academy.api.common.ability.AbilityCategory
@@ -11,7 +10,8 @@ import org.academy.api.common.ability.AbilityResourceSpec
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
-import java.util.Optional
+import org.lwjgl.glfw.GLFW
+import java.util.*
 
 class AbilityInfoHudTest {
     @Test

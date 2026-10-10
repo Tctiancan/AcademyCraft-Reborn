@@ -12,10 +12,10 @@ import org.academy.AcademyCraft;
 import org.academy.api.client.render.vfx.VfxManager;
 import org.academy.api.client.render.vfx.VfxPhase;
 import org.academy.api.client.render.vfx.VfxRegistry;
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeVisualPacket;
 import org.academy.internal.common.ability.electromaster.skills.lv5.LightningStorm;
 import org.academy.internal.common.ability.electromaster.skills.lv5.Thunderclap;
+import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
+import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeVisualPacket;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class SkyStrikeVfxClient {

@@ -3,6 +3,7 @@ package org.academy.internal.common.ability.aeromanip.skills.lv1;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.core.BlockPos;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -10,6 +11,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -25,8 +27,6 @@ import org.academy.api.client.input.InputSystem;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.ability.AbilityLevel;
 import org.academy.api.common.ability.AirMobility;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.network.chat.Component;
 import org.academy.api.common.ability.DevCondition;
 import org.academy.api.common.ability.Skill;
 import org.academy.api.common.gson.TypeHandler;
@@ -34,6 +34,7 @@ import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.ServerContext;
 import org.academy.api.server.team.TeamRelations;
 import org.academy.api.server.vanilla.MinecraftServerContext;
+import org.academy.internal.client.ability.aeromanip.AeromanipChargeHud;
 import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.ability.Skills;
@@ -41,7 +42,6 @@ import org.academy.internal.common.ability.aeromanip.charge.AeromanipChargeConte
 import org.academy.internal.common.ability.aeromanip.charge.AeromanipChargeTier;
 import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
 import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
-import org.academy.internal.client.ability.aeromanip.AeromanipChargeHud;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.sounds.SoundEvents;
 import org.academy.internal.common.world.level.block.Blocks;
@@ -56,7 +56,6 @@ import org.misaka.api.common.network.packet.PacketType;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.WeakHashMap;
 
 /** Air-mobility stance, temporary hover, and temporary compressed-air foothold. */

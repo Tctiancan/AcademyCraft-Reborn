@@ -23,7 +23,6 @@ import org.misaka.MisakaNetworkClient;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in real client/server network and HUD regression; never packaged in the mod. */

@@ -1,11 +1,9 @@
 package org.academy.internal.common.ability.development;
 
-import org.academy.internal.common.ability.AbilityCategories;
-
-
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.*;
 import org.academy.api.common.registries.Registries;
+import org.academy.internal.common.ability.AbilityCategories;
 import org.slf4j.Logger;
 
 import java.util.*;

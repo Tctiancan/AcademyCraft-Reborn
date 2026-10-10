@@ -1,8 +1,5 @@
 package org.academy.internal.client.render.vfx;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -19,6 +16,10 @@ import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.joml.Vector3f;
 import org.slf4j.Logger;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.UUID;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class PlatinumExecutionVfxClient {

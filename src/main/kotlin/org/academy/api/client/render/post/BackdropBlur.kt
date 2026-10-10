@@ -2,7 +2,6 @@ package org.academy.api.client.render.post
 
 import org.academy.api.client.render.texture.GpuTextureView
 import org.joml.Vector4f
-import java.util.ArrayList
 import kotlin.math.floor
 import kotlin.math.log2
 import kotlin.math.max

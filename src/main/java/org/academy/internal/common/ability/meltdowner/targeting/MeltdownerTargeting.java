@@ -1,8 +1,5 @@
 package org.academy.internal.common.ability.meltdowner.targeting;
 
-import org.academy.internal.common.ability.meltdowner.Meltdowner;
-
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;

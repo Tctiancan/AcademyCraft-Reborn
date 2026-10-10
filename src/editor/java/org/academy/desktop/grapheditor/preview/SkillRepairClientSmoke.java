@@ -15,7 +15,6 @@ import org.academy.internal.common.ability.Skills;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in visual regression in a copied world; excluded from mod artifacts. */

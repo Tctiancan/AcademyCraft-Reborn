@@ -8,13 +8,12 @@ import net.neoforged.fml.common.EventBusSubscriber
 import net.neoforged.neoforge.client.event.RenderGuiEvent
 import org.academy.AcademyCraft
 import org.academy.AcademyCraftClient
+import org.academy.api.client.gui.imgui.ImGuiUIDebugger
+import org.academy.api.client.gui.widget.WidgetContainer
 import org.academy.api.client.hud.ability.AbilityInfoHud
 import org.academy.api.client.hud.ability.ControlledTargetsHud
 import org.academy.api.client.hud.ability.ToggleStatusHud
 import org.academy.api.client.hud.terminal.TerminalHud
-import org.academy.api.client.gui.imgui.ImGuiUIDebugger
-import org.academy.api.client.gui.widget.WidgetContainer
-import org.academy.api.client.render.Render
 import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.vanilla.MainLoopEvent
 import org.academy.api.common.profiler.AcademyProfiler

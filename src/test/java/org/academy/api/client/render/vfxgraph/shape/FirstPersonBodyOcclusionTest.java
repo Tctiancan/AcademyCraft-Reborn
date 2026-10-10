@@ -2,7 +2,9 @@ package org.academy.api.client.render.vfxgraph.shape;
 
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class FirstPersonBodyOcclusionTest {
     @Test

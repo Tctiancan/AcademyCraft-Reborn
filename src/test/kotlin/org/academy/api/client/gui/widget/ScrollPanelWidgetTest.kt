@@ -1,17 +1,6 @@
 package org.academy.api.client.gui.widget
 
-import org.academy.api.client.gui.dsl.column
-import org.academy.api.client.gui.dsl.fill
-import org.academy.api.client.gui.dsl.height
-import org.academy.api.client.gui.dsl.heightMode
-import org.academy.api.client.gui.dsl.lp
-import org.academy.api.client.gui.dsl.matchParent
-import org.academy.api.client.gui.dsl.row
-import org.academy.api.client.gui.dsl.scrollPanel
-import org.academy.api.client.gui.dsl.standaloneColumn
-import org.academy.api.client.gui.dsl.weight
-import org.academy.api.client.gui.dsl.width
-import org.academy.api.client.gui.dsl.widthMode
+import org.academy.api.client.gui.dsl.*
 import org.academy.api.client.gui.event.MouseEvent
 import org.academy.api.client.gui.event.ScrollEvent
 import org.academy.api.client.gui.layout.MeasureSpec

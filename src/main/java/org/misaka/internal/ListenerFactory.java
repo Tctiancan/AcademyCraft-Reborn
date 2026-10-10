@@ -1,13 +1,15 @@
 package org.misaka.internal;
 
-import org.misaka.api.common.network.listener.PacketHandler;
+import org.jspecify.annotations.Nullable;
 import org.misaka.api.common.network.future.invoker.FutureHandler;
-import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.future.packet.RequestPacket;
 import org.misaka.api.common.network.future.packet.ResponsePacket;
-import org.jspecify.annotations.Nullable;
+import org.misaka.api.common.network.listener.PacketHandler;
+import org.misaka.api.common.network.packet.Packet;
 
-import java.lang.invoke.*;
+import java.lang.invoke.LambdaMetafactory;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 

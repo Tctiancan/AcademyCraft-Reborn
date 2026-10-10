@@ -1,6 +1,5 @@
 package org.academy.api.client.gui.text.device
 
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.gui.text.font.FontRepository
 import org.academy.api.client.gui.text.glyph.RasterPathPolicy
 import org.academy.api.client.gui.text.glyph.RasterSpec
@@ -10,6 +9,7 @@ import org.academy.api.client.gui.text.glyph.msdf.MsdfGlyphCache
 import org.academy.api.client.gui.text.model.GlyphKind
 import org.academy.api.client.gui.text.model.TextBlob
 import org.academy.api.client.gui.text.model.TextLine
+import org.academy.api.client.render.texture.GpuTextureView
 import kotlin.math.roundToLong
 
 object GlyphExpander {

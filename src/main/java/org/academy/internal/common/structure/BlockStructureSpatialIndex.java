@@ -3,14 +3,7 @@ package org.academy.internal.common.structure;
 import net.minecraft.core.SectionPos;
 import net.minecraft.world.phys.AABB;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Section-spanning broad-phase index for unusually large structure entities. */
 final class BlockStructureSpatialIndex<T> {

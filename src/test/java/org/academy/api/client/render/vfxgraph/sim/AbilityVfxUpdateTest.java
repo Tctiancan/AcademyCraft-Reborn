@@ -3,9 +3,9 @@ package org.academy.api.client.render.vfxgraph.sim;
 import com.google.gson.JsonParser;
 import org.academy.api.client.render.graph.registry.SimpleNodeRegistry;
 import org.academy.api.client.render.graph.type.Value;
+import org.academy.api.client.render.vfxgraph.nodes.CloudVortexEmitter;
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlockRegistry;
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlocks;
-import org.academy.api.client.render.vfxgraph.nodes.CloudVortexEmitter;
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec;
 import org.junit.jupiter.api.Test;
 

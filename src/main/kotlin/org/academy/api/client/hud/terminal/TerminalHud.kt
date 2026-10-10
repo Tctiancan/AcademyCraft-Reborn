@@ -3,16 +3,8 @@ package org.academy.api.client.hud.terminal
 import com.mojang.blaze3d.platform.InputConstants
 import com.mojang.blaze3d.platform.Window
 import com.mojang.blaze3d.vertex.PoseStack
-import org.academy.api.client.gui.command.DrawCommand
-import org.academy.api.client.gui.render.VertexWriter
-import org.academy.api.client.render.texture.GpuTextureView
-import org.academy.api.client.render.DynamicUniform
-import org.academy.api.client.render.Std140Builder
-import org.academy.api.client.render.Std140SizeCalculator
 import net.minecraft.client.Minecraft
 import net.minecraft.util.Mth
-import org.academy.api.client.input.CharacterEvent
-import org.academy.api.client.input.PreeditEvent
 import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ScreenEvent
 import net.neoforged.neoforge.common.NeoForge
@@ -22,6 +14,7 @@ import org.academy.api.client.app.App
 import org.academy.api.client.gui.animation.*
 import org.academy.api.client.gui.animation.ObjectAnimator.Companion.ofFloat
 import org.academy.api.client.gui.animation.ValueAnimator.Companion.ofFloat
+import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.LocalBounds
 import org.academy.api.client.gui.event.*
 import org.academy.api.client.gui.event.KeyEvent
@@ -34,31 +27,29 @@ import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
 import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.render.UiContext
+import org.academy.api.client.gui.render.VertexWriter
 import org.academy.api.client.gui.text.model.Ellipsize
 import org.academy.api.client.gui.widget.*
 import org.academy.api.client.input.*
+import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Render
+import org.academy.api.client.render.Std140Builder
+import org.academy.api.client.render.Std140SizeCalculator
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.resources.R
 import org.academy.api.client.thread.MainThread
 import org.academy.api.client.util.ClientUtil
-import org.academy.api.common.util.MathUtil
 import org.joml.Matrix4f
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.joml.Vector4f
 import org.lwjgl.glfw.GLFW
 import java.nio.ByteBuffer
-import java.util.*
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
 import java.util.function.Consumer
 import kotlin.concurrent.Volatile
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.roundToInt
-import kotlin.math.sign
-import kotlin.math.sin
-import kotlin.math.tan
+import kotlin.math.*
 
 class TerminalHud private constructor() {
     private var context: Context = Context()

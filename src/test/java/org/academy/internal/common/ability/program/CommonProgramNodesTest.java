@@ -1,37 +1,15 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.compile.ProgramCompiler;
-import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-import org.academy.internal.common.ability.program.CommonProgramExecutors;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
-
-
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
-import org.academy.api.common.ability.program.ProgramBlockPosition;
-import org.academy.api.common.ability.program.ProgramCompileContext;
-import org.academy.api.common.ability.program.ProgramDirection;
-import org.academy.api.common.ability.program.ProgramEntityPositionAnchor;
-import org.academy.api.common.ability.program.ProgramGraph;
-import org.academy.api.common.ability.program.ProgramLimits;
-import org.academy.api.common.ability.program.ProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramValueTypes;
-import org.academy.api.common.ability.program.ProgramVector;
-import org.academy.api.common.ability.program.ProgramWorldPosition;
+import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.program.compile.ProgramCompiler;
+import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
+import org.academy.internal.common.ability.program.registry.*;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 

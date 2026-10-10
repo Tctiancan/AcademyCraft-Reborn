@@ -1,8 +1,8 @@
 ﻿package org.academy.desktop.platform
 
+import net.minecraft.resources.ResourceLocation
 import org.com.mojang.blaze3d.textures.GpuTexture
 import org.com.mojang.blaze3d.textures.GpuTextureView
-import net.minecraft.resources.ResourceLocation
 import java.io.InputStream
 import java.util.concurrent.ConcurrentHashMap
 

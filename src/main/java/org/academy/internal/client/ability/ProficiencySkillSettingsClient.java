@@ -4,9 +4,9 @@ import net.minecraft.client.Minecraft;
 import org.academy.api.client.ability.AbilitySystemClient;
 import org.academy.api.client.config.SkillSettingsRegistry;
 import org.academy.api.common.ability.Skill;
+import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.proficiency.ProficiencySkillSettings;
-import org.academy.internal.common.ability.Skills;
 import org.misaka.MisakaNetworkClient;
 
 import java.util.List;

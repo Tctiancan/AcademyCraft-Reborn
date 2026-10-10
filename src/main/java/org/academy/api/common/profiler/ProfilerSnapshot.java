@@ -1,7 +1,8 @@
 package org.academy.api.common.profiler;
 
-import java.util.Map;
 import org.jspecify.annotations.Nullable;
+
+import java.util.Map;
 
 public class ProfilerSnapshot {
     private final Map<String, ZoneSnapshot> zones;

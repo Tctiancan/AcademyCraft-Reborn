@@ -6,13 +6,7 @@ import net.minecraft.world.entity.LivingEntity;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
 
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 /** Per-instance immunity sources supplement data-pack entity-type immunity tags. Server thread only. */
 public final class MentalImmunity {

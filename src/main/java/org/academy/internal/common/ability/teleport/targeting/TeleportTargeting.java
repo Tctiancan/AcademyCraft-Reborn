@@ -1,20 +1,17 @@
 package org.academy.internal.common.ability.teleport.targeting;
 
-import org.academy.internal.common.ability.teleport.Teleport;
-
-
 import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Pose;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.util.ViewTargetScanner;
-import org.jspecify.annotations.Nullable;
 import org.academy.internal.common.world.damagesource.PvpSetting;
+import org.jspecify.annotations.Nullable;
 
 /**
  * Shared crosshair targeting for Teleport skills.

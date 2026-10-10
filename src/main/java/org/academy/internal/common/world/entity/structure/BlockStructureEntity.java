@@ -1,9 +1,9 @@
 package org.academy.internal.common.world.entity.structure;
 
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.syncher.EntityDataAccessor;
 import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -16,32 +16,14 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import org.academy.api.common.structure.BlockStructure;
-import org.academy.api.common.structure.BlockStructureCollision;
-import org.academy.api.common.structure.BlockStructureGridAlignment;
-import org.academy.api.common.structure.BlockStructureImpact;
-import org.academy.api.common.structure.BlockStructurePlacementPolicy;
-import org.academy.api.common.structure.BlockStructureRestoreResult;
-import org.academy.api.common.structure.BlockStructureSettlementResult;
-import org.academy.api.common.structure.BlockStructureSnapshot;
-import org.academy.api.common.structure.BlockStructureKinetics;
+import org.academy.api.common.structure.*;
 import org.academy.api.server.team.TeamRelations;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
-import org.academy.internal.common.structure.BlockStructureCollisionGeometry;
-import org.academy.internal.common.structure.BlockStructureCollisionRuntime;
-import org.academy.internal.common.structure.BlockStructureKineticRuntime;
-import org.academy.internal.common.structure.BlockStructureManager;
-import org.academy.internal.common.structure.BlockStructureSettlementMotion;
+import org.academy.internal.common.structure.*;
 import org.academy.internal.common.world.damagesource.PvpSetting;
 import org.academy.internal.common.world.entity.EntityTypes;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 /** Server-authoritative entity representation of a captured block structure. */

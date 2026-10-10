@@ -7,11 +7,7 @@ import com.google.gson.annotations.SerializedName;
 import org.academy.api.client.input.InputSystem;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.Map;
+import java.util.*;
 
 public abstract class KeyBindingConfig {
     private static final Gson GSON = new Gson();

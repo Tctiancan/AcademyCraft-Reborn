@@ -5,9 +5,9 @@ import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
 import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.UniformPayload
-import java.nio.ByteBuffer
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.nio.ByteBuffer
 
 class BatchProcessorCullTest {
     private val uploader = object : BatchProcessor.UboUploader {

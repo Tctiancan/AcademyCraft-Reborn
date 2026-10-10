@@ -1,27 +1,20 @@
 package org.academy.internal.common.ability.meltdowner.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.MapCodec;
 import io.netty.channel.embedded.EmbeddedChannel;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.*;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.CommonListenerCookie;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.level.GameType;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.AbilityCategories;
@@ -30,7 +23,6 @@ import org.academy.internal.common.ability.meltdowner.skills.lv5.Disintegrate;
 import org.academy.internal.common.world.damagesource.DamageTypes;
 import org.academy.internal.common.world.entity.skill.HighSpeedElectronBeam;
 
-import java.util.List;
 import java.util.UUID;
 
 /** Verify the actual projectile pipeline, not only the skill's formula helper. */

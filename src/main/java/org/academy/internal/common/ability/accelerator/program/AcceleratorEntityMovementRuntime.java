@@ -11,11 +11,7 @@ import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.academy.AcademyCraft;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Drives vector-program entity displacement through vanilla velocity and collision handling.

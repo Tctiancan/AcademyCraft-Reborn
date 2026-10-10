@@ -3,7 +3,6 @@ package org.academy.internal.common.ability.mentalout.control;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.Mob;
-import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 
 import java.util.UUID;
 

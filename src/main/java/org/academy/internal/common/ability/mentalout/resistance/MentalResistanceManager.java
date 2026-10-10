@@ -1,10 +1,5 @@
 package org.academy.internal.common.ability.mentalout.resistance;
 
-import org.academy.internal.common.ability.mentalout.control.MentalIntrusionManager;
-import org.academy.internal.common.ability.mentalout.control.MentaloutControlContext;
-import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
-
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.chat.Component;
@@ -18,8 +13,7 @@ import org.academy.api.common.entitycontrol.MentalControlTags;
 import org.academy.api.common.entitycontrol.MentalImmunity;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.client.ability.mentalout.MentalResistanceClientState;
-import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
-import org.academy.internal.common.ability.mentalout.control.MentalPerceptionRuntime;
+import org.academy.internal.common.ability.mentalout.control.*;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationRuntime;
 import org.academy.internal.common.ability.mentalout.skills.lv5.MindDestruction;
 import org.academy.internal.common.network.PacketTypes;
@@ -31,11 +25,7 @@ import org.misaka.api.common.network.annotation.SubscribePacket;
 import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /** Server-authoritative player counterplay and tagged living-entity automatic resistance. */
 public final class MentalResistanceManager {

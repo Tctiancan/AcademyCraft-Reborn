@@ -1,9 +1,8 @@
 package org.academy.internal.common.ability.accelerator.reflection;
 
-import net.minecraft.world.effect.MobEffects;
-
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.phys.Vec3;
 import org.academy.AcademyCraft;
 import org.academy.api.server.entity.SurvivalDefense;

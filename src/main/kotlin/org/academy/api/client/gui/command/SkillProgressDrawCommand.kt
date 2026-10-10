@@ -1,12 +1,11 @@
 package org.academy.api.client.gui.command
 
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.SkillProgressUniforms
 import org.academy.api.client.render.TextureBinding
 import org.academy.api.client.render.UniformPayload
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 
 class SkillProgressDrawCommand : PosTexColorRectDrawCommand {
     constructor(

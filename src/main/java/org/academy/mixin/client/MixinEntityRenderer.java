@@ -1,10 +1,10 @@
 package org.academy.mixin.client;
 
+import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
-import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
-import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
-import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.AABB;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
 import org.spongepowered.asm.mixin.Mixin;

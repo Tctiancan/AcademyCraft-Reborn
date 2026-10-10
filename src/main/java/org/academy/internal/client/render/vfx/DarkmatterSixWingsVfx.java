@@ -16,9 +16,9 @@ import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
+import java.lang.reflect.Field;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.lang.reflect.Field;
 
 public final class DarkmatterSixWingsVfx implements Vfx {
     static final int VERTEX_STRIDE = 5 * Float.BYTES;

@@ -3,9 +3,7 @@ package org.academy.api.client.gui.widget
 import org.academy.api.client.gui.command.FillRectDrawCommand
 import org.academy.api.client.gui.layout.MeasureSpec
 import org.academy.api.client.gui.render.Canvas
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class TargetedInvalidationTest {

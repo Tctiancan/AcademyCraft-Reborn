@@ -2,9 +2,7 @@ package org.academy.api.client.gui.widget
 
 import org.academy.api.client.gui.text.device.FadeMask
 import org.academy.api.client.gui.text.fx.MarqueeState
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
 class TextWidgetMarqueeTest {

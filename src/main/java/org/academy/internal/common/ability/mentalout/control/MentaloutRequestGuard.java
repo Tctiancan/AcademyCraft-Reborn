@@ -1,8 +1,5 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import org.academy.internal.common.ability.mentalout.Mentalout;
-
-
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 
 import java.util.*;

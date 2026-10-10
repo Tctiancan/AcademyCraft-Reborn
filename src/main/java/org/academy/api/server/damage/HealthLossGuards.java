@@ -4,15 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.api.server.ability.AbilityResourceAccount;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.WeakHashMap;
-import java.util.function.DoublePredicate;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.DoublePredicate;
 import java.util.function.Supplier;
 
 /** Resource-backed protection at health submission, shared by normal and true-health writers. */

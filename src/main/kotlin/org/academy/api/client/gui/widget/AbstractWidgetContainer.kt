@@ -7,7 +7,6 @@ import org.academy.api.client.gui.command.SubmittedCommand
 import org.academy.api.client.gui.event.EventType
 import org.academy.api.client.gui.event.InputEvent
 import org.academy.api.client.gui.event.MouseEvent
-import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.MeasureSpec
 import org.academy.api.client.gui.layout.SizeMode
@@ -16,7 +15,6 @@ import org.academy.api.client.gui.render.SubtreeCache
 import org.academy.api.client.gui.text.model.TextShapingOptions
 import org.academy.api.client.gui.text.record.TextPainter
 import org.joml.Matrix4f
-import java.util.*
 import kotlin.math.max
 
 abstract class AbstractWidgetContainer : AbstractWidget(), WidgetContainer {

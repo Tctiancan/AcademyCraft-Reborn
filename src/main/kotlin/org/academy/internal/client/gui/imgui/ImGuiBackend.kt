@@ -8,8 +8,8 @@ import imgui.flag.ImGuiConfigFlags
 import imgui.glfw.ImGuiImplGlfw
 import imgui.type.ImInt
 import org.academy.AcademyCraft
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 import org.jetbrains.annotations.ApiStatus
 import java.io.IOException
 import java.lang.ref.Reference

@@ -1,11 +1,11 @@
 package org.academy.api.client.input;
 
+import net.minecraft.Util;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import net.minecraft.Util;
 
 /**
  * 1.21.1 无 26.2 的 `net.minecraft.client.input.InputWithModifiers` (带修饰键的输入抽象).

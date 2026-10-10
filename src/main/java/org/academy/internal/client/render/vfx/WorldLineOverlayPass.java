@@ -2,13 +2,11 @@ package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.RenderType;
 import org.academy.AcademyCraft;
 import org.academy.api.client.render.LevelRenderEvent;
 import org.academy.api.client.render.MatrixStack;
-import org.academy.api.client.render.Render;
 import org.joml.Matrix4fc;
 import org.slf4j.Logger;
 

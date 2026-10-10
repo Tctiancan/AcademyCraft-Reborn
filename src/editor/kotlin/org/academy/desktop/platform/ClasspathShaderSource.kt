@@ -1,8 +1,8 @@
 ﻿package org.academy.desktop.platform
 
 import com.mojang.blaze3d.preprocessor.GlslPreprocessor
-import org.com.mojang.blaze3d.shaders.ShaderType
 import net.minecraft.resources.ResourceLocation
+import org.com.mojang.blaze3d.shaders.ShaderType
 import java.nio.file.Files
 import java.nio.file.Path
 

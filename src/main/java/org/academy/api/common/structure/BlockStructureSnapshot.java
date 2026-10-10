@@ -19,11 +19,7 @@ import net.minecraft.world.phys.AABB;
 import org.academy.AcademyCraft;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 /** Immutable, origin-relative block and block-entity data for a movable structure. */
 public final class BlockStructureSnapshot {

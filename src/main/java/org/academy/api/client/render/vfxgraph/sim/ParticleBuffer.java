@@ -1,7 +1,8 @@
 package org.academy.api.client.render.vfxgraph.sim;
 
-import java.util.Arrays;
 import org.jspecify.annotations.Nullable;
+
+import java.util.Arrays;
 
 /**
  * SoA（结构体数组）粒子缓冲。并行 float 数组，swap-remove 删除，容量翻倍增长。

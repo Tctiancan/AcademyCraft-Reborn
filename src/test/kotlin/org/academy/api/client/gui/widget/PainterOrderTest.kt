@@ -11,10 +11,10 @@ import org.academy.api.client.gui.render.ScissorRect
 import org.academy.api.client.render.DynamicUniform
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.UniformPayload
-import java.nio.ByteBuffer
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import java.nio.ByteBuffer
 
 /**
  * 验证 AOSP 式画家顺序: 记录顺序即绘制顺序, 合并 (BatchProcessor) 不得破坏重叠内容的先后.

@@ -1,15 +1,14 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
-
-
 import com.google.gson.JsonObject;
 import com.mojang.serialization.Codec;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.Map;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class AddonNodeContractTest {

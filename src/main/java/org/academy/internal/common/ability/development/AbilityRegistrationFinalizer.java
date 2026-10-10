@@ -1,9 +1,10 @@
 package org.academy.internal.common.ability.development;
 
 import org.academy.api.common.registries.Registries;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
 import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
 import org.academy.internal.common.world.damagesource.AbilityDamageProfiles;
+
 import java.util.ArrayList;
 import java.util.Comparator;
 

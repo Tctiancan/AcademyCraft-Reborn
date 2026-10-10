@@ -5,11 +5,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.ability.Skill;
-import org.academy.api.common.ability.program.ForwardingProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramBlockPosition;
-import org.academy.api.common.ability.program.ProgramDirection;
-import org.academy.api.common.ability.program.ProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramWorldPosition;
+import org.academy.api.common.ability.program.*;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.darkmatter.resource.DarkmatterPhase;
@@ -17,9 +13,9 @@ import org.academy.internal.common.ability.darkmatter.skills.lv1.DarkmatterDisas
 import org.academy.internal.common.ability.darkmatter.skills.lv2.DarkmatterCut;
 import org.academy.internal.common.ability.darkmatter.skills.lv4.DarkmatterCreation;
 import org.academy.internal.common.ability.program.ProgramActionTransaction;
-import org.academy.internal.common.ability.program.registry.AbilityProgramSpatialRanges;
 import org.academy.internal.common.ability.program.ProgramPowerScale;
 import org.academy.internal.common.ability.program.ServerProgramTargetResolver;
+import org.academy.internal.common.ability.program.registry.AbilityProgramSpatialRanges;
 
 import java.util.List;
 import java.util.Objects;

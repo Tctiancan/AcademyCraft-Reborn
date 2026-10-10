@@ -4,11 +4,7 @@ import com.google.gson.JsonObject;
 import org.academy.internal.common.music.SharedTrackEntry;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 网易云音乐提供者的公共实现，客户端本地与服务器共享账号解析共用喵。

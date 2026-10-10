@@ -1,14 +1,12 @@
 package org.academy.internal.common.ability.proficiency;
 
-import org.academy.internal.common.ability.Skills;
-
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.minecraft.world.entity.player.Player;
+import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.attachment.AttachmentTypes;
 import org.academy.internal.common.network.PacketTypes;
 import org.misaka.MisakaNetworkServer;

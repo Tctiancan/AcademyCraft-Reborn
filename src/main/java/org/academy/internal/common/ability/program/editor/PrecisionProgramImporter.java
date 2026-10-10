@@ -1,13 +1,11 @@
 package org.academy.internal.common.ability.program.editor;
 
-import org.academy.internal.common.ability.program.migration.PrecisionProgramAliases;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
-
-
 import com.google.gson.JsonObject;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
+import org.academy.internal.common.ability.program.migration.PrecisionProgramAliases;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;

@@ -1,15 +1,9 @@
 package org.academy.internal.common.ability.teleport.map;
 
-import org.academy.internal.common.ability.teleport.chunk.ChunkLeapPackets;
-import org.academy.internal.common.ability.teleport.chunk.ChunkLeapRegion;
-import org.academy.internal.common.ability.teleport.chunk.ChunkSwapService;
-import org.academy.internal.common.ability.teleport.chunk.ChunkTicketLeaseManager;
-
-
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -27,16 +21,13 @@ import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.server.ServerStoppingEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import org.academy.AcademyCraft;
+import org.academy.internal.common.ability.teleport.chunk.ChunkLeapPackets;
+import org.academy.internal.common.ability.teleport.chunk.ChunkLeapRegion;
+import org.academy.internal.common.ability.teleport.chunk.ChunkSwapService;
+import org.academy.internal.common.ability.teleport.chunk.ChunkTicketLeaseManager;
 import org.misaka.MisakaNetworkServer;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Streams the 区块跃迁 map to clients: keeps the viewed rectangle loaded, rasterises

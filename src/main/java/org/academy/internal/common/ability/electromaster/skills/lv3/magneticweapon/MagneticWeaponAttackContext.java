@@ -1,6 +1,5 @@
 package org.academy.internal.common.ability.electromaster.skills.lv3.magneticweapon;
 
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.ItemTags;

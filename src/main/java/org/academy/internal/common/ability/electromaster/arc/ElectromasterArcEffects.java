@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.electromaster.arc;
 
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeVisualPacket;
-
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -20,6 +16,8 @@ import org.academy.api.common.arc.path.PolylinePath;
 import org.academy.api.common.arc.property.AttributeCurve;
 import org.academy.api.common.arc.property.Knot;
 import org.academy.api.server.ability.ElectromasterGraphEffects;
+import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
+import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeVisualPacket;
 import org.academy.internal.common.ability.shared.linear.LinearSegment;
 import org.academy.internal.common.world.entity.skill.ArcEffect;
 import org.joml.Vector3f;

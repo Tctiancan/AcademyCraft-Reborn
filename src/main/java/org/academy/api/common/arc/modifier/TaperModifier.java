@@ -1,7 +1,5 @@
 package org.academy.api.common.arc.modifier;
 
-import java.util.Objects;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -11,6 +9,8 @@ import org.academy.api.common.arc.data.PathData;
 import org.academy.api.common.arc.data.PropertyType;
 import org.academy.api.common.arc.property.AttributeCurve;
 import org.academy.internal.common.arc.PathModifierTypes;
+
+import java.util.Objects;
 
 public record TaperModifier(AttributeCurve curve, float globalScale) implements PathModifier {
     public static final StreamCodec<ByteBuf, TaperModifier> CODEC = StreamCodec.composite(

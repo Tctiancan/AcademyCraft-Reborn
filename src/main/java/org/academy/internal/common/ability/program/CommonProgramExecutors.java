@@ -1,25 +1,10 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
-import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
-import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
-
-
-import org.academy.internal.common.ability.program.AbilityProgramTriggerRuntime;
-import org.academy.internal.common.ability.program.ProgramActionTransaction;
-import org.academy.internal.common.ability.program.ProgramDebugFormatter;
-import org.academy.internal.common.ability.program.ProgramEntityDataQuery;
-import org.academy.internal.common.ability.program.ProgramExecutionFrame;
-import org.academy.internal.common.ability.program.ProgramInvocationContext;
-import org.academy.internal.common.ability.program.ProgramVmContext;
-
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.entity.Entity;
@@ -30,34 +15,17 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Projectile;
-import org.academy.api.common.ability.program.ProgramBlockPosition;
-import org.academy.api.common.ability.program.ProgramDirection;
-import org.academy.api.common.ability.program.ProgramInputView;
-import org.academy.api.common.ability.program.ProgramNodeStep;
-import org.academy.api.common.ability.program.ProgramNumericMath;
-import org.academy.api.common.ability.program.ProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramTextOperations;
-import org.academy.api.common.ability.program.ProgramValue;
-import org.academy.api.common.ability.program.ProgramValueType;
-import org.academy.api.common.ability.program.ProgramValueTypes;
-import org.academy.api.common.ability.program.ProgramVector;
-import org.academy.api.common.ability.program.ProgramWorldPosition;
+import org.academy.api.common.ability.program.*;
 import org.academy.api.server.ability.HostileTargets;
 import org.academy.internal.common.ability.darkmatter.targeting.DarkmatterTargeting;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
+import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
+import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
 import org.jspecify.annotations.Nullable;
 
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Comparator;
-import java.util.Optional;
-import java.util.OptionalDouble;
-import java.util.Locale;
+import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import java.util.function.DoubleBinaryOperator;

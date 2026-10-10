@@ -1,11 +1,6 @@
 package org.academy.api.common.entitycontrol;
 
-import java.util.Collections;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 /** Immutable view of all effective control capabilities for one entity at one server tick. */
 public record ControlSnapshot(

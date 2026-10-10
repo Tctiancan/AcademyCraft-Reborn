@@ -6,14 +6,7 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import org.academy.AcademyCraft;
-import org.academy.api.common.structure.BlockStructure;
-import org.academy.api.common.structure.BlockStructureForceProvider;
-import org.academy.api.common.structure.BlockStructureImpact;
-import org.academy.api.common.structure.BlockStructureImpactHandler;
-import org.academy.api.common.structure.BlockStructureKineticHandle;
-import org.academy.api.common.structure.BlockStructureKineticOptions;
-import org.academy.api.common.structure.BlockStructureWorldImpact;
-import org.academy.api.common.structure.BlockStructureWorldImpactHandler;
+import org.academy.api.common.structure.*;
 import org.academy.internal.common.world.entity.structure.BlockStructureEntity;
 
 import java.util.HashMap;

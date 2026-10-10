@@ -1,12 +1,6 @@
 package org.academy.api.client.render;
 
-import org.joml.Matrix4fc;
-import org.joml.Vector2fc;
-import org.joml.Vector2ic;
-import org.joml.Vector3fc;
-import org.joml.Vector3ic;
-import org.joml.Vector4fc;
-import org.joml.Vector4ic;
+import org.joml.*;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;

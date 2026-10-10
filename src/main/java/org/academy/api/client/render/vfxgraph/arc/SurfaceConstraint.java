@@ -1,8 +1,9 @@
 package org.academy.api.client.render.vfxgraph.arc;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.IdentityHashMap;
 import java.util.Map;
-import org.jspecify.annotations.Nullable;
 
 /**
  * 表面约束器（M22-Rev2 / M29）：复刻 Blender「闪电附着」的 Sample Nearest Surface。

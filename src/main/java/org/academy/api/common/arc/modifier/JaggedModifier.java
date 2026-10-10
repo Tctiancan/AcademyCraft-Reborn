@@ -1,7 +1,5 @@
 package org.academy.api.common.arc.modifier;
 
-import java.util.Objects;
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
@@ -16,6 +14,7 @@ import org.joml.Vector3fc;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 public record JaggedModifier(float jaggedness, int subdivisions, long seed) implements PathModifier {

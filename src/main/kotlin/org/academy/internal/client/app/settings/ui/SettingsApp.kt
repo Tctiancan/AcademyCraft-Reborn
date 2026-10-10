@@ -1,6 +1,5 @@
 ﻿package org.academy.internal.client.app.settings.ui
 
-import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FastColor
@@ -23,6 +22,7 @@ import org.academy.api.client.gui.widget.*
 import org.academy.api.client.hud.terminal.TerminalConfig
 import org.academy.api.client.hud.terminal.TerminalHud
 import org.academy.api.client.input.InputSystem
+import org.academy.api.client.render.texture.FilterMode
 import org.academy.api.client.resources.R
 import org.academy.api.common.util.L10n
 import org.academy.internal.client.ability.program.AbilityProgramEditorClient

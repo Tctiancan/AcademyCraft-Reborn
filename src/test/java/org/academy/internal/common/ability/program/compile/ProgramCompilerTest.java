@@ -1,14 +1,12 @@
 package org.academy.internal.common.ability.program.compile;
 
-import org.academy.internal.common.ability.program.editor.PrecisionProgramImporter;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
-
-
 import org.academy.api.common.ability.program.ProgramCompileContext;
 import org.academy.api.common.ability.program.ProgramDiagnosticCode;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.api.common.ability.program.ProgramLimits;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
+import org.academy.internal.common.ability.program.editor.PrecisionProgramImporter;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

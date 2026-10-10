@@ -1,13 +1,11 @@
 package org.academy.internal.common.ability.darkmatter.damage;
 
-import org.academy.internal.common.ability.darkmatter.targeting.DarkmatterTargeting;
-
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.LivingEntity;
 import org.academy.api.common.damage.LawDetonationDamageSource;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.internal.common.ability.Skills;
+import org.academy.internal.common.ability.darkmatter.targeting.DarkmatterTargeting;
 import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
 import org.academy.internal.common.world.damagesource.SkillDamageUtil;
 

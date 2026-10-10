@@ -13,19 +13,18 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
+import org.academy.api.server.ability.ElectromasterGraphEffects;
 import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.electromaster.arc.ElectromasterArcEffects;
-import org.academy.api.server.ability.ElectromasterGraphEffects;
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
 import org.academy.internal.common.ability.electromaster.skills.lv1.ArcGenerate;
 import org.academy.internal.common.ability.electromaster.skills.lv2.ThunderLance;
 import org.academy.internal.common.ability.electromaster.skills.lv4.Railgun;
+import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
 import org.academy.internal.common.attachment.AttachmentTypes;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in skill/network/attachment capture in run/electromaster-arcs, excluded from shipped jars. */

@@ -1,10 +1,5 @@
 package org.academy.internal.common.ability.mentalout.network;
 
-import org.academy.internal.common.ability.mentalout.Mentalout;
-import org.academy.internal.common.ability.mentalout.control.MentaloutControlContext;
-import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGuard;
-
-
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -13,6 +8,8 @@ import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
+import org.academy.internal.common.ability.mentalout.control.MentaloutControlContext;
+import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGuard;
 import org.academy.internal.common.network.PacketTypes;
 import org.jetbrains.annotations.Nullable;
 import org.misaka.MisakaNetworkClient;

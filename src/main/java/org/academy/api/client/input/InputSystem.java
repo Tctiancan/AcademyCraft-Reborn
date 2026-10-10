@@ -1,14 +1,10 @@
 package org.academy.api.client.input;
 
-import org.academy.internal.client.time.TemporalBindingRestrictions;
-import org.academy.internal.client.time.TemporalClientRuntime;
-import org.academy.internal.server.time.TemporalControlProvenance;
-
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.Util;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.Util;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.AcademyCraftClient;
 import org.academy.AcademyCraftConfig;
@@ -16,6 +12,9 @@ import org.academy.api.client.config.KeyBindingConfig;
 import org.academy.api.client.util.ClientUtil;
 import org.academy.api.common.ability.Skill;
 import org.academy.api.common.gson.TypeHandler;
+import org.academy.internal.client.time.TemporalBindingRestrictions;
+import org.academy.internal.client.time.TemporalClientRuntime;
+import org.academy.internal.server.time.TemporalControlProvenance;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;

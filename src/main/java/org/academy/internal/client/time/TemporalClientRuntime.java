@@ -1,23 +1,18 @@
 package org.academy.internal.client.time;
 
-import org.academy.api.server.time.TemporalPauseSource;
-import org.academy.api.client.input.InputSystem;
-import org.academy.api.client.input.UiInputContext;
-import org.academy.internal.server.time.TemporalBoundaryProtection;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.academy.api.client.input.InputSystem;
+import org.academy.api.client.input.UiInputContext;
 import org.academy.api.server.time.TemporalAccumulator;
+import org.academy.api.server.time.TemporalPauseSource;
+import org.academy.internal.server.time.TemporalBoundaryProtection;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /** Client-side wall-clock compensation for server-authorized immunity. */
 public final class TemporalClientRuntime {

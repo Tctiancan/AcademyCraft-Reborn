@@ -1,9 +1,5 @@
 package org.academy.api.client.gui.drawable
 
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.command.ImageDrawCommand
 import org.academy.api.client.gui.render.Canvas
@@ -11,6 +7,9 @@ import org.academy.api.client.gui.texture.GpuTextureViewSource
 import org.academy.api.client.gui.texture.IdentifierTextureSource
 import org.academy.api.client.gui.texture.TextureSource
 import org.academy.api.client.gui.widget.Widget
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 
 open class TextureDrawable : Drawable {
     private val textureSource: TextureSource?

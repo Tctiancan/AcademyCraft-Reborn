@@ -3,7 +3,6 @@
 import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.blaze3d.vertex.MeshData
 import com.mojang.blaze3d.vertex.VertexFormat
-import net.minecraft.util.FastColor
 import org.lwjgl.system.MemoryUtil
 
 class MeshBuilder(

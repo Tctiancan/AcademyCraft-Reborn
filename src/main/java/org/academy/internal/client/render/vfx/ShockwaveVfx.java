@@ -1,13 +1,13 @@
 package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import java.util.List;
-
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import org.academy.api.client.render.vfx.*;
 import org.academy.api.common.vfx.SkillVfxState;
 import org.academy.internal.client.renderer.entity.KineticShockwaveRenderer;
+
+import java.util.List;
 
 /** Short local playback survives the original server tick and entity lifetime. */
 public final class ShockwaveVfx implements Vfx {

@@ -1,7 +1,5 @@
 package org.academy.api.client.hud.ability
 
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.util.Mth
 import org.academy.api.client.gui.command.DrawCommand
@@ -10,13 +8,11 @@ import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.render.VertexWriter
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.TextureBinding
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.util.Chase
 import org.joml.Vector3f
-import kotlin.math.abs
-import kotlin.math.cos
-import kotlin.math.floor
-import kotlin.math.min
-import kotlin.math.sin
+import kotlin.math.*
 
 class CpDisplayController {
     var displayProgress: Float = 0f

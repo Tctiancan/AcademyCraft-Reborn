@@ -4,9 +4,12 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.internal.common.ability.aeromanip.network.FlowSensePacket;
 import org.junit.jupiter.api.Test;
+
 import java.util.List;
 import java.util.UUID;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class FlowObservationCacheTest {
     @Test void oversizedWireBatchIsRejectedBeforeAllocatingItsRecords() {

@@ -3,15 +3,15 @@ package org.academy.internal.client.render.vfx;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.ParticleStatus;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.HumanoidArm;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
-import org.academy.api.common.arc.ArcPath;
 import org.academy.AcademyCraft;
 import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.vfxgraph.render.GraphCamera;
 import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
+import org.academy.api.common.arc.ArcPath;
 import org.academy.internal.common.world.entity.skill.MagneticWeaponBlade;
 import org.academy.internal.common.world.entity.skill.MagneticWeaponBladeMotion;
 

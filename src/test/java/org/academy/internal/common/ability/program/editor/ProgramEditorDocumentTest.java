@@ -1,18 +1,12 @@
 package org.academy.internal.common.ability.program.editor;
 
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
-
-
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramDiagnosticCode;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
+import org.academy.internal.common.ability.program.registry.*;
 import org.junit.jupiter.api.Test;
 
 import java.io.InputStreamReader;

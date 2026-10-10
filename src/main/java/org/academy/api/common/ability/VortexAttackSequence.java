@@ -1,7 +1,8 @@
 package org.academy.api.common.ability;
 
-import java.util.function.BooleanSupplier;
 import org.jspecify.annotations.Nullable;
+
+import java.util.function.BooleanSupplier;
 
 /** Tick-driven attack sequence; independent of CP recovery speed, rendering and entity type. */
 public final class VortexAttackSequence {

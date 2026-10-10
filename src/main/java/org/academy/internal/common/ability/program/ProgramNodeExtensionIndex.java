@@ -1,13 +1,5 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinition;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
-
-
-import org.academy.internal.common.ability.program.ExtensionExecutionView;
-
-
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -19,20 +11,15 @@ import org.academy.api.common.ability.program.ProgramNodeExtension;
 import org.academy.api.common.ability.program.ProgramNodeType;
 import org.academy.api.common.ability.program.ProgramPortDefinition;
 import org.academy.api.common.registries.Registries;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinition;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
+import org.academy.internal.common.ability.program.registry.ProgramNodeExecutor;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HexFormat;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Validated, deterministic view of registry-backed program-node extensions.

@@ -15,7 +15,11 @@ import org.misaka.api.common.network.annotation.PacketTarget;
 import org.misaka.api.common.network.annotation.SubscribePacket;
 import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
-import java.util.*;
+
+import java.util.Collections;
+import java.util.IdentityHashMap;
+import java.util.Set;
+import java.util.UUID;
 
 /** One following visual per owner; heartbeat renews the lease without replaying particle bursts. */
 public final class VacuumVisuals {

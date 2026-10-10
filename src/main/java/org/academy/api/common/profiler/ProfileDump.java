@@ -1,9 +1,10 @@
 package org.academy.api.common.profiler;
 
+import org.jspecify.annotations.Nullable;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
-import org.jspecify.annotations.Nullable;
 
 public final class ProfileDump {
     private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");

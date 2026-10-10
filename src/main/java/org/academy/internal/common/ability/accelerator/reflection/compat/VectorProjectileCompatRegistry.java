@@ -19,7 +19,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class VectorProjectileCompatRegistry extends
         SimpleJsonResourceReloadListener {
     private static final VectorProjectileCompatRegistry INSTANCE =

@@ -1,9 +1,10 @@
 package org.academy.internal.client.gui.screen;
 
-import java.util.function.BooleanSupplier;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.network.chat.Component;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * A {@link ReceivingLevelScreen} that draws no terrain-loading UI, used for 区块跃迁 transitions.

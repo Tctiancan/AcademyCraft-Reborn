@@ -7,12 +7,12 @@ import org.academy.api.client.gui.frame.UiFrame
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.MeasureSpec
 import org.academy.api.client.gui.render.Canvas
-import org.academy.api.client.gui.text.model.Ellipsize
 import org.academy.api.client.gui.text.fx.MarqueeState
-import org.academy.api.client.gui.text.shape.TextMeasurer
-import org.academy.api.client.gui.text.record.TextPainter
-import org.academy.api.client.gui.text.model.TextShapingOptions
+import org.academy.api.client.gui.text.model.Ellipsize
 import org.academy.api.client.gui.text.model.FontStyle
+import org.academy.api.client.gui.text.model.TextShapingOptions
+import org.academy.api.client.gui.text.record.TextPainter
+import org.academy.api.client.gui.text.shape.TextMeasurer
 import kotlin.math.min
 
 open class TextWidget(text: String) : AbstractWidget(), TextHolder {

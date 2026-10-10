@@ -1,6 +1,5 @@
 package org.academy.internal.client.app.props
 
-import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.app.App
@@ -9,6 +8,7 @@ import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
 import org.academy.api.client.gui.widget.*
 import org.academy.api.client.hud.terminal.TerminalHud
+import org.academy.api.client.render.texture.FilterMode
 import org.academy.api.client.resources.R
 import org.academy.api.common.attribute.AbilityFactor
 import org.academy.api.common.attribute.PlayerAttributes

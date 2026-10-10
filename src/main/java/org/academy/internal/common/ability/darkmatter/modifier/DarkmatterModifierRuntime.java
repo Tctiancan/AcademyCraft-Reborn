@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.darkmatter.modifier;
 
-import org.academy.internal.common.ability.darkmatter.damage.DarkmatterLawMark;
-import org.academy.internal.common.ability.darkmatter.targeting.DarkmatterTargeting;
-
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Holder;
@@ -29,8 +25,8 @@ import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.monster.AbstractIllager;
 import net.minecraft.world.entity.npc.Villager;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.entity.projectile.AbstractArrow;
+import net.minecraft.world.entity.projectile.Projectile;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -56,7 +52,9 @@ import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.api.server.ability.AbilityBlockDrops;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.Skills;
+import org.academy.internal.common.ability.darkmatter.damage.DarkmatterLawMark;
 import org.academy.internal.common.ability.darkmatter.skills.lv1.DarkmatterShaping;
+import org.academy.internal.common.ability.darkmatter.targeting.DarkmatterTargeting;
 import org.academy.internal.common.world.item.DarkmatterItemUtil;
 import org.academy.internal.common.world.item.ItemDataComponents;
 import org.academy.internal.common.world.item.SpatialStorageUnitItem;

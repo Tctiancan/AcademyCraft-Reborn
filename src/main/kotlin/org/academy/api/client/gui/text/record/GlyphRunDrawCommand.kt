@@ -1,16 +1,15 @@
 package org.academy.api.client.gui.text.record
 
-import org.academy.api.client.render.RenderPipeline
-import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuTextureView
 import com.mojang.blaze3d.vertex.PoseStack
 import org.academy.api.client.gui.command.DrawCommand
 import org.academy.api.client.gui.command.LocalBounds
 import org.academy.api.client.gui.command.PosColorRectDrawCommand
 import org.academy.api.client.gui.render.VertexWriter
+import org.academy.api.client.render.RenderPipeline
 import org.academy.api.client.render.TextureBinding
 import org.academy.api.client.render.UniformPayload
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuTextureView
 import org.joml.Vector3f
 import kotlin.math.max
 import kotlin.math.min

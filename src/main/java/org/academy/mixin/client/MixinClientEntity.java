@@ -1,7 +1,6 @@
 package org.academy.mixin.client;
 
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
 import org.academy.internal.client.ability.VectorReflectionClientRuntime;

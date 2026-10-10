@@ -20,11 +20,11 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.academy.api.server.ability.AreaEffectTargets;
 import org.academy.internal.common.ability.electromaster.arc.ElectromasterArcEffects;
 import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
+
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /** Opt-in smoke probe, only enabled by the isolated development run. Never packaged in the mod. */
 @EventBusSubscriber(modid = "academy", value = Dist.CLIENT)

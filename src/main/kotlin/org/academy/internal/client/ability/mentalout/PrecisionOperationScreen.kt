@@ -13,21 +13,13 @@ import org.academy.internal.client.gui.layout.ProgramEditorVariant
 import org.academy.internal.client.gui.layout.buildProgramEditorLayout
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph
 import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationManager
-import org.academy.internal.common.ability.program.*
+import org.academy.internal.common.ability.program.AbilityProgramManager
 import org.academy.internal.common.ability.program.editor.PrecisionProgramExporter
 import org.academy.internal.common.ability.program.editor.PrecisionProgramImporter
 import org.academy.internal.common.ability.program.editor.ProgramEditorDocument
 import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions
-import java.util.ArrayDeque
-import java.util.Locale
-import java.util.OptionalInt
-import kotlin.math.ceil
-import kotlin.math.floor
-import kotlin.math.hypot
-import kotlin.math.round
-import kotlin.math.roundToInt
-import kotlin.math.roundToLong
-import kotlin.math.sign
+import java.util.*
+import kotlin.math.*
 
 class PrecisionOperationScreen(
     private var slot: Int,

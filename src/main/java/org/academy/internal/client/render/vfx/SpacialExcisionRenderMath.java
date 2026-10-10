@@ -1,13 +1,11 @@
 package org.academy.internal.client.render.vfx;
 
+import org.joml.*;
+import org.jspecify.annotations.Nullable;
+
+import java.lang.Math;
 import java.util.ArrayList;
 import java.util.List;
-import org.joml.Matrix4fc;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.joml.Vector3fc;
-import org.joml.Vector4f;
-import org.jspecify.annotations.Nullable;
 
 final class SpacialExcisionRenderMath {
     private static final float SCREEN_DIRECTION_EPSILON = 1.0e-6f;

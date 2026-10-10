@@ -3,9 +3,9 @@ package org.academy.internal.common.ability.accelerator.reflection.compat;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.projectile.Projectile;
-import org.academy.internal.common.attachment.AttachmentTypes;
 import org.academy.api.common.structure.BlockStructure;
 import org.academy.api.common.structure.BlockStructureKinetics;
+import org.academy.internal.common.attachment.AttachmentTypes;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.jetbrains.annotations.Nullable;
 

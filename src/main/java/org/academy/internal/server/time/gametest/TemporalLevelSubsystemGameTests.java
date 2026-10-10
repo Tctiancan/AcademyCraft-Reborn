@@ -1,35 +1,21 @@
 package org.academy.internal.server.time.gametest;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.*;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
-import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.ShulkerBoxBlockEntity;
 import net.minecraft.world.level.storage.ServerLevelData;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.academy.AcademyCraft;
-import org.academy.api.server.time.TemporalApi;
-import org.academy.api.server.time.TemporalChannel;
-import org.academy.api.server.time.TemporalField;
-import org.academy.api.server.time.TemporalFieldLease;
-import org.academy.api.server.time.TemporalPauseSource;
-import org.academy.api.server.time.TemporalScope;
+import org.academy.api.server.time.*;
 
-import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 
 /** End-to-end validation for level-wide and spatial one-shot channels. */

@@ -2,9 +2,7 @@ package org.academy.desktop.grapheditor.bridge
 
 import com.google.gson.Gson
 import com.google.gson.JsonObject
-import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
-import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.nio.file.Files
 

@@ -3,12 +3,12 @@ package org.academy.internal.common.ability.accelerator.skills.lv5.wing;
 import io.netty.buffer.Unpooled;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.ability.VortexAttackPattern;
-import org.junit.jupiter.api.Test;
-import org.academy.api.common.ability.VortexAttackTargets;
 import org.academy.api.common.ability.VortexAttackSequence;
-import java.util.concurrent.atomic.AtomicInteger;
+import org.academy.api.common.ability.VortexAttackTargets;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
 

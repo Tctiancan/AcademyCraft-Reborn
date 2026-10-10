@@ -1,6 +1,5 @@
 package org.academy.internal.common.ability.electromaster.skills.lv5;
 
-import org.academy.api.common.damage.DamageComposition;
 import com.mojang.blaze3d.platform.InputConstants;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.Minecraft;
@@ -30,8 +29,9 @@ import org.academy.api.common.arc.modifier.TaperModifier;
 import org.academy.api.common.arc.path.LinePath;
 import org.academy.api.common.arc.property.AttributeCurve;
 import org.academy.api.common.arc.property.Knot;
-import org.academy.api.common.damage.SkillDamageSource;
+import org.academy.api.common.damage.DamageComposition;
 import org.academy.api.common.damage.MaxHealthDamage;
+import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.api.common.gson.TypeHandler;
 import org.academy.api.common.util.MathUtil;
 import org.academy.api.server.ability.AbilitySystemServer;

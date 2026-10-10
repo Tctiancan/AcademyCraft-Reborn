@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import org.academy.internal.common.ability.mentalout.config.MentaloutConfig;
-import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
-
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.core.HolderLookup;
@@ -36,10 +32,10 @@ import org.academy.api.common.ability.SkillProficiencyProfile;
 import org.academy.api.common.entitycontrol.*;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.client.ability.mentalout.PlayerControlClientState;
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.mentalout.control.ImpressionRidingManager;
-import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
+import org.academy.internal.common.ability.mentalout.config.MentaloutConfig;
+import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.world.damagesource.FriendlyFireSetting;

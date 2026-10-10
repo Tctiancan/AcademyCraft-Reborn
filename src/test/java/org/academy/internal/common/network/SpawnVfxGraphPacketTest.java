@@ -1,8 +1,5 @@
 package org.academy.internal.common.network;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import io.netty.buffer.Unpooled;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
@@ -10,6 +7,9 @@ import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SpawnVfxGraphPacketTest {
     private static SpawnVfxGraphPacket roundTrip(SpawnVfxGraphPacket packet) {

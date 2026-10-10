@@ -1,37 +1,21 @@
 package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
-import org.academy.api.client.render.Std140SizeCalculator;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
-import org.academy.api.client.render.vfx.Vfx;
-import org.academy.api.client.render.vfx.VfxFrameContext;
-import org.academy.api.client.render.vfx.VfxCamera;
-import org.academy.api.client.render.vfx.VfxManager;
-import org.academy.api.client.render.vfx.VfxPhase;
-import org.academy.api.client.render.vfx.VfxPipelines;
-import org.academy.api.client.render.vfx.VfxRenderContext;
-import org.academy.api.client.render.vfx.VfxRenderData;
-import org.academy.api.client.render.vfx.VfxRenderer;
-import org.academy.api.client.render.vfx.VfxRegistry;
-import org.academy.api.client.render.vfx.VfxSink;
-import org.academy.internal.common.ability.teleport.effect.SpacialExcisionMath;
+import org.academy.api.client.render.Std140SizeCalculator;
+import org.academy.api.client.render.vfx.*;
 import org.academy.internal.client.render.vfx.SpacialExcisionRenderMath.AffineCutMapping;
+import org.academy.internal.common.ability.teleport.effect.SpacialExcisionMath;
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
-import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public final class SpacialExcisionVfxClient {
     private static final int VERTEX_STRIDE = 7 * Float.BYTES;

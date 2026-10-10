@@ -1,8 +1,9 @@
 package org.academy.api.common.profiler;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.List;
 import java.util.function.Supplier;
-import org.jspecify.annotations.Nullable;
 
 public final class AcademyProfiler {
     private static final long SNAPSHOT_TTL_NANOS = 250_000_000L;

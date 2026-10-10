@@ -1,8 +1,8 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import io.netty.buffer.ByteBuf;
+import it.unimi.dsi.fastutil.ints.Int2LongOpenHashMap;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -25,20 +25,20 @@ import org.academy.api.common.ability.AbilityLevel;
 import org.academy.api.common.ability.DevCondition;
 import org.academy.api.common.ability.Skill;
 import org.academy.api.common.damage.SkillDamageSource;
-import org.academy.api.server.ability.AreaQueryService;
-import org.academy.api.server.damage.AbilityDamageService;
 import org.academy.api.common.gson.TypeHandler;
 import org.academy.api.server.ability.AbilitySystemServer;
+import org.academy.api.server.ability.AreaQueryService;
+import org.academy.api.server.damage.AbilityDamageService;
 import org.academy.api.server.vanilla.MinecraftServerContext;
 import org.academy.internal.common.ability.AbilityCategories;
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
-import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
 import org.academy.internal.common.ability.aeromanip.VacuumVisuals;
+import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
 import org.academy.internal.common.ability.aeromanip.skills.lv2.BreathingBubble;
 import org.academy.internal.common.ability.aeromanip.skills.lv4.VortexPull;
+import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.world.damagesource.DamageTypes;
 import org.academy.internal.server.ability.AeromanipResourceManager;
@@ -50,9 +50,9 @@ import org.misaka.api.common.network.annotation.SubscribePacket;
 import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
 
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.IdentityHashMap;
 
 /** Toggleable player-centred vacuum that rapidly exhausts the air of drowning-capable targets. */
 public final class VacuumDomain extends Skill {

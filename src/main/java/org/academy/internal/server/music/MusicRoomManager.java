@@ -18,11 +18,7 @@ import org.academy.internal.server.util.ChatConfirmLinks;
 import org.misaka.MisakaNetworkServer;
 
 import java.security.SecureRandom;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**

@@ -1,9 +1,9 @@
 package org.academy.api.client.render.vfxgraph.model;
 
-import org.academy.api.client.render.graph.type.Value;
-import org.academy.api.client.render.graph.type.ValueType;
 import org.academy.api.client.render.graph.model.Port;
 import org.academy.api.client.render.graph.model.PortDirection;
+import org.academy.api.client.render.graph.type.Value;
+import org.academy.api.client.render.graph.type.ValueType;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

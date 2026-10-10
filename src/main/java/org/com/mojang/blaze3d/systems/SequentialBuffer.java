@@ -1,8 +1,8 @@
 package org.com.mojang.blaze3d.systems;
 
-import java.nio.ByteBuffer;
-
 import org.com.mojang.blaze3d.PrimitiveTopology;
+
+import java.nio.ByteBuffer;
 
 /**
  * 移植自 Minecraft 26.2 的 {@code com.mojang.blaze3d.systems.SequentialBuffer}.

@@ -3,8 +3,8 @@ package org.academy.api.client.config;
 import com.google.gson.Gson;
 import com.mojang.blaze3d.platform.InputConstants;
 import org.academy.api.client.input.InputSystem;
-import org.lwjgl.glfw.GLFW;
 import org.junit.jupiter.api.Test;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.Set;
 

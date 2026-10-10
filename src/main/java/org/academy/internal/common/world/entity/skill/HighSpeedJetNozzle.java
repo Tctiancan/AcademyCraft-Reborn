@@ -21,11 +21,11 @@ import org.academy.api.common.structure.BlockStructure;
 import org.academy.api.common.structure.BlockStructureGridAlignment;
 import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.ability.Skills;
+import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileStateAdapter;
 import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
+import org.academy.internal.common.ability.aeromanip.skills.lv4.HighSpeedJet;
 import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
 import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
-import org.academy.internal.common.ability.aeromanip.skills.lv4.HighSpeedJet;
-import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileStateAdapter;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.academy.internal.common.sounds.SoundEvents;
 

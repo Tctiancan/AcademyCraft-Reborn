@@ -1,7 +1,6 @@
 package org.academy.internal.client.app.settings.ui
 
 import com.mojang.blaze3d.platform.InputConstants
-import org.academy.api.client.render.texture.FilterMode
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraftClient
@@ -18,6 +17,7 @@ import org.academy.api.client.gui.widget.*
 import org.academy.api.client.hud.ability.AbilityInfoHud
 import org.academy.api.client.hud.terminal.TerminalHud
 import org.academy.api.client.input.InputSystem
+import org.academy.api.client.render.texture.FilterMode
 import org.academy.api.client.resources.R
 import org.academy.api.common.ability.Skill
 import org.academy.api.common.util.L10n

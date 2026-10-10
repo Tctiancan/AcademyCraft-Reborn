@@ -1,10 +1,6 @@
 package org.academy.internal.client.app.music.qq;
 
-import org.academy.internal.common.music.provider.MusicProviderApi;
-import org.academy.internal.common.music.provider.MusicProviders;
-import org.academy.internal.common.music.provider.ProviderCredential;
-import org.academy.internal.common.music.provider.ProviderSearchResult;
-import org.academy.internal.common.music.provider.QqProvider;
+import org.academy.internal.common.music.provider.*;
 
 import java.io.IOException;
 import java.util.List;

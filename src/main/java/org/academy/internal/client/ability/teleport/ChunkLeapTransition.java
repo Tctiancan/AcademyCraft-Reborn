@@ -1,6 +1,5 @@
 package org.academy.internal.client.ability.teleport;
 
-import java.util.function.BooleanSupplier;
 import net.minecraft.Util;
 import net.minecraft.client.gui.screens.ReceivingLevelScreen;
 import net.minecraft.resources.ResourceKey;
@@ -11,6 +10,8 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterDimensionTransitionScreenEvent;
 import org.academy.AcademyCraft;
 import org.academy.internal.client.gui.screen.ChunkLeapLoadingScreen;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * Replaces the terrain-loading screen with a lightweight one during 区块跃迁 cross-dimension jumps.

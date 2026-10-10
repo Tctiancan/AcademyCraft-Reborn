@@ -1,12 +1,10 @@
 package org.academy.internal.common.ability.program.editor;
 
-import org.academy.internal.common.ability.program.compile.ProgramGraphValidator;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinition;
-
-
 import com.google.gson.JsonElement;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.program.compile.ProgramGraphValidator;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinition;
 import org.jspecify.annotations.Nullable;
 
 import java.util.*;

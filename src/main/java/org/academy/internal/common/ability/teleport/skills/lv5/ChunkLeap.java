@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.teleport.skills.lv5;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import net.minecraft.client.Minecraft;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraftClient;
@@ -20,6 +19,7 @@ import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapCost;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapPackets;
 import org.academy.internal.common.ability.teleport.map.ChunkMapClientState;
+import org.lwjgl.glfw.GLFW;
 
 import java.util.List;
 

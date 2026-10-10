@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.mentalout.skills.lv1;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -24,14 +23,15 @@ import org.academy.api.server.vanilla.MinecraftServerContext;
 import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.mentalout.control.MentaloutControlContext;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
-import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
+import org.academy.internal.common.ability.mentalout.control.MentaloutControlContext;
 import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGuard;
 import org.academy.internal.common.ability.mentalout.network.MentaloutRosterPackets;
+import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
 import org.academy.internal.common.ability.mentalout.targeting.MentaloutTargeting;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.world.damagesource.PvpSetting;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

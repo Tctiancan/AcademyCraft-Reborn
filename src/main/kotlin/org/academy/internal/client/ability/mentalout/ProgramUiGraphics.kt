@@ -1,7 +1,6 @@
 package org.academy.internal.client.ability.mentalout
 
 import org.academy.api.client.gui.command.FillRectDrawCommand
-import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.Canvas
 import org.academy.api.client.gui.render.ScissorRect
 import org.academy.api.client.gui.text.model.TextShapingOptions

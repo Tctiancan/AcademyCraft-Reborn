@@ -1,11 +1,11 @@
 package org.academy.internal.server.time;
 
-import java.util.function.BooleanSupplier;
-
 import net.minecraft.world.entity.Entity;
 import org.academy.api.server.time.TemporalPauseSource;
 import org.academy.api.server.vanilla.MinecraftServerContext;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import java.util.function.BooleanSupplier;
 
 /** Protects the vanilla simulation boundary, including cancellations inside a fallback tick. */
 public final class TemporalBoundaryProtection {

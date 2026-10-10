@@ -1,10 +1,10 @@
 package org.academy.api.client.gui.text.record
 
-import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.gui.text.atlas.AtlasSpec
 import org.academy.api.client.gui.text.device.GlyphExpander
 import org.academy.api.client.gui.text.model.GlyphKind
 import org.academy.api.client.gui.text.model.TextBlob
+import org.academy.api.client.render.texture.GpuTextureView
 
 object SubRunBuilder {
     fun make(

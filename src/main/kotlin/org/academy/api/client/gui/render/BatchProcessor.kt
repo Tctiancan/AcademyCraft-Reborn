@@ -4,12 +4,8 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder
 import com.mojang.blaze3d.vertex.MeshData
 import org.academy.api.client.gui.command.ExpandableDrawCommand
 import org.academy.api.client.gui.command.SubmittedCommand
-import org.academy.api.client.render.DynamicUniform
+import org.academy.api.client.render.*
 import org.academy.api.client.render.Render.Buffers.getByteBufferBuilder
-import org.academy.api.client.render.RenderPipeline
-import org.academy.api.client.render.TextureBinding
-import org.academy.api.client.render.UniformBinding
-import org.academy.api.client.render.UniformPayload
 import java.nio.ByteBuffer
 
 object BatchProcessor {

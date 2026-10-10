@@ -16,10 +16,7 @@ import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.academy.internal.common.ability.AbilityCategories;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.electromaster.arc.ElectromasterArcEffects;
-import org.academy.api.server.ability.ElectromasterGraphEffects;
-import org.academy.internal.common.ability.electromaster.skystrike.SkyStrikeProfile;
 import org.academy.internal.common.ability.electromaster.skills.lv1.ArcGenerate;
-import org.academy.internal.common.ability.electromaster.skills.lv2.ThunderLance;
 import org.academy.internal.common.ability.electromaster.skills.lv4.Railgun;
 import org.academy.internal.common.attachment.AttachmentTypes;
 

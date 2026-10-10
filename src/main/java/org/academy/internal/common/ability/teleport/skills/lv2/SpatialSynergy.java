@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.teleport.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +32,7 @@ import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.teleport.targeting.TeleportSafety;
 import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
 import org.academy.internal.common.network.PacketTypes;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

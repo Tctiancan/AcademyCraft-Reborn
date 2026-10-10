@@ -1,8 +1,5 @@
 ﻿package org.academy.internal.client.app.music.ui
 
-import org.academy.api.client.render.texture.FilterMode
-import org.academy.api.client.render.texture.GpuSampler
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import org.academy.AcademyCraft
 import org.academy.api.client.app.App
@@ -24,6 +21,9 @@ import org.academy.api.client.gui.text.model.Ellipsize
 import org.academy.api.client.gui.widget.*
 import org.academy.api.client.gui.widget.SeekBarWidget.OnSeekBarChangeListener
 import org.academy.api.client.hud.terminal.TerminalHud
+import org.academy.api.client.render.texture.FilterMode
+import org.academy.api.client.render.texture.GpuSampler
+import org.academy.api.client.render.texture.GpuTextureView
 import org.academy.api.client.resources.R
 import org.academy.api.common.util.L10n
 import org.academy.internal.client.app.music.backend.AccountAvatarCache

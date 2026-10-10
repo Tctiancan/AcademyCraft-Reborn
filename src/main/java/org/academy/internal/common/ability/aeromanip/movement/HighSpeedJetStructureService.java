@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.aeromanip.movement;
 
-import org.academy.internal.common.ability.aeromanip.Aeromanip;
-import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
-
-
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -12,27 +8,15 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.damage.SkillDamageSource;
-import org.academy.api.common.structure.BlockStructure;
-import org.academy.api.common.structure.BlockStructureApi;
-import org.academy.api.common.structure.BlockStructureCaptureOptions;
-import org.academy.api.common.structure.BlockStructureImpact;
-import org.academy.api.common.structure.BlockStructureKineticHandle;
-import org.academy.api.common.structure.BlockStructureKineticOptions;
-import org.academy.api.common.structure.BlockStructureKinetics;
-import org.academy.api.common.structure.BlockStructurePlacementPolicy;
+import org.academy.api.common.structure.*;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.aeromanip.skills.lv4.HighSpeedJet;
+import org.academy.internal.common.ability.aeromanip.targeting.AeromanipTargeting;
 import org.academy.internal.common.ability.program.ProgramPowerScale;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.academy.internal.common.world.entity.skill.HighSpeedJetNozzle;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 /** Shared server implementation used by High-Speed Jet and Aeromanip programs. */
 public final class HighSpeedJetStructureService {

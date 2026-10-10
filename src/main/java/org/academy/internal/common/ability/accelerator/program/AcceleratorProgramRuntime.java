@@ -1,10 +1,6 @@
 package org.academy.internal.common.ability.accelerator.program;
 
-import org.academy.api.common.ability.program.ProgramBlockPosition;
-import org.academy.api.common.ability.program.ProgramDirection;
-import org.academy.api.common.ability.program.ProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramVector;
-import org.academy.api.common.ability.program.ProgramWorldPosition;
+import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.ProgramActionTransaction;
 
 import java.util.List;

@@ -12,7 +12,7 @@ import org.academy.api.client.gui.widget.Widget
 import org.academy.internal.client.gui.layout.ReflectionFilterLayout
 import org.academy.internal.client.gui.layout.buildReflectionFilterLayout
 import org.misaka.MisakaNetworkClient
-import java.util.Locale
+import java.util.*
 import kotlin.math.roundToInt
 
 class ReflectionFilterScreen(data: ReflectionFilter.Data) :

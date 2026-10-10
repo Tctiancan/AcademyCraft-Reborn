@@ -6,13 +6,7 @@ import org.academy.api.common.registries.Registries;
 import org.academy.api.server.ability.SkillTuning;
 import org.academy.internal.common.world.damagesource.DestroyBlocksSetting;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
-import java.util.TreeSet;
+import java.util.*;
 
 /**
  * Server-side ability tuning ({@code academy-server.json} 的 "ability" 段)。

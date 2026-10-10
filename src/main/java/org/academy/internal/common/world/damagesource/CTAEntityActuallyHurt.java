@@ -1,12 +1,12 @@
 package org.academy.internal.common.world.damagesource;
 
-import org.academy.api.common.damage.DamageComposition;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.gameevent.GameEvent;
+import org.academy.api.common.damage.DamageComposition;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.internal.common.ability.level0.skills.OutputControl;
 import org.academy.internal.common.attribute.PlayerAttributeRuntime;

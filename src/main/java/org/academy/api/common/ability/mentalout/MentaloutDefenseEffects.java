@@ -2,8 +2,6 @@ package org.academy.api.common.ability.mentalout;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.ai.attributes.AttributeModifier;
-import org.academy.api.common.attribute.PlayerAttributes;
 
 /** Reusable mental self-regulation effects for skills, precision programs and non-player actors. */
 public final class MentaloutDefenseEffects {

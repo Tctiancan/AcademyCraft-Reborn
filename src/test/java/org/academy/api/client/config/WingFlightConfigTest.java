@@ -3,13 +3,13 @@ package org.academy.api.client.config;
 import com.google.gson.Gson;
 import org.academy.internal.common.ability.accelerator.skills.lv4.StormWing;
 import org.academy.internal.common.ability.accelerator.skills.lv5.wing.BlackWing;
-import org.academy.internal.common.ability.accelerator.skills.lv5.wing.WhiteWing;
 import org.academy.internal.common.ability.accelerator.skills.lv5.wing.PlatinumWing;
+import org.academy.internal.common.ability.accelerator.skills.lv5.wing.WhiteWing;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WingFlightConfigTest {
     private final Gson gson = new Gson();

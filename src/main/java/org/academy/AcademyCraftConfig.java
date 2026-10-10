@@ -1,8 +1,8 @@
 package org.academy;
 
 import com.google.gson.*;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.Util;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.gson.TypeHandler;
 import org.academy.api.common.util.UncheckedUtil;
 import org.slf4j.Logger;

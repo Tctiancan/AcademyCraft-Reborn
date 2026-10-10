@@ -1,6 +1,5 @@
 package org.academy.api.client.util;
 
-import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.util.thread.ReentrantBlockableEventLoop;

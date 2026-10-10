@@ -1,13 +1,11 @@
 package org.academy.internal.client.ability.mentalout;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.academy.api.common.ability.program.ProgramBook;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramBook;
 import org.academy.api.common.ability.program.ProgramEditorLayout;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
-import org.academy.internal.common.ability.program.*;
 import org.academy.internal.common.ability.program.compile.ProgramBookCodec;
 import org.academy.internal.common.ability.program.editor.ProgramEditorDocument;
 import org.academy.internal.common.ability.program.migration.PrecisionProgramBookMigrator;

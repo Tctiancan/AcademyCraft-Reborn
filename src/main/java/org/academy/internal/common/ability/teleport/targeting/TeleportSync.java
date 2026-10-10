@@ -1,15 +1,13 @@
 package org.academy.internal.common.ability.teleport.targeting;
 
-import org.academy.internal.common.ability.teleport.effect.TeleportCompletedEvent;
-import org.academy.internal.common.ability.teleport.network.InstantTeleportSyncPacket;
-
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.RelativeMovement;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.neoforge.common.NeoForge;
+import org.academy.internal.common.ability.teleport.effect.TeleportCompletedEvent;
+import org.academy.internal.common.ability.teleport.network.InstantTeleportSyncPacket;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.misaka.MisakaNetworkServer;
 

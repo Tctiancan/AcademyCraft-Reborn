@@ -1,7 +1,5 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
-import java.util.List;
-import java.util.Map;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.model.GraphNode;
 import org.academy.api.client.render.graph.registry.SimpleNodeRegistry;
@@ -10,7 +8,11 @@ import org.academy.api.client.render.vfxgraph.nodes.VfxNodes;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.List;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class OffscreenSimulationTest {
     private static ActiveEffect effect() {

@@ -1,9 +1,10 @@
 package org.academy.api.common.ability;
 
+import org.jspecify.annotations.Nullable;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import org.jspecify.annotations.Nullable;
 
 import static org.academy.api.common.ability.SkillProficiencyProfile.CostKind.*;
 

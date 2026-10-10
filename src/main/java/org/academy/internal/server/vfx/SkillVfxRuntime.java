@@ -1,9 +1,5 @@
 package org.academy.internal.server.vfx;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.UUID;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -23,6 +19,11 @@ import org.academy.internal.common.network.SkillVfxPacket;
 import org.academy.internal.common.world.entity.skill.HighSpeedElectronBeam;
 import org.academy.internal.common.world.entity.skill.Plasma;
 import org.misaka.MisakaNetworkServer;
+
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Map;
+import java.util.UUID;
 
 /** Samples once per effect; shares each immutable packet among interested observers. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)

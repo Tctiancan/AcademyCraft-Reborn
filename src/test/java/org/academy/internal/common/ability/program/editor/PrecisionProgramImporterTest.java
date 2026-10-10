@@ -1,15 +1,13 @@
 package org.academy.internal.common.ability.program.editor;
 
+import org.academy.AcademyCraft;
+import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 import org.academy.internal.common.ability.program.compile.ProgramGraphValidator;
 import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
 import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
 import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
 import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
-
-
-import org.academy.AcademyCraft;
-import org.academy.api.common.ability.program.*;
-import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;

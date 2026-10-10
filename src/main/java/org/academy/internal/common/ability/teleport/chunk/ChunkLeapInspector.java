@@ -10,7 +10,6 @@ import net.minecraft.world.level.levelgen.Heightmap;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Reads a short, human-readable summary of one chunk: what its surface is, where it is, and roughly

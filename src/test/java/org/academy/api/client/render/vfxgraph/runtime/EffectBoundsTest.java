@@ -3,7 +3,9 @@ package org.academy.api.client.render.vfxgraph.runtime;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class EffectBoundsTest {
     @Test void radiusKeepsVisibleEdgeWhenCenterExceedsDistance() {

@@ -14,7 +14,7 @@ import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.layout.SizeMode
 import org.academy.api.client.gui.widget.*
-import java.util.Locale
+import java.util.*
 
 object ImGuiUIDebugger {
     @Volatile

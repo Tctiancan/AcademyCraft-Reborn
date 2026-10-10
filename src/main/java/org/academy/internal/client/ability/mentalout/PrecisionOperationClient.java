@@ -14,7 +14,7 @@ import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGuard;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationManager;
-import org.academy.internal.common.ability.program.*;
+import org.academy.internal.common.ability.program.AbilityProgramManager;
 import org.academy.internal.common.ability.program.compile.ProgramBookCodec;
 import org.academy.internal.common.ability.program.editor.PrecisionProgramExporter;
 import org.academy.internal.common.ability.program.editor.ProgramEditorDocument;

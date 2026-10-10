@@ -9,9 +9,9 @@ import org.academy.api.client.render.vfxgraph.nodes.VfxBlockRegistry;
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlocks;
 import org.academy.api.client.render.vfxgraph.runtime.VortexRenderBudget;
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec;
-import org.junit.jupiter.api.Test;
-import org.joml.Vector3f;
 import org.academy.api.common.ability.VortexAttackPattern;
+import org.joml.Vector3f;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;

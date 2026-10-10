@@ -1,12 +1,5 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.compile.CompiledProgram;
-import org.academy.internal.common.ability.program.compile.ProgramBookCodec;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
-
-
 import io.netty.buffer.ByteBuf;
 import io.netty.handler.codec.DecoderException;
 import io.netty.handler.codec.EncoderException;
@@ -40,9 +33,14 @@ import org.academy.internal.common.ability.electromaster.program.ServerElectroma
 import org.academy.internal.common.ability.level0.skills.OutputControl;
 import org.academy.internal.common.ability.meltdowner.program.MeltdownerProgramExecutionBridge;
 import org.academy.internal.common.ability.meltdowner.program.MeltdownerProgramNodeCatalog;
-import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationRuntime;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
+import org.academy.internal.common.ability.mentalout.precision.PrecisionOperationRuntime;
 import org.academy.internal.common.ability.mentalout.skills.lv5.PrecisionOperation;
+import org.academy.internal.common.ability.program.compile.CompiledProgram;
+import org.academy.internal.common.ability.program.compile.ProgramBookCodec;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeCatalog;
 import org.academy.internal.common.ability.teleport.program.TeleportProgramExecutionBridge;
 import org.academy.internal.common.ability.teleport.program.TeleportProgramNodeCatalog;
 import org.academy.internal.common.network.PacketTypes;

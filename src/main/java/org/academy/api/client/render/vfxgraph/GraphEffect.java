@@ -1,11 +1,12 @@
 package org.academy.api.client.render.vfxgraph;
 
-import org.academy.api.client.render.texture.GpuTextureView;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.model.GraphNode;
 import org.academy.api.client.render.graph.model.GraphParameter;
 import org.academy.api.client.render.graph.type.Value;
+import org.academy.api.client.render.texture.GpuTextureView;
 import org.academy.api.client.render.vfxgraph.arc.ArcBuffer;
+import org.academy.api.client.render.vfxgraph.arc.EffectArcSource;
 import org.academy.api.client.render.vfxgraph.model.VfxSystem;
 import org.academy.api.client.render.vfxgraph.nodes.VfxBlockRegistry;
 import org.academy.api.client.render.vfxgraph.nodes.VfxNodeRegistry;
@@ -16,17 +17,12 @@ import org.academy.api.client.render.vfxgraph.render.VfxGraphRenderer;
 import org.academy.api.client.render.vfxgraph.render.WorldTransform;
 import org.academy.api.client.render.vfxgraph.shape.SurfaceProjector;
 import org.academy.api.client.render.vfxgraph.shape.SurfaceSampler;
-import org.academy.api.client.render.vfxgraph.arc.EffectArcSource;
 import org.academy.api.client.render.vfxgraph.sim.ParticleBuffer;
 import org.academy.api.client.render.vfxgraph.sim.VfxSimulator;
 import org.academy.api.client.render.vfxgraph.sim.VfxSystemSimulator;
 import org.jspecify.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 运行时 VFX 图效果（自持）：持有模拟器 + [VfxGraphRenderer]，

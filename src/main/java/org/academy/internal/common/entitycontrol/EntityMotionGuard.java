@@ -1,7 +1,5 @@
 package org.academy.internal.common.entitycontrol;
 
-import org.academy.internal.server.time.TemporalMutationProtection;
-
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -12,8 +10,9 @@ import org.academy.api.server.ability.VectorDefenseProtection;
 import org.academy.internal.common.ability.accelerator.skills.lv3.VectorDeviation;
 import org.academy.internal.common.ability.accelerator.skills.lv4.ReflectionFilter;
 import org.academy.internal.common.ability.accelerator.skills.lv4.VectorReflection;
-import org.academy.internal.common.world.effect.StatusEffects;
 import org.academy.internal.common.world.damagesource.PvpSetting;
+import org.academy.internal.common.world.effect.StatusEffects;
+import org.academy.internal.server.time.TemporalMutationProtection;
 
 import java.lang.StackWalker.StackFrame;
 import java.lang.ref.WeakReference;

@@ -50,7 +50,6 @@ import java.util.Deque;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
-import net.minecraft.util.Mth;
 
 public class VectorDeviation extends Skill {
     private static final double INTERCEPT_MARGIN = 1.0;

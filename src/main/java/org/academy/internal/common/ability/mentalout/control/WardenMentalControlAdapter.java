@@ -1,8 +1,8 @@
 package org.academy.internal.common.ability.mentalout.control;
 
 import net.minecraft.util.Unit;
-import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
 import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.monster.warden.WardenAi;

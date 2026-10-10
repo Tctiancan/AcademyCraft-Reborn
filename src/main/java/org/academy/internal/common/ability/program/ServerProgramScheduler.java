@@ -1,20 +1,14 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.compile.CompiledProgram;
-import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
-
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.academy.api.server.time.TemporalApi;
+import org.academy.internal.common.ability.program.compile.CompiledProgram;
+import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
 import org.academy.internal.server.time.TemporalRuntime;
 import org.jspecify.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.IdentityHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Server-thread facade for resumable ability-program sessions.

@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv4;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -32,6 +31,7 @@ import org.academy.internal.common.ability.darkmatter.skills.lv5.DarkmatterSixWi
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.server.ability.AeromanipResourceManager;
 import org.academy.internal.server.ability.SkillFlightController;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

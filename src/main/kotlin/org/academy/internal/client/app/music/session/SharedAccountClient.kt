@@ -2,10 +2,9 @@ package org.academy.internal.client.app.music.session
 
 import com.google.gson.GsonBuilder
 import net.minecraft.client.Minecraft
+import net.neoforged.bus.api.SubscribeEvent
 import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent
 import net.neoforged.neoforge.common.NeoForge
-import net.neoforged.bus.api.SubscribeEvent
-import org.academy.AcademyCraft
 import org.academy.api.client.gui.state.UiState
 import org.academy.internal.client.app.music.netease.NeteaseCredentialManager
 import org.academy.internal.client.app.music.qq.QqCredentialManager

@@ -1,31 +1,24 @@
 package org.academy.internal.common.entitycontrol.gametest;
 
-import com.mojang.serialization.MapCodec;
-import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.gametest.framework.*;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.gametest.framework.GameTest;
+import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+import net.minecraft.world.entity.animal.Cow;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Rotation;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.damage.LawDetonationDamageSource;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.entitycontrol.*;
+import org.academy.internal.common.entitycontrol.EntityControlApi;
+import org.academy.internal.common.entitycontrol.HealthOffsetAccess;
 import org.academy.internal.common.world.damagesource.DamageTypes;
 import org.academy.internal.common.world.damagesource.SkillDamageUtil;
-
-import java.util.List;
 
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class TrueHealthOffsetGameTests {

@@ -12,7 +12,6 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import org.academy.api.client.resources.R;
-import org.academy.internal.client.model.ImagPhaseDowsingRodModel;
 
 import static org.academy.internal.client.model.ImagPhaseDowsingRodModel.MODEL;
 

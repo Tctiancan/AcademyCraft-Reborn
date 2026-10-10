@@ -1,11 +1,6 @@
 package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.systems.TimerQuery;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.neoforged.api.distmarker.Dist;
@@ -17,6 +12,12 @@ import net.neoforged.neoforge.client.event.ScreenEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.slf4j.Logger;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /** Records actual game frames and GPU timestamp queries; never active in ordinary runs. */
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)

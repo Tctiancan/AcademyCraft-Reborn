@@ -1,8 +1,8 @@
 package org.academy.mixin.common;
 
 import net.minecraft.server.MinecraftServer;
-import org.academy.AcademyCraftServer;
 import org.academy.AcademyCraftConfig;
+import org.academy.AcademyCraftServer;
 import org.academy.api.server.vanilla.MinecraftServerContext;
 import org.academy.internal.common.ability.accelerator.reflection.VectorReflectionRuntime;
 import org.academy.internal.server.time.TemporalRuntime;

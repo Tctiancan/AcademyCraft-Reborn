@@ -18,7 +18,6 @@ import org.academy.api.client.render.vfxgraph.operator.VfxOperator;
 import org.academy.api.client.render.vfxgraph.operator.VfxOperatorRegistry;
 import org.academy.api.client.render.vfxgraph.shape.SurfaceProjector;
 import org.academy.api.client.render.vfxgraph.shape.SurfaceSampler;
-import org.academy.api.client.render.vfxgraph.arc.EffectArcSource;
 
 import java.util.*;
 

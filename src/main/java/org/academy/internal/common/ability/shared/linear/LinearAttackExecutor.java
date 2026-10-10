@@ -1,17 +1,20 @@
 package org.academy.internal.common.ability.shared.linear;
 
-import org.academy.api.common.damage.DamageComposition;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
+import org.academy.api.common.damage.DamageComposition;
 import org.academy.api.common.util.ViewTargetScanner;
 import org.academy.internal.common.world.damagesource.CtaFriendlyFireWhitelist;
 import org.academy.internal.common.world.damagesource.ReflectedSkillDamageSource;
 import org.academy.internal.common.world.entity.EntityTypes;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Predicate;
 
 public final class LinearAttackExecutor {

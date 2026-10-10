@@ -13,8 +13,8 @@ import org.academy.internal.server.storage.SpatialStorageService;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 /** Explicit attribution for ability block destruction, including secondary container/neighbor drops.
  * Block movement and the teleport program's block-teleport node must not enter this scope.

@@ -4,9 +4,7 @@ import org.academy.api.common.data.AbilityData;
 import org.academy.internal.common.skilldata.CommonSkillData;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class PlayerAbilityStateProtectionTest {
     @Test

@@ -1,21 +1,13 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
-import org.academy.internal.common.ability.teleport.chunk.ChunkLeapSelection;
-import org.academy.internal.common.ability.teleport.chunk.ChunkSwapService;
-
-
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Selection validation. Equal size and matching shape are now guaranteed by construction (the target is

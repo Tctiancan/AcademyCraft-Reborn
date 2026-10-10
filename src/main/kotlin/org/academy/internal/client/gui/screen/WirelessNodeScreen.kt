@@ -11,12 +11,13 @@ import org.academy.api.client.gui.dsl.*
 import org.academy.api.client.gui.layout.Gravity
 import org.academy.api.client.gui.layout.Orientation
 import org.academy.api.client.gui.screen.ContainerUiScreen
-import org.academy.api.client.gui.text.model.TextShapingOptions
 import org.academy.api.client.gui.util.attributeRow
 import org.academy.api.client.gui.util.infoArea
 import org.academy.api.client.gui.util.infoRow
 import org.academy.api.client.gui.util.inputRow
-import org.academy.api.client.gui.widget.*
+import org.academy.api.client.gui.widget.FrameLayoutWidget
+import org.academy.api.client.gui.widget.RadioButtonWidget
+import org.academy.api.client.gui.widget.RadioGroupWidget
 import org.academy.api.client.resources.R
 import org.academy.api.common.wireless.SetNodeNamePacket
 import org.academy.api.common.wireless.SetNodePassPacket

@@ -18,7 +18,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-@EventBusSubscriber(modid = AcademyCraft.MOD_ID, bus = EventBusSubscriber.Bus.GAME)
+@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public final class VectorCompatProfileRegistry extends SimpleJsonResourceReloadListener {
     private static final VectorCompatProfileRegistry INSTANCE = new VectorCompatProfileRegistry();
     private static volatile List<ProfileEntry> profiles = List.of();

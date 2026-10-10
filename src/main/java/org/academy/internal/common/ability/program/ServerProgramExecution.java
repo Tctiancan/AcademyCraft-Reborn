@@ -1,12 +1,10 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.compile.CompiledProgram;
-import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
-
-
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.AcademyCraft;
+import org.academy.internal.common.ability.program.compile.CompiledProgram;
+import org.academy.internal.common.ability.program.registry.ProgramExecutorLookup;
 
 import java.util.Optional;
 

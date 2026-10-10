@@ -6,10 +6,10 @@ import org.academy.api.common.ability.program.ProgramBlockPosition;
 import org.academy.api.common.ability.program.ProgramDirection;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.api.common.ability.program.ProgramWorldPosition;
-import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
 import org.academy.internal.common.ability.program.ProgramActionTransaction;
 import org.academy.internal.common.ability.program.ProgramVmResult;
+import org.academy.internal.common.ability.program.registry.AbilityProgramDefinitions;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

@@ -1,18 +1,10 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-
-
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.resources.ResourceLocation;
-import org.academy.api.common.ability.program.ProgramConfigurationPorts;
-import org.academy.api.common.ability.program.ProgramInputView;
-import org.academy.api.common.ability.program.ProgramNodeRole;
-import org.academy.api.common.ability.program.ProgramNodeSchema;
-import org.academy.api.common.ability.program.ProgramTag;
-import org.academy.api.common.ability.program.ProgramValue;
-import org.academy.api.common.ability.program.ProgramValueTypes;
+import org.academy.api.common.ability.program.*;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

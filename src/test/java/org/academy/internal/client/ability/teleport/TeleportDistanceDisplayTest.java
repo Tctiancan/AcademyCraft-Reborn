@@ -2,7 +2,8 @@ package org.academy.internal.client.ability.teleport;
 
 import org.academy.api.client.config.SkillSettingsRegistry;
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TeleportDistanceDisplayTest {
     @Test

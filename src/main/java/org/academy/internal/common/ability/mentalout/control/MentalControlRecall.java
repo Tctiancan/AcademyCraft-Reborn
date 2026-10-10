@@ -5,7 +5,6 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Mob;
 import net.minecraft.world.phys.AABB;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 
 import java.util.*;
 

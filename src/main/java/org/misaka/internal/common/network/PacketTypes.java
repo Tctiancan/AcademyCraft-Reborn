@@ -4,10 +4,10 @@ import net.minecraft.network.codec.StreamCodec;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.misaka.MisakaNetwork;
-import org.misaka.api.common.registries.MisakaNetworkRegistries;
 import org.misaka.api.common.network.future.packet.FutureRequestPacket;
 import org.misaka.api.common.network.future.packet.FutureResponsePacket;
 import org.misaka.api.common.network.packet.PacketType;
+import org.misaka.api.common.registries.MisakaNetworkRegistries;
 
 public final class PacketTypes {
     public static final DeferredRegister<PacketType<?, ?>> PACKET_TYPES =

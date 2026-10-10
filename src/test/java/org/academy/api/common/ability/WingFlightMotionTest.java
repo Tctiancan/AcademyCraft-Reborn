@@ -3,7 +3,7 @@ package org.academy.api.common.ability;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WingFlightMotionTest {
     private static final WingControlIntent RELEASED = new WingControlIntent(0, 0, 0);

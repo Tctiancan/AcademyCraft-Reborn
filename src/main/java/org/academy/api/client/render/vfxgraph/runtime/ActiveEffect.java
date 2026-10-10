@@ -1,9 +1,9 @@
 package org.academy.api.client.render.vfxgraph.runtime;
 
-import org.academy.api.client.render.texture.GpuTextureView;
 import net.minecraft.world.entity.Entity;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.graph.type.Value;
+import org.academy.api.client.render.texture.GpuTextureView;
 import org.academy.api.client.render.vfxgraph.GraphEffect;
 import org.academy.api.client.render.vfxgraph.arc.EffectArcSource;
 import org.academy.api.client.render.vfxgraph.model.VfxSystem;
@@ -16,8 +16,8 @@ import org.academy.api.client.render.vfxgraph.render.VfxGraphRenderer;
 import org.academy.api.client.render.vfxgraph.render.WorldTransform;
 import org.academy.api.client.render.vfxgraph.shape.SurfaceProjector;
 import org.academy.api.client.render.vfxgraph.shape.SurfaceSampler;
-import org.joml.Quaternionf;
 import org.joml.Matrix4fc;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 

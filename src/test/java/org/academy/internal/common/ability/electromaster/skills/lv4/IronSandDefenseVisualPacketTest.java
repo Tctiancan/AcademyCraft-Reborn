@@ -4,7 +4,7 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.world.phys.Vec3;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class IronSandDefenseVisualPacketTest {
     @Test void directionsAndDistantWorldImpactCoordinatesRoundTrip() {

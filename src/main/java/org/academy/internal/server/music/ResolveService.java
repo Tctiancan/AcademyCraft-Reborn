@@ -4,7 +4,6 @@ import org.academy.AcademyCraft;
 import org.academy.internal.common.music.SlidingWindowRateLimiter;
 import org.academy.internal.common.music.provider.MusicProviders;
 import org.academy.internal.common.music.provider.ProviderCredential;
-import org.academy.internal.common.music.provider.TrackCandidate;
 import org.academy.internal.server.config.MusicConfig;
 
 import java.util.List;

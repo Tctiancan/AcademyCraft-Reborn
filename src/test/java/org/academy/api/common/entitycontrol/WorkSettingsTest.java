@@ -3,8 +3,14 @@ package org.academy.api.common.entitycontrol;
 import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import org.junit.jupiter.api.Test;
-import java.util.*;
-import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class WorkSettingsTest {
     @Test void roundTripsFiltersTasksAndStoragePoints() {

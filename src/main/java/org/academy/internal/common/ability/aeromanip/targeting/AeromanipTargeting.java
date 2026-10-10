@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.aeromanip.targeting;
 
-import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
-import org.academy.internal.common.ability.aeromanip.movement.AeromanipDisplacementTracker;
-
-
 import net.minecraft.network.protocol.game.ClientboundSetEntityMotionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -18,8 +14,10 @@ import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.ability.AirMobility;
 import org.academy.api.common.util.ViewTargetScanner;
 import org.academy.api.server.team.TeamRelations;
-import org.academy.internal.common.world.damagesource.FriendlyFireSetting;
+import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
+import org.academy.internal.common.ability.aeromanip.movement.AeromanipDisplacementTracker;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
+import org.academy.internal.common.world.damagesource.FriendlyFireSetting;
 
 import java.util.function.Predicate;
 

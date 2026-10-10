@@ -25,8 +25,8 @@ import org.academy.api.client.render.vfxgraph.operator.VfxOperatorRegistry
 import org.academy.api.client.render.vfxgraph.operator.VfxOperators
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec
 import org.academy.api.client.render.vfxgraph.serialize.VfxGraphSchemaVersion
-import org.academy.desktop.grapheditor.canvas.*
 import org.academy.desktop.grapheditor.bridge.VfxGraphMcpBridge
+import org.academy.desktop.grapheditor.canvas.*
 import org.academy.desktop.grapheditor.clipboard.GraphClipboard
 import org.academy.desktop.grapheditor.commandpalette.CommandPalette
 import org.academy.desktop.grapheditor.container.VfxContainerCanvas

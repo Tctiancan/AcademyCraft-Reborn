@@ -2,12 +2,12 @@
 
 import com.mojang.blaze3d.platform.NativeImage
 import com.mojang.blaze3d.systems.RenderSystem
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.texture.IdentifierTextureSource
 import org.academy.api.client.gui.texture.TextureSource
+import org.academy.api.client.render.texture.GpuTextureView
 import java.io.ByteArrayInputStream
 import java.io.InputStream
 import java.nio.file.Path

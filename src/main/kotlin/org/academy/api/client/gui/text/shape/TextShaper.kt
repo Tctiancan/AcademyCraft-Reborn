@@ -3,16 +3,12 @@
 import org.academy.api.client.gui.text.font.AwtFaceCache
 import org.academy.api.client.gui.text.font.FontLineMetrics
 import org.academy.api.client.gui.text.font.FontRepository
-import org.academy.api.client.gui.text.model.GlyphRun
-import org.academy.api.client.gui.text.model.TextBlob
-import org.academy.api.client.gui.text.model.TextLine
-import org.academy.api.client.gui.text.model.TextShapingOptions
-import org.academy.api.client.gui.text.model.FontStyle
+import org.academy.api.client.gui.text.model.*
 import java.awt.Font
 import java.awt.font.LineBreakMeasurer
+import java.awt.font.TextAttribute
 import java.text.AttributedString
 import java.text.Bidi
-import java.awt.font.TextAttribute
 
 object TextShaper {
     private const val HUGE = 1e9f

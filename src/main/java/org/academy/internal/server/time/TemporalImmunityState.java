@@ -2,12 +2,7 @@ package org.academy.internal.server.time;
 
 import org.academy.api.server.time.TemporalPauseSource;
 
-import java.util.EnumMap;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.HashSet;
+import java.util.*;
 
 /** Reference-counted transient immunity contributions. */
 final class TemporalImmunityState {

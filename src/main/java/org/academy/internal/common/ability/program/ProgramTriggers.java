@@ -1,15 +1,13 @@
 package org.academy.internal.common.ability.program;
 
-import org.academy.internal.common.ability.program.compile.CompiledProgram;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
-
-
 import com.mojang.serialization.JsonOps;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramGraph;
+import org.academy.internal.common.ability.program.compile.CompiledProgram;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
 
 import java.util.HashMap;
 import java.util.Map;

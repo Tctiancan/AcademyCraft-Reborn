@@ -2,8 +2,8 @@ package org.academy.api.server.damage;
 
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.damagesource.DamageType;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.entity.LivingEntity;
@@ -15,6 +15,7 @@ import org.academy.internal.common.world.damagesource.AbilityDamageProfiles;
 import org.academy.internal.common.world.damagesource.SkillDamageTypeResolver;
 import org.academy.internal.common.world.damagesource.SkillDamageUtil;
 import org.jspecify.annotations.Nullable;
+
 import java.util.Objects;
 
 /**

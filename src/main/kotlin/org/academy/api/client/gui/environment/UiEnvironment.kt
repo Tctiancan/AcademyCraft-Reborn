@@ -1,9 +1,9 @@
 package org.academy.api.client.gui.environment
 
-import org.academy.api.client.render.texture.GpuTextureView
 import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.texture.TextureSource
 import org.academy.api.client.gui.unit.Density
+import org.academy.api.client.render.texture.GpuTextureView
 import java.io.InputStream
 import java.nio.file.Path
 

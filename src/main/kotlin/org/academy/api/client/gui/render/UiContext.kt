@@ -18,7 +18,6 @@ import org.academy.api.client.thread.runOnRenderThread
 import java.nio.ByteBuffer
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicReference
-import kotlin.math.ceil
 
 open class UiContext {
     private val commandList = AtomicReference<MutableList<SubmittedCommand>?>()

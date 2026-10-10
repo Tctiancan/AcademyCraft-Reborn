@@ -4,9 +4,9 @@ import org.academy.api.client.render.graph.registry.PropertySpec;
 import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.graph.type.ValueType;
 import org.academy.api.client.render.vfxgraph.model.VfxBlock;
+import org.academy.api.client.render.vfxgraph.sim.ParticleBuffer;
 import org.academy.api.client.render.vfxgraph.sim.SimContext;
 import org.academy.api.client.render.vfxgraph.sim.SimNode;
-import org.academy.api.client.render.vfxgraph.sim.ParticleBuffer;
 
 import java.util.Arrays;
 import java.util.HashMap;

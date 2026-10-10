@@ -1,7 +1,6 @@
 package org.academy.internal.common.ability.mentalout.skills.lv2;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import org.academy.AcademyCraftClient;
 import org.academy.AcademyCraftConfig;
 import org.academy.api.client.ability.AbilitySystemClient;
@@ -20,6 +19,7 @@ import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.mentalout.control.MentalIntrusionManager;
 import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGuard;
 import org.academy.internal.common.ability.mentalout.skills.lv1.MentalIntrusion;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 
 import java.util.List;

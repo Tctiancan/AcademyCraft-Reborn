@@ -1,8 +1,5 @@
 package org.academy.internal.common.ability.meltdowner.beam;
 
-import org.academy.internal.common.ability.meltdowner.targeting.MeltdownerTargeting;
-
-
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.Mth;
@@ -13,8 +10,9 @@ import org.academy.api.common.ability.Skill;
 import org.academy.api.common.damage.SkillDamageSource;
 import org.academy.api.common.util.LevelUtil;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.shared.linear.*;
 import org.academy.internal.common.ability.meltdowner.skills.lv1.RadiationIntensify;
+import org.academy.internal.common.ability.meltdowner.targeting.MeltdownerTargeting;
+import org.academy.internal.common.ability.shared.linear.*;
 
 import java.util.function.Predicate;
 

@@ -1,8 +1,9 @@
 package org.academy.api.common.ability.program;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.registries.Registries;
+
 import java.util.Objects;
 
 /** Declares a category's generic program runtime. Uses the existing Level 5 unlock policy. */

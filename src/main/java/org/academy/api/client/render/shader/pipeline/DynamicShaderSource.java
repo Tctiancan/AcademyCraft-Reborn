@@ -1,8 +1,8 @@
 package org.academy.api.client.render.shader.pipeline;
 
+import net.minecraft.resources.ResourceLocation;
 import org.com.mojang.blaze3d.shaders.ShaderSource;
 import org.com.mojang.blaze3d.shaders.ShaderType;
-import net.minecraft.resources.ResourceLocation;
 import org.jspecify.annotations.Nullable;
 
 import java.nio.charset.StandardCharsets;

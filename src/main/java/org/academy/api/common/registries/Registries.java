@@ -6,10 +6,10 @@ import net.neoforged.neoforge.registries.RegistryBuilder;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.AbilityCategory;
 import org.academy.api.common.ability.Skill;
-import org.academy.api.common.damage.AbilityDamageProfile;
 import org.academy.api.common.ability.program.ProgramNodeType;
 import org.academy.api.common.arc.PathModifierType;
 import org.academy.api.common.arc.PathType;
+import org.academy.api.common.damage.AbilityDamageProfile;
 import org.academy.api.common.sync.DataType;
 import org.academy.api.common.sync.SyncKey;
 

@@ -18,7 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.academy.api.client.render.vfxgraph.shape.SkyDischargeGeometry.*;
+import static org.academy.api.client.render.vfxgraph.shape.SkyDischargeGeometry.smooth;
+import static org.academy.api.client.render.vfxgraph.shape.SkyDischargeGeometry.unit;
 
 /** Independent, short surface traces with local forks. No common center or radial spokes. */
 public final class SurfaceDischargeEmitter {

@@ -7,15 +7,13 @@ import org.academy.api.client.render.graph.type.Value;
 import org.academy.api.client.render.graph.type.ValueType;
 import org.joml.Vector3f;
 import org.junit.jupiter.api.Test;
-import org.lwjgl.system.MemoryStack;
 
+import java.nio.ByteBuffer;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
-import java.nio.ByteBuffer;
 
 class GraphMaterialTest {
     private static GraphParameter param(String id, ValueType type, Value def) {

@@ -1,16 +1,12 @@
 package org.academy.internal.common.ability.program.registry;
 
+import net.minecraft.resources.ResourceLocation;
+import org.academy.api.common.ability.program.*;
 import org.academy.internal.common.ability.program.CommonProgramExecutors;
 import org.academy.internal.common.ability.program.ProgramNodeExtensionIndex;
-
-
 import org.academy.internal.common.ability.program.compile.ProgramCompileResult;
 import org.academy.internal.common.ability.program.compile.ProgramCompiler;
 import org.academy.internal.common.ability.program.editor.ProgramEditorNodeCatalog;
-
-
-import net.minecraft.resources.ResourceLocation;
-import org.academy.api.common.ability.program.*;
 
 import java.util.List;
 import java.util.Map;

@@ -6,7 +6,6 @@ import net.minecraft.world.entity.Mob;
 import net.minecraft.world.entity.Pose;
 import net.minecraft.world.entity.ai.goal.GoalSelector;
 import net.minecraft.world.entity.ai.memory.MemoryModuleType;
-import org.academy.api.common.entitycontrol.AttackDecision;
 import org.academy.internal.common.ability.mentalout.control.MentalControlMobAccess;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 import org.academy.internal.common.world.damagesource.CategoryDamageRuntime;

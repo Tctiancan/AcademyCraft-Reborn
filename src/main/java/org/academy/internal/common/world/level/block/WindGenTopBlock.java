@@ -32,7 +32,6 @@ import org.academy.internal.common.world.level.block.entity.WindGenTopBlockEntit
 import org.jspecify.annotations.Nullable;
 
 import java.util.Map;
-import java.util.function.Function;
 
 public final class WindGenTopBlock extends BaseEntityBlock {
     public static final MapCodec<WindGenTopBlock> CODEC = simpleCodec(WindGenTopBlock::new);

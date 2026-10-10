@@ -15,7 +15,6 @@ import org.academy.internal.common.network.MusicJukeboxPackets;
 import org.academy.internal.server.config.MusicConfig;
 import org.misaka.MisakaNetworkServer;
 
-import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;

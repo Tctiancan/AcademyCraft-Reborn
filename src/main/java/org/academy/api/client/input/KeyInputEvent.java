@@ -1,7 +1,5 @@
 package org.academy.api.client.input;
 
-import com.mojang.blaze3d.platform.InputConstants;
-
 public class KeyInputEvent extends InputControlEvent {
     public int key;
     public int scanCode;

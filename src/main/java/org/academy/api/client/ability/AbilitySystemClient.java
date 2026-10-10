@@ -2,11 +2,11 @@ package org.academy.api.client.ability;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.ChatFormatting;
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.Util;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.AcademyCraft;
 import org.academy.AcademyCraftClient;

@@ -1,16 +1,14 @@
 package org.academy.internal.common.ability.program.migration;
 
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
-import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
-import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
-
-
 import com.google.gson.JsonObject;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.common.ability.program.AbilityProgram;
 import org.academy.api.common.ability.program.ProgramBook;
 import org.academy.api.common.ability.program.ProgramGraph;
 import org.academy.internal.common.ability.mentalout.precision.PrecisionGraph;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeCatalog;
+import org.academy.internal.common.ability.program.registry.CommonProgramNodeIds;
+import org.academy.internal.common.ability.program.registry.PrecisionProgramNodeIds;
 import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;

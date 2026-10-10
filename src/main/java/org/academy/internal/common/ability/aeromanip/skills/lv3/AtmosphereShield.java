@@ -1,10 +1,6 @@
 package org.academy.internal.common.ability.aeromanip.skills.lv3;
 
-import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
-import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
-
 import com.mojang.blaze3d.platform.InputConstants;
-import org.lwjgl.glfw.GLFW;
 import io.netty.buffer.ByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.resources.ResourceLocation;
@@ -40,12 +36,17 @@ import org.academy.api.common.ability.SkillProficiencyProfile;
 import org.academy.api.common.gson.TypeHandler;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.vanilla.MinecraftServerContext;
-import org.academy.internal.common.ability.*;
+import org.academy.internal.common.ability.AbilityCategories;
+import org.academy.internal.common.ability.SkillNames;
+import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.aeromanip.config.AeromanipConfig;
-import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
 import org.academy.internal.common.ability.aeromanip.skills.lv2.BreathingBubble;
+import org.academy.internal.common.ability.aeromanip.vfx.AeromanipVfx;
+import org.academy.internal.common.ability.effect.TimedSkillEffectRuntime;
+import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.attribute.PlayerAttributeRuntime;
 import org.academy.internal.common.network.PacketTypes;
+import org.lwjgl.glfw.GLFW;
 import org.misaka.MisakaNetworkClient;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;
@@ -54,13 +55,7 @@ import org.misaka.api.common.network.annotation.SubscribePacket;
 import org.misaka.api.common.network.packet.Packet;
 import org.misaka.api.common.network.packet.PacketType;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
-import java.util.WeakHashMap;
+import java.util.*;
 
 public final class AtmosphereShield extends Skill {
     private static final float[] REDUCTION = {0.20f, 0.28f, 0.35f};

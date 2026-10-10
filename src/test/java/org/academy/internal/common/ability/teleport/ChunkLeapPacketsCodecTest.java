@@ -1,24 +1,20 @@
 package org.academy.internal.common.ability.teleport;
 
+import io.netty.buffer.Unpooled;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.Level;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapPackets;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapRegion;
 import org.academy.internal.common.ability.teleport.chunk.ChunkLeapSelection;
 import org.academy.internal.common.ability.teleport.map.MapTileBuilder;
-
-
-import io.netty.buffer.Unpooled;
-import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.resources.ResourceKey;
-import net.minecraft.world.level.Level;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Round-trips every 鍖哄潡璺冭縼 packet through its codec. These guard the wire contract: a field added

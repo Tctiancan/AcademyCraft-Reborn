@@ -29,7 +29,6 @@ import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.event.level.BlockEvent;
 import org.academy.api.server.ability.AbilityBlockDrops;
 import org.academy.api.server.ability.AbilityEffectPolicy;
-import org.academy.internal.common.ability.meltdowner.skills.lv2.MiningBeam;
 import org.academy.internal.common.world.entity.EntityTypes;
 import org.academy.internal.server.storage.SpatialStorageService;
 import org.apache.commons.lang3.tuple.Pair;

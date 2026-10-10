@@ -1,10 +1,5 @@
 package org.academy.internal.common.ability.mentalout.control;
 
-import org.academy.internal.common.ability.mentalout.config.MentaloutConfig;
-import org.academy.internal.common.ability.mentalout.network.MentaloutRosterPackets;
-import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
-
-
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
@@ -22,7 +17,9 @@ import org.academy.api.common.entitycontrol.*;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.api.server.ability.ServerContext;
 import org.academy.internal.common.ability.Skills;
-import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
+import org.academy.internal.common.ability.mentalout.config.MentaloutConfig;
+import org.academy.internal.common.ability.mentalout.network.MentaloutRosterPackets;
+import org.academy.internal.common.ability.mentalout.resistance.MentalResistanceManager;
 import org.academy.internal.common.ability.mentalout.targeting.MentaloutTargeting;
 import org.academy.internal.common.world.damagesource.FriendlyFireSetting;
 import org.academy.internal.common.world.damagesource.PvpSetting;

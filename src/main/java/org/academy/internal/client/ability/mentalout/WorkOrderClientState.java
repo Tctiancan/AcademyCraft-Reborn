@@ -6,7 +6,9 @@ import com.mojang.serialization.JsonOps;
 import net.minecraft.core.BlockPos;
 import org.academy.api.common.entitycontrol.MiningWorkPlan;
 import org.academy.api.common.entitycontrol.WorkSettings;
-import java.util.*;
+
+import java.util.Optional;
+import java.util.UUID;
 
 /** Last server acknowledgement; draft configuration remains screen-owned until explicitly loaded. */
 public final class WorkOrderClientState {

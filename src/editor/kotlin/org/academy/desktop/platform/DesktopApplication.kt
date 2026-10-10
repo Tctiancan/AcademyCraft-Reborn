@@ -2,17 +2,15 @@ package org.academy.desktop.platform
 
 import com.mojang.blaze3d.platform.DisplayData
 import com.mojang.blaze3d.platform.Monitor
-import com.mojang.blaze3d.platform.MonitorCreator
 import com.mojang.blaze3d.platform.ScreenManager
 import com.mojang.blaze3d.platform.Window
 import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.Util
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.text.font.FontRepository
 import org.lwjgl.glfw.GLFW
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.util.OptionalInt
+import java.util.*
 
 object DesktopApplication {
     private val LOGGER: Logger = LoggerFactory.getLogger(DesktopApplication::class.java)

@@ -6,10 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.joml.Matrix4f;
-import org.joml.Vector3f;
-import org.junit.jupiter.api.Test;
-
 final class GraphCameraTest {
     private static final float FOV = (float) Math.toRadians(70.0);
     private static final float ASPECT = 16.0f / 9.0f;

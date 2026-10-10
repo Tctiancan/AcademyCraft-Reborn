@@ -1,9 +1,5 @@
 package org.academy.internal.common.ability.teleport.chunk;
 
-import org.academy.internal.common.ability.teleport.targeting.TeleportSafety;
-import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
-
-
 import io.netty.buffer.Unpooled;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.SectionPos;
@@ -20,13 +16,11 @@ import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.LevelChunkSection;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.AABB;
+import org.academy.internal.common.ability.teleport.targeting.TeleportSafety;
+import org.academy.internal.common.ability.teleport.targeting.TeleportSync;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 /**

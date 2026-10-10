@@ -15,24 +15,19 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.common.ability.Skill;
-import org.academy.api.common.ability.program.ForwardingProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramBlockPosition;
-import org.academy.api.common.ability.program.ProgramDirection;
-import org.academy.api.common.ability.program.ProgramTargetResolver;
-import org.academy.api.common.ability.program.ProgramWorldPosition;
-import org.academy.api.common.ability.program.ProgramVector;
+import org.academy.api.common.ability.program.*;
 import org.academy.api.server.ability.AbilitySystemServer;
 import org.academy.internal.common.ability.Skills;
 import org.academy.internal.common.ability.accelerator.reflection.compat.VectorProjectileStateAdapter;
 import org.academy.internal.common.ability.accelerator.skills.lv2.KineticEnergyApplied;
 import org.academy.internal.common.ability.program.ProgramActionTransaction;
-import org.academy.internal.common.ability.program.registry.AbilityProgramSpatialRanges;
 import org.academy.internal.common.ability.program.ProgramPowerScale;
 import org.academy.internal.common.ability.program.ServerProgramTargetResolver;
+import org.academy.internal.common.ability.program.registry.AbilityProgramSpatialRanges;
 import org.academy.internal.common.entitycontrol.EntityMotionGuard;
 import org.academy.internal.common.world.damagesource.CtaFriendlyFireWhitelist;
-import org.academy.internal.common.world.damagesource.PvpSetting;
 import org.academy.internal.common.world.damagesource.DestroyBlocksSetting;
+import org.academy.internal.common.world.damagesource.PvpSetting;
 
 import java.util.*;
 

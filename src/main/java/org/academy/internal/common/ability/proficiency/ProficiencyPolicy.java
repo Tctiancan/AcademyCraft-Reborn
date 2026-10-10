@@ -1,8 +1,5 @@
 package org.academy.internal.common.ability.proficiency;
 
-import org.academy.internal.common.ability.SkillNames;
-
-
 import io.netty.buffer.ByteBuf;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.codec.ByteBufCodecs;
@@ -13,6 +10,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.ability.Skill;
+import org.academy.internal.common.ability.SkillNames;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.server.config.AbilityConfig;
 import org.misaka.MisakaNetworkClient;

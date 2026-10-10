@@ -27,7 +27,6 @@ import org.academy.internal.common.ability.mentalout.control.MentaloutRequestGua
 import org.academy.internal.common.ability.mentalout.skills.lv5.MindDestruction;
 import org.misaka.MisakaNetworkClient;
 
-import java.util.Set;
 import java.util.function.Consumer;
 
 /** Opt-in packet, server-tick and client health-sync smoke test in the isolated ability test world. */
