@@ -65,7 +65,7 @@ public final class WaterSuppression extends SavedData {
 
     private static WaterSuppression get(ServerLevel level) {
         return level.getDataStorage()
-                .computeIfAbsent(getType(), AcademyCraft.academy("suppressed_water").toString());
+                .computeIfAbsent(getType(), AcademyCraft.academy_("suppressed_water"));
     }
 
     public static void refresh(ServerLevel level, UUID source, Vec3 center, double radius) {

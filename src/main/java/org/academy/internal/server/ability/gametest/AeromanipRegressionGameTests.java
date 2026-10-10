@@ -5,7 +5,6 @@ import net.minecraft.core.Direction;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.nbt.NbtOps;
-import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -115,10 +114,10 @@ public final class AeromanipRegressionGameTests {
         level.setBlockAndUpdate(pos, original);
         WaterSuppression.refresh(level, UUID.randomUUID(), Vec3.atCenterOf(pos), 2.0);
         var data = level.getDataStorage()
-                .computeIfAbsent(WaterSuppression.getType(), AcademyCraft.academy("suppressed_water").toString());
+                .computeIfAbsent(WaterSuppression.getType(), AcademyCraft.academy_("suppressed_water"));
         var encoded = WaterSuppression.CODEC.encodeStart(NbtOps.INSTANCE, data).getOrThrow();
         var reloaded = WaterSuppression.CODEC.parse(NbtOps.INSTANCE, encoded).getOrThrow();
-        level.getDataStorage().set(AcademyCraft.academy("suppressed_water").toString(), reloaded);
+        level.getDataStorage().set(AcademyCraft.academy_("suppressed_water"), reloaded);
         helper.runAfterDelay(2, () -> {
             helper.assertTrue(level.getBlockState(pos).equals(original), "Reloaded restoration journal must restore the original slab without an owner");
             helper.succeed();

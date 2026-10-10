@@ -41,6 +41,10 @@ public final class AcademyCraft {
         return ResourceLocation.fromNamespaceAndPath(MOD_ID, name);
     }
 
+    public static String academy_(String name) {
+        return MOD_ID + "_" + name;
+    }
+
     public static Logger getLogger() {
         return LoggerFactory.getLogger("academy/" + STACK_WALKER.getCallerClass().getSimpleName());
     }

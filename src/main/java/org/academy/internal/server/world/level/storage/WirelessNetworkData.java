@@ -22,8 +22,6 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static org.academy.AcademyCraft.academy;
-
 public final class WirelessNetworkData extends SavedData {
     private static final Codec<BlockPos> BLOCKPOS_AS_STRING_CODEC = Codec.STRING.flatXmap(
             s -> {
@@ -79,7 +77,9 @@ public final class WirelessNetworkData extends SavedData {
 
     public static WirelessNetworkData get(ServerLevel level) {
         return level.getDataStorage()
-                .computeIfAbsent(getType(), AcademyCraft.academy("wireless").toString());
+                // 1.21.1: computeIfAbsent 的 key 会直接作为 data/ 目录下的文件名, 以命名空间作前缀,
+                // 保存为 data/academy_wireless.dat (26.2 的 SavedDataType(ResourceLocation) 不再可用).
+                .computeIfAbsent(getType(), AcademyCraft.academy_("wireless"));
     }
 
     public boolean registerNode(BlockPos pos, String name, String password, int radius, int maxConnections) {

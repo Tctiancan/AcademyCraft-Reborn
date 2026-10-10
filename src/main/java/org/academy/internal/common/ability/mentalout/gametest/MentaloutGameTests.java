@@ -1,19 +1,11 @@
 package org.academy.internal.common.ability.mentalout.gametest;
 
 import com.mojang.authlib.GameProfile;
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
 import com.mojang.serialization.JsonOps;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import io.netty.channel.embedded.EmbeddedChannel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Holder;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.*;
 import net.minecraft.network.Connection;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.PacketFlow;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -31,12 +23,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.phys.Vec3;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterGameTestsEvent;
-import net.neoforged.neoforge.registries.RegisterEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.common.entitycontrol.*;
 import org.academy.internal.common.ability.mentalout.control.MentalControlMemory;
@@ -50,7 +40,6 @@ import org.academy.internal.common.ability.mentalout.targeting.MentaloutTargetin
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
@@ -551,14 +540,14 @@ public final class MentaloutGameTests {
                     try {
                         var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder.toFile(),
                                 net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess());
-                        storage.set(AcademyCraft.academy("mental_work_orders").toString(), data);
+                        storage.set(AcademyCraft.academy_("mental_work_orders"), data);
                         storage.save();
                     } catch (Exception failure) { throw new IllegalStateException(failure); }
                     try {
                         var storage = new net.minecraft.world.level.storage.DimensionDataStorage(folder.toFile(),
                                 net.minecraft.util.datafix.DataFixers.getDataFixer(), helper.getLevel().registryAccess());
                         var restored = storage.computeIfAbsent(WorkOrderData.getType(),
-                                AcademyCraft.academy("mental_work_orders").toString()).selected(owner, List.of(worker));
+                                AcademyCraft.academy_("mental_work_orders")).selected(owner, List.of(worker));
                         helper.assertValueEqual(restored.size(), 1, "Disk reload lost the pending return");
                         helper.assertValueEqual(restored.getFirst().cargo().getFirst().getCount(), 9, "Disk reload changed cargo");
                         helper.assertTrue(restored.getFirst().paused() && restored.getFirst().returning(), "Disk reload resumed a cancelled order");

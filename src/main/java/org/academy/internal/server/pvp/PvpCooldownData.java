@@ -66,7 +66,7 @@ public final class PvpCooldownData extends SavedData {
 
     public static PvpCooldownData get(MinecraftServer server) {
         return server.overworld().getDataStorage()
-                .computeIfAbsent(getType(), AcademyCraft.academy("pvp_cooldowns").toString());
+                .computeIfAbsent(getType(), AcademyCraft.academy_("pvp_cooldowns"));
     }
 
     public synchronized int remainingTicks(UUID playerId) {

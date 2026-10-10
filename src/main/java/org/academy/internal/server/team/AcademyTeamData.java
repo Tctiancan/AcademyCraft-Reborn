@@ -69,7 +69,7 @@ public final class AcademyTeamData extends SavedData {
 
     public static AcademyTeamData get(MinecraftServer server) {
         return server.overworld().getDataStorage()
-                .computeIfAbsent(getType(), AcademyCraft.academy("teams").toString());
+                .computeIfAbsent(getType(), AcademyCraft.academy_("teams"));
     }
 
     public synchronized Optional<String> teamFor(UUID playerId) {

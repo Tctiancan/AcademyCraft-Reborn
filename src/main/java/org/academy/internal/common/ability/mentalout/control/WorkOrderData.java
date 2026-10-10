@@ -116,7 +116,7 @@ public final class WorkOrderData extends SavedData {
     private WorkOrderData(List<Entry> entries) { entries.forEach(this::put); }
     public static WorkOrderData get(MinecraftServer server) {
         return server.overworld().getDataStorage()
-                .computeIfAbsent(getType(), AcademyCraft.academy("mental_work_orders").toString());
+                .computeIfAbsent(getType(), AcademyCraft.academy_("mental_work_orders"));
     }
     public List<Entry> entries() { return List.copyOf(orders.values()); }
     public int size() { return orders.size(); }

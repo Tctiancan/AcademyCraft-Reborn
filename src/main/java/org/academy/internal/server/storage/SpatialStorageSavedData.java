@@ -2,7 +2,6 @@ package org.academy.internal.server.storage;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.HolderLookup;
-import net.minecraft.core.UUIDUtil;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtOps;
@@ -16,7 +15,6 @@ import org.academy.AcademyCraft;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -35,7 +33,7 @@ public final class SpatialStorageSavedData extends SavedData {
 
     public static SpatialStorageSavedData get(MinecraftServer server) {
         return server.overworld().getDataStorage().computeIfAbsent(
-                FACTORY, AcademyCraft.academy("spatial_storage").toString());
+                FACTORY, AcademyCraft.academy_("spatial_storage"));
     }
 
     public static SpatialStorageSavedData load(CompoundTag tag, HolderLookup.Provider registries) {

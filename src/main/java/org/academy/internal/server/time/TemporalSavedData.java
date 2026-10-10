@@ -92,7 +92,7 @@ public final class TemporalSavedData extends SavedData {
 
     public static TemporalSavedData get(MinecraftServer server) {
         return server.overworld().getDataStorage()
-                .computeIfAbsent(getType(), AcademyCraft.academy("temporal_state").toString());
+                .computeIfAbsent(getType(), AcademyCraft.academy_("temporal_state"));
     }
 
     synchronized boolean isImmune(UUID entityId, TemporalPauseSource source) {
