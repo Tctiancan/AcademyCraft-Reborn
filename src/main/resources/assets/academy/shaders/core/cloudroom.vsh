@@ -1,11 +1,11 @@
-#version 330
+#version 150
 
-#moj_import <minecraft:dynamictransforms.glsl>
-#moj_import <minecraft:projection.glsl>
+uniform mat4 ProjMat;
+uniform mat4 ModelViewMat;
 
 in vec3 Position;
 in vec2 UV0;
-in vec4 Color;
+
 out vec2 texCoord0;
 out vec3 viewPosition;
 

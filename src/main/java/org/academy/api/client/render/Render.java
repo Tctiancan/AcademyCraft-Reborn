@@ -5,6 +5,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
 import org.academy.api.client.resources.R;
+import org.academy.internal.client.render.AcademyShaders;
 import org.com.mojang.blaze3d.buffers.GpuBuffer;
 import org.com.mojang.blaze3d.textures.GpuTextureView;
 import org.joml.Matrix4f;
@@ -302,7 +303,10 @@ public final class Render {
                 new RenderPipeline("level_pos_color_additive", List.of(DefaultVertexFormat.POSITION_COLOR), VertexFormat.Mode.TRIANGLES, RenderType.gui());
         public static final RenderPipeline MINE_DETECT_LINES =
                 new RenderPipeline("mine_detect_lines", List.of(DefaultVertexFormat.POSITION_COLOR), VertexFormat.Mode.LINES, RenderType.gui());
-        public static final RenderPipeline CLOUDROOM = textured(VertexFormat.Mode.QUADS, "cloudroom");
+        public static final RenderPipeline CLOUDROOM =
+                new RenderPipeline("cloudroom", List.of(DefaultVertexFormat.NEW_ENTITY),
+                        VertexFormat.Mode.QUADS,
+                        AcademyShaders.cloudroomType(R.textures.item.cat_engine));
         public static final RenderPipeline TELEPORT_CURSOR = textured(VertexFormat.Mode.QUADS, "teleport_cursor");
         public static final RenderPipeline IMAG_PHASE_PARTICLE_POST = textured(VertexFormat.Mode.QUADS, "imag_phase_particle_post");
         public static final RenderPipeline PLATINUM_COSMIC_WING = textured(VertexFormat.Mode.QUADS, "platinum_cosmic_wing");
@@ -333,7 +337,7 @@ public final class Render {
         public static final RenderType PLATINUM_WING_BYPASS = RenderType.gui();
         public static final RenderType IRON_SAND_FIRST_PERSON = RenderType.gui();
         public static final RenderType IMAG_PHASE_PARTICLE_POST = RenderType.gui();
-        public static final RenderType CLOUDROOM = RenderType.gui();
+        public static final RenderType CLOUDROOM = AcademyShaders.cloudroomType(R.textures.item.cat_engine);
         public static final RenderType CLEANING_ROBOT = RenderType.gui();
         public static final RenderType DISTORTION_RING = RenderType.gui();
         public static final RenderType CAT_ENGINE = RenderType.entityTranslucent(R.textures.item.cat_engine);
