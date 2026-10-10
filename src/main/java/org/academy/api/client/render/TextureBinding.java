@@ -17,17 +17,40 @@ public record TextureBinding(String name, @Nullable ResourceLocation location, i
         this(name, location, DEFAULT_SLOT);
     }
 
-    /** 兼容 26.2 语义的便捷构造: 从 [view] 提取其位置作为绑定目标. */
+    /**
+     * 兼容 26.2 语义的便捷构造: 从 [view] 提取其位置作为绑定目标.
+     * 纹理采样槽从 [name] 推导 ("Sampler0"->0, "Sampler1"->1 ...), 以便多纹理绑定
+     * (如 SkillProgressDrawCommand 的 Sampler0 轮廓 + Sampler1 径向遮罩) 各占独立 GL 单元;
+     * 一律落到 0 会让后一个绑定覆盖前一个, 导致把径向遮罩误画在图标上方.
+     */
     public TextureBinding(String name, @Nullable GpuTextureView view, GpuSampler sampler) {
-        this(name, view == null ? null : view.location(), DEFAULT_SLOT);
+        this(name, view == null ? null : view.location(), samplerSlotOf(name));
     }
 
     /**
      * 兼容桌面编辑器 (org.academy.desktop) 使用的 26.2 纹理视图/采样器类型:
-     * 从 com.mojang 纹理视图提取资源路径作绑定目标.
+     * 从 com.mojang 纹理视图提取资源路径作绑定目标, 采样槽同样从 [name] 推导.
      */
     public TextureBinding(String name, @Nullable org.com.mojang.blaze3d.textures.GpuTextureView view,
                           org.com.mojang.blaze3d.textures.GpuSampler sampler) {
-        this(name, view == null ? null : view.location(), DEFAULT_SLOT);
+        this(name, view == null ? null : view.location(), samplerSlotOf(name));
+    }
+
+    private static int samplerSlotOf(String name) {
+        if (name == null) return DEFAULT_SLOT;
+        int idx = name.toLowerCase().lastIndexOf("sampler");
+        if (idx < 0) return DEFAULT_SLOT;
+        int acc = 0;
+        boolean hasDigit = false;
+        for (int i = idx + "sampler".length(); i < name.length(); i++) {
+            char c = name.charAt(i);
+            if (c >= '0' && c <= '9') {
+                hasDigit = true;
+                acc = acc * 10 + (c - '0');
+            } else if (hasDigit) {
+                return acc;
+            }
+        }
+        return hasDigit ? acc : DEFAULT_SLOT;
     }
 }

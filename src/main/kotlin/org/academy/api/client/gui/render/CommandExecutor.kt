@@ -6,8 +6,10 @@ import com.mojang.blaze3d.vertex.BufferUploader
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.MeshData
 import com.mojang.blaze3d.vertex.VertexFormat
+import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.GameRenderer
 import net.minecraft.client.renderer.ShaderInstance
+import net.minecraft.resources.ResourceLocation
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.render.RenderPipeline
 import org.academy.api.client.render.TextureBinding
@@ -28,6 +30,19 @@ import kotlin.math.floor
  * - Scissor: 复用原物理像素换算, 落到 [RenderSystem.enableScissor].
  */
 class CommandExecutor : AutoCloseable {
+
+    /**
+     * 按 progress 裁切的专业度环专用着色器. 1.21.1 [BufferUploader.drawWithShader] 默认
+     * 按网格顶点格式选内置 shader, 无法采样第二纹理/携带进度 uniform; 故 skill_progress 管线
+     * 单独实例化 [ShaderInstance] (双采样 Sampler0/Sampler1 + SkillProgress), 复刻 26.2
+     * 径向遮罩按角度裁切的效果. 渲染线程懒加载一次后复用.
+     */
+    private var skillProgressShader: ShaderInstance? = null
+
+    /** skill_progress 管线名, 用于把该管线的批次路由到自定义 shader. */
+    private companion object {
+        const val SKILL_PROGRESS_PIPELINE = "skill_progress"
+    }
 
     /**
      * 提交一批网格到当前 1.21.1 渲染目标.
@@ -55,6 +70,11 @@ class CommandExecutor : AutoCloseable {
     private fun drawBatch(batch: PendingBatch) {
         configureBlend(batch.pipeline)
         bindTextures(batch.textures)
+
+        if (batch.pipeline.name == SKILL_PROGRESS_PIPELINE) {
+            drawSkillProgress(batch)
+            return
+        }
 
         for (mesh in batch.meshDataList) {
             drawMesh(mesh)
@@ -95,6 +115,56 @@ class CommandExecutor : AutoCloseable {
         BufferUploader.drawWithShader(mesh)
         // MeshData 为 CPU 侧一次性分配; 完成后立即释放内存.
         mesh.close()
+    }
+
+    /**
+     * 使用自定义 skill_progress 着色器绘制专业度环: 同时采样 Sampler0 (轮廓) 与 Sampler1
+     * (径向遮罩), 依据批次上的 SkillProgress uniform 在片段着色器内按角度裁切, 复刻 26.2 效果.
+     * 顶点/UV(0..1 全域) 由 [PosColorRectDrawCommand] 基类生成单个全矩形四边形.
+     */
+    private fun drawSkillProgress(batch: PendingBatch) {
+        val shader = skillProgressShader()
+            ?: run {
+                // shader 加载失败(编译/链接错误)时跳过本批次, 但仍需释放其网格资源.
+                for (mesh in batch.meshDataList) mesh.close()
+                return
+            }
+        RenderSystem.setShader { shader }
+
+        var progress = -1f
+        for (binding in batch.uniforms) {
+            if (binding.name() == "SkillProgress") {
+                progress = binding.data().getFloat(0).coerceIn(0f, 1f)
+                break
+            }
+        }
+        val uniform = shader.safeGetUniform("SkillProgress")
+        uniform.set(progress)
+
+        for (mesh in batch.meshDataList) {
+            BufferUploader.drawWithShader(mesh)
+            // MeshData 为 CPU 侧一次性分配; 完成后立即释放内存.
+            mesh.close()
+        }
+    }
+
+    /**
+     * 渲染线程懒加载 skill_progress 着色器. 加载发生在绘制批次时 (渲染线程), 其后每次
+     * [BufferUploader.drawWithShader] 都会经 setDefaultUniforms 重新绑定 Sampler0/Sampler1.
+     */
+    private fun skillProgressShader(): ShaderInstance? {
+        if (skillProgressShader != null) return skillProgressShader
+        skillProgressShader = try {
+            ShaderInstance(
+                Minecraft.getInstance().getResourceManager(),
+                ResourceLocation.fromNamespaceAndPath("academy", "skill_progress"),
+                DefaultVertexFormat.POSITION_TEX_COLOR
+            )
+        } catch (e: Exception) {
+            skillProgressShader = null
+            null
+        }
+        return skillProgressShader
     }
 
     /**
@@ -139,5 +209,11 @@ class CommandExecutor : AutoCloseable {
 
     override fun close() {
         // 1.21.1 即时模式下无跨帧 GPU 资源需要释放 (由 mesh.close / RenderSystem 管理).
+        try {
+            skillProgressShader?.close()
+        } catch (_: Exception) {
+            // 忽略关闭期异常, 避免污染渲染线程.
+        }
+        skillProgressShader = null
     }
 }
