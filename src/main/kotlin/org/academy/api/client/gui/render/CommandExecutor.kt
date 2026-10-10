@@ -39,9 +39,18 @@ class CommandExecutor : AutoCloseable {
      */
     private var skillProgressShader: ShaderInstance? = null
 
+    /**
+     * 圆角底盘(BgIcons/WirelessPanel 的半透明深色背景)专用的 SDF 边缘柔化着色器.
+     * 26.2 中该管线把 SdfUniforms (Size/Margins/FillColor) 经 UBO 上传; 1.21.1 的
+     * [ShaderInstance] 无法访问 GPU uniform 块, 故 fsh 改为逐个 uniform, 渲染线程
+     * 懒加载一次后复用, 并在每次绘制前从批次提取 SDFData 重新上传.
+     */
+    private var sdfSharpMarginShader: ShaderInstance? = null
+
     /** skill_progress 管线名, 用于把该管线的批次路由到自定义 shader. */
     private companion object {
         const val SKILL_PROGRESS_PIPELINE = "skill_progress"
+        const val SDF_SHARP_MARGIN_PIPELINE = "sdf_sharp_margin"
     }
 
     /**
@@ -73,6 +82,11 @@ class CommandExecutor : AutoCloseable {
 
         if (batch.pipeline.name == SKILL_PROGRESS_PIPELINE) {
             drawSkillProgress(batch)
+            return
+        }
+
+        if (batch.pipeline.name == SDF_SHARP_MARGIN_PIPELINE) {
+            drawSdfSharpMargin(batch)
             return
         }
 
@@ -149,6 +163,70 @@ class CommandExecutor : AutoCloseable {
     }
 
     /**
+     * 使用自定义 sdf_sharp_margin 着色器绘制圆角底盘 (BlendQuadWidget 的黑色半透明背景).
+     * 1.21.1 下 [PositionTexRectDrawCommand] 仅写位置+UV, 无内置颜色; 若走内置 position_tex
+     * 着色器会去采样当前绑定的 Sampler0 (往往是刚绘制过的图标纹理), 把图标拉伸成大块"幽灵"
+     * 半透明叠在背景上. 这里为批次绑定 SDF 着色器, 并从 [BlendQuadWidget.SDFData] 提取
+     * Size/Margins/FillColor 后经普通 uniform 上传, 复刻 26.2 的圆角羽化填充.
+     */
+    private fun drawSdfSharpMargin(batch: PendingBatch) {
+        val shader = sdfSharpMarginShader()
+            ?: run {
+                for (mesh in batch.meshDataList) mesh.close()
+                return
+            }
+        RenderSystem.setShader { shader }
+
+        for (binding in batch.uniforms) {
+            if (binding.name() == "SdfUniforms") {
+                uploadSdfUniforms(shader, binding.data())
+                break
+            }
+        }
+
+        for (mesh in batch.meshDataList) {
+            BufferUploader.drawWithShader(mesh)
+            mesh.close()
+        }
+    }
+
+    /**
+     * 从 [BatchProcessor] 序列化出的 std140 [ByteBuffer] 提取 SDFData (Size/Margins/FillColor),
+     * 逐 uniform 上传到 sdf_sharp_margin 着色器. 偏移严格对应 [BlendQuadWidget.SDFData] 的
+     * [org.academy.api.client.render.Std140Builder] 布局: vec2(align8, 8B) + pad8 + vec4*2(align16).
+     */
+    private fun uploadSdfUniforms(shader: ShaderInstance, buf: java.nio.ByteBuffer) {
+        val sizeX = buf.getFloat(0); val sizeY = buf.getFloat(4)
+        val mx = buf.getFloat(16); val my = buf.getFloat(20)
+        val mz = buf.getFloat(24); val mw = buf.getFloat(28)
+        val fx = buf.getFloat(32); val fy = buf.getFloat(36)
+        val fz = buf.getFloat(40); val fw = buf.getFloat(44)
+
+        shader.safeGetUniform("Size")?.set(sizeX, sizeY)
+        shader.safeGetUniform("Margins")?.set(mx, my, mz, mw)
+        shader.safeGetUniform("FillColor")?.set(fx, fy, fz, fw)
+    }
+
+    /**
+     * 渲染线程懒加载 sdf_sharp_margin 着色器. 网格顶点格式为位置+UV.
+     * 加载失败(编译/链接错误)时返回 null 并跳过该批次.
+     */
+    private fun sdfSharpMarginShader(): ShaderInstance? {
+        if (sdfSharpMarginShader != null) return sdfSharpMarginShader
+        sdfSharpMarginShader = try {
+            ShaderInstance(
+                Minecraft.getInstance().getResourceManager(),
+                ResourceLocation.fromNamespaceAndPath("academy", "sdf_sharp_margin"),
+                DefaultVertexFormat.POSITION_TEX
+            )
+        } catch (e: Exception) {
+            sdfSharpMarginShader = null
+            null
+        }
+        return sdfSharpMarginShader
+    }
+
+    /**
      * 渲染线程懒加载 skill_progress 着色器. 加载发生在绘制批次时 (渲染线程), 其后每次
      * [BufferUploader.drawWithShader] 都会经 setDefaultUniforms 重新绑定 Sampler0/Sampler1.
      */
@@ -214,6 +292,12 @@ class CommandExecutor : AutoCloseable {
         } catch (_: Exception) {
             // 忽略关闭期异常, 避免污染渲染线程.
         }
+        try {
+            sdfSharpMarginShader?.close()
+        } catch (_: Exception) {
+            // 忽略关闭期异常, 避免污染渲染线程.
+        }
         skillProgressShader = null
+        sdfSharpMarginShader = null
     }
 }

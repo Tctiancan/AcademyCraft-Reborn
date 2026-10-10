@@ -207,6 +207,22 @@ abstract class ContainerUiScreen<T : AbstractContainerMenu> protected constructo
     override fun renderLabels(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int) {
     }
 
+    /**
+     * 1.21.1 下 [AbstractContainerScreen.render] 会无条件为每个槽绘制物品图标/背景/悬浮高亮,
+     * 与 26.2 原版仅在 [isRenderInventory] 为真时才提取容器内容不一致. 切换无线节点页时
+     * [isRenderInventory] 为 false, 这里提前返回以隐藏物品栏槽位及其悬浮高亮.
+     */
+    override fun renderSlot(guiGraphics: GuiGraphics, slot: Slot) {
+        if (!isRenderInventory) return
+        super.renderSlot(guiGraphics, slot)
+    }
+
+    /** 对应隐藏槽位的悬浮物品提示 (仅物品页显示). */
+    override fun renderTooltip(guiGraphics: GuiGraphics, x: Int, y: Int) {
+        if (!isRenderInventory) return
+        super.renderTooltip(guiGraphics, x, y)
+    }
+
     override fun mouseMoved(mouseX: Double, mouseY: Double) {
         if (ImGuiUtilApi.wantCaptureMouse()) return
 

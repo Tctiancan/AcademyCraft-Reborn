@@ -67,6 +67,12 @@ object AnimationUtil {
                 widget.visibility = Widget.Visibility.INVISIBLE
                 onEndCallback.run()
             }
+
+            // 隐藏动画被中断(例如快速来回切换页面)时, 若只在 onAnimationEnd 置 INVISIBLE,
+            // 被中断隐藏的页面会残留为可见, 旧的页面内容继续绘制在背景上.
+            override fun onAnimationCancel(animation: Animator) {
+                widget.visibility = Widget.Visibility.INVISIBLE
+            }
         }
     }
 }

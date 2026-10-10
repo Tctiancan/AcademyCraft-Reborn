@@ -1,10 +1,11 @@
-#version 330
+#version 150
 
-layout(std140) uniform SdfUniforms {
-    vec2 Size;
-    vec4 Margins;
-    vec4 FillColor;
-};
+// 移植自 26.2: 原版本使用 `layout(std140) uniform SdfUniforms` 块, 但 1.21.1 的
+// [ShaderInstance] 无法访问/上传 GL uniform 块, 故改为逐个普通 uniform (Size/Margins/FillColor)
+// 以经 safeGetUniform 上传, 保留原有 SDF 圆角羽化数学.
+uniform vec2 Size;
+uniform vec4 Margins;
+uniform vec4 FillColor;
 
 in vec2 texCoord0;
 out vec4 fragColor;
