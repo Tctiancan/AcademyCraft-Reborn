@@ -14,6 +14,7 @@ import org.academy.api.client.render.post.PostEffect;
 import org.academy.api.client.render.post.WorldSurfaceMasks;
 import org.academy.api.client.render.vfx.VfxContexts;
 import org.academy.api.client.render.vfx.VfxManager;
+import org.academy.api.client.renderer.RendererManager;
 import org.academy.internal.client.ability.aeromanip.FlowSenseClient;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
 import org.academy.internal.client.render.vfx.InterferenceFieldClient;
@@ -87,5 +88,29 @@ public abstract class MixinLevelRenderer {
                 camera.getPosition()
         );
         NeoForge.EVENT_BUS.post(event);
+        renderFirstPersonEffectsWithHiddenHud(deltaTracker, poseStack);
+    }
+
+    private void renderFirstPersonEffectsWithHiddenHud(DeltaTracker deltaTracker, PoseStack poseStack) {
+        var minecraft = Minecraft.getInstance();
+        // 仅当 GUI 被隐藏 (F1) 时才复用 26.2 的 hidden-HUD 第一人称特效挂点:
+        // 此分支在第 level render 相机视图 poseStack (frustumMatrix) 上渲染
+        // renderFirstPersonWhenHudHidden()==true 的桥接渲染器 (电磁铁武器),
+        // 因为此时 renderItemInHand 不会再绘制手部与普通第一人称特效。
+        if (!minecraft.options.hideGui
+                || !minecraft.options.getCameraType().isFirstPerson()
+                || minecraft.gameMode == null) {
+            return;
+        }
+        var gameType = minecraft.gameMode.getPlayerMode();
+        if (gameType == net.minecraft.world.level.GameType.SPECTATOR) return;
+        var player = minecraft.player;
+        if (player == null) return;
+        var partialTick = deltaTracker.getGameTimeDeltaPartialTick(false);
+        var bufferSource = minecraft.renderBuffers().bufferSource();
+        var packedLight = minecraft.getEntityRenderDispatcher().getPackedLightCoords(player, partialTick);
+        RendererManager.renderEffectFirstPersonWithHiddenHud(
+                poseStack, bufferSource, player, packedLight, partialTick);
+        bufferSource.endBatch();
     }
 }
