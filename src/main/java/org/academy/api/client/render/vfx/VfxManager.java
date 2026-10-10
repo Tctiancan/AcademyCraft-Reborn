@@ -70,9 +70,11 @@ public final class VfxManager {
                     VfxRegistry.renderPhase(VfxPhase.WORLD_ALWAYS_ON_TOP, frameData, renderContext));
             AcademyProfiler.runZone("academy.vfx.screen", () ->
                     VfxRegistry.renderPhase(VfxPhase.SCREEN_SPACE_POST, frameData, renderContext));
-            if (!hasPhaseData(VfxPhase.WORLD_GLOW)) {
-                frameData.clear();
-            }
+            // 26.2 的 WORLD_GLOW 数据由 bloom/glow 后处理 pass 延迟渲染; 1.21.1 无该统一 pass,
+            // 改为在 translucent/top/screen 之后以内联加法方式渲染到主缓冲 (渲染器自包含 RenderSystem 态)。
+            AcademyProfiler.runZone("academy.vfx.glow", () ->
+                    VfxRegistry.renderPhase(VfxPhase.WORLD_GLOW, frameData, renderContext));
+            frameData.clear();
         });
     }
 
@@ -99,6 +101,7 @@ public final class VfxManager {
         private final Vector3f cameraPos = new Vector3f();
         private final Quaternionf cameraOrientation = new Quaternionf();
         private final Matrix4f viewRotationMatrix = new Matrix4f();
+        private final Matrix4f projection = new Matrix4f();
         private float gameTime;
 
         void update(VfxFrameContext frame) {
@@ -107,6 +110,7 @@ public final class VfxManager {
             cameraPos.set(camera.pos());
             cameraOrientation.set(camera.orientation());
             viewRotationMatrix.set(camera.viewRotationMatrix());
+            projection.set(camera.projectionMatrix());
         }
 
         @Override

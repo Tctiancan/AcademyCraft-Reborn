@@ -69,18 +69,26 @@ public final class BeamRenderer implements VfxRenderer<BeamData> {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
         RenderSystem.disableDepthTest();
+        RenderSystem.disableCull();
 
         var modelViewStack = RenderSystem.getModelViewStack();
         modelViewStack.pushMatrix();
         modelViewStack.set(viewMatrix);
         RenderSystem.applyModelViewMatrix();
 
+        // renderLevel RETURN 时 RenderSystem 的环境投影不可靠，显式用帧捕获的真实世界透视投影设置。
+        var prevProjection = RenderSystem.getProjectionMatrix();
+
+        // 注意：1.21.1 的 Tesselator.begin() 每次返回共享同一 ByteBufferBuilder 的新 BufferBuilder。
+        // 若同时创建 ball/box 两个 builder 交错写入，build() 会一次性取走两段字节但 drawState 只按
+        // 各自 builder 的顶点数绘制，圆柱轴数据会被丢弃导致光束不可见。因此必须拆成先后两个独立 pass：
+        // 先构建并冲刷球网格 (清空共享缓冲)，再重建圆柱 builder 写入并冲刷。
+        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
         var instance = new Matrix4f();
         var ballBuilder = Tesselator.getInstance().begin(
                 VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-        var boxBuilder = Tesselator.getInstance().begin(
-                VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
-
         for (var beam : data) {
             var ballRadius = beam.progress() * 0.185f * beam.ballScale();
             instance.identity()
@@ -89,7 +97,15 @@ public final class BeamRenderer implements VfxRenderer<BeamData> {
                     .rotateZ((90 + beam.xRot()) * Mth.DEG_TO_RAD)
                     .scale(ballRadius * ballFactor);
             appendIcosphere(ballBuilder, instance);
+        }
+        MeshData ballMesh = ballBuilder.build();
+        if (ballMesh != null) {
+            BufferUploader.drawWithShader(ballMesh);
+        }
 
+        var boxBuilder = Tesselator.getInstance().begin(
+                VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
+        for (var beam : data) {
             var rayProgress = beam.isCharging() ? 0.0f : beam.progress();
             var width = rayProgress * 0.25f * boxFactorXZ * beam.widthScale();
             instance.identity()
@@ -99,20 +115,15 @@ public final class BeamRenderer implements VfxRenderer<BeamData> {
                     .scale(width, beam.length(), width);
             appendCylinderQuads(boxBuilder, instance);
         }
-
-        RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        MeshData ballMesh = ballBuilder.build();
-        if (ballMesh != null) {
-            BufferUploader.draw(ballMesh);
-        }
         MeshData boxMesh = boxBuilder.build();
         if (boxMesh != null) {
-            BufferUploader.draw(boxMesh);
+            BufferUploader.drawWithShader(boxMesh);
         }
 
         modelViewStack.popMatrix();
         RenderSystem.applyModelViewMatrix();
+        RenderSystem.setProjectionMatrix(prevProjection, com.mojang.blaze3d.vertex.VertexSorting.DISTANCE_TO_ORIGIN);
+        RenderSystem.enableCull();
         RenderSystem.enableDepthTest();
     }
 

@@ -3,6 +3,7 @@ package org.academy.internal.client.renderer.effect;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -65,10 +66,12 @@ public final class LightShieldEffectRenderer implements EffectRenderer {
     @Override
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, int packedLight,
                        float yRot, float xRot) {
+        var player = Minecraft.getInstance().player;
+        if (player == null || !player.getData(AttachmentTypes.LIGHT_SHIELD_ACTIVE.get())) return;
         poseStack.pushPose();
         poseStack.translate(0, -0.25, -1.4);
         poseStack.mulPose(Axis.XP.rotationDegrees(-xRot));
-        poseStack.mulPose(Axis.ZP.rotationDegrees(0));
+        poseStack.mulPose(Axis.ZP.rotationDegrees(player.tickCount * 12.0f));
         submitShield(poseStack, bufferSource, packedLight, THIRD_PERSON_HALF_SIZE);
         poseStack.popPose();
     }
