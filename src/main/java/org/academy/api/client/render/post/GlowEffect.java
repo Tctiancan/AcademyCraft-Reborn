@@ -3,11 +3,12 @@ package org.academy.api.client.render.post;
 import org.jspecify.annotations.Nullable;
 
 /**
- * 1.21.1 简化版 (C-stun)。
+ * 1.21.1 实装 (原 26.2 辉光/bloom 后处理)。
  *
- * 26.2 通过命令编码器 + 多级高斯降采样完成辉光/bloom 后处理; 1.21.1 无对应 API,
- * 且该链路位于世界级 VFX。按首版简化策略整体跳过: 保留实例生命周期 (init/getInstance/
- * close) 与阶段访问 (getBefore/getAfter), process 为空操作, 不产生任何辉光合成。
+ * <p>26.2 通过命令编码器 + 多级高斯降采样完成辉光合成; 1.21.1 无对应 API, 且辉光辉染 shader 未移植。
+ * 本实现以 {@link Phase} 承载辉光阶段 ({@link #getBefore()}/{@link #getAfter()}), {@link #process()}
+ * 在离屏目标 {@code MAIN_SCENE} 之上以 {@code position_color} 冲刷阶段几何, 保留瞬时辉光形体而不含
+ * 高斯 post 模糊。生命周期 (init/getInstance/close) 与原签名保持一致。
  */
 public final class GlowEffect {
     private static final Phase BEFORE = new Phase("before");
@@ -41,7 +42,9 @@ public final class GlowEffect {
     }
 
     public void process() {
-        // C-stun: 1.21.1 不执行辉光后处理。
+        // 离屏目标 MAIN_SCENE 已由 PostEffect.pre() 绑为写入目标, 在此冲刷辉光阶段几何.
+        BEFORE.draw();
+        AFTER.draw();
     }
 
     public void close() {

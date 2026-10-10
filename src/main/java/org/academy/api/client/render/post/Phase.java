@@ -1,21 +1,27 @@
 package org.academy.api.client.render.post;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.BufferUploader;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
 import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 
 /**
- * 1.21.1 简化版 (C-stun)。
+ * 1.21.1 实装 (原 26.2 后处理阶段缓冲)。
  *
- * 26.2 通过 StagedVertexBuffer + RenderType.drawFromBuffer 延迟提交阶段顶点; 1.21.1
- * 无对应 API。按首版简化策略, getBuffer 返回 Tesselator 的单例 BufferBuilder (不被 flush,
- * 顶点随即丢弃), draw/close 为空操作, 保证调用方 (粒子/实体渲染器) 仍可编译运行但不产生辉光。
+ * <p>26.2 通过 {@code StagedVertexBuffer} + {@code RenderType.drawFromBuffer} 延迟提交阶段顶点;
+ * 1.21.1 无对应 API。本实现以即时态缓冲等价物保持同一调用形态 ({@link #getBuffer(RenderType)} 返回
+ * 顶点消费者), {@link #draw()} 把阶段内累积的三角形列表以 {@code position_color} shader 冲刷进
+ * 当前绑定的帧缓冲 (由 {@link PostEffect#pre()} 切换为离屏目标 {@code MAIN_SCENE}), 再为重开下一帧
+ * 重建缓冲。格式保持首版选定的 {@code POSITION_COLOR}/{@code TRIANGLES}。
  */
 public class Phase {
-    private final BufferBuilder builder;
+    private BufferBuilder builder;
 
     public Phase(String name) {
         this.builder = Tesselator.getInstance().begin(
@@ -27,7 +33,14 @@ public class Phase {
     }
 
     public void draw() {
-        // C-stun: 1.21.1 不提交阶段缓存。
+        MeshData meshdata = this.builder.build();
+        if (meshdata == null) {
+            return;
+        }
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        BufferUploader.draw(meshdata);
+        this.builder = Tesselator.getInstance().begin(
+                VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
     }
 
     public void close() {

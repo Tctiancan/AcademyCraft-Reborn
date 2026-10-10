@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderType;
+import org.academy.api.client.resources.R;
 import org.com.mojang.blaze3d.buffers.GpuBuffer;
 import org.com.mojang.blaze3d.textures.GpuTextureView;
 import org.joml.Matrix4f;
@@ -335,6 +336,7 @@ public final class Render {
         public static final RenderType CLOUDROOM = RenderType.gui();
         public static final RenderType CLEANING_ROBOT = RenderType.gui();
         public static final RenderType DISTORTION_RING = RenderType.gui();
+        public static final RenderType CAT_ENGINE = RenderType.entityTranslucent(R.textures.item.cat_engine);
         public static final RenderType POS_COLOR_TRANGLES = RenderType.gui();
         public static final RenderType POS_COLOR_TRANGLES_GLOW_ADDITIVE = RenderType.gui();
         public static final RenderType POS_COLOR_QUADS = RenderType.gui();

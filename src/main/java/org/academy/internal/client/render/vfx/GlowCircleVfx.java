@@ -73,7 +73,16 @@ public final class GlowCircleVfx implements Vfx {
 
         @Override
         public void render(VfxRenderContext context, List<? extends Data> data) {
-            // C-stun: 1.21.1 不渲染光环特效 (世界级 VFX)。
+            var camera = context.cameraPos();
+            for (var ring : data) {
+                if (!GlowCircleRenderer.isVisibleForCurrentCamera(ring.ownerEntityId())) continue;
+                var position = ring.position();
+                poseStack.pushPose();
+                poseStack.translate(position.x - camera.x, position.y - camera.y, position.z - camera.z);
+                GlowCircleRenderer.renderRing(
+                        poseStack, ring.radius(), ring.xRot(), ring.yRot());
+                poseStack.popPose();
+            }
         }
     }
 }

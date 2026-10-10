@@ -1,11 +1,22 @@
 package org.academy.internal.client.render.vfx;
 
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.Tesselator;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.academy.api.client.render.vfx.*;
 import org.academy.api.client.resources.R;
 import org.academy.api.common.vfx.SkillVfxState;
+import org.joml.Matrix4f;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
@@ -48,12 +59,16 @@ public final class DarkmatterSlashVfx implements Vfx {
     }
 
     /**
-     * 1.21.1 简化版 (C-stun)。
+     * 1.21.1 实装 (原 26.2 斩击刀光)。
      *
-     * 26.2 通过 GpuDevice/RenderPass 实例化四边形绘制斩击刀光; 1.21.1 无对应 API, 且该渲染位于
-     * 世界级 VFX 链路上。按首版简化策略清空 GPU 实现, 仅保留 VfxRenderer 生命周期方法。
+     * <p>26.2 通过 GpuDevice/RenderPass 实例化四边形绘制; 1.21.1 无对应 API, 改用即时态提交:
+     * 以相机-相对视旋转矩阵 ({@link VfxRenderContext#viewRotationMatrix()}) 左乘每实例变换
+     * ({@code translate→rotateY→rotateX→translate→scale}) 合成模型视图, 把单位四边形以
+     * {@code positional_tex_color} shader 冲刷, 颜色 alpha 为逐实例生命周期强度, 按进度选中
+     * 4 帧贴图中的一帧, 透明混合。
      */
     private static final class Renderer implements VfxRenderer<Data> {
+        private static final boolean[] INNER = {false, true};
         private static final ResourceLocation[] FRAMES = {
                 R.textures.darkmatter_cut_slash_effect_1, R.textures.darkmatter_cut_slash_effect_2,
                 R.textures.darkmatter_cut_slash_effect_3, R.textures.darkmatter_cut_slash_effect_4
@@ -61,17 +76,69 @@ public final class DarkmatterSlashVfx implements Vfx {
 
         @Override
         public void init() {
-            // C-stun: 1.21.1 不创建 GPU 缓冲。
         }
 
         @Override
         public void render(VfxRenderContext ctx, List<? extends Data> data) {
-            // C-stun: 1.21.1 不绘制斩击刀光。
+            if (data.isEmpty()) {
+                return;
+            }
+            RenderSystem.enableBlend();
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+            RenderSystem.disableDepthTest();
+            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            for (var item : data) {
+                for (boolean inner : INNER) {
+                    drawSlash(ctx, item, inner);
+                }
+            }
+            RenderSystem.enableDepthTest();
+        }
+
+        private static void drawSlash(VfxRenderContext ctx, Data item, boolean inner) {
+            int frame = item.frame();
+            float life = Mth.sin(item.progress * Mth.PI);
+            float scale = item.state.scale() * (.92f + .18f * life) * (inner ? .76f : 1f);
+            float width = 5f * scale * (.82f + .18f * Math.min(1.0f, item.progress * 1.7f));
+            float height = 1.05f * scale;
+            boolean mirrored = (item.state.direction() < 0) != inner;
+            var p = item.state.position();
+            var camera = ctx.cameraPos();
+            var transform = new Matrix4f()
+                    .translation((float) (p.x - camera.x), (float) (p.y - camera.y), (float) (p.z - camera.z))
+                    .rotateY((270 - item.state.yRot()) * Mth.DEG_TO_RAD)
+                    .rotateX(-item.state.xRot() * Mth.DEG_TO_RAD)
+                    .translate(0, height * .5f, 0).scale(width, 1, mirrored ? -width : width);
+            float alpha = life * .92f * (inner ? .52f : 1f);
+
+            var modelViewStack = RenderSystem.getModelViewStack();
+            modelViewStack.pushMatrix();
+            modelViewStack.set(new Matrix4f(ctx.viewRotationMatrix()).mul(transform));
+            RenderSystem.applyModelViewMatrix();
+
+            var builder = Tesselator.getInstance().begin(
+                    VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            emitCorner(builder, -0.5f, 0.0f, -0.5f, 0.0f, 0.0f, alpha);
+            emitCorner(builder, 0.5f, 0.0f, -0.5f, 1.0f, 0.0f, alpha);
+            emitCorner(builder, 0.5f, 0.0f, 0.5f, 1.0f, 1.0f, alpha);
+            emitCorner(builder, -0.5f, 0.0f, 0.5f, 0.0f, 1.0f, alpha);
+            MeshData meshData = builder.build();
+            if (meshData != null) {
+                RenderSystem.setShaderTexture(0, FRAMES[frame]);
+                BufferUploader.draw(meshData);
+            }
+
+            modelViewStack.popMatrix();
+            RenderSystem.applyModelViewMatrix();
+        }
+
+        private static void emitCorner(VertexConsumer consumer, float x, float y, float z,
+                                       float u, float v, float alpha) {
+            consumer.addVertex(x, y, z).setUv(u, v).setColor(1.0f, 1.0f, 1.0f, alpha);
         }
 
         @Override
         public void close() {
-            // C-stun: 1.21.1 无 GPU 资源需要释放。
         }
     }
 }
