@@ -47,10 +47,11 @@ public class GlowCircleRenderer extends EntityRenderer<GlowCircle> {
         poseStack.mulPose(Axis.XP.rotationDegrees(180));
 
         var vertexConsumer = PostEffect.getPre().getBuffer(Render.RenderTypes.DISTORTION_RING);
-        vertexConsumer.addVertex(matrix, -halfRadius, 0, -halfRadius).setUv(0, 0).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
-        vertexConsumer.addVertex(matrix, halfRadius, 0, -halfRadius).setUv(1, 0).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
-        vertexConsumer.addVertex(matrix, halfRadius, 0, halfRadius).setUv(1, 1).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
-        vertexConsumer.addVertex(matrix, -halfRadius, 0, halfRadius).setUv(0, 1).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
+        // 当前后处理阶段缓冲为 POSITION_COLOR, 需显式填充颜色元素, 否则 addVertex 校验 "Missing elements in vertex: Color"。
+        vertexConsumer.addVertex(matrix, -halfRadius, 0, -halfRadius).setColor(0xFFFFFFFF).setUv(0, 0).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
+        vertexConsumer.addVertex(matrix, halfRadius, 0, -halfRadius).setColor(0xFFFFFFFF).setUv(1, 0).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
+        vertexConsumer.addVertex(matrix, halfRadius, 0, halfRadius).setColor(0xFFFFFFFF).setUv(1, 1).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
+        vertexConsumer.addVertex(matrix, -halfRadius, 0, halfRadius).setColor(0xFFFFFFFF).setUv(0, 1).setNormal(distortionStrength, ringWidth, ringEdgeBlur);
 
         poseStack.popPose();
     }

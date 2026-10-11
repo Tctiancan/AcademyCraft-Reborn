@@ -3,9 +3,11 @@ package org.academy.api.client.render.post;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlas;
+import org.academy.internal.client.render.AcademyShaders;
 
 /**
  * 1.21.1 实装 (原 26.2 后处理阶段缓冲)。
@@ -25,6 +27,7 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 public class Phase {
     private static final int INITIAL_CAPACITY = 786432;
     private final boolean textured;
+    private final boolean distortion;
     private final ByteBufferBuilder allocator;
     private BufferBuilder builder;
 
@@ -33,12 +36,22 @@ public class Phase {
     }
 
     public Phase(String name, boolean textured) {
+        this(name, textured, false);
+    }
+
+    public Phase(String name, boolean textured, boolean distortion) {
         this.textured = textured;
+        this.distortion = distortion;
         this.allocator = new ByteBufferBuilder(INITIAL_CAPACITY);
         this.builder = newBuffer();
     }
 
     private BufferBuilder newBuffer() {
+        if (distortion) {
+            // 扭曲光环阶段: 顶点携带 UV0 (全屏采样坐标) 与 Normal (扭曲强度/环宽/边缘模糊),
+            // 以 QUADS 拓扑构建环形四边形。
+            return new BufferBuilder(allocator, VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
+        }
         if (textured) {
             return new BufferBuilder(allocator, VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
         }
@@ -60,7 +73,23 @@ public class Phase {
             RenderSystem.disableDepthTest();
             RenderSystem.enableBlend();
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            if (textured) {
+            if (distortion) {
+                // 扭曲光环阶段: 以扭曲 shader 采样离屏场景快照 (PostEffect 捕获的 MAIN_SCENE),
+                // 对环带做径向偏移扭曲, 合成回屏。ModelViewMat/ProjMat 由 drawWithShader 依据
+                // RenderSystem 当前矩阵 (混合前已设为相机旋转 + 等级投影) 上传, 故环面位置正确;
+                // ScreenSize 用于 fragCoord->屏幕 UV 归一化. 绑定的是离屏场景纹理而非活动帧缓冲,
+                // 规避 "读自己" 的帧缓冲反馈。
+                RenderSystem.defaultBlendFunc();
+                var distortionShader = AcademyShaders.getDistortionShader();
+                if (distortionShader != null) {
+                    RenderSystem.setShader(() -> distortionShader);
+                    RenderSystem.setShaderTexture(0, PostEffect.getSceneColorTextureId());
+                    var main = Minecraft.getInstance().getMainRenderTarget();
+                    distortionShader.safeGetUniform("ScreenSize").set((float) main.width, (float) main.height);
+                } else {
+                    RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+                }
+            } else if (textured) {
                 // 纹理相位 (移植 26.2 IMAG_PHASE_PARTICLE_POST): 采样粒子图集, position_tex_color
                 // shader, 半透明混合。每个粒子据此显示出圆润带纹理的光斑, 而非单调纯色三角面。
                 // 26.2 该管线即 position_tex_color + Sampler0=粒子图集 + TRANSLUCENT + 不剔除。

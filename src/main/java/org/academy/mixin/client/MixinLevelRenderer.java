@@ -94,6 +94,9 @@ public abstract class MixinLevelRenderer {
         modelViewStack.set(viewRotation);
         RenderSystem.applyModelViewMatrix();
         try {
+            // 扭曲光环 (动能冲击波) 须采样主帧缓冲场景作径向偏移, 需离屏只读快照; 在模型视图/
+            // 投影窗口内冲刷, 其四边形几何方经正确的 ProjMat*ModelViewMat 变换映射到屏幕环带。
+            PostEffect.drawPre();
             GlowEffect.getInstance().process();
         } finally {
             modelViewStack.popMatrix();

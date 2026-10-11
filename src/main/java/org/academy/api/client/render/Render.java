@@ -339,7 +339,7 @@ public final class Render {
         public static final RenderType IMAG_PHASE_PARTICLE_POST = RenderType.gui();
         public static final RenderType CLOUDROOM = AcademyShaders.cloudroomType(R.textures.item.cat_engine);
         public static final RenderType CLEANING_ROBOT = RenderType.gui();
-        public static final RenderType DISTORTION_RING = RenderType.gui();
+        public static final RenderType DISTORTION_RING = AcademyShaders.distortionRingType();
         public static final RenderType CAT_ENGINE = RenderType.entityTranslucent(R.textures.item.cat_engine);
         public static final RenderType POS_COLOR_TRANGLES = RenderType.gui();
         public static final RenderType POS_COLOR_TRANGLES_GLOW_ADDITIVE = RenderType.gui();

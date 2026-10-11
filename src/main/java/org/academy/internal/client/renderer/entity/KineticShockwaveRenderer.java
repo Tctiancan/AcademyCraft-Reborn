@@ -26,10 +26,11 @@ public final class KineticShockwaveRenderer
         if (xRot != 0.0f) poseStack.mulPose(Axis.XP.rotationDegrees(xRot));
         var matrix = poseStack.last().pose();
         var consumer = PostEffect.getPre().getBuffer(Render.RenderTypes.DISTORTION_RING);
-        consumer.addVertex(matrix, -radius, 0, -radius).setUv(0, 0).setNormal(strength, width, blur);
-        consumer.addVertex(matrix, radius, 0, -radius).setUv(1, 0).setNormal(strength, width, blur);
-        consumer.addVertex(matrix, radius, 0, radius).setUv(1, 1).setNormal(strength, width, blur);
-        consumer.addVertex(matrix, -radius, 0, radius).setUv(0, 1).setNormal(strength, width, blur);
+        // 当前后处理阶段缓冲为 POSITION_COLOR, 需显式填充颜色元素, 否则 addVertex 校验 "Missing elements in vertex: Color"。
+        consumer.addVertex(matrix, -radius, 0, -radius).setColor(0xFFFFFFFF).setUv(0, 0).setNormal(strength, width, blur);
+        consumer.addVertex(matrix, radius, 0, -radius).setColor(0xFFFFFFFF).setUv(1, 0).setNormal(strength, width, blur);
+        consumer.addVertex(matrix, radius, 0, radius).setColor(0xFFFFFFFF).setUv(1, 1).setNormal(strength, width, blur);
+        consumer.addVertex(matrix, -radius, 0, radius).setColor(0xFFFFFFFF).setUv(0, 1).setNormal(strength, width, blur);
         poseStack.popPose();
     }
 

@@ -28,6 +28,8 @@ import static org.academy.AcademyCraft.academy;
 @EventBusSubscriber(modid = AcademyCraft.MOD_ID, value = Dist.CLIENT)
 public final class AcademyShaders {
     private static ShaderInstance cloudroomShader;
+    private static ShaderInstance distortionShader;
+    private static @org.jspecify.annotations.Nullable RenderType distortionRingType;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -45,10 +47,22 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic cloudroom shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("distortion_ring"),
+                    DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL);
+            event.registerShader(shader, instance -> distortionShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic distortion ring shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
         return cloudroomShader;
+    }
+
+    public static ShaderInstance getDistortionShader() {
+        return distortionShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {
@@ -66,5 +80,25 @@ public final class AcademyShaders {
                 .createCompositeState(true);
         return RenderType.create("cloudroom", DefaultVertexFormat.NEW_ENTITY,
                 VertexFormat.Mode.QUADS, 1536, true, true, state);
+    }
+
+    public static RenderType distortionRingType() {
+        if (distortionRingType == null) {
+            distortionRingType = buildDistortionRingType();
+        }
+        return distortionRingType;
+    }
+
+    private static RenderType buildDistortionRingType() {
+        RenderType.CompositeState state = RenderType.CompositeState.builder()
+                .setShaderState(new RenderStateShard.ShaderStateShard(AcademyShaders::getDistortionShader))
+                .setTextureState(RenderStateShard.NO_TEXTURE)
+                .setTransparencyState(RenderStateShard.TRANSLUCENT_TRANSPARENCY)
+                .setCullState(RenderStateShard.NO_CULL)
+                .setDepthTestState(RenderStateShard.NO_DEPTH_TEST)
+                .setWriteMaskState(RenderStateShard.COLOR_WRITE)
+                .createCompositeState(true);
+        return RenderType.create("distortion_ring", DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL,
+                VertexFormat.Mode.QUADS, 1536, true, false, state);
     }
 }

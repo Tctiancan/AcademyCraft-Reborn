@@ -1,8 +1,7 @@
-#version 330
-
-#moj_import <minecraft:globals.glsl>
+#version 150
 
 uniform sampler2D Sampler0;
+uniform vec2 ScreenSize;
 
 in vec2 texCoord0;
 in vec3 distortionParams;
