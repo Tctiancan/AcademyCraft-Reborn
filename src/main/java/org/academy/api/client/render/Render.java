@@ -324,7 +324,10 @@ public final class Render {
      * 基础上映射到基础透明类型, 供实体层引用以维持编译.
      */
     public abstract static class RenderTypes {
-        public static final RenderType MINE_DETECT_LINES = RenderType.gui();
+        // sqrtf: 该常量对应 26.2 的线框管线 (LINES)。旧桩用 RenderType.gui()(QUADS) 会把
+        // 每段 2 顶点的线框线段当四边形解释, 导致描边显示为三角面/填充面; 改用真正的
+        // 线渲染类型 RenderType.lines()(LINES + POSITION_COLOR_NORMAL)。
+        public static final RenderType MINE_DETECT_LINES = RenderType.lines();
         public static final RenderType TELEPORT_CURSOR = RenderType.gui();
         public static final RenderType STORM_WING = RenderType.gui();
         public static final RenderType PLASMA_CLOUD = RenderType.gui();
