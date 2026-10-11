@@ -1,28 +1,40 @@
 package org.academy.internal.client.render.vfx;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.academy.api.client.render.graph.type.Value;
+import org.academy.api.client.render.vfx.BoundedAnimationTimeline;
 import org.academy.api.client.render.vfx.Vfx;
 import org.academy.api.client.render.vfx.VfxFrameContext;
 import org.academy.api.client.render.vfx.VfxSink;
+import org.academy.api.client.render.vfxgraph.runtime.ActiveEffect;
+import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
+import org.academy.api.client.render.vfxgraph.runtime.VortexRenderBudget;
 import org.academy.api.client.util.VertexUtil;
 import org.academy.api.common.ability.VortexAttackPattern;
 import org.academy.api.common.util.ImprovedNoise;
 import org.academy.internal.common.attachment.AttachmentTypes;
+import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -102,6 +114,39 @@ public final class WingVfx implements Vfx {
             createSweepTimelines();
     private static final Map<Integer, Long> BLACK_TO_WHITE_TRANSITIONS = new HashMap<>();
     private static ClientLevel animationLevel;
+    private static final ResourceLocation BLACK_GRAPH = ResourceLocation.fromNamespaceAndPath("academy", "vfxgraph/black_wings");
+    private static final Map<Integer, ActiveEffect> BLACK_GRAPHS = new HashMap<>();
+    private static final Map<Integer, BlackPlayback> BLACK_ATTACKS = new HashMap<>();
+    private static final Map<Integer, BlackVisual> BLACK_VISUALS = new HashMap<>();
+    private static final VortexRenderBudget BLACK_BUDGET = new VortexRenderBudget();
+
+    private static int blackVisibleCount;
+    private static long blackClockNanos;
+    private static double blackTime;
+
+    private static final class BlackVisual {
+        final Matrix4f relativeRoot = new Matrix4f();
+        boolean hasRoot;
+        float capturedYaw;
+        int requestedTier = 1;
+        double lastVisible;
+    }
+
+    private static final class BlackPlayback {
+        final long epoch;
+        final BoundedAnimationTimeline<BlackAttack> timeline;
+        final double receivedAt;
+        boolean active;
+        boolean entitySeen;
+        BlackPlayback(long epoch, long sequenceFloor, boolean active) {
+            this.epoch = epoch;
+            this.active = active;
+            receivedAt = blackTime;
+            timeline = new BoundedAnimationTimeline<>(sequenceFloor);
+        }
+    }
+
+    private record BlackAttack(VortexAttackPattern pattern, List<Vec3> targets) { }
 
     private static EnumMap<org.academy.internal.client.render.vfx.WingKind, SweepAnimationTimeline<SweepAnimation>> createSweepTimelines() {
         var timelines = new EnumMap<org.academy.internal.client.render.vfx.WingKind, SweepAnimationTimeline<SweepAnimation>>(
@@ -140,11 +185,26 @@ public final class WingVfx implements Vfx {
     public static final WingVfx INSTANCE = new WingVfx();
 
     public static long blackActivationEpoch(int entityId) {
-        return -1;
+        var playback = BLACK_ATTACKS.get(entityId);
+        return playback == null || !playback.active ? -1 : playback.epoch;
     }
 
     public static BlackDiagnostics blackDiagnostics() {
-        return new BlackDiagnostics(0, 0, 0L, 0L, 0L, 0L, 0L);
+        long started = 0, duplicates = 0, coalesced = 0, expired = 0;
+        for (var playback : BLACK_ATTACKS.values()) {
+            started += playback.timeline.started(); duplicates += playback.timeline.duplicates();
+            coalesced += playback.timeline.coalesced(); expired += playback.timeline.expired();
+        }
+        return new BlackDiagnostics(blackVisibleCount, BLACK_BUDGET.vertices(), BLACK_BUDGET.bytes(),
+                started, duplicates, coalesced, expired);
+    }
+
+    private static double blackVisualTime() {
+        long now = System.nanoTime();
+        if (blackClockNanos != 0 && !Minecraft.getInstance().isPaused())
+            blackTime += Math.max(0, (now - blackClockNanos) / 1e9);
+        blackClockNanos = now;
+        return blackTime;
     }
 
     public static void enqueueSweep(WingKind kind, int entityId, boolean leftWing,
@@ -165,12 +225,35 @@ public final class WingVfx implements Vfx {
     }
 
     public static void syncBlackState(int entityId, long epoch, long sequenceFloor, boolean active) {
-        // C-stun: 1.21.1 黑色翅膀 vfxgraph 尚未移植, 不同步黑色翅膀状态。
+        var minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) return;
+        if (animationLevel != minecraft.level) { clearSweeps(); animationLevel = minecraft.level; }
+        blackVisualTime();
+        var previous = BLACK_ATTACKS.get(entityId);
+        if (previous != null && previous.epoch > epoch) return;
+        if (previous != null && previous.epoch == epoch && (active || !previous.active)) return;
+        if (BLACK_ATTACKS.size() >= 256 && previous == null) return;
+        BLACK_ATTACKS.put(entityId, new BlackPlayback(epoch, sequenceFloor, active));
     }
 
     public static void enqueueBlackAttack(int entityId, VortexAttackPattern pattern, List<Vec3> targets,
                                          long epoch, long sequence, float initialProgress) {
-        // C-stun: 1.21.1 不播放黑色翅膀攻击图形。
+        var minecraft = Minecraft.getInstance();
+        if (minecraft.level == null) return;
+        if (animationLevel != minecraft.level) { clearSweeps(); animationLevel = minecraft.level; }
+        double now = blackVisualTime();
+        var playback = BLACK_ATTACKS.get(entityId);
+        if (playback == null || playback.epoch < epoch) {
+            syncBlackState(entityId, epoch, 0, true);
+            playback = BLACK_ATTACKS.get(entityId);
+        }
+        if (playback == null || playback.epoch != epoch || !playback.active) return;
+        if (targets.size() != (pattern == VortexAttackPattern.FOURFOLD_SLAM ? 4 : 1)) return;
+        for (var target : targets) {
+            if (!Double.isFinite(target.x) || !Double.isFinite(target.y) || !Double.isFinite(target.z)) return;
+        }
+        playback.timeline.offer(sequence, new BlackAttack(pattern, List.copyOf(targets)), now,
+                pattern.durationTicks() / 20.0, initialProgress);
     }
 
     public static void enqueueBlackToWhiteTransition(int entityId) {
@@ -195,6 +278,16 @@ public final class WingVfx implements Vfx {
             return;
         }
         var currentTick = minecraft.level.getGameTime();
+        double now = blackVisualTime();
+        BLACK_ATTACKS.entrySet().removeIf(entry -> {
+            var playback = entry.getValue();
+            playback.timeline.advance(now);
+            if (!(minecraft.level.getEntity(entry.getKey()) instanceof Player player))
+                return playback.entitySeen || now - playback.receivedAt > 0.5;
+            playback.entitySeen = true;
+            if (!player.isAlive()) return true;
+            return false;
+        });
         for (var timeline : SWEEP_ANIMATIONS.values()) {
             timeline.prune(currentTick, SWEEP_DURATION_TICKS,
                     entityId -> minecraft.level.getEntity(entityId) != null);
@@ -208,6 +301,14 @@ public final class WingVfx implements Vfx {
     public static void clearSweeps() {
         for (var timeline : SWEEP_ANIMATIONS.values()) timeline.clear();
         BLACK_TO_WHITE_TRANSITIONS.clear();
+        BLACK_GRAPHS.values().forEach(ActiveEffect::stop);
+        BLACK_GRAPHS.clear();
+        BLACK_VISUALS.clear();
+        BLACK_BUDGET.beginFrame();
+        blackVisibleCount = 0;
+        BLACK_ATTACKS.clear();
+        blackClockNanos = 0;
+        blackTime = 0;
         animationLevel = null;
     }
 
@@ -228,6 +329,7 @@ public final class WingVfx implements Vfx {
         var level = minecraft.level;
         if (level == null) return;
         var roots = WingAvatarRegistry.entries();
+        sampleBlackGraphs(ctx, roots);
         if (roots.isEmpty()) return;
 
         var partialTick = ctx.partialTick();
@@ -296,6 +398,162 @@ public final class WingVfx implements Vfx {
     @Override
     public boolean isAlive() {
         return true;
+    }
+
+    private static void sampleBlackGraphs(VfxFrameContext ctx, Map<Integer, Matrix4f> capturedRoots) {
+        var minecraft = Minecraft.getInstance();
+        var level = minecraft.level;
+        var manager = VfxGraphManager.INSTANCE;
+        if (level == null || !manager.isInitialized()) return;
+        double now = blackVisualTime();
+        var camera = ctx.camera().pos();
+        // 26.2 的 VfxFrameContext.camera() 携带真实投影矩阵; 1.21.1 解析管线刻意把投影置
+        // 单位阵 (绘制时由 RenderSystem 提供), 若直接用 ctx.camera().projectionMatrix() 构造
+        // 视锥, 会在 1 格开外便把黑翼误剔除。采样发生在 renderLevel RETURN 早期, RenderSystem
+        // 投影仍是本帧等级投影, 此处取其真实值构造剔除视锥与投影混叠距离。
+        var projection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        var frustum = new FrustumIntersection(new Matrix4f(projection)
+                .mul(ctx.camera().viewRotationMatrix()));
+        var players = new ArrayList<Player>(level.players());
+        players.sort(Comparator.comparingDouble(player -> player == minecraft.player ? -1e12
+                : player.distanceToSqr(camera.x, camera.y, camera.z)
+                - (BLACK_ATTACKS.containsKey(player.getId()) && BLACK_ATTACKS.get(player.getId()).timeline.hasEvents() ? 256 : 0)));
+        BLACK_BUDGET.beginFrame((int) players.stream().filter(player -> isActive(player,
+                org.academy.internal.client.render.vfx.WingKind.BLACK)
+                || BLACK_TO_WHITE_TRANSITIONS.containsKey(player.getId())).count());
+        blackVisibleCount = 0;
+        BLACK_GRAPHS.values().forEach(effect -> effect.setFrameVisible(false));
+        var retained = new HashSet<Integer>();
+        for (var player : players) {
+            var transition = transitionProjection(player.getId(), ctx.gameTime());
+            boolean active = isActive(player, org.academy.internal.client.render.vfx.WingKind.BLACK);
+            if ((!active && transition == null) || !player.isAlive()) continue;
+            var pose = transition == null ? null : transition.blackWing();
+            if (pose != null && !pose.visible()) continue;
+            retained.add(player.getId());
+            var visual = BLACK_VISUALS.computeIfAbsent(player.getId(), id -> new BlackVisual());
+            var position = player.getPosition(ctx.partialTick());
+            float yaw = Mth.rotLerp(ctx.partialTick(), player.yBodyRotO, player.yBodyRot);
+            var captured = capturedRoots.get(player.getId());
+            if (captured != null) {
+                visual.relativeRoot.translation((float) (camera.x - position.x), (float) (camera.y - position.y),
+                        (float) (camera.z - position.z)).mul(captured);
+                visual.capturedYaw = yaw;
+                visual.hasRoot = true;
+            }
+            var playback = active && transition == null ? BLACK_ATTACKS.get(player.getId()) : null;
+            if (playback != null) playback.timeline.advance(now);
+            var current = playback == null || !playback.active ? null : playback.timeline.currentValue();
+            var pending = playback == null || !playback.active ? null : playback.timeline.pendingValue();
+            boolean fourfold = current != null && current.pattern == VortexAttackPattern.FOURFOLD_SLAM
+                    || pending != null && pending.pattern == VortexAttackPattern.FOURFOLD_SLAM;
+            double radius = Math.max(blackBoundsRadius(current, position), blackBoundsRadius(pending, position));
+            double distance = position.distanceTo(new Vec3(camera.x, camera.y, camera.z));
+            if (distance - radius > 128 || !frustum.testSphere((float) (position.x - camera.x),
+                    (float) (position.y - camera.y + 1.4), (float) (position.z - camera.z), (float) radius)) {
+                continue;
+            }
+            double projectedDistance = distance * 1.428 / Math.max(0.1, Math.abs(projection.m11()));
+            visual.requestedTier = player == minecraft.player ? 0
+                    : VortexRenderBudget.preferred(projectedDistance, visual.requestedTier);
+            int tier = BLACK_BUDGET.allocate(visual.requestedTier, fourfold);
+            if (tier < 0) {
+                continue;
+            }
+            var detail = VortexRenderBudget.DETAILS.get(tier);
+            visual.lastVisible = now;
+            blackVisibleCount++;
+            var effect = BLACK_GRAPHS.get(player.getId());
+            if (effect == null || effect.isStopped()) {
+                effect = manager.spawn(BLACK_GRAPH, new Vector3f());
+                // This caller already tested full sweep bounds and reserved the geometry cost.
+                effect.setAlwaysVisible(true);
+                BLACK_GRAPHS.put(player.getId(), effect);
+            }
+            effect.setFrameVisible(true);
+            Matrix4f root;
+            if (captured != null) root = new Matrix4f(captured);
+            else if (visual.hasRoot && player != minecraft.player) {
+                root = new Matrix4f().translation((float) (position.x - camera.x), (float) (position.y - camera.y),
+                        (float) (position.z - camera.z)).rotateY(-(yaw - visual.capturedYaw) * Mth.DEG_TO_RAD).mul(visual.relativeRoot);
+            } else {
+                root = new Matrix4f().translation((float) (position.x - camera.x), (float) (position.y - camera.y) + 1.4071875f,
+                        (float) (position.z - camera.z)).rotateY(-yaw * Mth.DEG_TO_RAD).rotateX(Mth.PI).scale(0.9375f);
+            }
+            var transform = root.translate(0f, 0.30f, 0.12f).rotateX(Mth.PI);
+            effect.setPosition(transform.getTranslation(new Vector3f()).add(camera));
+            effect.setRotation(transform.getUnnormalizedRotation(new Quaternionf()));
+            effect.setScale(transform.getScale(new Vector3f()).x);
+            var graph = effect.effect();
+            boolean clipBody = player == minecraft.player && minecraft.options.getCameraType().isFirstPerson()
+                    && minecraft.getCameraEntity() == player;
+            graph.setLiveParam("first_person_body_clip", Value.of(clipBody ? 1f : 0f));
+            if (clipBody) {
+                var inverse = new Matrix4f(transform).invert();
+                var eye = inverse.transformPosition(new Vector3f());
+                var minimum = new Vector3f(Float.POSITIVE_INFINITY);
+                var maximum = new Vector3f(Float.NEGATIVE_INFINITY);
+                float halfWidth = player.getBbWidth() * 0.4f;
+                // Stop below the eyes so the eye is never inside its own occluder.
+                float top = (float) (camera.y - position.y) - 0.18f;
+                for (int corner = 0; corner < 8; corner++) {
+                    var point = new Vector3f((float) (position.x - camera.x) + ((corner & 1) == 0 ? -halfWidth : halfWidth),
+                            (float) (position.y - camera.y) + ((corner & 2) == 0 ? 0f : top),
+                            (float) (position.z - camera.z) + ((corner & 4) == 0 ? -halfWidth : halfWidth));
+                    inverse.transformPosition(point);
+                    minimum.min(point);
+                    maximum.max(point);
+                }
+                graph.setLiveParam("body_clip_eye", Value.of(eye));
+                graph.setLiveParam("body_clip_min", Value.of(minimum));
+                graph.setLiveParam("body_clip_max", Value.of(maximum));
+            }
+            graph.setLiveParam("vortex_time", Value.of((float) now));
+            graph.setLiveParam("vortex_filaments", Value.of((float) detail.filaments()));
+            graph.setLiveParam("vortex_segments", Value.of((float) detail.segments()));
+            graph.setLiveParam("vortex_rings", Value.of((float) detail.rings()));
+            graph.setLiveParam("vortex_flecks", Value.of((float) detail.flecks()));
+            graph.setLiveParam("radial_scale", Value.of(pose == null ? 1f : pose.radialScale()));
+            graph.setLiveParam("length_scale", Value.of(pose == null ? 1f : pose.lengthScale()));
+            graph.setLiveParam("spread_scale", Value.of(pose == null ? 1f : pose.spreadDegrees() / 30f));
+            graph.setLiveParam("opacity", Value.of(1f));
+            graph.setLiveParam("sweep_left", Value.of(0f)); graph.setLiveParam("sweep_right", Value.of(0f));
+            graph.setLiveParam("pitch_left", Value.of(0f)); graph.setLiveParam("pitch_right", Value.of(0f));
+            graph.setLiveParam("attack_mode", Value.of(0f)); graph.setLiveParam("attack_progress", Value.of(1f));
+            var frame = playback == null || !playback.active ? null : playback.timeline.sample(now);
+            if (frame == null) continue;
+            var attack = frame.value();
+            graph.setLiveParam("attack_mode", Value.of((float) attack.pattern.id()));
+            graph.setLiveParam("attack_progress", Value.of(frame.progress()));
+            var inverseRotation = new Quaternionf(effect.rotation()).conjugate();
+            for (int i = 0; i < attack.targets.size(); i++) {
+                var worldTarget = attack.targets.get(i);
+                var target = new Vector3f((float) (worldTarget.x - effect.position().x),
+                        (float) (worldTarget.y - effect.position().y), (float) (worldTarget.z - effect.position().z));
+                inverseRotation.transform(target);
+                target.div(Math.max(0.001f, effect.scale()));
+                if (attack.pattern == VortexAttackPattern.FOURFOLD_SLAM) graph.setLiveParam("attack_corner_" + i, Value.of(target));
+                else {
+                    graph.setLiveParam("attack_target_x", Value.of(target.x));
+                    graph.setLiveParam("attack_target_y", Value.of(target.y));
+                    graph.setLiveParam("attack_target_z", Value.of(target.z));
+                }
+            }
+        }
+        BLACK_GRAPHS.entrySet().removeIf(entry -> {
+            var visual = BLACK_VISUALS.get(entry.getKey());
+            if (retained.contains(entry.getKey()) && visual != null && now - visual.lastVisible <= 0.75) return false;
+            entry.getValue().stop();
+            return true;
+        });
+        BLACK_VISUALS.keySet().removeIf(id -> !retained.contains(id));
+    }
+
+    private static double blackBoundsRadius(BlackAttack attack, Vec3 origin) {
+        if (attack == null) return 10;
+        double radius = 18;
+        for (var target : attack.targets) radius = Math.max(radius, target.distanceTo(origin) + 16);
+        return radius;
     }
 
     private static boolean isActive(Player player, org.academy.internal.client.render.vfx.WingKind kind) {

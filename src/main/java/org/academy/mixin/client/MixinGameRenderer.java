@@ -8,6 +8,7 @@ import org.academy.api.client.gui.animation.AnimationManager;
 import org.academy.api.client.gui.frame.UiFrame;
 import org.academy.api.client.render.Render;
 import org.academy.api.client.vanilla.RenderLoopEvent;
+import org.academy.internal.client.render.vfx.WingAvatarRegistry;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -33,6 +34,10 @@ public abstract class MixinGameRenderer {
 
     @Inject(method = "render", at = @At("HEAD"))
     private void onFrameUpdate(DeltaTracker deltaTracker, boolean renderLevel, CallbackInfo ci) {
+        // 26.2 MixinGameRenderer 每帧清空 wing avatar capture (PlayerModel/humanoid render 期间填充),
+        // 避免第三人称捕获的相机相对根矩阵残留到下一帧: 否则本地玩家从第三人称切到第一人称后,
+        // 遍历仍命中断掉的陈旧 capture → 黑翼按旧第三人称根定位而离体。
+        WingAvatarRegistry.beginFrame();
         AnimationManager.INSTANCE.onFrameUpdate();
         UiFrame.INSTANCE.onFrame();
         NeoForge.EVENT_BUS.post(new RenderLoopEvent());

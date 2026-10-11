@@ -328,6 +328,15 @@ public final class ActiveEffect {
     public void render(GpuTextureView target, @Nullable GpuTextureView depth,
                        GraphCamera camera, VfxGraphRenderer renderer, boolean clear, boolean bloomPass) {
         renderer.renderWorld(effect().buffer(), camera, worldTransform(), specs(), bloomPass);
+        // 弧光 (ARC) 几何由 ink_storm 弧管管线独立绘制 (黑翼等), 每张 ARC 规格各冲刷一次。
+        var arcs = effect().arcBuffer();
+        if (arcs != null && arcs.count() > 0) {
+            var renderWorld = worldTransform();
+            for (var spec : specs()) {
+                if (spec.geometry() != RenderSpec.Geometry.ARC) continue;
+                renderer.drawArcTubes(arcs, camera, renderWorld, bloomPass, spec);
+            }
+        }
     }
 
     /**

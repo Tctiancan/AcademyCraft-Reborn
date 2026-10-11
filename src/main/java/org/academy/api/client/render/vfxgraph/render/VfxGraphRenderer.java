@@ -14,12 +14,15 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.academy.api.client.resources.R;
 import org.academy.api.client.render.vfxgraph.arc.ArcBuffer;
+import org.academy.api.client.render.vfxgraph.arc.ArcCurve;
+import org.academy.api.client.render.vfxgraph.arc.BlenderArcCurves;
 import org.academy.api.client.render.vfxgraph.arc.CurveToMeshBuilder;
 import org.academy.api.client.render.vfxgraph.sim.ParticleBuffer;
 import org.academy.internal.client.render.AcademyShaders;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
@@ -86,7 +89,117 @@ public final class VfxGraphRenderer {
 
     public void drawArcTubes(ArcBuffer arcBuffer, GraphCamera camera, WorldTransform transform,
                              boolean bloomPass, RenderSpec spec) {
-        // C-stun: 世界 VFX 弧光渲染暂不移植。
+        if (arcBuffer == null || arcBuffer.count() == 0 || spec == null || spec.arc() == null) return;
+        var shader = AcademyShaders.getVfxgraphInkStormShader();
+        if (shader == null) return;
+
+        var arcRender = spec.arc();
+        int segRes = Math.clamp(arcRender.segments(), 3, 16);
+        int totalVerts = 0, totalIndices = 0;
+        for (int a = 0; a < arcBuffer.count(); a++) {
+            var arc = arcBuffer.arc(a);
+            if (!spec.matchesArcLayer(arc.layer())) continue;
+            var size = CurveToMeshBuilder.measure(arc, segRes);
+            totalVerts += size.vertices();
+            totalIndices += size.indices();
+        }
+        if (totalVerts == 0 || totalIndices == 0) return;
+        long vertexBytes = (long) totalVerts * CurveToMeshBuilder.VERTEX_STRIDE;
+        long indexBytes = (long) totalIndices * Integer.BYTES;
+        if (vertexBytes > Integer.MAX_VALUE - 64 || indexBytes > Integer.MAX_VALUE - 64) return;
+
+        // 1) 用 CurveToMeshBuilder 把全部弧管共享顶点/索引烘焙到临时缓冲 (发射器局部坐标)。
+        var vertexData = BufferUtils.createByteBuffer((int) vertexBytes);
+        var indexData = BufferUtils.createByteBuffer((int) indexBytes);
+        int vertexOffset = 0;
+        for (int a = 0; a < arcBuffer.count(); a++) {
+            var arc = arcBuffer.arc(a);
+            if (!spec.matchesArcLayer(arc.layer())) continue;
+            var light = arcLight(arc);
+            vertexOffset += CurveToMeshBuilder.append(arc, segRes,
+                    arc.r() * light[0], arc.g() * light[0], arc.b() * light[0], arc.a() * light[1],
+                    arcRender.branchBrightnessScale(), vertexData, indexData, vertexOffset);
+        }
+        vertexData.flip();
+        indexData.flip();
+        // 2) 顶点映射为相机相对世界坐标。该纯数据步骤在 1.21.1 已具备。
+        transformArcTubeVertices(vertexData, totalVerts, camera.position(), transform, arcRender.overallScale());
+
+        // 3) 1.21.1 的 MeshData/DrawState 仅支持顺序自动索引, 无法携带共享顶点的显式索引缓冲;
+        //    故按索引数据把共享顶点平铺成三角形流 (每角独立顶点), 交由 TRIANGLES 模式顺序索引绘制。
+        //    用 memByteBuffer 托管视图做切片拷贝: 全程边界检查, 避免 memCopy 的 SIMD 存根
+        //    越读页边界触发原生 EXCEPTION_ACCESS_VIOLATION。
+        long flatBytes = (long) totalIndices * CurveToMeshBuilder.VERTEX_STRIDE;
+        var flatBuilder = new ByteBufferBuilder((int) flatBytes);
+        long ptr = flatBuilder.reserve((int) flatBytes);
+        ByteBuffer flat = MemoryUtil.memByteBuffer(ptr, (int) flatBytes);
+        ByteBuffer src = vertexData.duplicate();
+        src.position(0);
+        for (int i = 0; i < totalIndices; i++) {
+            int vi = indexData.getInt(i * Integer.BYTES);
+            long off = (long) vi * CurveToMeshBuilder.VERTEX_STRIDE;
+            src.limit((int) (off + CurveToMeshBuilder.VERTEX_STRIDE));
+            src.position((int) off);
+            flat.put(src);
+        }
+        ByteBufferBuilder.Result flatResult = flatBuilder.build();
+
+        var drawState = new MeshData.DrawState(AcademyShaders.VFX_GRAPH_ARC_TUBE,
+                totalIndices, totalIndices, VertexFormat.Mode.TRIANGLES, VertexFormat.IndexType.least(totalIndices));
+        var mesh = new MeshData(flatResult, drawState);
+        try {
+            drawArcTubes(mesh, spec, shader, camera);
+        } finally {
+            mesh.close();
+        }
+    }
+
+    /** 弧光寿命亮度采样 (对齐 26.2): 火花/接触面/基座/闪烁各用一条 Blender 曲线调制亮度与 alpha。 */
+    private static float[] arcLight(ArcCurve arc) {
+        var lifetime = Math.max(1e-3f, arc.lifetime());
+        var ageFrac = Math.clamp(arc.age() / lifetime, 0f, 1f);
+        if (arc.sparkVelocity() != null) {
+            return new float[]{BlenderArcCurves.sample(BlenderArcCurves.PARTICLE_LIFE, ageFrac), 1f};
+        }
+        if (arc.flatRadius()) {
+            return new float[]{BlenderArcCurves.sample(BlenderArcCurves.CONTACT_RADIUS_AGE, ageFrac), 1f};
+        }
+        if (arc.hasArchBase()) {
+            return new float[]{BlenderArcCurves.sample(BlenderArcCurves.LIGHT, ageFrac) + 0.33f, 1f};
+        }
+        return new float[]{BlenderArcCurves.sample(BlenderArcCurves.FLICKER, ageFrac), 1f};
+    }
+
+    /** 弧管网格即时绘制：绑定 ink_storm shader，模型视图为纯旋转视图，顶点为相机相对坐标。 */
+    private void drawArcTubes(MeshData mesh, RenderSpec spec, ShaderInstance shader, GraphCamera camera) {
+        RenderSystem.setShader(() -> shader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        boolean additive = spec.blend() == RenderSpec.Blend.ADDITIVE || spec.blend() == RenderSpec.Blend.GLOW;
+        RenderSystem.enableBlend();
+        if (additive) {
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        } else {
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        }
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableCull();
+
+        var stack = RenderSystem.getModelViewStack();
+        stack.pushMatrix();
+        stack.set(camera.viewRotation()); // 纯旋转视图矩阵, 顶点已是相机相对坐标
+        RenderSystem.applyModelViewMatrix();
+        var prevProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        RenderSystem.setProjectionMatrix(camera.projection(), VertexSorting.DISTANCE_TO_ORIGIN);
+        try {
+            BufferUploader.drawWithShader(mesh);
+        } finally {
+            RenderSystem.setProjectionMatrix(prevProjection, VertexSorting.DISTANCE_TO_ORIGIN);
+            stack.popMatrix();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.enableCull();
+            RenderSystem.enableDepthTest();
+            RenderSystem.disableBlend();
+        }
     }
 
     /**

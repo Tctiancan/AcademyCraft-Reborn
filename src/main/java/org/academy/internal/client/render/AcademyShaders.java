@@ -40,6 +40,10 @@ public final class AcademyShaders {
     private static final VertexFormatElement INSTANCE_ROT = VertexFormatElement.register(10, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
     private static final VertexFormatElement INSTANCE_SEED = VertexFormatElement.register(11, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
     private static final VertexFormatElement INSTANCE_AGE = VertexFormatElement.register(12, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    /** 弧管使用 FLOAT 版法线/颜色元素: 内置 NORMAL(BYTE,3)/COLOR(UBYTE,4) 字节数与
+     *  CurveToMeshBuilder 的 12float 交错布局不匹配, 会导致顶点属性错位与颜色/几何错乱. */
+    private static final VertexFormatElement ARC_NORMAL = VertexFormatElement.register(13, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.NORMAL, 3);
+    private static final VertexFormatElement ARC_COLOR = VertexFormatElement.register(14, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
 
     public static final VertexFormat VFX_GRAPH_CLOUD_VORTEX = VertexFormat.builder()
             .add("Position", VertexFormatElement.POSITION)
@@ -52,6 +56,15 @@ public final class AcademyShaders {
             .add("InstanceAge", INSTANCE_AGE)
             .build();
     private static ShaderInstance vfxgraphCloudVortexShader;
+
+    /** 弧光管线 (黑翼/电弧) 顶点格式: 与 CurveToMeshBuilder 12float 交错布局完全吻合 (pos/normal/uv/color). */
+    public static final VertexFormat VFX_GRAPH_ARC_TUBE = VertexFormat.builder()
+            .add("Position", VertexFormatElement.POSITION)
+            .add("Normal", ARC_NORMAL)
+            .add("UV0", VertexFormatElement.UV0)
+            .add("Color", ARC_COLOR)
+            .build();
+    private static ShaderInstance vfxgraphInkStormShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -84,6 +97,13 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph cloud vortex shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_ink_storm"), VFX_GRAPH_ARC_TUBE);
+            event.registerShader(shader, instance -> vfxgraphInkStormShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph ink storm shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -96,6 +116,10 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphCloudVortexShader() {
         return vfxgraphCloudVortexShader;
+    }
+
+    public static ShaderInstance getVfxgraphInkStormShader() {
+        return vfxgraphInkStormShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {
