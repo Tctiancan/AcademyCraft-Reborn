@@ -6,6 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.commands.Commands;
@@ -75,11 +77,14 @@ import org.academy.internal.client.world.item.ImagPhaseDowsingRodClient;
 import org.academy.internal.common.ability.proficiency.ProficiencyPolicy;
 import org.academy.internal.common.ability.teleport.network.InstantTeleportSyncPacket;
 import org.academy.internal.common.core.particles.ParticleTypes;
+import org.academy.internal.common.network.DarkmatterVisualPacket;
+import org.academy.internal.common.network.MagneticSupportPacket;
 import org.academy.internal.common.network.SkillVfxPacket;
 import org.academy.internal.common.network.SpawnVfxGraphPacket;
 import org.academy.internal.common.network.TemporalImmunitySyncPacket;
 import org.academy.internal.common.world.damagesource.PvpSetting;
 import org.academy.internal.common.world.item.Items;
+import org.academy.internal.common.world.level.material.Fluids;
 import org.joml.Vector3f;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
@@ -120,8 +125,8 @@ public final class AcademyCraftClient {
         TemporalImmunitySyncPacket.initClient();
         SpawnVfxGraphPacket.initClient();
         SkillVfxPacket.initClient();
-        org.academy.internal.common.network.MagneticSupportPacket.initClient();
-        org.academy.internal.common.network.DarkmatterVisualPacket.initClient();
+        MagneticSupportPacket.initClient();
+        DarkmatterVisualPacket.initClient();
         ShockwaveVfx.register();
         GlowCircleVfx.register();
         ProficiencyPolicy.initClient();
@@ -154,6 +159,9 @@ public final class AcademyCraftClient {
         GlowEffect.init();
         ScreenDispatcher.Companion.init();
         HudManager.INSTANCE.initRender();
+
+        ItemBlockRenderTypes.setRenderLayer(Fluids.IMAG_PHASE.get(), RenderType.translucent());
+        ItemBlockRenderTypes.setRenderLayer(Fluids.FLOWING_IMAG_PHASE.get(), RenderType.translucent());
 
         // 预热必须在字体 face 全部加载完成之后进行，否则会在字体未就绪时解析码点，
         // 污染 charToFontCache 导致文字变豆腐块/不显示。正常情况下由 TextReloadListener

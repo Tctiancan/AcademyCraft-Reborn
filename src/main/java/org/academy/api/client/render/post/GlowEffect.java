@@ -11,7 +11,7 @@ import org.jspecify.annotations.Nullable;
  * 高斯 post 模糊。生命周期 (init/getInstance/close) 与原签名保持一致。
  */
 public final class GlowEffect {
-    private static final Phase BEFORE = new Phase("before");
+    private static final Phase BEFORE = new Phase("before", true);
     private static final Phase AFTER = new Phase("after");
     @Nullable
     private static GlowEffect instance;

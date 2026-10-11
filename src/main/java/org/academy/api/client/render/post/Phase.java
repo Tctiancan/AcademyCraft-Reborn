@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 
 /**
  * 1.21.1 实装 (原 26.2 后处理阶段缓冲)。
@@ -23,15 +24,24 @@ import net.minecraft.client.renderer.RenderType;
  */
 public class Phase {
     private static final int INITIAL_CAPACITY = 786432;
+    private final boolean textured;
     private final ByteBufferBuilder allocator;
     private BufferBuilder builder;
 
     public Phase(String name) {
+        this(name, false);
+    }
+
+    public Phase(String name, boolean textured) {
+        this.textured = textured;
         this.allocator = new ByteBufferBuilder(INITIAL_CAPACITY);
         this.builder = newBuffer();
     }
 
     private BufferBuilder newBuffer() {
+        if (textured) {
+            return new BufferBuilder(allocator, VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_TEX_COLOR);
+        }
         return new BufferBuilder(allocator, VertexFormat.Mode.TRIANGLES, DefaultVertexFormat.POSITION_COLOR);
     }
 
@@ -44,22 +54,32 @@ public class Phase {
         if (meshdata != null) {
             // 相位几何在 renderLevel RETURN 时冲刷, 此时世界渲染遗留的背面剔除/深度测试处于开启,
             // 单面粒子这样随意旋转的三角形绕向往往为背面而被剔除; 相位又常被已有几何遮挡。相位几何
-            // 的语义是叠加在其上的光效/辉光层 (26.2 经 bloom 加法合成), 故此处显式关闭剔除与深度,
-            // 用加法混合让辉光始终叠加在最上层可见。画完恢复, 以免影响随后的第一人称手部渲染。
+            // 的语义是叠加在其上的光效/辉光层, 故此处显式关闭剔除与深度, 让光效始终叠加在最上层可见,
+            // 画完恢复, 以免影响随后的第一人称手部渲染。
             RenderSystem.disableCull();
             RenderSystem.disableDepthTest();
             RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(
-                    GlStateManager.SourceFactor.SRC_ALPHA,
-                    GlStateManager.DestFactor.ONE,
-                    GlStateManager.SourceFactor.ONE,
-                    GlStateManager.DestFactor.ONE
-            );
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-            RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            if (textured) {
+                // 纹理相位 (移植 26.2 IMAG_PHASE_PARTICLE_POST): 采样粒子图集, position_tex_color
+                // shader, 半透明混合。每个粒子据此显示出圆润带纹理的光斑, 而非单调纯色三角面。
+                // 26.2 该管线即 position_tex_color + Sampler0=粒子图集 + TRANSLUCENT + 不剔除。
+                RenderSystem.defaultBlendFunc();
+                RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_PARTICLES);
+                RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+            } else {
+                // 纯色相位 (如辉光增量形体): additive 加法混合, 保留发光叠加效果。
+                RenderSystem.blendFuncSeparate(
+                        GlStateManager.SourceFactor.SRC_ALPHA,
+                        GlStateManager.DestFactor.ONE,
+                        GlStateManager.SourceFactor.ONE,
+                        GlStateManager.DestFactor.ONE
+                );
+                RenderSystem.setShader(GameRenderer::getPositionColorShader);
+            }
             // 必须用 drawWithShader 而非 draw: drawWithShader 会把 RenderSystem 当前 modelview/
-            // projection/shader 作为 uniform 上传给 position_color 的 ModelViewMat/ProjMat; 而
-            // draw() 只画不更新 uniform, 会让几何套用残留矩阵而被投到屏外 (此前不可见的总根因).
+            // projection/shader 作为 uniform 上传给 shader 的 ModelViewMat/ProjMat; 而 draw() 只画
+            // 不更新 uniform, 会让几何套用残留矩阵而被投到屏外 (此前不可见的总根因)。
             BufferUploader.drawWithShader(meshdata);
             RenderSystem.enableDepthTest();
             RenderSystem.enableCull();

@@ -107,9 +107,14 @@ public final class ImagPhaseFluidParticle extends TextureSheetParticle {
             float z,
             float partialTick
     ) {
+        // Phase 缓冲是 TRIANGLES 拓扑 (见 Phase.newBuffer), 不能按 QUADS 逐面写 4 顶点, 否则
+        // 相邻面/相邻粒子的第 4 点会被错误连成三角形而呈现怪异网格。每个 quad 拆成两个三角形
+        // (A,B,C) 与 (A,C,D), 环绕方向与原 quad 一致, 共 6 顶点, 保持 3 的倍数与相位缓冲对齐。
         float scale = getQuadSize(partialTick);
         postVertex(output, rotation, x, y, z, 1.0F, -1.0F, scale, getU1(), getV1());
         postVertex(output, rotation, x, y, z, 1.0F, 1.0F, scale, getU1(), getV0());
+        postVertex(output, rotation, x, y, z, -1.0F, 1.0F, scale, getU0(), getV0());
+        postVertex(output, rotation, x, y, z, 1.0F, -1.0F, scale, getU1(), getV1());
         postVertex(output, rotation, x, y, z, -1.0F, 1.0F, scale, getU0(), getV0());
         postVertex(output, rotation, x, y, z, -1.0F, -1.0F, scale, getU0(), getV1());
     }
