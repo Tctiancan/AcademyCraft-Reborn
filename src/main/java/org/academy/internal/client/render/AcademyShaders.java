@@ -2,6 +2,7 @@ package org.academy.internal.client.render;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexFormatElement;
 import net.minecraft.Util;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
@@ -31,6 +32,27 @@ public final class AcademyShaders {
     private static ShaderInstance distortionShader;
     private static @org.jspecify.annotations.Nullable RenderType distortionRingType;
 
+    /** 向量爆发 (VectorBlast) 粒子云实例化顶点格式: 四角 Position + 每粒子 Instance* 属性. */
+    private static final VertexFormatElement INSTANCE_POS = VertexFormatElement.register(6, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 3);
+    private static final VertexFormatElement INSTANCE_VEL = VertexFormatElement.register(7, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 3);
+    private static final VertexFormatElement INSTANCE_SIZE = VertexFormatElement.register(8, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_COLOR = VertexFormatElement.register(9, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 4);
+    private static final VertexFormatElement INSTANCE_ROT = VertexFormatElement.register(10, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_SEED = VertexFormatElement.register(11, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_AGE = VertexFormatElement.register(12, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+
+    public static final VertexFormat VFX_GRAPH_CLOUD_VORTEX = VertexFormat.builder()
+            .add("Position", VertexFormatElement.POSITION)
+            .add("InstancePos", INSTANCE_POS)
+            .add("InstanceVel", INSTANCE_VEL)
+            .add("InstanceSize", INSTANCE_SIZE)
+            .add("InstanceColor", INSTANCE_COLOR)
+            .add("InstanceRot", INSTANCE_ROT)
+            .add("InstanceSeed", INSTANCE_SEED)
+            .add("InstanceAge", INSTANCE_AGE)
+            .build();
+    private static ShaderInstance vfxgraphCloudVortexShader;
+
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
             Util.memoize(AcademyShaders::buildCloudroomType);
@@ -55,6 +77,13 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic distortion ring shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_cloud_vortex"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphCloudVortexShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph cloud vortex shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -63,6 +92,10 @@ public final class AcademyShaders {
 
     public static ShaderInstance getDistortionShader() {
         return distortionShader;
+    }
+
+    public static ShaderInstance getVfxgraphCloudVortexShader() {
+        return vfxgraphCloudVortexShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {

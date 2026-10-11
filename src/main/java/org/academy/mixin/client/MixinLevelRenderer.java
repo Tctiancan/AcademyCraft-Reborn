@@ -15,6 +15,8 @@ import org.academy.api.client.render.post.PostEffect;
 import org.academy.api.client.render.post.WorldSurfaceMasks;
 import org.academy.api.client.render.vfx.VfxContexts;
 import org.academy.api.client.render.vfx.VfxManager;
+import org.academy.api.client.render.vfxgraph.render.GraphCamera;
+import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.academy.api.client.renderer.RendererManager;
 import org.academy.internal.client.ability.aeromanip.FlowSenseClient;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
@@ -98,6 +100,10 @@ public abstract class MixinLevelRenderer {
             // 投影窗口内冲刷, 其四边形几何方经正确的 ProjMat*ModelViewMat 变换映射到屏幕环带。
             PostEffect.drawPre();
             GlowEffect.getInstance().process();
+            // 1.21.1 世界 VFX 帧提交 (VectorBlast 云涡等): 与相位辉光同用相机相对坐标约定, 渲染器
+            // 在内部自管 modelview/projection 状态, 因此放在该窗口内、由外层 finally 一并还原。
+            VfxGraphManager.INSTANCE.renderWorldFrame(GraphCamera.fromGameCamera(
+                    camera.getPosition().toVector3f(), viewRotation, projectionMatrix));
         } finally {
             modelViewStack.popMatrix();
             RenderSystem.applyModelViewMatrix();

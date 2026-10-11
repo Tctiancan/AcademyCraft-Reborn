@@ -95,6 +95,7 @@ public final class R {
             public static final ResourceLocation vfxgraph_simple = academy("core/vfxgraph_simple");
             public static final ResourceLocation vfxgraph_arc = academy("core/vfxgraph_arc");
             public static final ResourceLocation vfxgraph_surface = academy("core/vfxgraph_surface");
+            public static final ResourceLocation vfxgraph_cloud_vortex = academy("core/vfxgraph_cloud_vortex");
 
             private core() {
             }

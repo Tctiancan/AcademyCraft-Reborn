@@ -327,7 +327,7 @@ public final class ActiveEffect {
 
     public void render(GpuTextureView target, @Nullable GpuTextureView depth,
                        GraphCamera camera, VfxGraphRenderer renderer, boolean clear, boolean bloomPass) {
-        // C-stun: 世界 VFX GPU 渲染暂不移植。
+        renderer.renderWorld(effect().buffer(), camera, worldTransform(), specs(), bloomPass);
     }
 
     /**

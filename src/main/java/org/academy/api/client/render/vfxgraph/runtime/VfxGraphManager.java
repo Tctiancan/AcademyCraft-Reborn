@@ -190,6 +190,13 @@ public final class VfxGraphManager {
         frameStatistics = new FrameStatistics(effects.size(), visible, culled, simulated);
     }
 
+    /**
+     * 1.21.1 世界 VFX 帧入口：主帧缓冲即时绘制无需 GpuTextureView 绑定，透传 null。
+     */
+    public void renderWorldFrame(GraphCamera camera) {
+        renderFrame(null, null, camera);
+    }
+
     public void renderGlowFrame(GpuTextureView color, @Nullable GpuTextureView depth) {
         if (!initialized || lastCamera == null) return;
         for (var effect : effects) {
