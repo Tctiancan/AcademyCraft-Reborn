@@ -11,7 +11,6 @@ import org.academy.api.client.render.LevelRenderEvent;
 import org.academy.api.client.render.vfx.VfxRenderContext;
 import org.academy.api.client.render.vfx.VfxRenderer;
 import org.academy.api.client.resources.R;
-import org.joml.Matrix4f;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -135,17 +134,5 @@ public final class WingRenderer implements VfxRenderer<WingData> {
 
     @Override
     public void close() {
-    }
-
-    // 保留原接口中的世界级矩阵常量与捕获方法 (供 26.2 移植期诊断/参考, 1.21.1 bufferSource 路径不再使用)。
-    private static final Matrix4f LEVEL_PROJECTION = new Matrix4f();
-    private static final Matrix4f LEVEL_VIEW_ROTATION = new Matrix4f();
-
-    public static void captureLevelProjection(Matrix4f projection) {
-        LEVEL_PROJECTION.set(projection);
-    }
-
-    public static void captureLevelViewRotation(Matrix4f viewRotation) {
-        LEVEL_VIEW_ROTATION.set(viewRotation);
     }
 }

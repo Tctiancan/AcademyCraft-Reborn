@@ -232,27 +232,17 @@ public final class WingVfx implements Vfx {
 
         var partialTick = ctx.partialTick();
         var currentTick = (double) ctx.gameTime();
-        var camera = ctx.camera().pos();
         var buffers = new EnumMap<org.academy.internal.client.render.vfx.WingKind, ByteBuffer>(
                 org.academy.internal.client.render.vfx.WingKind.class);
         var ascensionBuffer = ensureBuffer(null);
 
-        for (var entity : level.players()) {
+        for (var root : roots.entrySet()) {
+            var entity = level.getEntity(root.getKey());
             if (!(entity instanceof Player player)) continue;
-            // capture 取自 setupRotations 的多态栈, 已含玩家位置相对当前相机的平移(相机相对空间)。
-            // 第三人称身体可见时用它; 否则(本地玩家第一人称、或身体本帧未渲染)按 26.2 原版
-            // 用 位置-相机 + yaw 合成根, 使翅膀固定于玩家身后而不是跟镜头/固定 180°。
-            var capturedRoot = roots.get(player.getId());
-            boolean firstPersonLocal = player == minecraft.player
-                    && minecraft.options.getCameraType().isFirstPerson()
-                    && minecraft.getCameraEntity() == player;
-            // 本地玩家第一人称时身体视角特殊, 一律用合成锚点(固定于玩家身后), 不信任本帧 capture。
-            var worldRoot = firstPersonLocal || capturedRoot == null
-                    ? synthesizeWingRoot(player, camera, partialTick)
-                    : capturedRoot;
-            if (capturedRoot != null) {
-                debugTransform(player, capturedRoot, worldRoot, camera);
-            }
+            // 26.2: 解析/风暴翅膀只对已被 avatar capture 的玩家渲染, 无第一人称 fallback。
+            // capture 取自 setupRotations 多态栈, 已含 玩家位置-相机 的相机相对平移;
+            // 本地玩家第一人称身体不渲染→不 capture→风暴翅膀不渲染, 与 26.2 行为一致。
+            var worldRoot = root.getValue();
             var transition = transitionProjection(player.getId(), currentTick);
             var effectTime = player.tickCount + partialTick;
 
@@ -306,38 +296,6 @@ public final class WingVfx implements Vfx {
     @Override
     public boolean isAlive() {
         return true;
-    }
-
-    /**
-     * 玩家身体本帧未渲染(本地玩家第一人称)或未被 capture 时的合成根矩阵。
-     * 对照 26.2 的 fallback: 相机相对地锚到玩家脚下再抬高到眼位, 旋转 -yaw 使翅膀位于玩家身后。
-     */
-    private static Matrix4f synthesizeWingRoot(Player player, org.joml.Vector3f camera, float partialTick) {
-        float yaw = Mth.rotLerp(partialTick, player.yBodyRotO, player.yBodyRot);
-        return new Matrix4f()
-                .translation((float) (player.getX() - camera.x),
-                        (float) (player.getY() - camera.y) + 1.4071875f,
-                        (float) (player.getZ() - camera.z))
-                .rotateY(-yaw * Mth.DEG_TO_RAD)
-                .rotateX(Mth.PI)
-                .scale(0.9375f);
-    }
-
-    private static boolean transformLogged;
-
-    private static void debugTransform(Player player, Matrix4f root, Matrix4f worldRoot, org.joml.Vector3f camera) {
-        if (transformLogged) return;
-        transformLogged = true;
-        com.mojang.logging.LogUtils.getLogger().warn("pos=" + player.position()
-                + " m03=[" + f(root.m03()) + ',' + f(root.m13()) + ',' + f(root.m23()) + "]"
-                + " m3=[" + f(root.m30()) + ',' + f(root.m31()) + ',' + f(root.m32()) + "]"
-                + " worldM03=[" + f(worldRoot.m03()) + ',' + f(worldRoot.m13()) + ',' + f(worldRoot.m23()) + "]"
-                + " worldM3=[" + f(worldRoot.m30()) + ',' + f(worldRoot.m31()) + ',' + f(worldRoot.m32()) + "]"
-                + " rootScale=[" + f(root.m00()) + ',' + f(root.m11()) + ',' + f(root.m22()) + "]");
-    }
-
-    private static String f(float v) {
-        return String.format(java.util.Locale.ROOT, "%.3f", v);
     }
 
     private static boolean isActive(Player player, org.academy.internal.client.render.vfx.WingKind kind) {

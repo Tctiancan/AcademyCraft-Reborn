@@ -38,10 +38,6 @@ public abstract class MixinLevelRenderer {
             CallbackInfo ci
     ) {
         org.academy.internal.client.render.vfx.InterferenceFieldClient.beginFrame();
-        // 1.21.1: 捕获 renderLevel 的等级透视投影, 供世界级 VFX 渲染器在其 draw 阶段显式恢复,
-        // 避免 VfxManager.renderFrame() 在 renderLevel RETURN 投影尚未就绪时错用遗留投影。
-        org.academy.internal.client.render.vfx.WingRenderer.captureLevelProjection(projectionMatrix);
-        org.academy.internal.client.render.vfx.WingRenderer.captureLevelViewRotation(frustumMatrix);
     }
 
     /**
