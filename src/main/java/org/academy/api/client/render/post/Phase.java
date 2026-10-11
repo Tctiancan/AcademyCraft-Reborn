@@ -1,5 +1,6 @@
 package org.academy.api.client.render.post;
 
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.renderer.GameRenderer;
@@ -41,8 +42,29 @@ public class Phase {
     public void draw() {
         MeshData meshdata = this.builder.build();
         if (meshdata != null) {
+            // 相位几何在 renderLevel RETURN 时冲刷, 此时世界渲染遗留的背面剔除/深度测试处于开启,
+            // 单面粒子这样随意旋转的三角形绕向往往为背面而被剔除; 相位又常被已有几何遮挡。相位几何
+            // 的语义是叠加在其上的光效/辉光层 (26.2 经 bloom 加法合成), 故此处显式关闭剔除与深度,
+            // 用加法混合让辉光始终叠加在最上层可见。画完恢复, 以免影响随后的第一人称手部渲染。
+            RenderSystem.disableCull();
+            RenderSystem.disableDepthTest();
+            RenderSystem.enableBlend();
+            RenderSystem.blendFuncSeparate(
+                    GlStateManager.SourceFactor.SRC_ALPHA,
+                    GlStateManager.DestFactor.ONE,
+                    GlStateManager.SourceFactor.ONE,
+                    GlStateManager.DestFactor.ONE
+            );
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
             RenderSystem.setShader(GameRenderer::getPositionColorShader);
-            BufferUploader.draw(meshdata);
+            // 必须用 drawWithShader 而非 draw: drawWithShader 会把 RenderSystem 当前 modelview/
+            // projection/shader 作为 uniform 上传给 position_color 的 ModelViewMat/ProjMat; 而
+            // draw() 只画不更新 uniform, 会让几何套用残留矩阵而被投到屏外 (此前不可见的总根因).
+            BufferUploader.drawWithShader(meshdata);
+            RenderSystem.enableDepthTest();
+            RenderSystem.enableCull();
+            RenderSystem.defaultBlendFunc();
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         }
         this.allocator.clear();
         this.builder = newBuffer();

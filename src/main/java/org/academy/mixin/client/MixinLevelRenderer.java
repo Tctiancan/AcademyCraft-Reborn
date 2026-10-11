@@ -1,5 +1,6 @@
 package org.academy.mixin.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
@@ -73,7 +74,32 @@ public abstract class MixinLevelRenderer {
         WorldSurfaceMasks.renderEntities();
         DirectionalFieldRenderer.render(pos, viewRotation, projectionMatrix,
                 org.academy.internal.client.render.vfx.InterferenceFieldClient.areas());
-        GlowEffect.getInstance().process();
+        // 1.21.1 移植: 26.2 的相位几何经 `MATRICES...` shader 应用 modelViewProjection 把相机相对
+        // 坐标映射到裁剪空间 (模型视图为相机旋转矩阵)。移植版 Phase.draw() 用 position_color, 其顶点
+        // 同样经 `ProjMat * ModelViewMat * pos` 变换, 但此前无人设置模型视图, 相机相对坐标在错误的
+        // 矩阵下被裁剪到屏幕外而导致相位几何不可见。此处临时将模型视图置为相机旋转 (投影在 renderLevel
+        // RETURN 时仍为等级投影, 无需改动), 冲刷辉光阶段后再还原, 避免影响其后 (FlowSense/手部渲染)
+        // 的渲染状态。
+        // 相机相对坐标 (world - camPos) 与 Frustum 用同一约定: 相机空间 = viewRotation * (相机相对坐标),
+        // 其中 viewRotation(=renderLevel 的 frustumMatrix) 已被 Frustum.calculateFrustum 证实就是
+        // world→camera 的 view 旋转 (clip = projection * frustumMatrix * cameraRelative). 故模型视图
+        // 直接置为 viewRotation, 无需取逆; 投影在 renderLevel RETURN 时仍是等级投影, 无需改动.
+        // 冲刷前强制恢复等级透视投影: VfxManager.renderFrame()/WorldSurfaceMasks 等前置调用可能
+        // 改过投影未还原, 若用遗留投影, 相机相对坐标会被错误裁剪而不可见。投影与 GameRenderer
+        // 的 resetProjectionMatrix 完全一致 (DISTANCE_TO_ORIGIN). 之后画完还原 modelview/projection.
+        var prevProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        RenderSystem.setProjectionMatrix(projectionMatrix, com.mojang.blaze3d.vertex.VertexSorting.DISTANCE_TO_ORIGIN);
+        var modelViewStack = RenderSystem.getModelViewStack();
+        modelViewStack.pushMatrix();
+        modelViewStack.set(viewRotation);
+        RenderSystem.applyModelViewMatrix();
+        try {
+            GlowEffect.getInstance().process();
+        } finally {
+            modelViewStack.popMatrix();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.setProjectionMatrix(prevProjection, com.mojang.blaze3d.vertex.VertexSorting.DISTANCE_TO_ORIGIN);
+        }
         PostEffect.post();
         FlowSenseClient.render(pos, viewRotation, projectionMatrix);
 
