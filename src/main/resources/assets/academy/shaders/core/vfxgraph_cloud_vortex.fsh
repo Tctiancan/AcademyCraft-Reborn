@@ -27,7 +27,9 @@ void main() {
     vec3 color = vertexColor.rgb * light;
     vec2 screenUv = gl_FragCoord.xy / textureSize(Sampler1, 0);
     float sceneDepth = texture(Sampler1, screenUv).r;
-    float depthDiff = gl_FragCoord.z - sceneDepth;
+    // 1.21.1 为非反转 z（近=0、远=1）：片元较近(gl_FragCoord.z 更小)时差值>0 → 保留。
+    // 26.2 为反转 z，故符号相反。
+    float depthDiff = sceneDepth - gl_FragCoord.z;
     float sceneGrad = max(length(vec2(dFdx(sceneDepth), dFdy(sceneDepth))) * 4.0, 1e-3);
     alpha *= smoothstep(0.0, sceneGrad, depthDiff);
     if (alpha < 0.002) discard;

@@ -39,6 +39,7 @@ public final class VfxGraphRenderer {
     private @Nullable DynamicTexture noiseTexture;
     private @Nullable DynamicTexture farTexture;
     private boolean samplerTexturesReady;
+    private final SceneDepth sceneDepth = new SceneDepth();
 
     public record SurfaceMesh(float[] triangles, float r, float g, float b, float a) {
     }
@@ -147,6 +148,7 @@ public final class VfxGraphRenderer {
         var spec = pickScreenPass(specs, bloomPass);
         if (spec == null || buffer.count() == 0) return;
         ensureSamplerTextures();
+        sceneDepth.copyFrom(null); // 抓取主帧当前场景深度（1.21.1 直接引用主帧深度纹理）
         var shader = AcademyShaders.getVfxgraphCloudVortexShader();
         if (shader == null) return;
 
@@ -235,7 +237,9 @@ public final class VfxGraphRenderer {
     private void drawCloudVortex(MeshData mesh, RenderSpec spec, ShaderInstance shader, GraphCamera camera) {
         RenderSystem.setShader(() -> shader);
         RenderSystem.setShaderTexture(0, noiseTexture == null ? 0 : noiseTexture.getId()); // Sampler0: 可平铺噪波
-        RenderSystem.setShaderTexture(1, farTexture == null ? 0 : farTexture.getId());      // Sampler1: 场景深度兜底(0.0)
+        Object depthView = sceneDepth.view();
+        int sam1 = depthView instanceof Integer d ? d : (farTexture == null ? 0 : farTexture.getId());
+        RenderSystem.setShaderTexture(1, sam1); // Sampler1: 场景深度（不可用时用 far 兜底 1.0）
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         boolean additive = spec.blend() == RenderSpec.Blend.ADDITIVE || spec.blend() == RenderSpec.Blend.GLOW;
         RenderSystem.enableBlend();
@@ -266,8 +270,8 @@ public final class VfxGraphRenderer {
     }
 
     /**
-     * 惰性构建并注册噪声采样（Sampler0）与远景深度兜底（Sampler1=纯黑 R 0.0）动态纹理，
-     * 对应 26.2 NOISE_SIZE=256 的三倍噪波平铺与 1x1 R32_FLOAT(0) 的 far 深度纹理。
+     * 惰性构建并注册噪声采样（Sampler0）与远景深度兜底（Sampler1=纯白 R 1.0）动态纹理，
+     * 对应 26.2 NOISE_SIZE=256 的三倍噪波平铺与 1x1 far 深度纹理。
      */
     private void ensureSamplerTextures() {
         if (samplerTexturesReady) return;
@@ -279,8 +283,9 @@ public final class VfxGraphRenderer {
             manager.register("academy_vfx_noise", noiseTexture);
         }
         if (farTexture == null) {
+            // far 兜底深度 = 1.0（非反转 z 的远平面），与 26.2 反转 z 的 far=0.0 对应。
             var farImage = new NativeImage(1, 1, true);
-            farImage.setPixelRGBA(0, 0, 0xFF000000); // ABGR: alpha 255, RGB 全 0 → 采样深度 0.0
+            farImage.setPixelRGBA(0, 0, 0xFFFFFFFF); // ABGR: alpha 255, RGB 全 1 → 采样深度 1.0(far)
             farTexture = new DynamicTexture(farImage);
             manager.register("academy_vfx_far", farTexture);
         }
