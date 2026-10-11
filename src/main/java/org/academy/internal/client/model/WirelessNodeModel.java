@@ -181,9 +181,8 @@ public class WirelessNodeModel {
     }
 
     public void setupAnim(WirelessNodeRenderState renderState) {
-        if (renderState.connectedUsersCount == 0) {
-            resetPose();
-        } else {
+        KeyframeAnimationApplier.resetPoseTree(root);
+        if (renderState.connectedUsersCount != 0) {
             var ratio100 = renderState.connectedUsersCount * 100 / renderState.maxConnectedUsers;
             var level = (ratio100 - 1) / 25 + 1;
             var progress = Math.min(level, 4);
@@ -206,10 +205,6 @@ public class WirelessNodeModel {
                 }
             }
         }
-    }
-
-    private void resetPose() {
-        root.getAllParts().forEach(ModelPart::resetPose);
     }
 
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, int lightCoords, int overlayCoords) {

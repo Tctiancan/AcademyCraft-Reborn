@@ -119,6 +119,7 @@ public class AbilityDeveloperModel {
     }
 
     public void setupAnim(AbilityDeveloperRenderState renderState) {
+        KeyframeAnimationApplier.resetPoseTree(root);
         KeyframeAnimationApplier.animateState(opening, renderState.openingState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(closing, renderState.closingState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(standing, renderState.standingState, renderState.ageInTicks, root);

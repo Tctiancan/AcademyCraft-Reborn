@@ -74,6 +74,7 @@ public class WindGenBaseModel {
     }
 
     public void setupAnim(WindGenBaseRenderState renderState) {
+        KeyframeAnimationApplier.resetPoseTree(root);
         KeyframeAnimationApplier.animateState(setup, renderState.setupState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(shut, renderState.shutdownState, renderState.ageInTicks, root);
     }

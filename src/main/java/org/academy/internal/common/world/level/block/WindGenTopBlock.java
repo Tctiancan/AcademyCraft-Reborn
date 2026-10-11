@@ -61,7 +61,7 @@ public final class WindGenTopBlock extends BaseEntityBlock {
 
         return getShapeForEachState(blockState ->
                 rotateShape(Direction.NORTH,
-                        blockState.getValue(BlockStateProperties.HORIZONTAL_FACING), all));
+                        blockState.getValue(BlockStateProperties.HORIZONTAL_FACING), all.move(0, 0, -1)));
     }
 
     private static VoxelShape rotateShape(Direction from, Direction to, VoxelShape shape) {

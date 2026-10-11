@@ -8,7 +8,6 @@ import net.minecraft.client.model.geom.builders.CubeDeformation;
 import net.minecraft.client.model.geom.builders.CubeListBuilder;
 import net.minecraft.client.model.geom.builders.LayerDefinition;
 import net.minecraft.client.model.geom.builders.MeshDefinition;
-import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
@@ -58,6 +57,10 @@ public final class SolarGenModel {
     }
 
     public void setupAnim(SolarGenRenderState renderState) {
+        // offsetRotation/offsetPos accumulate onto the cached part pose, so reset the
+        // whole model tree every frame (matching the vanilla resetPose-before-animate
+        // contract) to avoid offsetting on top of the previous frame's result.
+        KeyframeAnimationApplier.resetPoseTree(root);
         KeyframeAnimationApplier.animateState(folding, renderState.foldingState, renderState.ageInTicks, root);
         KeyframeAnimationApplier.animateState(unfolding, renderState.unfoldingState, renderState.ageInTicks, root);
     }
@@ -68,7 +71,7 @@ public final class SolarGenModel {
         RenderType base = RenderType.entityCutout(R.textures.model.solar_gen);
         bottom.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
         panel1.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
-        panel2.render(poseStack, bufferSource.getBuffer(base), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY);
+        panel2.render(poseStack, bufferSource.getBuffer(base), packedLight, packedOverlay);
         poseStack.popPose();
     }
 }

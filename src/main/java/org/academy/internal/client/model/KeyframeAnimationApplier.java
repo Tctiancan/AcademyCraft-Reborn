@@ -35,6 +35,18 @@ public final class KeyframeAnimationApplier {
     }
 
     /**
+     * Resets every {@link ModelPart} in {@code root}'s subtree back to its initial pose.
+     * <p>
+     * {@code offsetRotation}/{@code offsetPos}/{@code offsetScale} accumulate onto the part pose, so
+     * consumers must reset the modeled bones at the start of each frame (matching the vanilla
+     * {@code HierarchicalModel#resetPose()} contract) before applying any keyframe animation,
+     * otherwise the transform offsets are added on top of the previous frame's result.
+     */
+    public static void resetPoseTree(ModelPart root) {
+        root.getAllParts().forEach(ModelPart::resetPose);
+    }
+
+    /**
      * Applies {@code definition} to the nearest bone descendants of {@code root}, using the same
      * interpolation logic as 1.21.1 {@code KeyframeAnimations#animate}.
      */
