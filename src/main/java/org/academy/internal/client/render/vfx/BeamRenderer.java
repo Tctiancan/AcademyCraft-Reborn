@@ -63,7 +63,7 @@ public final class BeamRenderer implements VfxRenderer<BeamData> {
         } else {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
-        RenderSystem.disableDepthTest();
+        RenderSystem.enableDepthTest();
         RenderSystem.disableCull();
 
         var modelViewStack = RenderSystem.getModelViewStack();
