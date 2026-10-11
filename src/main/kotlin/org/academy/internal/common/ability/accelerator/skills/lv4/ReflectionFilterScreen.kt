@@ -63,7 +63,11 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         val compact = width < PREFERRED_W + 24 || height < PREFERRED_H + 24
         val built = buildReflectionFilterLayout(compact)
         layout = built
-        root.addChild("reflection_filter_layout", built.root)
+        // 1.21.1 手绘式界面: 本屏全部内容在 render() 内绘制. 布局子树仅作为背景/坐标参考,
+        // 不挂入 root —— 否则 ScreenDispatcher 会在 ScreenEvent.Render.Post (晚于 render()) 阶段
+        // 把布局绘制到手绘内容之上形成遮挡. 未挂载子树不会被测量, syncLayout() 因 width<=0 早退,
+        // 界面沿用 onInit 计算坐标, 背景洗层由 render() 最底层显式绘制.
+        // root.addChild("reflection_filter_layout", built.root)
 
         panelW = Mth.clamp(width - 24, MIN_W, PREFERRED_W)
         panelW = minOf(panelW, width - 12)
@@ -163,6 +167,9 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
 
     override fun render(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
         syncLayout()
+        // 全屏背景(模糊+调暗)必须先绘制在内容之下, 形成"背景在最底、界面叠加在上方"的 26.2 层级.
+        super.renderBackground(guiGraphics, mouseX, mouseY, partialTick)
+        drawBasePanel(guiGraphics)
         fillSection(guiGraphics, leftX, panelY + SECTION_TOP, leftW, panelH - SECTION_TOP - SECTION_BOTTOM_PAD)
         fillSection(guiGraphics, rightX - 5, panelY + SECTION_TOP, rightW + 5, panelH - SECTION_TOP - SECTION_BOTTOM_PAD)
         val searchFrame = searchFrame()
@@ -181,6 +188,21 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
         renderForcedMovementProtection(guiGraphics, mouseX, mouseY)
         renderSideLists(guiGraphics, mouseX, mouseY)
         super.render(guiGraphics, mouseX, mouseY, partialTick)
+    }
+
+    /**
+     * 1.21.1 手绘式界面: 全屏背景(模糊+调暗)已在 [render] 开头显式绘制于内容之下;
+     * 置空本方法以避免原版 [super.render] 在末尾再次绘制全屏背景, 遮挡界面内容.
+     */
+    override fun renderBackground(guiGraphics: GuiGraphics, mouseX: Int, mouseY: Int, partialTick: Float) {
+    }
+
+    private fun drawBasePanel(graphics: GuiGraphics) {
+        graphics.fill(panelX + 4, panelY + 4, panelX + panelW - 4, panelY + panelH - 4, PANEL_BG)
+        border(graphics, panelX + 4, panelY + 4, panelW - 8, panelH - 8, BORDER_DIM)
+        graphics.fill(panelX, panelY + 4, panelX + 1, panelY + panelH - 4, BORDER_DIM.toInt())
+        graphics.fill(panelX + panelW - 1, panelY + 4, panelX + panelW, panelY + panelH - 4, BORDER_DIM.toInt())
+        graphics.fill(panelX + 7, panelY + 24, panelX + panelW - 7, panelY + 25, BORDER_DIM.toInt())
     }
 
     private fun renderEffects(graphics: GuiGraphics, mouseX: Int, mouseY: Int) {
@@ -583,6 +605,7 @@ class ReflectionFilterScreen(data: ReflectionFilter.Data) :
     companion object {
         private const val ACTIVE = 0xFFFFFFFF.toInt()
         private const val SECTION = 0x40000000
+        private const val PANEL_BG = 0x80000000.toInt()
         private const val CONTROL = 0x28000000
         private const val INPUT = 0x5F1F1F1F
         private const val INPUT_FOCUSED = 0x5F5A5A5A
