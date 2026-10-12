@@ -19,11 +19,6 @@ void main() {
     float alpha = vertexColor.a * softMote * (0.66 + grain * 0.42);
     vec3 color = mix(vertexColor.rgb * 0.76, vec3(0.72, 0.71, 0.68), grain * 0.28);
 
-    vec2 screenUv = gl_FragCoord.xy / textureSize(Sampler1, 0);
-    float sceneDepth = texture(Sampler1, screenUv).r;
-    float depthDiff = gl_FragCoord.z - sceneDepth;
-    float sceneGrad = max(length(vec2(dFdx(sceneDepth), dFdy(sceneDepth))) * 4.0, 1e-3);
-    alpha *= smoothstep(0.0, sceneGrad, depthDiff);
     if (alpha < 0.002) discard;
     fragColor = vec4(color, alpha);
 }

@@ -20,11 +20,6 @@ void main() {
     density *= smoothstep(0.08, 0.42, coarse * 0.7 + detail * 0.3);
     float alpha = vertexColor.a * density;
 
-    vec2 screenUv = gl_FragCoord.xy / textureSize(Sampler1, 0);
-    float sceneDepth = texture(Sampler1, screenUv).r;
-    float depthDiff = gl_FragCoord.z - sceneDepth;
-    float sceneGrad = max(length(vec2(dFdx(sceneDepth), dFdy(sceneDepth))) * 4.0, 1e-3);
-    alpha *= smoothstep(0.0, sceneGrad, depthDiff);
     if (alpha < 0.002) discard;
     vec3 grey = vertexColor.rgb * mix(0.72, 1.08, coarse);
     fragColor = vec4(grey, alpha);

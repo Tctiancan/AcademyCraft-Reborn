@@ -1,9 +1,7 @@
-#version 330
+#version 150
 
-layout(std140) uniform GraphCamera {
-    mat4 View;
-    mat4 Projection;
-};
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
 
 in vec3 Position;
 in vec3 InstancePos;
@@ -20,14 +18,14 @@ out float smokeSeed;
 out float smokeAge;
 
 void main() {
-    vec4 viewPos = View * vec4(InstancePos, 1.0);
+    vec4 viewPos = ModelViewMat * vec4(InstancePos, 1.0);
     vec2 off = Position.xy * 2.0 - 1.0;
     float angle = InstanceRot + InstanceSeed * 0.73;
     float c = cos(angle);
     float s = sin(angle);
     vec2 rotated = vec2(off.x * c - off.y * s, off.x * s + off.y * c);
     viewPos.xy += rotated * InstanceSize;
-    gl_Position = Projection * viewPos;
+    gl_Position = ProjMat * viewPos;
     texCoord = Position.xy;
     vertexColor = InstanceColor;
     smokeSeed = fract(sin(InstanceSeed * 91.7) * 43758.5453);

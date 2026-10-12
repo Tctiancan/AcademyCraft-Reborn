@@ -337,6 +337,8 @@ public final class ActiveEffect {
                 renderer.drawArcTubes(arcs, camera, renderWorld, bloomPass, spec);
             }
         }
+        // 拖尾 (RIBBON) 几何由 vfxgraph_simple 条带管线绘制 (等离子发射球轨迹), 每张 RIBBON 规格各构建一次。
+        renderer.drawRibbons(effect().buffer(), camera, worldTransform(), specs(), bloomPass);
     }
 
     /**

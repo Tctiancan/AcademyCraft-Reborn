@@ -1,9 +1,7 @@
-#version 330
+#version 150
 
-layout(std140) uniform GraphCamera {
-    mat4 View;
-    mat4 Projection;
-};
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
 
 in vec3 Position;
 in vec3 InstancePos;
@@ -20,7 +18,7 @@ out float windTime;
 out float windSeed;
 
 void main() {
-    vec4 viewPos = View * vec4(InstancePos, 1.0);
+    vec4 viewPos = ModelViewMat * vec4(InstancePos, 1.0);
     vec2 off = Position.xy * 2.0 - 1.0;
     float angle = InstanceRot * 0.18 + InstanceSeed * 0.37;
     float c = cos(angle);
@@ -31,7 +29,7 @@ void main() {
             stretched.x * s + stretched.y * c
     );
     viewPos.xy += rotated * InstanceSize;
-    gl_Position = Projection * viewPos;
+    gl_Position = ProjMat * viewPos;
     texCoord = Position.xy;
     vertexColor = InstanceColor;
     windTime = InstanceAge;

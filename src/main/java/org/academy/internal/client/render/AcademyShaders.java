@@ -56,6 +56,8 @@ public final class AcademyShaders {
             .add("InstanceAge", INSTANCE_AGE)
             .build();
     private static ShaderInstance vfxgraphCloudVortexShader;
+    private static ShaderInstance vfxgraphPlasmaLiquidShader;
+    private static ShaderInstance vfxgraphPlasmaHaloShader;
 
     /** 弧光管线 (黑翼/电弧) 顶点格式: 与 CurveToMeshBuilder 12float 交错布局完全吻合 (pos/normal/uv/color). */
     public static final VertexFormat VFX_GRAPH_ARC_TUBE = VertexFormat.builder()
@@ -65,6 +67,20 @@ public final class AcademyShaders {
             .add("Color", ARC_COLOR)
             .build();
     private static ShaderInstance vfxgraphInkStormShader;
+
+    /** 简单实例(non-instanced)顶点格式: 相机相对 Position + FLOAT Color，供拖尾条带等 vfxgraph_simple 绘制。 */
+    private static final VertexFormatElement SIMPLE_COLOR = VertexFormatElement.register(15, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
+    public static final VertexFormat VFX_GRAPH_SIMPLE = VertexFormat.builder()
+            .add("Position", VertexFormatElement.POSITION)
+            .add("Color", SIMPLE_COLOR)
+            .build();
+    private static ShaderInstance vfxgraphSimpleShader;
+    private static ShaderInstance vfxgraphPlasmaFlashShader;
+    private static ShaderInstance vfxgraphPlasmaSparkShader;
+    private static ShaderInstance vfxgraphPlasmaSmokeShader;
+    private static ShaderInstance vfxgraphImpactMonochromeShader;
+    private static ShaderInstance vfxgraphTornadoVolumeShader;
+    private static ShaderInstance vfxgraphTornadoDustShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -104,6 +120,69 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph ink storm shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_plasma_liquid"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphPlasmaLiquidShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph plasma liquid shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_plasma_halo"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphPlasmaHaloShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph plasma halo shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_plasma_flash"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphPlasmaFlashShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph plasma flash shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_plasma_spark"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphPlasmaSparkShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph plasma spark shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_plasma_smoke"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphPlasmaSmokeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph plasma smoke shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_impact_monochrome"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphImpactMonochromeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph impact monochrome shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_simple"), VFX_GRAPH_SIMPLE);
+            event.registerShader(shader, instance -> vfxgraphSimpleShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph simple shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_tornado_volume"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphTornadoVolumeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph tornado volume shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_tornado_dust"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphTornadoDustShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph tornado dust shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -120,6 +199,42 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphInkStormShader() {
         return vfxgraphInkStormShader;
+    }
+
+    public static ShaderInstance getVfxgraphPlasmaLiquidShader() {
+        return vfxgraphPlasmaLiquidShader;
+    }
+
+    public static ShaderInstance getVfxgraphPlasmaHaloShader() {
+        return vfxgraphPlasmaHaloShader;
+    }
+
+    public static ShaderInstance getVfxgraphPlasmaFlashShader() {
+        return vfxgraphPlasmaFlashShader;
+    }
+
+    public static ShaderInstance getVfxgraphPlasmaSparkShader() {
+        return vfxgraphPlasmaSparkShader;
+    }
+
+    public static ShaderInstance getVfxgraphPlasmaSmokeShader() {
+        return vfxgraphPlasmaSmokeShader;
+    }
+
+    public static ShaderInstance getVfxgraphImpactMonochromeShader() {
+        return vfxgraphImpactMonochromeShader;
+    }
+
+    public static ShaderInstance getVfxgraphSimpleShader() {
+        return vfxgraphSimpleShader;
+    }
+
+    public static ShaderInstance getVfxgraphTornadoVolumeShader() {
+        return vfxgraphTornadoVolumeShader;
+    }
+
+    public static ShaderInstance getVfxgraphTornadoDustShader() {
+        return vfxgraphTornadoDustShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {

@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
@@ -41,12 +41,6 @@ void main() {
     vec3 color = hot + pinkLiquid + coolLimb;
     float alpha = vertexColor.a * sphere
             * clamp(whiteCore + liquidBody * 0.94 + blueLimb, 0.0, 1.0);
-
-    vec2 screenUv = gl_FragCoord.xy / textureSize(Sampler1, 0);
-    float sceneDepth = texture(Sampler1, screenUv).r;
-    float depthDiff = gl_FragCoord.z - sceneDepth;
-    float sceneGrad = max(length(vec2(dFdx(sceneDepth), dFdy(sceneDepth))) * 4.0, 1e-3);
-    alpha *= smoothstep(0.0, sceneGrad, depthDiff);
     if (alpha < 0.002) discard;
     fragColor = vec4(color * alpha, alpha);
 }

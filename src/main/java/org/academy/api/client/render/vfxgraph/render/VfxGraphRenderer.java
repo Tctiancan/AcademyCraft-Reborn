@@ -258,19 +258,53 @@ public final class VfxGraphRenderer {
      */
     public void renderWorld(ParticleBuffer buffer, GraphCamera camera, WorldTransform transform,
                             List<RenderSpec> specs, boolean bloomPass) {
-        var spec = pickScreenPass(specs, bloomPass);
-        if (spec == null || buffer.count() == 0) return;
+        if (buffer == null || buffer.count() == 0 || specs == null) return;
         ensureSamplerTextures();
         sceneDepth.copyFrom(null); // 抓取主帧当前场景深度（1.21.1 直接引用主帧深度纹理）
-        var shader = AcademyShaders.getVfxgraphCloudVortexShader();
-        if (shader == null) return;
+        for (var spec : specs) {
+            if (spec.geometry() != RenderSpec.Geometry.QUAD) continue;
+            boolean additive = spec.blend() == RenderSpec.Blend.ADDITIVE || spec.blend() == RenderSpec.Blend.GLOW;
+            // 1.21.1 未调度 bloom/glow pass，故主 pass 需同时绘制透明（风场）与加色（球体）规格；
+            // 若未来接入 glow pass，则仅在其上绘制加色规格。
+            if (bloomPass && !additive) continue;
+            var shader = resolveQuadShader(spec);
+            if (shader == null) continue;
+            drawQuadSpec(buffer, camera, transform, spec, shader);
+        }
+    }
 
-        int count = buffer.count();
+    /** 由 quad 规格的片元着色器解析为已注册的 {@link ShaderInstance}；未知着色器返回 {@code null}。 */
+    private static @Nullable ShaderInstance resolveQuadShader(RenderSpec spec) {
+        var fs = spec.fragmentShader();
+        if (fs == null) return null;
+        if (fs.equals(R.shaders.core.vfxgraph_cloud_vortex)) return AcademyShaders.getVfxgraphCloudVortexShader();
+        if (fs.equals(R.shaders.core.vfxgraph_plasma_liquid)) return AcademyShaders.getVfxgraphPlasmaLiquidShader();
+        if (fs.equals(R.shaders.core.vfxgraph_plasma_halo)) return AcademyShaders.getVfxgraphPlasmaHaloShader();
+        if (fs.equals(R.shaders.core.vfxgraph_plasma_flash)) return AcademyShaders.getVfxgraphPlasmaFlashShader();
+        if (fs.equals(R.shaders.core.vfxgraph_plasma_spark)) return AcademyShaders.getVfxgraphPlasmaSparkShader();
+        if (fs.equals(R.shaders.core.vfxgraph_plasma_smoke)) return AcademyShaders.getVfxgraphPlasmaSmokeShader();
+        if (fs.equals(R.shaders.core.vfxgraph_impact_monochrome)) return AcademyShaders.getVfxgraphImpactMonochromeShader();
+        if (fs.equals(R.shaders.core.vfxgraph_tornado_volume)) return AcademyShaders.getVfxgraphTornadoVolumeShader();
+        if (fs.equals(R.shaders.core.vfxgraph_tornado_dust)) return AcademyShaders.getVfxgraphTornadoDustShader();
+        return null;
+    }
+
+    private void drawQuadSpec(ParticleBuffer buffer, GraphCamera camera, WorldTransform transform,
+                              RenderSpec spec, ShaderInstance shader) {
+        byte layerFilter = ParticleBuffer.layerFilter(spec.layer());
+        int total = buffer.count();
+        int count = 0;
+        for (int i = 0; i < total; i++) {
+            if (layerFilter >= 0 && layerFilter != buffer.layer(i)) continue;
+            count++;
+        }
+        if (count == 0) return;
+
         int vertexCount = count * 4;
         long totalBytes = (long) AcademyShaders.VFX_GRAPH_CLOUD_VORTEX.getVertexSize() * vertexCount;
         if (totalBytes <= 0 || totalBytes > Integer.MAX_VALUE - 64) return;
 
-        ByteBufferBuilder.Result result = buildCloudVortexMesh(buffer, count, camera, transform, (int) totalBytes);
+        ByteBufferBuilder.Result result = buildCloudVortexMesh(buffer, count, camera, transform, (int) totalBytes, layerFilter);
         if (result == null) return;
         var drawState = new MeshData.DrawState(
                 AcademyShaders.VFX_GRAPH_CLOUD_VORTEX, vertexCount, vertexCount / 4 * 6,
@@ -296,7 +330,8 @@ public final class VfxGraphRenderer {
     }
 
     private static @Nullable ByteBufferBuilder.Result buildCloudVortexMesh(
-            ParticleBuffer buffer, int count, GraphCamera camera, WorldTransform transform, int totalBytes) {
+            ParticleBuffer buffer, int count, GraphCamera camera, WorldTransform transform,
+            int totalBytes, byte layerFilter) {
         boolean identity = transform.isIdentity();
         var cam = camera.position();
         int vertexSize = AcademyShaders.VFX_GRAPH_CLOUD_VORTEX.getVertexSize();
@@ -304,7 +339,9 @@ public final class VfxGraphRenderer {
         long ptr = vertices.reserve(totalBytes);
         var world = new float[3];
         int base = 0;
-        for (int i = 0; i < count; i++) {
+        int total = buffer.count();
+        for (int i = 0; i < total; i++) {
+            if (layerFilter >= 0 && layerFilter != buffer.layer(i)) continue;
             float px = buffer.positionX(i), py = buffer.positionY(i), pz = buffer.positionZ(i);
             if (!identity) {
                 transform.apply(px, py, pz, world);
@@ -367,6 +404,152 @@ public final class VfxGraphRenderer {
         var stack = RenderSystem.getModelViewStack();
         stack.pushMatrix();
         stack.set(camera.viewRotation()); // 纯旋转视图矩阵，顶点已是相机相对坐标
+        RenderSystem.applyModelViewMatrix();
+        var prevProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+        RenderSystem.setProjectionMatrix(camera.projection(), VertexSorting.DISTANCE_TO_ORIGIN);
+        try {
+            BufferUploader.drawWithShader(mesh);
+        } finally {
+            RenderSystem.setProjectionMatrix(prevProjection, VertexSorting.DISTANCE_TO_ORIGIN);
+            stack.popMatrix();
+            RenderSystem.applyModelViewMatrix();
+            RenderSystem.enableCull();
+            RenderSystem.enableDepthTest();
+            RenderSystem.disableBlend();
+        }
+    }
+
+    /**
+     * 拖尾(RIBBON)即时绘制入口：按每张 RIBBON 规格的 layer 过滤粒子，把每粒子的环形 trail 历史
+     * 构建成相机面向的条带，用 vfxgraph_simple(纯 Position+Color) 上色（1.21.1 无 GPU 实例化，
+     * 在 CPU 端展开）。条带宽度取自粒子 size，颜色取自粒子颜色并沿拖尾尾部淡出。
+     */
+    public void drawRibbons(ParticleBuffer buffer, GraphCamera camera, WorldTransform transform,
+                            List<RenderSpec> specs, boolean bloomPass) {
+        if (buffer == null || specs == null) return;
+        var shader = AcademyShaders.getVfxgraphSimpleShader();
+        if (shader == null) return;
+        for (var spec : specs) {
+            if (spec.geometry() != RenderSpec.Geometry.RIBBON) continue;
+            boolean additive = spec.blend() == RenderSpec.Blend.ADDITIVE || spec.blend() == RenderSpec.Blend.GLOW;
+            if (bloomPass && !additive) continue;
+            drawRibbonSpec(buffer, camera, transform, spec);
+        }
+    }
+
+    private void drawRibbonSpec(ParticleBuffer buffer, GraphCamera camera, WorldTransform transform,
+                                RenderSpec spec) {
+        byte layerFilter = ParticleBuffer.layerFilter(spec.layer());
+        int total = buffer.count();
+        boolean identity = transform.isIdentity();
+        var cam = camera.position();
+
+        // 最大 segment 数（每段 4 顶点构成一个面向条带四边形）。
+        int maxSeg = 0;
+        for (int i = 0; i < total; i++) {
+            if (layerFilter >= 0 && layerFilter != buffer.layer(i)) continue;
+            int ts = buffer.trailSize(i);
+            if (ts > 1) maxSeg += (ts - 1);
+        }
+        if (maxSeg == 0) return;
+
+        int vertexSize = AcademyShaders.VFX_GRAPH_SIMPLE.getVertexSize();
+        int vertexCount = maxSeg * 4;
+        long totalBytes = (long) vertexSize * vertexCount;
+        if (totalBytes <= 0 || totalBytes > Integer.MAX_VALUE - 64) return;
+
+        ByteBufferBuilder vertices = new ByteBufferBuilder((int) totalBytes);
+        long ptr = vertices.reserve((int) totalBytes);
+        var world = new float[3];
+        long base = 0;
+        for (int i = 0; i < total; i++) {
+            if (layerFilter >= 0 && layerFilter != buffer.layer(i)) continue;
+            int ts = buffer.trailSize(i);
+            if (ts < 2) continue;
+            float cr = buffer.colorR(i), cg = buffer.colorG(i), cb = buffer.colorB(i), a = buffer.alpha(i);
+            float halfW = Math.max(0.01f, buffer.size(i) * 0.22f);
+            float lastFac = 1f;
+            for (int k = 0; k < ts - 1; k++) {
+                float ax = buffer.trailX(i, k), ay = buffer.trailY(i, k), az = buffer.trailZ(i, k);
+                float bx = buffer.trailX(i, k + 1), by = buffer.trailY(i, k + 1), bz = buffer.trailZ(i, k + 1);
+                if (!identity) {
+                    transform.apply(ax, ay, az, world); ax = world[0]; ay = world[1]; az = world[2];
+                    transform.apply(bx, by, bz, world); bx = world[0]; by = world[1]; bz = world[2];
+                }
+                float arx = ax - cam.x, ary = ay - cam.y, arz = az - cam.z;
+                float brx = bx - cam.x, bry = by - cam.y, brz = bz - cam.z;
+                float dx = brx - arx, dy = bry - ary, dz = brz - arz;
+                float lenSq = dx * dx + dy * dy + dz * dz;
+                if (lenSq < 1e-8f) continue;
+                // 从段中点到相机的视线方向，求相机面向法线 right = normalize(cross(dir, view))。
+                float midx = (arx + brx) * 0.5f, midy = (ary + bry) * 0.5f, midz = (arz + brz) * 0.5f;
+                float vx = -midx, vy = -midy, vz = -midz;
+                float vlen = (float) Math.sqrt(vx * vx + vy * vy + vz * vz);
+                if (vlen < 1e-4f) { vx = 0f; vy = 0f; vz = 1f; }
+                else { vx /= vlen; vy /= vlen; vz /= vlen; }
+                float rx = dy * vz - dz * vy;
+                float ry = dz * vx - dx * vz;
+                float rz = dx * vy - dy * vx;
+                float rlen = (float) Math.sqrt(rx * rx + ry * ry + rz * rz);
+                if (rlen < 1e-5f) { rx = 0f; ry = 0f; rz = 1f; rlen = 1f; }
+                rx /= rlen; ry /= rlen; rz /= rlen;
+                float wx = rx * halfW, wy = ry * halfW, wz = rz * halfW;
+                float f0 = lastFac;
+                float f1 = 1f - (k + 1) / (float) (ts - 1);
+                f1 *= f1;
+                lastFac = f1;
+                float a0 = a * f0, a1 = a * f1;
+                emitRibbonVertex(ptr, base + vertexSize * 0L, arx - wx, ary - wy, arz - wz, cr, cg, cb, a0);
+                emitRibbonVertex(ptr, base + vertexSize * 1L, arx + wx, ary + wy, arz + wz, cr, cg, cb, a0);
+                emitRibbonVertex(ptr, base + vertexSize * 2L, brx + wx, bry + wy, brz + wz, cr, cg, cb, a1);
+                emitRibbonVertex(ptr, base + vertexSize * 3L, brx - wx, bry - wy, brz - wz, cr, cg, cb, a1);
+                base += vertexSize * 4L;
+            }
+        }
+        ByteBufferBuilder.Result result = vertices.build();
+        int quadCount = (int) (base / (vertexSize * 4L));
+        if (quadCount == 0) return;
+        int drawVertexCount = quadCount * 4;
+        var drawState = new MeshData.DrawState(
+                AcademyShaders.VFX_GRAPH_SIMPLE, drawVertexCount, quadCount * 6,
+                VertexFormat.Mode.QUADS, VertexFormat.IndexType.least(drawVertexCount));
+        MeshData mesh = new MeshData(result, drawState);
+        try {
+            drawSimple(mesh, spec, camera);
+        } finally {
+            mesh.close();
+        }
+    }
+
+    private static void emitRibbonVertex(long ptr, long off, float x, float y, float z,
+                                         float r, float g, float b, float alpha) {
+        MemoryUtil.memPutFloat(ptr + off, x);
+        MemoryUtil.memPutFloat(ptr + off + 4, y);
+        MemoryUtil.memPutFloat(ptr + off + 8, z);
+        MemoryUtil.memPutFloat(ptr + off + 12, r);
+        MemoryUtil.memPutFloat(ptr + off + 16, g);
+        MemoryUtil.memPutFloat(ptr + off + 20, b);
+        MemoryUtil.memPutFloat(ptr + off + 24, alpha);
+    }
+
+    /** vfxgraph_simple 条带即时绘制：模型视图纯旋转，顶点相机相对坐标，混合由规格决定。 */
+    private void drawSimple(MeshData mesh, RenderSpec spec, GraphCamera camera) {
+        var shader = AcademyShaders.getVfxgraphSimpleShader();
+        RenderSystem.setShader(() -> shader);
+        RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
+        boolean additive = spec.blend() == RenderSpec.Blend.ADDITIVE || spec.blend() == RenderSpec.Blend.GLOW;
+        RenderSystem.enableBlend();
+        if (additive) {
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        } else {
+            RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+        }
+        RenderSystem.enableDepthTest();
+        RenderSystem.disableCull();
+
+        var stack = RenderSystem.getModelViewStack();
+        stack.pushMatrix();
+        stack.set(camera.viewRotation());
         RenderSystem.applyModelViewMatrix();
         var prevProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
         RenderSystem.setProjectionMatrix(camera.projection(), VertexSorting.DISTANCE_TO_ORIGIN);
