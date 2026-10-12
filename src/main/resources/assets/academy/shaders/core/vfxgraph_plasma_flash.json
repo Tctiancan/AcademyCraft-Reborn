@@ -1,14 +1,7 @@
 {
     "vertex": "academy:vfxgraph_plasma_flash",
     "fragment": "academy:vfxgraph_plasma_flash",
-    "samplers": [
-        {
-            "name": "Sampler0"
-        },
-        {
-            "name": "Sampler1"
-        }
-    ],
+    "samplers": [],
     "uniforms": [
         {
             "name": "ModelViewMat",
