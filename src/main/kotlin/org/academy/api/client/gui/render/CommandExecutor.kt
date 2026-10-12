@@ -73,6 +73,13 @@ class CommandExecutor : AutoCloseable {
             }
             drawBatch(batch)
         }
+        // 本 HUD 为即时绘制, 按批次开启的 blend 及其混合函数需在返回前复位, 否则会残留到
+        // 随后的渲染阶段. 尤其暂停菜单紧跟 HUD 做 renderBlurredBackground -> processBlurEffect
+        // 的全屏模糊 PostChain, 而 PostPass.process 并不强制设置混合状态, 会继承此处残留的
+        // blend, 导致模糊/深色背景被污染而出现大量黑块. 背包/方块界面用的是
+        // renderTransparentBackground (纯渐变、不触发模糊后处理), 故不受影响, 与现象一致.
+        RenderSystem.disableBlend()
+        RenderSystem.defaultBlendFunc()
         RenderSystem.disableScissor()
     }
 
