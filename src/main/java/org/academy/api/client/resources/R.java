@@ -111,6 +111,11 @@ public final class R {
             public static final ResourceLocation vfxgraph_aeromanip_blade_grain = academy("core/vfxgraph_aeromanip_blade_grain");
             public static final ResourceLocation vfxgraph_material_erosion = academy("core/vfxgraph_material_erosion");
             public static final ResourceLocation vfxgraph_material_smoke = academy("core/vfxgraph_material_smoke");
+            public static final ResourceLocation vfxgraph_material_growth = academy("core/vfxgraph_material_growth");
+            public static final ResourceLocation vfxgraph_material_light = academy("core/vfxgraph_material_light");
+            public static final ResourceLocation vfxgraph_material_medium = academy("core/vfxgraph_material_medium");
+            public static final ResourceLocation vfxgraph_material_contact = academy("core/vfxgraph_material_contact");
+            public static final ResourceLocation vfxgraph_material_blade = academy("core/vfxgraph_material_blade");
 
             private core() {
             }

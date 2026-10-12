@@ -120,7 +120,11 @@ public final class DarkmatterSlashVfx implements Vfx {
             MeshData meshData = builder.build();
             if (meshData != null) {
                 RenderSystem.setShaderTexture(0, FRAMES[frame]);
-                BufferUploader.draw(meshData);
+                // 1.21.1: draw(MeshData) 走 VertexBuffer.draw()，只发 glDraw 事件、不向 shader
+                // 上传 ModelViewMat/ProjMat uniform，导致四边形顶点被陈旧矩阵变换而不可见。
+                // drawWithShader 会用 RenderSystem 当前模型视图(=viewRotation*transform)与投影填充
+                // 矩阵 uniform 并 apply，与 Beam 等正常绘制路径一致。
+                BufferUploader.drawWithShader(meshData);
             }
 
             modelViewStack.popMatrix();

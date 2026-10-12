@@ -88,6 +88,11 @@ public final class AcademyShaders {
     private static ShaderInstance vfxgraphAeromanipBladeGrainShader;
     private static ShaderInstance vfxgraphMaterialErosionShader;
     private static ShaderInstance vfxgraphMaterialSmokeShader;
+    private static ShaderInstance vfxgraphMaterialGrowthShader;
+    private static ShaderInstance vfxgraphMaterialLightShader;
+    private static ShaderInstance vfxgraphMaterialMediumShader;
+    private static ShaderInstance vfxgraphMaterialContactShader;
+    private static ShaderInstance vfxgraphMaterialBladeShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -239,6 +244,41 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph material smoke shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_growth"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialGrowthShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material growth shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_light"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialLightShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material light shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_medium"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialMediumShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material medium shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_contact"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialContactShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material contact shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_blade"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialBladeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material blade shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -315,6 +355,26 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphMaterialSmokeShader() {
         return vfxgraphMaterialSmokeShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialGrowthShader() {
+        return vfxgraphMaterialGrowthShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialLightShader() {
+        return vfxgraphMaterialLightShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialMediumShader() {
+        return vfxgraphMaterialMediumShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialContactShader() {
+        return vfxgraphMaterialContactShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialBladeShader() {
+        return vfxgraphMaterialBladeShader;
     }
 
     public static ShaderInstance getFlowSenseShader() {

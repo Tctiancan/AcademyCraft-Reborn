@@ -1,5 +1,8 @@
-#version 330
-layout(std140) uniform GraphCamera { mat4 View; mat4 Projection; };
+#version 150
+
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
+
 in vec3 Position;
 in vec3 InstancePos;
 in vec3 InstanceVel;
@@ -22,7 +25,7 @@ void main() {
     vec3 right = side * cos(InstanceRot) + other * sin(InstanceRot);
     vec2 p = Position.xy * 2.0 - 1.0;
     vec3 world = InstancePos + (right * p.x * 0.24 + axis * p.y) * InstanceSize;
-    gl_Position = Projection * View * vec4(world, 1.0);
+    gl_Position = ProjMat * ModelViewMat * vec4(world, 1.0);
     texCoord = Position.xy;
     vertexColor = InstanceColor;
     materialProgress = InstanceAge;
