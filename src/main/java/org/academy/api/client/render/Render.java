@@ -3,6 +3,7 @@ package org.academy.api.client.render;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import org.academy.api.client.resources.R;
 import org.academy.internal.client.render.AcademyShaders;
@@ -15,6 +16,7 @@ import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.List;
+import java.util.OptionalDouble;
 
 /**
  * 移植自 Minecraft 26.2 模组渲染后端, 适配 1.21.1 即时渲染管线.
@@ -326,8 +328,27 @@ public final class Render {
     public abstract static class RenderTypes {
         // sqrtf: 该常量对应 26.2 的线框管线 (LINES)。旧桩用 RenderType.gui()(QUADS) 会把
         // 每段 2 顶点的线框线段当四边形解释, 导致描边显示为三角面/填充面; 改用真正的
-        // 线渲染类型 RenderType.lines()(LINES + POSITION_COLOR_NORMAL)。
-        public static final RenderType MINE_DETECT_LINES = RenderType.lines();
+        // 线渲染类型 (LINES + POSITION_COLOR_NORMAL)。26.2 的 mine_detect_lines 管线使用
+        // DepthStencilState(CompareOp.ALWAYS_PASS, false), 即禁用深度测试/深度写入, 使矿物
+        // 轮廓能穿过地形显示; 此处对应地以 NO_DEPTH_TEST + COLOR_WRITE 复现该行为 (不会因
+        // 遮挡方块而裁掉)。注意: 渲染器会逐个 setColor/setNormal, 因此必须保持 vanilla
+        // LINES 的 POSITION_COLOR_NORMAL 顶点格式与逐顶点 (非 setColor 整体) 写法兼容。
+        public static final RenderType MINE_DETECT_LINES = RenderType.create(
+                "mine_detect_lines",
+                DefaultVertexFormat.POSITION_COLOR_NORMAL,
+                VertexFormat.Mode.LINES,
+                1536,
+                RenderType.CompositeState.builder()
+                        .setShaderState(RenderType.RENDERTYPE_LINES_SHADER)
+                        .setLineState(new RenderStateShard.LineStateShard(OptionalDouble.empty()))
+                        .setLayeringState(RenderType.VIEW_OFFSET_Z_LAYERING)
+                        .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                        .setOutputState(RenderType.ITEM_ENTITY_TARGET)
+                        .setWriteMaskState(RenderType.COLOR_WRITE)
+                        .setDepthTestState(RenderType.NO_DEPTH_TEST)
+                        .setCullState(RenderType.NO_CULL)
+                        .createCompositeState(false)
+        );
         public static final RenderType TELEPORT_CURSOR = RenderType.gui();
         public static final RenderType STORM_WING = RenderType.gui();
         public static final RenderType PLASMA_CLOUD = RenderType.gui();
