@@ -86,6 +86,8 @@ public final class AcademyShaders {
     private static ShaderInstance vfxgraphAeromanipBladeShader;
     private static ShaderInstance vfxgraphAeromanipBladeMistShader;
     private static ShaderInstance vfxgraphAeromanipBladeGrainShader;
+    private static ShaderInstance vfxgraphMaterialErosionShader;
+    private static ShaderInstance vfxgraphMaterialSmokeShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -223,6 +225,20 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph aeromanip blade grain shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_erosion"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialErosionShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material erosion shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_material_smoke"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphMaterialSmokeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph material smoke shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -291,6 +307,14 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphAeromanipBladeGrainShader() {
         return vfxgraphAeromanipBladeGrainShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialErosionShader() {
+        return vfxgraphMaterialErosionShader;
+    }
+
+    public static ShaderInstance getVfxgraphMaterialSmokeShader() {
+        return vfxgraphMaterialSmokeShader;
     }
 
     public static ShaderInstance getFlowSenseShader() {

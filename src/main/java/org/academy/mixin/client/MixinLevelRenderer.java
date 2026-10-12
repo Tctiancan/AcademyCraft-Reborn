@@ -19,13 +19,16 @@ import org.academy.api.client.render.vfxgraph.render.GraphCamera;
 import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.academy.api.client.renderer.RendererManager;
 import org.academy.internal.client.ability.aeromanip.FlowSenseClient;
+import org.academy.internal.client.ability.aeromanip.HighSpeedJetHighlightClient;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
 import org.academy.internal.client.render.vfx.SpacialExcisionVfxClient;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.world.entity.Entity;
 
 @Mixin(LevelRenderer.class)
 public abstract class MixinLevelRenderer {
@@ -38,6 +41,40 @@ public abstract class MixinLevelRenderer {
             CallbackInfo ci
     ) {
         org.academy.internal.client.render.vfx.InterferenceFieldClient.beginFrame();
+    }
+
+    /**
+     * 1.21.1 适配 (26.2 的实体描边)。
+     *
+     * 26.2 在 `submitEntities` 里把 `shouldShowEntityOutlines` 置为 true，并经
+     * `MixInEntityRenderer.extractRenderState` 写回 `EntityRenderState.outlineColor`。
+     * 1.21.1 无渲染状态与 `extractRenderState`，实体描边走
+     * `LevelRenderer.renderLevel` 实体循环里的
+     * `shouldEntityAppearGlowing(entity)` + `entity.getTeamColor()` 两条调用：前者决定该实体是否
+     * 被写入 `OutlineBufferSource`，后者决定轮廓色。因此：
+     * - 重定向 `shouldEntityAppearGlowing`：被高速喷流高亮 (支持实体/预览实体) 时视为发光，
+     *   从而进入描边分支，同时让该帧 `flag2=true` 触发 `entityEffect.process()`；
+     * - 重定向 `getTeamColor`：对高亮实体固定白色 `WHITE_OUTLINE`，与 26.2 一致。
+     * 这两个调用点在 `renderLevel` 内均只出现一次 (经比对 1.21.1 源码第 1027/1031 行)，注入无歧义。
+     */
+    @Redirect(method = "renderLevel", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/client/Minecraft;shouldEntityAppearGlowing(Lnet/minecraft/world/entity/Entity;)Z"))
+    private boolean academy$shouldEntityAppearGlowing(Minecraft minecraft, Entity entity) {
+        if (WideAreaInterferenceClientState.shouldOutline(entity)) return true;
+        if (HighSpeedJetHighlightClient.shouldHighlightEntity(entity)) return true;
+        return minecraft.shouldEntityAppearGlowing(entity);
+    }
+
+    @Redirect(method = "renderLevel", at = @At(value = "INVOKE",
+            target = "Lnet/minecraft/world/entity/Entity;getTeamColor()I"))
+    private int academy$highlightOutlineColor(Entity entity) {
+        if (WideAreaInterferenceClientState.shouldOutline(entity)) {
+            return WideAreaInterferenceClientState.outlineColor(entity);
+        }
+        if (HighSpeedJetHighlightClient.shouldHighlightEntity(entity)) {
+            return HighSpeedJetHighlightClient.WHITE_OUTLINE;
+        }
+        return entity.getTeamColor();
     }
 
     /**

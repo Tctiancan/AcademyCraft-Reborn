@@ -1,4 +1,4 @@
-#version 330
+#version 150
 uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
 in vec2 texCoord;
@@ -13,7 +13,6 @@ void main() {
     float billow = texture(Sampler0, texCoord * 0.018 + phase + cloudTime * vec2(0.018, -0.012)).r;
     float detail = texture(Sampler0, texCoord * 0.047 - phase + cloudTime * vec2(-0.025, 0.02)).r;
     float density = 1.0 - dot(p, p) + (billow - 0.5) * 0.75;
-    // Expanding, porous smoke loses density as it leaves the surface, rather than filling the target.
     float alpha = vertexColor.a * smoothstep(0.0, 0.75, density)
             * (0.45 + billow * 0.4 + detail * 0.15) * (1.0 - cloudTime * 0.5);
     float shade = 0.68 + billow * 0.26 + detail * 0.06;
