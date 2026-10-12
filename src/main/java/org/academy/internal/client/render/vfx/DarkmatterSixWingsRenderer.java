@@ -59,7 +59,9 @@ public final class DarkmatterSixWingsRenderer implements VfxRenderer<DarkmatterS
             }
             MeshData meshData = builder.build();
             if (meshData != null) {
-                BufferUploader.draw(meshData);
+                // 1.21.1: 立即态网格必须以 drawWithShader 提交, 携带 RenderSystem 当前
+                // 模型视图/投影与 shader 状态; 裸 draw() 仅上传顶点而不合成分辨率像素。
+                BufferUploader.drawWithShader(meshData);
             }
         }
 

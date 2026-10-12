@@ -1,0 +1,9 @@
+{
+    "vertex": "academy:screen_blit",
+    "fragment": "academy:screen_blit",
+    "samplers": [
+        {
+            "name": "Sampler0"
+        }
+    ]
+}

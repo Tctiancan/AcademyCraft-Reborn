@@ -1,0 +1,9 @@
+{
+    "vertex": "academy:screen_blit",
+    "fragment": "academy:directional_field",
+    "samplers": [
+        {
+            "name": "SceneDepth"
+        }
+    ]
+}

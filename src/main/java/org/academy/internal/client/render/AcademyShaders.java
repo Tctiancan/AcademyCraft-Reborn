@@ -68,6 +68,8 @@ public final class AcademyShaders {
             .add("Color", ARC_COLOR)
             .build();
     private static ShaderInstance vfxgraphInkStormShader;
+    private static ShaderInstance directionalFieldShader;
+    private static ShaderInstance screenBlitShader;
 
     /** 简单实例(non-instanced)顶点格式: 相机相对 Position + FLOAT Color，供拖尾条带等 vfxgraph_simple 绘制。 */
     private static final VertexFormatElement SIMPLE_COLOR = VertexFormatElement.register(15, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
@@ -279,6 +281,20 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph material blade shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("directional_field"), DefaultVertexFormat.POSITION);
+            event.registerShader(shader, instance -> directionalFieldShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic directional field shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("screen_blit"), DefaultVertexFormat.POSITION);
+            event.registerShader(shader, instance -> screenBlitShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic screen blit shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -379,6 +395,14 @@ public final class AcademyShaders {
 
     public static ShaderInstance getFlowSenseShader() {
         return flowSenseShader;
+    }
+
+    public static ShaderInstance getDirectionalFieldShader() {
+        return directionalFieldShader;
+    }
+
+    public static ShaderInstance getScreenBlitShader() {
+        return screenBlitShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {

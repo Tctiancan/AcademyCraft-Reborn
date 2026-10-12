@@ -21,9 +21,11 @@ public final class DarkmatterCreatureModel extends EntityModel<DarkmatterBeetle>
     private final ModelPart[] limbs = new ModelPart[3];
     private final ModelPart[] additional = new ModelPart[4];
 
+    private final ModelPart all;
+
     public DarkmatterCreatureModel(ModelPart root) {
         super();
-        var all = root.getChild("all");
+        all = root.getChild("all");
         for (var i = 0; i < heads.length; i++) heads[i] = all.getChild("head_" + i);
         for (var i = 0; i < torsos.length; i++) torsos[i] = all.getChild("torso_" + i);
         for (var i = 0; i < limbs.length; i++) limbs[i] = all.getChild("limbs_" + i);
@@ -78,10 +80,7 @@ public final class DarkmatterCreatureModel extends EntityModel<DarkmatterBeetle>
 
     @Override
     public void renderToBuffer(PoseStack poseStack, VertexConsumer buffer, int packedLight, int packedOverlay, int color) {
-        for (var part : heads) part.render(poseStack, buffer, packedLight, packedOverlay, color);
-        for (var part : torsos) part.render(poseStack, buffer, packedLight, packedOverlay, color);
-        for (var part : limbs) part.render(poseStack, buffer, packedLight, packedOverlay, color);
-        for (var part : additional) part.render(poseStack, buffer, packedLight, packedOverlay, color);
+        all.render(poseStack, buffer, packedLight, packedOverlay, color);
     }
 
     @Override
