@@ -1,4 +1,4 @@
-#version 330
+#version 150
 
 uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
@@ -29,7 +29,8 @@ void main() {
 
     vec2 screenUv = gl_FragCoord.xy / textureSize(Sampler1, 0);
     float sceneDepth = texture(Sampler1, screenUv).r;
-    float depthDiff = gl_FragCoord.z - sceneDepth;
+    // 1.21.1 非反转 z（近=0、远=1）：片元较近(sceneDepth 更大)时差值>0 → 保留。
+    float depthDiff = sceneDepth - gl_FragCoord.z;
     float sceneGradient = max(length(vec2(dFdx(sceneDepth), dFdy(sceneDepth))) * 4.0, 1e-3);
     alpha *= smoothstep(0.0, sceneGradient, depthDiff);
     if (alpha < 0.001) discard;

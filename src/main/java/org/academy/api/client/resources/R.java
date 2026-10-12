@@ -106,6 +106,9 @@ public final class R {
             public static final ResourceLocation vfxgraph_tornado_volume = academy("core/vfxgraph_tornado_volume");
             public static final ResourceLocation vfxgraph_tornado_dust = academy("core/vfxgraph_tornado_dust");
             public static final ResourceLocation vfxgraph_aeromanip_mist = academy("core/vfxgraph_aeromanip_mist");
+            public static final ResourceLocation vfxgraph_aeromanip_blade = academy("core/vfxgraph_aeromanip_blade");
+            public static final ResourceLocation vfxgraph_aeromanip_blade_mist = academy("core/vfxgraph_aeromanip_blade_mist");
+            public static final ResourceLocation vfxgraph_aeromanip_blade_grain = academy("core/vfxgraph_aeromanip_blade_grain");
 
             private core() {
             }

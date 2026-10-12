@@ -83,6 +83,9 @@ public final class AcademyShaders {
     private static ShaderInstance vfxgraphTornadoVolumeShader;
     private static ShaderInstance vfxgraphTornadoDustShader;
     private static ShaderInstance vfxgraphAeromanipMistShader;
+    private static ShaderInstance vfxgraphAeromanipBladeShader;
+    private static ShaderInstance vfxgraphAeromanipBladeMistShader;
+    private static ShaderInstance vfxgraphAeromanipBladeGrainShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -199,6 +202,27 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic flow sense shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_aeromanip_blade"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphAeromanipBladeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph aeromanip blade shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_aeromanip_blade_mist"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphAeromanipBladeMistShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph aeromanip blade mist shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_aeromanip_blade_grain"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphAeromanipBladeGrainShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph aeromanip blade grain shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -255,6 +279,18 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphAeromanipMistShader() {
         return vfxgraphAeromanipMistShader;
+    }
+
+    public static ShaderInstance getVfxgraphAeromanipBladeShader() {
+        return vfxgraphAeromanipBladeShader;
+    }
+
+    public static ShaderInstance getVfxgraphAeromanipBladeMistShader() {
+        return vfxgraphAeromanipBladeMistShader;
+    }
+
+    public static ShaderInstance getVfxgraphAeromanipBladeGrainShader() {
+        return vfxgraphAeromanipBladeGrainShader;
     }
 
     public static ShaderInstance getFlowSenseShader() {

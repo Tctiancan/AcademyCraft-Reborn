@@ -287,6 +287,9 @@ public final class VfxGraphRenderer {
         if (fs.equals(R.shaders.core.vfxgraph_tornado_volume)) return AcademyShaders.getVfxgraphTornadoVolumeShader();
         if (fs.equals(R.shaders.core.vfxgraph_tornado_dust)) return AcademyShaders.getVfxgraphTornadoDustShader();
         if (fs.equals(R.shaders.core.vfxgraph_aeromanip_mist)) return AcademyShaders.getVfxgraphAeromanipMistShader();
+        if (fs.equals(R.shaders.core.vfxgraph_aeromanip_blade)) return AcademyShaders.getVfxgraphAeromanipBladeShader();
+        if (fs.equals(R.shaders.core.vfxgraph_aeromanip_blade_mist)) return AcademyShaders.getVfxgraphAeromanipBladeMistShader();
+        if (fs.equals(R.shaders.core.vfxgraph_aeromanip_blade_grain)) return AcademyShaders.getVfxgraphAeromanipBladeGrainShader();
         return null;
     }
 

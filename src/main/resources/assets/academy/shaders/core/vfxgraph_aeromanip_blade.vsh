@@ -1,9 +1,7 @@
-#version 330
+#version 150
 
-layout(std140) uniform GraphCamera {
-    mat4 View;
-    mat4 Projection;
-};
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
 
 in vec3 Position;
 in vec3 InstancePos;
@@ -27,9 +25,9 @@ float hash1(float value) {
 }
 
 void main() {
-    vec4 viewPos = View * vec4(InstancePos, 1.0);
+    vec4 viewPos = ModelViewMat * vec4(InstancePos, 1.0);
     vec2 offset = Position.xy * 2.0 - 1.0;
-    vec3 velocityView = (View * vec4(InstanceVel, 0.0)).xyz;
+    vec3 velocityView = (ModelViewMat * vec4(InstanceVel, 0.0)).xyz;
     float projectedSpeed = length(velocityView.xy);
     float fallbackAngle = InstanceRot + hash1(InstanceSeed + 7.9) * 6.2831853;
     vec2 longAxis = projectedSpeed > 1e-4
@@ -46,7 +44,7 @@ void main() {
     viewPos.xy += longAxis * offset.y * InstanceSize * stretch * CARD_LENGTH_SCALE;
     viewPos.xy += shortAxis * offset.x * InstanceSize * 0.68 * widthVariation * CARD_WIDTH_SCALE;
 
-    gl_Position = Projection * viewPos;
+    gl_Position = ProjMat * viewPos;
     texCoord = Position.xy;
     vertexColor = InstanceColor;
 }
