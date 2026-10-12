@@ -30,6 +30,7 @@ import static org.academy.AcademyCraft.academy;
 public final class AcademyShaders {
     private static ShaderInstance cloudroomShader;
     private static ShaderInstance distortionShader;
+    private static ShaderInstance flowSenseShader;
     private static @org.jspecify.annotations.Nullable RenderType distortionRingType;
 
     /** 向量爆发 (VectorBlast) 粒子云实例化顶点格式: 四角 Position + 每粒子 Instance* 属性. */
@@ -191,6 +192,13 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph aeromanip mist shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("flow_sense"), DefaultVertexFormat.POSITION_TEX_COLOR);
+            event.registerShader(shader, instance -> flowSenseShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic flow sense shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -247,6 +255,10 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphAeromanipMistShader() {
         return vfxgraphAeromanipMistShader;
+    }
+
+    public static ShaderInstance getFlowSenseShader() {
+        return flowSenseShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {

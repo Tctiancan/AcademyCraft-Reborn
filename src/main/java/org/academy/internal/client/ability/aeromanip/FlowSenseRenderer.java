@@ -2,13 +2,18 @@ package org.academy.internal.client.ability.aeromanip;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexSorting;
+import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.util.Mth;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import org.academy.internal.client.render.AcademyShaders;
 import org.joml.Matrix4f;
 import org.joml.Matrix4fc;
 import org.joml.Vector3f;
@@ -33,11 +38,11 @@ public final class FlowSenseRenderer implements AutoCloseable {
     /** 半透明、深度无关、面向相机的空心标记渲染状态 (位置+颜色, 四边形). */
     private static final RenderType MARKERS = RenderType.create(
             "academy_flow_sense_markers",
-            DefaultVertexFormat.POSITION_COLOR,
+            DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormat.Mode.QUADS,
             786432, false, false,
             RenderType.CompositeState.builder()
-                    .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionColorShader))
+                    .setShaderState(new RenderStateShard.ShaderStateShard(AcademyShaders::getFlowSenseShader))
                     .setTransparencyState(new RenderStateShard.TransparencyStateShard("translucent_transparency",
                             () -> {
                                 RenderSystem.enableBlend();
@@ -72,7 +77,22 @@ public final class FlowSenseRenderer implements AutoCloseable {
         if (mc.level == null || mc.player == null) return;
         drawn = 0;
         float partial = mc.getTimer().getGameTimeDeltaPartialTick(false);
-        var matrix = new Matrix4f(projection).mul(view);
+        // 1.21.1 的 GameRenderer.renderLevel 会把行走摇曳 (view bob) 折叠进主世界的投影矩阵
+        // (matrix4f.mul(bobView pose)), 使整帧画面随玩家行走而晃动. 标记是稳定的屏幕锚点,
+        // 不应随头部摇曳一起摆动, 故把摇曳变换从投影矩阵中剔除, 恢复无摇曳的稳定投影后再
+        // 用于标记的投影与绘制.
+        Matrix4f stableProjection = new Matrix4f(projection);
+        if (mc.options.bobView().get() && mc.getCameraEntity() instanceof Player player) {
+            float f = player.walkDist - player.walkDistO;
+            float f1 = -(player.walkDist + f * partial);
+            float f2 = Mth.lerp(partial, player.oBob, player.bob);
+            var bob = new PoseStack();
+            bob.translate(Mth.sin(f1 * (float) Math.PI) * f2 * 0.5F, -Math.abs(Mth.cos(f1 * (float) Math.PI) * f2), 0.0F);
+            bob.mulPose(Axis.ZP.rotationDegrees(Mth.sin(f1 * (float) Math.PI) * f2 * 3.0F));
+            bob.mulPose(Axis.XP.rotationDegrees(Math.abs(Mth.cos(f1 * (float) Math.PI - 0.2F) * f2) * 5.0F));
+            stableProjection.mul(bob.last().pose().invert());
+        }
+        var matrix = new Matrix4f(stableProjection).mul(view);
         var fullInv = new Matrix4f(matrix).invert();
         var clip = new Vector4f();
         var win = mc.getWindow();
@@ -108,11 +128,16 @@ public final class FlowSenseRenderer implements AutoCloseable {
         prepareNanos = System.nanoTime() - start;
         if (drawn == 0) { lastNanos = prepareNanos; uploadNanos = 0; return; }
         // 以相机旋转矩阵作为模型矩阵; 顶点以相机相对坐标给出, 由 RenderSystem 完成投影.
+        // 绘制期间把全局投影临时切换为无摇曳的稳定投影, 否则标记会被主世界带摇曳的投影
+        // 再次偏移而跟随头部晃动; 绘制完毕后立即还原, 不影响其后(手部/后续 HUD)的渲染.
+        var originalProjection = RenderSystem.getProjectionMatrix();
         var modelView = RenderSystem.getModelViewStack();
         modelView.pushMatrix();
         modelView.set(view);
         RenderSystem.applyModelViewMatrix();
+        RenderSystem.setProjectionMatrix(stableProjection, VertexSorting.DISTANCE_TO_ORIGIN);
         bufferSource.endBatch(MARKERS);
+        RenderSystem.setProjectionMatrix(originalProjection, VertexSorting.DISTANCE_TO_ORIGIN);
         modelView.popMatrix();
         uploadNanos = System.nanoTime() - start - prepareNanos;
         frames++; lastNanos = System.nanoTime() - start;
@@ -140,10 +165,12 @@ public final class FlowSenseRenderer implements AutoCloseable {
         var tr = fullInv.transformPosition(new Vector3f(ndcX + sx, ndcY + sy, ndcZ), new Vector3f());
         var br = fullInv.transformPosition(new Vector3f(ndcX + sx, ndcY - sy, ndcZ), new Vector3f());
         var bl = fullInv.transformPosition(new Vector3f(ndcX - sx, ndcY - sy, ndcZ), new Vector3f());
-        builder.addVertex(tl.x, tl.y, tl.z).setColor(r, g, b, alpha);
-        builder.addVertex(tr.x, tr.y, tr.z).setColor(r, g, b, alpha);
-        builder.addVertex(br.x, br.y, br.z).setColor(r, g, b, alpha);
-        builder.addVertex(bl.x, bl.y, bl.z).setColor(r, g, b, alpha);
+        // UV 在四边形内线性铺满 [-1,1]，由 flow_sense 片元着色器将 |x|+|y|=0.78 以外的区域裁成
+        // 透明，从而呈现空心菱形外轮廓（与 26.2 语义一致：方块实体标记任一面）。
+        builder.addVertex(tl.x, tl.y, tl.z).setUv(-1, -1).setColor(r, g, b, alpha);
+        builder.addVertex(tr.x, tr.y, tr.z).setUv(1, -1).setColor(r, g, b, alpha);
+        builder.addVertex(br.x, br.y, br.z).setUv(1, 1).setColor(r, g, b, alpha);
+        builder.addVertex(bl.x, bl.y, bl.z).setUv(-1, 1).setColor(r, g, b, alpha);
     }
 
     @Override public void close() {
