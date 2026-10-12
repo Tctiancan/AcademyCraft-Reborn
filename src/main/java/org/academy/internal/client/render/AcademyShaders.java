@@ -81,6 +81,7 @@ public final class AcademyShaders {
     private static ShaderInstance vfxgraphImpactMonochromeShader;
     private static ShaderInstance vfxgraphTornadoVolumeShader;
     private static ShaderInstance vfxgraphTornadoDustShader;
+    private static ShaderInstance vfxgraphAeromanipMistShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -183,6 +184,13 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph tornado dust shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_aeromanip_mist"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphAeromanipMistShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph aeromanip mist shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -235,6 +243,10 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphTornadoDustShader() {
         return vfxgraphTornadoDustShader;
+    }
+
+    public static ShaderInstance getVfxgraphAeromanipMistShader() {
+        return vfxgraphAeromanipMistShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {
