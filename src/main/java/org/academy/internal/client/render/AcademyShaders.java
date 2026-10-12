@@ -68,6 +68,10 @@ public final class AcademyShaders {
             .add("Color", ARC_COLOR)
             .build();
     private static ShaderInstance vfxgraphInkStormShader;
+    private static ShaderInstance vfxgraphArcShader;
+    private static ShaderInstance vfxgraphArc2Shader;
+    private static ShaderInstance vfxgraphAxialBurstShader;
+    private static ShaderInstance vfxgraphSkyDischargeShader;
     private static ShaderInstance directionalFieldShader;
     private static ShaderInstance screenBlitShader;
 
@@ -133,6 +137,34 @@ public final class AcademyShaders {
             event.registerShader(shader, instance -> vfxgraphInkStormShader = instance);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic vfxgraph ink storm shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_arc"), VFX_GRAPH_ARC_TUBE);
+            event.registerShader(shader, instance -> vfxgraphArcShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph arc shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_arc2"), VFX_GRAPH_ARC_TUBE);
+            event.registerShader(shader, instance -> vfxgraphArc2Shader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph arc2 shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_axial_burst"), VFX_GRAPH_ARC_TUBE);
+            event.registerShader(shader, instance -> vfxgraphAxialBurstShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph axial burst shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_sky_discharge"), VFX_GRAPH_ARC_TUBE);
+            event.registerShader(shader, instance -> vfxgraphSkyDischargeShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph sky discharge shader", e);
         }
         try {
             ShaderInstance shader = new ShaderInstance(
@@ -311,6 +343,22 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphInkStormShader() {
         return vfxgraphInkStormShader;
+    }
+
+    public static ShaderInstance getVfxgraphArcShader() {
+        return vfxgraphArcShader;
+    }
+
+    public static ShaderInstance getVfxgraphArc2Shader() {
+        return vfxgraphArc2Shader;
+    }
+
+    public static ShaderInstance getVfxgraphAxialBurstShader() {
+        return vfxgraphAxialBurstShader;
+    }
+
+    public static ShaderInstance getVfxgraphSkyDischargeShader() {
+        return vfxgraphSkyDischargeShader;
     }
 
     public static ShaderInstance getVfxgraphPlasmaLiquidShader() {

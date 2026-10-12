@@ -1,9 +1,7 @@
-#version 330
+#version 150
 
-layout(std140) uniform GraphCamera {
-    mat4 View;
-    mat4 Projection;
-};
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
 
 in vec3 Position;
 in vec3 Normal;
@@ -16,11 +14,12 @@ out vec4 vColor;
 out vec3 vViewDir;
 
 void main() {
-    gl_Position = Projection * View * vec4(Position, 1.0);
-    vNormal = Normal;
+    vec4 viewPosition = ModelViewMat * vec4(Position, 1.0);
+    gl_Position = ProjMat * viewPosition;
+    vNormal = mat3(ModelViewMat) * Normal;
     texCoord0 = UV0;
     vColor = Color;
-    // Position 已由 CPU 转为相机相对坐标（world - camPos），故 -Position 即碎片到相机的世界方向
-    // （视图为纯旋转矩阵，方向不受旋转影响；视角相关 rim 在片元里用它与法线点积计算）。
-    vViewDir = normalize(-Position);
+    // Position 已由 CPU 转为相机相对坐标 (world - camPos), 模型视图为纯旋转矩阵;
+    // 故 -viewPosition.xyz 即碎片到相机的视图方向 (view-space rim 用它与法线点积计算)。
+    vViewDir = normalize(-viewPosition.xyz);
 }

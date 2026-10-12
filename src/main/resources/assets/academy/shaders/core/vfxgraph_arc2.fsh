@@ -1,14 +1,12 @@
-#version 330
+#version 150
 
-layout(std140) uniform ArcLightning {
-    vec4 LightningParams; // x = aces toggle, z = emission boost
-};
+uniform float ArcEmission;
+uniform float ArcAces;
 
 in vec3 vNormal;
 in vec2 texCoord0;
 in vec4 vColor;
 in vec3 vViewDir;
-
 out vec4 fragColor;
 
 vec3 acesApprox(vec3 x) {
@@ -16,7 +14,7 @@ vec3 acesApprox(vec3 x) {
 }
 
 void main() {
-    float emission = 1.0 + LightningParams.z;
+    float emission = 1.0 + ArcEmission;
     vec3 base = max(vColor.rgb, vec3(1e-4));
     vec3 color = base * emission;
 
@@ -24,7 +22,7 @@ void main() {
     rim = smoothstep(0.2, 0.7, rim);
     float alpha = vColor.a * mix(0.8, 1.0, rim);
 
-    if (LightningParams.x > 0.5) {
+    if (ArcAces > 0.5) {
         color = acesApprox(color);
     }
 

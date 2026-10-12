@@ -94,6 +94,9 @@ public final class R {
             public static final ResourceLocation vfxgraph_mesh = academy("core/vfxgraph_mesh");
             public static final ResourceLocation vfxgraph_simple = academy("core/vfxgraph_simple");
             public static final ResourceLocation vfxgraph_arc = academy("core/vfxgraph_arc");
+            public static final ResourceLocation vfxgraph_arc2 = academy("core/vfxgraph_arc2");
+            public static final ResourceLocation vfxgraph_axial_burst = academy("core/vfxgraph_axial_burst");
+            public static final ResourceLocation vfxgraph_sky_discharge = academy("core/vfxgraph_sky_discharge");
             public static final ResourceLocation vfxgraph_surface = academy("core/vfxgraph_surface");
             public static final ResourceLocation vfxgraph_cloud_vortex = academy("core/vfxgraph_cloud_vortex");
             public static final ResourceLocation vfxgraph_ink_storm = academy("core/vfxgraph_ink_storm");

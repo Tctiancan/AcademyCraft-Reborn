@@ -90,7 +90,7 @@ public final class VfxGraphRenderer {
     public void drawArcTubes(ArcBuffer arcBuffer, GraphCamera camera, WorldTransform transform,
                              boolean bloomPass, RenderSpec spec) {
         if (arcBuffer == null || arcBuffer.count() == 0 || spec == null || spec.arc() == null) return;
-        var shader = AcademyShaders.getVfxgraphInkStormShader();
+        var shader = pickArcShader(spec);
         if (shader == null) return;
 
         var arcRender = spec.arc();
@@ -170,9 +170,39 @@ public final class VfxGraphRenderer {
         return new float[]{BlenderArcCurves.sample(BlenderArcCurves.FLICKER, ageFrac), 1f};
     }
 
-    /** 弧管网格即时绘制：绑定 ink_storm shader，模型视图为纯旋转视图，顶点为相机相对坐标。 */
+    /** 按输出节点指定的片元着色器选择弧管着色器: ink_storm(黑翼) / arc2 / axial_burst / sky_discharge 精确匹配, 其余回退 arc。 */
+    private static @Nullable ShaderInstance pickArcShader(RenderSpec spec) {
+        var fs = spec.fragmentShader();
+        if (fs != null && fs.equals(R.shaders.core.vfxgraph_ink_storm)) {
+            return AcademyShaders.getVfxgraphInkStormShader();
+        }
+        if (fs != null && fs.equals(R.shaders.core.vfxgraph_arc2)) {
+            return AcademyShaders.getVfxgraphArc2Shader();
+        }
+        if (fs != null && fs.equals(R.shaders.core.vfxgraph_axial_burst)) {
+            return AcademyShaders.getVfxgraphAxialBurstShader();
+        }
+        if (fs != null && fs.equals(R.shaders.core.vfxgraph_sky_discharge)) {
+            return AcademyShaders.getVfxgraphSkyDischargeShader();
+        }
+        return AcademyShaders.getVfxgraphArcShader();
+    }
+
+    /** 弧管网格即时绘制：绑定图数据指定的弧着色器，模型视图为纯旋转视图，顶点为相机相对坐标。 */
     private void drawArcTubes(MeshData mesh, RenderSpec spec, ShaderInstance shader, GraphCamera camera) {
         RenderSystem.setShader(() -> shader);
+        var emission = shader.getUniform("ArcEmission");
+        if (emission != null) {
+            emission.set(spec.arc() != null ? spec.arc().emission() : 0f);
+        }
+        var aces = shader.getUniform("ArcAces");
+        if (aces != null) {
+            aces.set(0f); // 主 pass 关闭 ACES 色调映射 (对齐 26.2 writeArcLightning LightningParams.x=0)
+        }
+        var bloom = shader.getUniform("ArcBloom");
+        if (bloom != null) {
+            bloom.set(0f); // 1.21.1 无独立 bloom pass (对齐 LightningParams.y=0, 世界直通 alpha)
+        }
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         boolean additive = spec.blend() == RenderSpec.Blend.ADDITIVE || spec.blend() == RenderSpec.Blend.GLOW;
         RenderSystem.enableBlend();
@@ -182,6 +212,9 @@ public final class VfxGraphRenderer {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
         RenderSystem.enableDepthTest();
+        // 对齐 26.2 buildPipeline: DepthStencilState(..., false) —— 弧管不写深度。
+        // 否则外层壳体先写入深度, 内层亮芯被遮挡, 只剩偏暗蓝而丢失白色核心。
+        RenderSystem.depthMask(false);
         RenderSystem.disableCull();
 
         var stack = RenderSystem.getModelViewStack();
@@ -197,6 +230,7 @@ public final class VfxGraphRenderer {
             stack.popMatrix();
             RenderSystem.applyModelViewMatrix();
             RenderSystem.enableCull();
+            RenderSystem.depthMask(true);
             RenderSystem.enableDepthTest();
             RenderSystem.disableBlend();
         }

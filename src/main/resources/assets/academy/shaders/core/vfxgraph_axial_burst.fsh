@@ -1,6 +1,8 @@
-#version 330
+#version 150
 
-layout(std140) uniform ArcLightning { vec4 LightningParams; };
+uniform float ArcEmission;
+uniform float ArcBloom;
+
 in vec3 vNormal;
 in vec2 texCoord0;
 in vec4 vColor;
@@ -15,10 +17,10 @@ void main() {
     float plasma = smoothstep(0.0, 0.35, vColor.r - vColor.b);
     float edge = mix(pow(facing, 1.1), 0.20 + 0.80 * pow(facing, 0.85), plasma);
     float alpha = vColor.a * edge;
-    vec3 color = vColor.rgb * LightningParams.z;
+    vec3 color = vColor.rgb * ArcEmission;
     // A restrained circumferential gradient separates the translucent cylindrical shells.
     float roundness = 0.82 + 0.18 * max(dot(normal, normalize(vec3(0.35, 0.8, 0.3))), 0.0);
     color *= mix(1.0, roundness, plasma);
-    if (LightningParams.y > 0.5) color *= alpha;
+    if (ArcBloom > 0.5) color *= alpha;
     fragColor = vec4(color, alpha);
 }

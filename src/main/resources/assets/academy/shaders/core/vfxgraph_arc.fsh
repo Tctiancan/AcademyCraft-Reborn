@@ -1,14 +1,12 @@
-#version 330
+#version 150
 
-layout(std140) uniform ArcLightning {
-    vec4 LightningParams; // x = aces toggle, z = emission boost (Light × 6 语义)
-};
+uniform float ArcEmission;
+uniform float ArcAces;
 
 in vec3 vNormal;
 in vec2 texCoord0;
 in vec4 vColor;
 in vec3 vViewDir;
-
 out vec4 fragColor;
 
 vec3 acesApprox(vec3 x) {
@@ -19,9 +17,9 @@ void main() {
     // Blender Principled BSDF Emission：Emission = LColor × (Light × 6)。
     // 颜色 100% 由图数据顶点色驱动（零代码颜色常量）。
     vec3 base = max(vColor.rgb, vec3(1e-4));
-    vec3 color = base * LightningParams.z;
+    vec3 color = base * ArcEmission;
 
-    if (LightningParams.x > 0.5) {
+    if (ArcAces > 0.5) {
         color = acesApprox(color);
     }
 
