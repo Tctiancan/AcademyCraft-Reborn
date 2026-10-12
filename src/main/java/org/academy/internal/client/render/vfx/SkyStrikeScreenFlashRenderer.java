@@ -75,7 +75,7 @@ public final class SkyStrikeScreenFlashRenderer implements VfxRenderer<SkyStrike
         emitCorner(builder, fullInv, -1.0f, 1.0f, alpha);
         MeshData meshData = builder.build();
         if (meshData != null) {
-            BufferUploader.draw(meshData);
+            BufferUploader.drawWithShader(meshData);
         }
 
         modelViewStack.popMatrix();

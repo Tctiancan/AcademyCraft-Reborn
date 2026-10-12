@@ -67,7 +67,7 @@ public final class TexturedQuadRenderer implements VfxRenderer<WorldQuadData> {
             }
             RenderSystem.setShaderTexture(0, quad.texture());
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            BufferUploader.draw(meshData);
+            BufferUploader.drawWithShader(meshData);
         }
 
         modelViewStack.popMatrix();

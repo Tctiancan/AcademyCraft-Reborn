@@ -74,7 +74,7 @@ public final class SkyStrikeWorldRenderer implements VfxRenderer<SkyStrikeWorldD
                 continue;
             }
             RenderSystem.setShaderTexture(0, quad.texture());
-            BufferUploader.draw(meshData);
+            BufferUploader.drawWithShader(meshData);
         }
 
         modelViewStack.popMatrix();
