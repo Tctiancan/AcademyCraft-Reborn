@@ -81,6 +81,7 @@ public final class DarkmatterSlashVfx implements Vfx {
             RenderSystem.enableBlend();
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
             RenderSystem.disableDepthTest();
+            RenderSystem.disableCull();
             RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
             for (var item : data) {
                 for (boolean inner : INNER) {
@@ -88,6 +89,7 @@ public final class DarkmatterSlashVfx implements Vfx {
                 }
             }
             RenderSystem.enableDepthTest();
+            RenderSystem.enableCull();
         }
 
         private static void drawSlash(VfxRenderContext ctx, Data item, boolean inner) {
