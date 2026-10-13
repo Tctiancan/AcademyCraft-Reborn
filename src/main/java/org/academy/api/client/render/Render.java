@@ -3,6 +3,7 @@ package org.academy.api.client.render;
 import com.mojang.blaze3d.vertex.ByteBufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import org.academy.api.client.resources.R;
@@ -349,7 +350,37 @@ public final class Render {
                         .setCullState(RenderType.NO_CULL)
                         .createCompositeState(false)
         );
-        public static final RenderType TELEPORT_CURSOR = RenderType.gui();
+        // sqrtf: 复刻 26.2 `RenderTypes.TELEPORT_CURSOR` 的管线状态 (着色器/混合/深度/排序)。
+        // 26.2 原管线用 cull(true), 但其 GeckoLib 模型为外翻绕序; 本移植模型在
+        // TeleportCursorRenderer 中 BODY 以 inwardFacing=true (反向绕序) 建模, 是供双面绘制
+        // 的, 若开启背面剔除会让摄像机面向的面被裁掉、只剩背面, 顶部盘面也可能整片消失。
+        // 因此这里必须用 NO_CULL 才能完整显示长方体与顶部盘面。
+        // 此处的 RenderType.gui() 桩不绑定 teleport_cursor 纹理: 复刻 26.2 用 RenderSetup 显式
+        // bind 的 "Sampler0"=teleport_cursor。顶点格式 POSITION_TEX_COLOR 逐顶点 (u,v)+setColor,
+        // 着色器由逐顶点色乘纹理色; 纹理本身为灰度+alpha(目标半透明设计)。
+        // 深度改为 ALWAYS 通过且不写深度, 使瞄准光标作为始终置顶的叠加层绘制, 避免被地形裁剪/深度冲突。
+        public static final RenderType TELEPORT_CURSOR = RenderType.create(
+                "academy_teleport_cursor",
+                DefaultVertexFormat.POSITION_TEX_COLOR,
+                VertexFormat.Mode.QUADS,
+                786432,
+                false,
+                true,
+                RenderType.CompositeState.builder()
+                        // 26.2 光标用的是 position_tex_color 程序 (逐顶点色); 不能用
+                        // RENDERTYPE_GUI_SHADER (rendertype_gui) —— 其片元为
+                        // texture*ColorModulator, 忽略逐顶点 setColor, 会继承冲刷时残留的全局
+                        // 颜色 (如绿色), 使光标整体变绿。position_tex_color 用 texture*vertexColor,
+                        // 光标颜色严格由顶点色 (白) 决定, 与背景无关。
+                        .setShaderState(new RenderStateShard.ShaderStateShard(GameRenderer::getPositionTexColorShader))
+                        .setTextureState(new RenderStateShard.TextureStateShard(
+                                R.textures.teleport_cursor, false, false))
+                        .setTransparencyState(RenderType.TRANSLUCENT_TRANSPARENCY)
+                        .setCullState(RenderType.CULL)
+                        .setDepthTestState(RenderType.NO_DEPTH_TEST)
+                        .setWriteMaskState(RenderType.COLOR_WRITE)
+                        .createCompositeState(false)
+        );
         public static final RenderType STORM_WING = RenderType.gui();
         public static final RenderType PLASMA_CLOUD = RenderType.gui();
         public static final RenderType BLACK_WING = RenderType.gui();

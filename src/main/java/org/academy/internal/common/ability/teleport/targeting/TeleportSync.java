@@ -66,6 +66,12 @@ public final class TeleportSync {
         var origin = entity.getBoundingBox().getCenter();
         var preTeleportYaw = entity.getYRot();
         var preTeleportPitch = entity.getXRot();
+        // When preserving the view rotation, the vanilla relative-Y_ROT/X_ROT flags compute a
+        // rotation delta of (yaw - current). Feeding the entity's current rotation therefore yields
+        // a delta of zero, keeping the owning client's camera orientation untouched. Passing the raw
+        // (0, 0) here would forcibly reset the client view to yaw=0/pitch=0 on every teleport.
+        var teleportYaw = preserveViewRotation ? preTeleportYaw : yaw;
+        var teleportPitch = preserveViewRotation ? preTeleportPitch : pitch;
         synchronized (PENDING_ABSOLUTE_SYNCS) {
             PENDING_ABSOLUTE_SYNCS.add(entity);
         }
@@ -75,8 +81,8 @@ public final class TeleportSync {
                 destination.y,
                 destination.z,
                 preserveViewRotation ? PRESERVED_VIEW_ROTATION : Set.of(),
-                yaw,
-                pitch
+                teleportYaw,
+                teleportPitch
         )) {
             synchronized (PENDING_ABSOLUTE_SYNCS) {
                 PENDING_ABSOLUTE_SYNCS.remove(entity);

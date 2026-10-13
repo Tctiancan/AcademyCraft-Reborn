@@ -36,7 +36,8 @@ public final class WorldLineOverlayPass {
     }
 
     public static boolean accepts(RenderType renderType) {
-        return renderType == Render.RenderTypes.MINE_DETECT_LINES;
+        return renderType == Render.RenderTypes.MINE_DETECT_LINES
+                || renderType == Render.RenderTypes.TELEPORT_CURSOR;
     }
 
     public static void submit(PoseStack poseStack, RenderType renderType, MatrixStack matrixStack,
