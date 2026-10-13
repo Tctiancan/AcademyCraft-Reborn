@@ -26,7 +26,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * {@code MENTALOUT_OUTLINE_COLOR} 保留为后续描边功能预留。
  */
 @Mixin(LivingEntityRenderer.class)
-//@EventBusSubscriber(modid = AcademyCraft.MOD_ID)
 public abstract class MixinLivingEntityRenderer extends EntityRenderer<LivingEntity> {
     private static final int MENTALOUT_OUTLINE_COLOR = 0xFFFF7A18;
 

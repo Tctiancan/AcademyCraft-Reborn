@@ -99,6 +99,7 @@ public final class AcademyShaders {
     private static ShaderInstance vfxgraphMaterialMediumShader;
     private static ShaderInstance vfxgraphMaterialContactShader;
     private static ShaderInstance vfxgraphMaterialBladeShader;
+    private static ShaderInstance vfxgraphIronSandShader;
 
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
@@ -315,6 +316,13 @@ public final class AcademyShaders {
         }
         try {
             ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("vfxgraph_iron_sand"), VFX_GRAPH_CLOUD_VORTEX);
+            event.registerShader(shader, instance -> vfxgraphIronSandShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic vfxgraph iron sand shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
                     event.getResourceProvider(), academy("directional_field"), DefaultVertexFormat.POSITION);
             event.registerShader(shader, instance -> directionalFieldShader = instance);
         } catch (IOException e) {
@@ -439,6 +447,10 @@ public final class AcademyShaders {
 
     public static ShaderInstance getVfxgraphMaterialBladeShader() {
         return vfxgraphMaterialBladeShader;
+    }
+
+    public static ShaderInstance getVfxgraphIronSandShader() {
+        return vfxgraphIronSandShader;
     }
 
     public static ShaderInstance getFlowSenseShader() {

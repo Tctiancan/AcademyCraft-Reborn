@@ -100,6 +100,7 @@ public final class R {
             public static final ResourceLocation vfxgraph_surface = academy("core/vfxgraph_surface");
             public static final ResourceLocation vfxgraph_cloud_vortex = academy("core/vfxgraph_cloud_vortex");
             public static final ResourceLocation vfxgraph_ink_storm = academy("core/vfxgraph_ink_storm");
+            public static final ResourceLocation vfxgraph_iron_sand = academy("core/vfxgraph_iron_sand");
             public static final ResourceLocation vfxgraph_plasma_liquid = academy("core/vfxgraph_plasma_liquid");
             public static final ResourceLocation vfxgraph_plasma_halo = academy("core/vfxgraph_plasma_halo");
             public static final ResourceLocation vfxgraph_plasma_flash = academy("core/vfxgraph_plasma_flash");

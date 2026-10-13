@@ -45,7 +45,7 @@ public static final AttachmentType<QuantumData> CONTEXT_KEY = AttachmentTypes.QU
         var model = getParentModel();
         model.setupAnim(entity, limbSwing, limbSwingAmount, ageInTicks, netHeadYaw, headPitch);
         var consumer = bufferSource.getBuffer(RenderType.entityTranslucent(getTextureLocation(entity)));
-        var alpha = Mth.floor(intensity * Math.abs(Mth.sin(ageInTicks * 0.1f)) * 255.0f);
+        var alpha = Mth.floor(intensity * Math.abs(Mth.sin(entity.tickCount * 0.1f)) * 255.0f);
         model.renderToBuffer(poseStack, consumer, LightTexture.FULL_BRIGHT,
                 OverlayTexture.NO_OVERLAY, (alpha << 24) | (r << 16) | (g << 8) | b);
     }

@@ -331,6 +331,7 @@ public final class VfxGraphRenderer {
         if (fs.equals(R.shaders.core.vfxgraph_material_medium)) return AcademyShaders.getVfxgraphMaterialMediumShader();
         if (fs.equals(R.shaders.core.vfxgraph_material_contact)) return AcademyShaders.getVfxgraphMaterialContactShader();
         if (fs.equals(R.shaders.core.vfxgraph_material_blade)) return AcademyShaders.getVfxgraphMaterialBladeShader();
+        if (fs.equals(R.shaders.core.vfxgraph_iron_sand)) return AcademyShaders.getVfxgraphIronSandShader();
         return null;
     }
 
@@ -431,7 +432,12 @@ public final class VfxGraphRenderer {
 
     private void drawCloudVortex(MeshData mesh, RenderSpec spec, ShaderInstance shader, GraphCamera camera) {
         RenderSystem.setShader(() -> shader);
-        RenderSystem.setShaderTexture(0, noiseTexture == null ? 0 : noiseTexture.getId()); // Sampler0: 可平铺噪波
+        // Sampler0：规格显式声明的材质纹理（如铁砂 grain）优先，空值回退可平铺程序噪波。
+        ResourceLocation matTex = spec.texture();
+        int sam0 = matTex != null
+                ? Minecraft.getInstance().getTextureManager().getTexture(matTex).getId()
+                : (noiseTexture == null ? 0 : noiseTexture.getId());
+        RenderSystem.setShaderTexture(0, sam0);
         Object depthView = sceneDepth.view();
         int sam1 = depthView instanceof Integer d ? d : (farTexture == null ? 0 : farTexture.getId());
         RenderSystem.setShaderTexture(1, sam1); // Sampler1: 场景深度（不可用时用 far 兜底 1.0）
