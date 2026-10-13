@@ -52,7 +52,7 @@ public final class LightningRenderer implements VfxRenderer<LightningMeshData> {
         } else {
             RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
         }
-        RenderSystem.disableDepthTest();
+        RenderSystem.enableDepthTest();
         // 26.2 的 LIGHTNING_TUBE pipeline 明确 withCull(false): 电弧管状网格是闭合曲面,
         // 其绕序会让朝向相机的面被视作背面而整根被剔除。1.21.1 移植此前漏配 cull 状态,
         // 导致网格即使构建成功也完全不可见。此处开/关包住整个绘制循环并恢复。
