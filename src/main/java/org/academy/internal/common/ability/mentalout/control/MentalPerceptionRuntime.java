@@ -200,8 +200,10 @@ public final class MentalPerceptionRuntime {
                             : new NearestVisibleLivingEntities(mob, filtered)
             );
         }
-        var players = brain.getMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER);
-        if (players.isPresent() && players.get() == hidden) {
+        // 注意: getMemory 会在该 brain 未注册此 memory 时抛 IllegalStateException("Unregistered memory fetched"), 与上面的
+        // nearest/nemesis/visible 分支一致用 getMemoryInternal 做空安全访问, 仅当内存存在且等于被隐藏实体时才清除。
+        var players = brain.getMemoryInternal(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER);
+        if (players != null && players.isPresent() && players.get() == hidden) {
             brain.eraseMemory(MemoryModuleType.NEAREST_VISIBLE_ATTACKABLE_PLAYER);
         }
     }

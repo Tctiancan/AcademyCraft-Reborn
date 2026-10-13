@@ -372,6 +372,15 @@ public final class WideAreaInterferenceScreen extends UiScreen {
     public void extractBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
     }
 
+    /**
+     * 1.21.1 的 Screen.render() 会自动调用本方法, 而原版 renderBackground -> renderBlurredBackground
+     * 会对屏幕背后的世界执行 processBlurEffect 全屏高斯模糊。WAI 是 RTS 观察界面, 需要保持世界(方块/生物)锐利清晰,
+     * 因此置空以取消该默认模糊(处理方式同 ReflectionFilterScreen 对背景渲染的接管)。
+     */
+    @Override
+    public void renderBackground(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
+    }
+
     @Override
     public void extractRenderState(
             GuiGraphics graphics,
