@@ -1,12 +1,8 @@
-#version 330
+#version 150
 
 uniform sampler2D Sampler0;
 uniform sampler2D Sampler1;
-
-layout (std140) uniform SpatialCutFlow {
-    // x: game time in ticks; z: pulse half-width.
-    vec4 Params;
-};
+uniform vec4 Params;
 
 in vec4 vertexColor;
 in float flowCoord;
@@ -15,6 +11,7 @@ in vec4 portalProjection;
 
 out vec4 fragColor;
 
+// Vanilla End Portal palette, kept in the same order as rendertype_end_portal.fsh.
 const vec3 PORTAL_COLORS[16] = vec3[](
     vec3(0.022087, 0.098399, 0.110818),
     vec3(0.011892, 0.095924, 0.089485),
@@ -34,6 +31,8 @@ const vec3 PORTAL_COLORS[16] = vec3[](
     vec3(0.080955, 0.314821, 0.661491)
 );
 
+// Vanilla End Portal texture sampling: layer 0 from Sampler0 (end sky),
+// layers 1..15 from Sampler1 (end portal), mirroring rendertype_end_portal.fsh.
 const mat4 SCALE_TRANSLATE = mat4(
     0.5, 0.0, 0.0, 0.25,
     0.0, 0.5, 0.0, 0.25,

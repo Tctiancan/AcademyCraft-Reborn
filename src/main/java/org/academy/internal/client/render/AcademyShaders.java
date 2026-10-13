@@ -14,6 +14,7 @@ import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.RegisterShadersEvent;
 
 import org.academy.AcademyCraft;
+import org.academy.api.client.render.vfx.VfxPipelines;
 
 import java.io.IOException;
 import java.util.function.Function;
@@ -104,6 +105,11 @@ public final class AcademyShaders {
     /** 按实体贴图缓存云室绿色烟雾 RenderType。 */
     private static final Function<ResourceLocation, RenderType> CLOUDROOM_TYPES =
             Util.memoize(AcademyShaders::buildCloudroomType);
+
+    /** 空间切割 (SpacialExcision) 描线/材质/辉光双通道着色器实例与顶点格式。 */
+    public static final VertexFormat SPATIAL_CUT_LINE = VfxPipelines.SPATIAL_CUT_LINE_FORMAT;
+    private static ShaderInstance spatialCutMaterialShader;
+    private static ShaderInstance spatialCutGlowShader;
 
     private AcademyShaders() {
     }
@@ -335,6 +341,20 @@ public final class AcademyShaders {
         } catch (IOException e) {
             throw new RuntimeException("Failed to load academic screen blit shader", e);
         }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("spatial_cut_material"), SPATIAL_CUT_LINE);
+            event.registerShader(shader, instance -> spatialCutMaterialShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic spatial cut material shader", e);
+        }
+        try {
+            ShaderInstance shader = new ShaderInstance(
+                    event.getResourceProvider(), academy("spatial_cut_glow"), SPATIAL_CUT_LINE);
+            event.registerShader(shader, instance -> spatialCutGlowShader = instance);
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to load academic spatial cut glow shader", e);
+        }
     }
 
     public static ShaderInstance getCloudroomShader() {
@@ -463,6 +483,14 @@ public final class AcademyShaders {
 
     public static ShaderInstance getScreenBlitShader() {
         return screenBlitShader;
+    }
+
+    public static ShaderInstance getSpatialCutMaterialShader() {
+        return spatialCutMaterialShader;
+    }
+
+    public static ShaderInstance getSpatialCutGlowShader() {
+        return spatialCutGlowShader;
     }
 
     public static RenderType cloudroomType(ResourceLocation texture) {

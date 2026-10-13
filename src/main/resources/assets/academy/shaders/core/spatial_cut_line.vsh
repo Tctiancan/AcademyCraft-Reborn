@@ -1,7 +1,7 @@
-#version 330
+#version 150
 
-#moj_import <minecraft:dynamictransforms.glsl>
-#moj_import <minecraft:projection.glsl>
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
 
 in vec3 Position;
 in vec4 Color;
@@ -14,11 +14,12 @@ out vec2 materialUv;
 out vec4 portalProjection;
 
 void main() {
-    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-    vertexColor = Color * ColorModulator;
+    vec4 clipPosition = ProjMat * ModelViewMat * vec4(Position, 1.0);
+    gl_Position = clipPosition;
+    vertexColor = Color;
     flowCoord = Flow;
     materialUv = MaterialUv;
-    // Match the vanilla End Portal vertex path. The portal layers are projected
-    // from clip space instead of stretched along the cut's long local UV axis.
-    portalProjection = projection_from_position(gl_Position);
+    // 从裁剪空间推导端门投影坐标 (对齐原版 end_portal 的 projection_from_position 语义,
+    // 1.21.1 纯程序化端门配色只依赖其连续性)。
+    portalProjection = vec4(clipPosition.xyz * 0.5 + vec3(clipPosition.w * 0.25), clipPosition.w);
 }

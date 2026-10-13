@@ -1,11 +1,19 @@
 package org.academy.internal.client.render.vfx;
 
 import com.mojang.blaze3d.pipeline.RenderTarget;
+import com.mojang.blaze3d.platform.GlStateManager;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferUploader;
+import com.mojang.blaze3d.vertex.ByteBufferBuilder;
+import com.mojang.blaze3d.vertex.MeshData;
+import com.mojang.blaze3d.vertex.VertexFormat;
+import com.mojang.blaze3d.vertex.VertexSorting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.academy.api.client.render.Std140SizeCalculator;
 import org.academy.api.client.render.vfx.*;
+import org.academy.internal.client.render.AcademyShaders;
 import org.academy.internal.client.render.vfx.SpacialExcisionRenderMath.AffineCutMapping;
 import org.academy.internal.common.ability.teleport.effect.SpacialExcisionMath;
 import org.joml.Matrix4f;
@@ -13,6 +21,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.jspecify.annotations.Nullable;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.system.MemoryUtil;
 
 import java.nio.ByteBuffer;
 import java.util.*;
@@ -51,7 +60,7 @@ public final class SpacialExcisionVfxClient {
     private static final ResourceLocation END_SKY_TEXTURE =
             ResourceLocation.withDefaultNamespace("textures/environment/end_sky.png");
     private static final ResourceLocation END_PORTAL_TEXTURE =
-            ResourceLocation.withDefaultNamespace("textures/entity/end_portal/end_portal.png");
+            ResourceLocation.withDefaultNamespace("textures/entity/end_portal.png");
     private static final boolean DEBUG_POST_CLASSIFICATION =
             Boolean.getBoolean("academy.spatialCut.debugClassification");
     private static final Map<UUID, Session> SESSIONS = new LinkedHashMap<>();
@@ -750,8 +759,11 @@ public final class SpacialExcisionVfxClient {
             var vertices = latestLineVertices;
             var camera = latestCamera;
             if (vertices == null || camera == null || latestLineVertexCount <= 0) return;
-            MATERIAL_RENDERER.renderAfterPost(
-                    camera, latestGameTime, vertices.duplicate(), latestLineVertexCount);
+            var gameTime = latestGameTime;
+            var count = latestLineVertexCount;
+            // 材质/描线通道 + 辉光通道双通道上屏 (MixinLevelRenderer RETURN 之后绘制).
+            MATERIAL_RENDERER.renderAfterPost(camera, gameTime, vertices.duplicate(), count);
+            GLOW_RENDERER.renderAfterPost(camera, gameTime, vertices.duplicate(), count);
         }
 
         private static int appendSegment(
@@ -1653,7 +1665,8 @@ public final class SpacialExcisionVfxClient {
 
         @Override
         public void render(VfxRenderContext context, List<? extends T> data) {
-            // 1.21.1 C-stun: 空间切割线条渲染依赖 GpuDevice/缓冲绘制, 在此移除。
+            // 空间切割线条的即时绘制走 renderVisibleLines -> renderAfterPost 路径
+            // (MixinLevelRenderer RETURN 挂点), 不在此分派, 避免与后处理双重绘制。
         }
 
         private void renderAfterPost(
@@ -1662,7 +1675,75 @@ public final class SpacialExcisionVfxClient {
                 ByteBuffer vertices,
                 int vertexCount
         ) {
-            // 1.21.1 C-stun: 无后处理线条绘制。
+            if (vertexCount <= 0 || vertices == null || camera == null) return;
+            var stride = LINE_VERTEX_STRIDE;
+            if (vertices.remaining() < (long) vertexCount * stride) return;
+            var shader = isGlow()
+                    ? AcademyShaders.getSpatialCutGlowShader()
+                    : AcademyShaders.getSpatialCutMaterialShader();
+            if (shader == null) return;
+
+            var bytes = Math.toIntExact((long) vertexCount * stride);
+            var builder = new ByteBufferBuilder(bytes);
+            long ptr = builder.reserve(bytes);
+            ByteBuffer destination = MemoryUtil.memByteBuffer(ptr, bytes);
+            ByteBuffer source = vertices.duplicate();
+            source.position(0);
+            source.limit(bytes);
+            destination.put(source);
+            ByteBufferBuilder.Result result = builder.build();
+
+            var drawState = new MeshData.DrawState(
+                    VfxPipelines.SPATIAL_CUT_LINE_FORMAT,
+                    vertexCount, vertexCount,
+                    VertexFormat.Mode.TRIANGLES,
+                    VertexFormat.IndexType.least(vertexCount));
+            var mesh = new MeshData(result, drawState);
+            try {
+                RenderSystem.setShader(() -> shader);
+                var params = shader.getUniform("Params");
+                if (params != null) params.set(gameTime, 0.05f, 0.16f, 1.0f);
+                RenderSystem.setShaderColor(1.0f, 1.0f, 1.0f, 1.0f);
+                // Sampler0 = end sky, Sampler1 = end portal (same pairing as vanilla
+                // rendertype_end_portal), so samplePortal reproduces the End Portal look.
+                RenderSystem.setShaderTexture(0, END_SKY_TEXTURE);
+                RenderSystem.setShaderTexture(1, END_PORTAL_TEXTURE);
+                RenderSystem.enableBlend();
+                if (isGlow()) {
+                    RenderSystem.blendFunc(
+                            GlStateManager.SourceFactor.SRC_ALPHA,
+                            GlStateManager.DestFactor.ONE);
+                } else {
+                    RenderSystem.blendFunc(
+                            GlStateManager.SourceFactor.SRC_ALPHA,
+                            GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA);
+                }
+                RenderSystem.enableDepthTest();
+                RenderSystem.depthMask(false);
+                RenderSystem.disableCull();
+
+                var stack = RenderSystem.getModelViewStack();
+                stack.pushMatrix();
+                stack.set(new Matrix4f(camera.viewRotationMatrix()));
+                RenderSystem.applyModelViewMatrix();
+                var previousProjection = new Matrix4f(RenderSystem.getProjectionMatrix());
+                RenderSystem.setProjectionMatrix(camera.projectionMatrix(),
+                        VertexSorting.DISTANCE_TO_ORIGIN);
+                try {
+                    BufferUploader.drawWithShader(mesh);
+                } finally {
+                    RenderSystem.setProjectionMatrix(previousProjection,
+                            VertexSorting.DISTANCE_TO_ORIGIN);
+                    stack.popMatrix();
+                    RenderSystem.applyModelViewMatrix();
+                    RenderSystem.enableCull();
+                    RenderSystem.depthMask(true);
+                    RenderSystem.enableDepthTest();
+                    RenderSystem.disableBlend();
+                }
+            } finally {
+                mesh.close();
+            }
         }
 
         private void grow(int requiredVertices) {
