@@ -1,5 +1,6 @@
 package org.academy.mixin.client;
 
+import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
@@ -8,7 +9,10 @@ import org.academy.api.client.gui.animation.AnimationManager;
 import org.academy.api.client.gui.frame.UiFrame;
 import org.academy.api.client.render.Render;
 import org.academy.api.client.vanilla.RenderLoopEvent;
+import org.academy.internal.client.ability.mentalout.MentalIntrusionClientState;
+import org.academy.internal.client.ability.teleport.ChunkLeapGodView;
 import org.academy.internal.client.render.vfx.WingAvatarRegistry;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -41,6 +45,23 @@ public abstract class MixinGameRenderer {
         AnimationManager.INSTANCE.onFrameUpdate();
         UiFrame.INSTANCE.onFrame();
         NeoForge.EVENT_BUS.post(new RenderLoopEvent());
+    }
+
+    @Inject(method = "renderItemInHand",
+            at = @At("HEAD"), cancellable = true)
+    private void academy$hideMentalIntrusionHands(
+            Camera camera,
+            float partialTick,
+            Matrix4f projectionMatrix,
+            CallbackInfo ci) {
+        // 与 26.2 MixinGameRenderer.academy$hideMentalIntrusionHands 对齐: 心念入侵后摄像头移入目标实体,
+        // 玩家自身持有的物品/手部属于不再使用的人称视点, 应隐去(直接取消第一人称手持物绘制)。
+        if (MentalIntrusionClientState.isActive()) {
+            ci.cancel();
+        } else if (ChunkLeapGodView.isActive()) {
+            // Detached overhead camera: the held items belong to a viewpoint that is no longer in use.
+            ci.cancel();
+        }
     }
 
     @Inject(method = "close", at = @At("HEAD"))

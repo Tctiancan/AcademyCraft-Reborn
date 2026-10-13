@@ -20,6 +20,7 @@ import org.academy.api.client.render.vfxgraph.runtime.VfxGraphManager;
 import org.academy.api.client.renderer.RendererManager;
 import org.academy.internal.client.ability.aeromanip.FlowSenseClient;
 import org.academy.internal.client.ability.aeromanip.HighSpeedJetHighlightClient;
+import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
 import org.academy.internal.client.ability.mentalout.WideAreaInterferenceClientState;
 import org.academy.internal.client.render.vfx.SpacialExcisionVfxClient;
 import org.joml.Matrix4f;
@@ -61,6 +62,7 @@ public abstract class MixinLevelRenderer {
             target = "Lnet/minecraft/client/Minecraft;shouldEntityAppearGlowing(Lnet/minecraft/world/entity/Entity;)Z"))
     private boolean academy$shouldEntityAppearGlowing(Minecraft minecraft, Entity entity) {
         if (WideAreaInterferenceClientState.shouldOutline(entity)) return true;
+        if (MentaloutRosterClientState.isControlledTarget(entity.getUUID())) return true;
         if (HighSpeedJetHighlightClient.shouldHighlightEntity(entity)) return true;
         return minecraft.shouldEntityAppearGlowing(entity);
     }
@@ -70,6 +72,9 @@ public abstract class MixinLevelRenderer {
     private int academy$highlightOutlineColor(Entity entity) {
         if (WideAreaInterferenceClientState.shouldOutline(entity)) {
             return WideAreaInterferenceClientState.outlineColor(entity);
+        }
+        if (MentaloutRosterClientState.isControlledTarget(entity.getUUID())) {
+            return MentaloutRosterClientState.MENTALOUT_OUTLINE_COLOR;
         }
         if (HighSpeedJetHighlightClient.shouldHighlightEntity(entity)) {
             return HighSpeedJetHighlightClient.WHITE_OUTLINE;

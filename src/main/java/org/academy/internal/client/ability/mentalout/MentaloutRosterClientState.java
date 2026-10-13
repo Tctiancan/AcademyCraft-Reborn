@@ -6,6 +6,9 @@ import java.util.*;
 import java.util.function.LongConsumer;
 
 public final class MentaloutRosterClientState {
+    /** 高等干涉(mentalout)受控目标描边色:橙,与 26.2 一致。 */
+    public static final int MENTALOUT_OUTLINE_COLOR = 0xFFFF7A18;
+
     public static final byte SUPPORT_FULL = 0;
     public static final byte SUPPORT_BEST_EFFORT = 1;
     public static final byte SUPPORT_UNSUPPORTED = 2;

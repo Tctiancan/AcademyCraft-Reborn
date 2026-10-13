@@ -8,6 +8,7 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
 import org.academy.internal.client.renderer.entity.layers.quantum.QuantumInterferenceLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -23,12 +24,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * {@code LivingEntityRenderer} 签名不同 (实体直传, 无 render state), 也没有 {@code getModelTint} 钩子,
  * 因此此处只移植可用的 {@code getRenderType} 注入: 量子数据处于激活态时把实体模型强制为半透明渲染。
  * 模型自身的白色/蓝色染色由上一层 {@link QuantumInterferenceLayer} 的叠加渲染完成, 故无需模型染色钩子。
- * {@code MENTALOUT_OUTLINE_COLOR} 保留为后续描边功能预留。
+ * mentalout 受控目标的橙色描边由 {@link org.academy.mixin.client.MixinLevelRenderer} 的
+ * `getTeamColor`/`shouldEntityAppearGlowing` 重定向实现 (1.21.1 无 render state 的 outlineColor)。
  */
 @Mixin(LivingEntityRenderer.class)
 public abstract class MixinLivingEntityRenderer extends EntityRenderer<LivingEntity> {
-    private static final int MENTALOUT_OUTLINE_COLOR = 0xFFFF7A18;
-
     @Inject(method = "getRenderType", at = @At("HEAD"), cancellable = true)
     private void getRenderType(LivingEntity livingEntity, boolean bodyVisible, boolean translucent, boolean glowing, CallbackInfoReturnable<RenderType> cir) {
         var quantum = livingEntity.getData(QuantumInterferenceLayer.CONTEXT_KEY);
