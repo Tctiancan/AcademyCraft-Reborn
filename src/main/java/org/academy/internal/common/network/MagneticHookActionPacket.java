@@ -7,7 +7,7 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.neoforged.fml.ModList;
 import org.academy.internal.common.ability.mentalout.control.MentalControlRuntime;
 import org.academy.internal.common.ability.mentalout.control.PlayerControlSessionManager;
-import org.academy.internal.common.compatibility.MagneticHookCuriosCompat;
+import org.academy.internal.common.compatibility.curios.MagneticHookCuriosCompat;
 import org.academy.internal.common.world.item.MagneticHookItem;
 import org.misaka.MisakaNetworkServer;
 import org.misaka.api.common.network.ThreadType;

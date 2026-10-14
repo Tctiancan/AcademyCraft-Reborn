@@ -1,4 +1,4 @@
-package org.academy.internal.common.compatibility;
+package org.academy.internal.common.compatibility.jei;
 
 import mezz.jei.api.IModPlugin;
 import mezz.jei.api.JeiPlugin;

@@ -8,7 +8,7 @@ import net.neoforged.fml.ModList;
 import net.neoforged.fml.common.EventBusSubscriber;
 import org.academy.AcademyCraft;
 import org.academy.api.client.input.MouseButtonEvent;
-import org.academy.internal.common.compatibility.MagneticHookCuriosCompat;
+import org.academy.internal.common.compatibility.curios.MagneticHookCuriosCompat;
 import org.academy.internal.common.network.MagneticHookActionPacket;
 import org.misaka.MisakaNetworkClient;
 

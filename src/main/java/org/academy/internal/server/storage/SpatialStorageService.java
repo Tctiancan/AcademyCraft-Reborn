@@ -12,7 +12,7 @@ import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 import org.academy.AcademyCraft;
 import org.academy.api.server.ability.AbilityBlockDrops;
 import org.academy.internal.common.compatibility.BeyondDimensionsSpatialCompat;
-import org.academy.internal.common.compatibility.SpatialStorageCuriosCompat;
+import org.academy.internal.common.compatibility.curios.SpatialStorageCuriosCompat;
 import org.academy.internal.common.world.item.ItemDataComponents;
 import org.academy.internal.common.world.item.SpatialStorageUnitItem;
 

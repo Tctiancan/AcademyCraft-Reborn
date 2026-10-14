@@ -32,8 +32,8 @@ import org.academy.internal.common.ability.program.registry.AbilityProgramNodeTy
 import org.academy.internal.common.arc.PathModifierTypes;
 import org.academy.internal.common.arc.PathTypes;
 import org.academy.internal.common.attachment.AttachmentTypes;
-import org.academy.internal.common.compatibility.MagneticHookCuriosCompat;
-import org.academy.internal.common.compatibility.SpatialStorageCuriosCompat;
+import org.academy.internal.common.compatibility.curios.MagneticHookCuriosCompat;
+import org.academy.internal.common.compatibility.curios.SpatialStorageCuriosCompat;
 import org.academy.internal.common.core.particles.ParticleTypes;
 import org.academy.internal.common.network.PacketTypes;
 import org.academy.internal.common.network.syncher.EntityDataSerializers;
