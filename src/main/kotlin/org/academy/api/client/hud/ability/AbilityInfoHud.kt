@@ -464,7 +464,7 @@ class AbilityInfoHud private constructor() {
             val category = AbilitySystemClient.getCategory()
             return AbilitySystemClient.getSkillInfosForCategory(category)
                 .filter { AbilitySystemClient.isSkillLearned(it.skill) }
-                .filter { InputSystem.hasActiveBindingForSkill(it.skill) }
+                .filter { InputSystem.hasActiveBindingForSkillCached(it.skill) }
         }
 
         private fun createSkillItem(info: SkillInfo): Widget {
@@ -487,7 +487,7 @@ class AbilityInfoHud private constructor() {
 
                     text("") {
                         setFrameUpdate {
-                            text = InputSystem.formatBindingsForSkill(info.skill).ifBlank {
+                            text = InputSystem.formatBindingsForSkillCached(info.skill).ifBlank {
                                 L10n["app.academy.settings.keybind.format.none"]
                             }
                             true

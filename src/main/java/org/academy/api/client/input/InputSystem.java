@@ -50,6 +50,13 @@ public final class InputSystem {
     private static @Nullable Config config;
     private static @Nullable RebindSession rebindSession;
     private static long bindingRevision;
+
+    // 每帧 UI 会频繁查询每个技能的按键绑定文本与是否存在活跃绑定. 按键绑定很少变化,
+    // 而这些查询会全表扫描. 借助 bindingRevision 作版本号, 仅在绑定表确实变化时才重建缓存.
+    private static long cachedFormatBindingsRevision = Long.MIN_VALUE;
+    private static final Map<ResourceLocation, String> FORMATTED_BINDINGS_CACHE = new HashMap<>();
+    private static long cachedActiveBindingsRevision = Long.MIN_VALUE;
+    private static final Map<ResourceLocation, Boolean> ACTIVE_BINDINGS_CACHE = new HashMap<>();
     private static final TemporalBindingRestrictions TEMPORAL_RESTRICTIONS =
             new TemporalBindingRestrictions();
 
@@ -225,6 +232,23 @@ public final class InputSystem {
                 .collect(Collectors.joining(" / "));
     }
 
+    /**
+     * 与 {@link #formatBindingsForSkill} 等价, 但结果按 bindingRevision 缓存, 避免每帧全表扫描.
+     * 供每帧渲染/文本更新的热路径使用; 绑定表变化时 revision 递增会自动使缓存失效.
+     */
+    public static String formatBindingsForSkillCached(Skill skill) {
+        if (bindingRevision != cachedFormatBindingsRevision) {
+            FORMATTED_BINDINGS_CACHE.clear();
+            cachedFormatBindingsRevision = bindingRevision;
+        }
+        var key = skill.getKey();
+        var cached = FORMATTED_BINDINGS_CACHE.get(key);
+        if (cached != null) return cached;
+        var formatted = formatBindingsForSkill(skill);
+        FORMATTED_BINDINGS_CACHE.put(key, formatted);
+        return formatted;
+    }
+
     public static boolean isBindingForSkill(String keyName, Skill skill) {
         return isBindingForSkill(keyName, skill.getKey());
     }
@@ -255,6 +279,18 @@ public final class InputSystem {
         return KEY_BINDINGS.entrySet().stream().anyMatch(entry ->
                 entry.getValue().enabled && isBindingForSkill(entry.getKey(), skill)
         );
+    }
+
+    /**
+     * 与 {@link #hasActiveBindingForSkill} 等价, 但结果按 bindingRevision 缓存, 避免每帧全表扫描.
+     * 供每帧刷新技能列表的热路径使用; 绑定表变化时 revision 递增会自动使缓存失效.
+     */
+    public static boolean hasActiveBindingForSkillCached(Skill skill) {
+        if (bindingRevision != cachedActiveBindingsRevision) {
+            ACTIVE_BINDINGS_CACHE.clear();
+            cachedActiveBindingsRevision = bindingRevision;
+        }
+        return ACTIVE_BINDINGS_CACHE.computeIfAbsent(skill.getKey(), k -> hasActiveBindingForSkill(skill));
     }
 
     /**
