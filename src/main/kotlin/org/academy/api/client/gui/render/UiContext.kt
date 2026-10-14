@@ -238,22 +238,9 @@ open class UiContext {
         commands: MutableList<SubmittedCommand>,
         effectiveScale: Float
     ): MutableList<SubmittedCommand> {
-        // 首版 1.21.1 移植: 物品命令经 ItemStackDrawCommand.resolve 解析为标准图集 Sprite,
-        // 转为带 UV 的 PosTexColorRectDrawCommand 走顶点批处理管线, 无需 26.2 的 GPU 离屏图集.
-        // 解析失败 (模型/图集未就绪) 时略过该物品, 避免空绘制.
-        return commands.mapNotNullTo(mutableListOf()) { submitted ->
-            val itemCommand = submitted.command as? ItemStackDrawCommand
-                ?: return@mapNotNullTo submitted
-            val resolved = itemCommand.resolve()
-                ?: return@mapNotNullTo null
-            SubmittedCommand(
-                resolved,
-                submitted.pose,
-                submitted.scissorRect,
-                submitted.commandIndex,
-                submitted.alphaMul
-            )
-        }
+        // 1.21.1 移植: 所有物品统一改用原版 GuiGraphics.renderItem 即时绘制 (支持 BEWLR 外观
+        // 与物品栏式提示框), 故整体从顶点批处理中剔除, 由 ScreenDispatcher.renderPost 逐控件绘制.
+        return commands.filterNotTo(mutableListOf()) { submitted -> submitted.command is ItemStackDrawCommand }
     }
 
     open fun generateCommands(

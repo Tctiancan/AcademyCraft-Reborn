@@ -9,6 +9,8 @@ import net.neoforged.neoforge.event.GameShuttingDownEvent
 import org.academy.AcademyCraft
 import org.academy.api.client.gui.environment.UiEnvironment
 import org.academy.api.client.gui.render.UiContext
+import org.academy.api.client.gui.widget.ItemStackWidget
+import org.academy.api.client.gui.widget.WidgetContainer
 import org.academy.api.client.thread.RenderThread
 
 /**
@@ -49,6 +51,38 @@ class ScreenDispatcher private constructor() {
             env.physicalWidth / env.guiScale,
             env.physicalHeight / env.guiScale
         )
+
+        // 所有物品统一用原版 GuiGraphics.renderItem 即时绘制, 达到与物品栏一致的渲染效果;
+        // 悬停的物品再绘制原版提示框 (物品名+备注).
+        val graphics = event.getGuiGraphics()
+        collectItemStacks(screen.root) { widget ->
+            if (widget.stack.isEmpty) return@collectItemStacks
+            val absX = widget.getAbsoluteX() + widget.getAbsoluteTranslationX()
+            val absY = widget.getAbsoluteY() + widget.getAbsoluteTranslationY()
+            val lp = widget.layoutParams
+            val originX = absX + lp.paddingLeft
+            val originY = absY + lp.paddingTop
+            graphics.renderItem(widget.stack, originX.toInt(), originY.toInt())
+            if (widget.isHovered) {
+                graphics.renderTooltip(mc.font, widget.stack, event.getMouseX(), event.getMouseY())
+            }
+        }
+        graphics.flush()
+    }
+
+    /** 递归收集以 [root] 为根的子树中所有 [ItemStackWidget]. */
+    private fun collectItemStacks(
+        root: WidgetContainer,
+        action: (ItemStackWidget) -> Unit
+    ) {
+        for (child in root.children.values) {
+            if (child is ItemStackWidget) {
+                action(child)
+            }
+            if (child is WidgetContainer) {
+                collectItemStacks(child, action)
+            }
+        }
     }
 
     @SubscribeEvent
