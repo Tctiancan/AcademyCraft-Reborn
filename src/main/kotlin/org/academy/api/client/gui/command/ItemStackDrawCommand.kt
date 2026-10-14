@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.TextureAtlasSprite
 import net.minecraft.world.item.ItemStack
+import net.neoforged.neoforge.client.model.data.ModelData
 import org.academy.api.client.gui.render.VertexWriter
 import org.academy.api.client.render.Render
 import org.academy.api.client.render.TextureBinding
@@ -48,7 +49,7 @@ class ItemStackDrawCommand(
         }
         // 物品粒子图标即 GUI 图标纹理所在 Sprite.
         val sprite = try {
-            model.getParticleIcon()
+            model.getParticleIcon(ModelData.EMPTY)
         } catch (_: Throwable) {
             return null
         }

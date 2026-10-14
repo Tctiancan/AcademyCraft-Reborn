@@ -65,8 +65,8 @@ object HudManager {
         val w = mc.window
         val m = mc.mouseHandler
         // 1.21.1: MouseHandler 无 getScaledXPos/getScaledYPos, xpos()/ypos() 为物理像素, 除以 guiScale 即 GUI 坐标.
-        val mouseX = (m.xpos() / w.guiScale).toDouble()
-        val mouseY = (m.ypos() / w.guiScale).toDouble()
+        val mouseX = m.xpos() / w.guiScale
+        val mouseY = m.ypos() / w.guiScale
         // 1.21.1: Minecraft 无 deltaTracker, 改用 getTimer() 提供本帧 partialTick.
         val deltaPartialTick = mc.getTimer().getGameTimeDeltaPartialTick(false)
         TerminalHud.INSTANCE.perform(mouseX, mouseY, deltaPartialTick)

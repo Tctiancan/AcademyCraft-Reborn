@@ -23,7 +23,6 @@ import static org.academy.internal.client.model.AbilityControlTabletModel.SCREEN
  * 该管线在 1.21.1 不存在, 因此改用 {@code BlockEntityWithoutLevelRenderer}。物品栏默认展示展开姿态。
  */
 public final class AbilityControlTabletItemRenderer extends BlockEntityWithoutLevelRenderer {
-    private static final long OPEN_ANIMATION_MILLIS = 459L;
     private static AbilityControlTabletItemRenderer instance;
 
     private AbilityControlTabletItemRenderer(BlockEntityRenderDispatcher blockEntityRenderDispatcher, EntityModelSet entityModelSet) {
@@ -50,7 +49,8 @@ public final class AbilityControlTabletItemRenderer extends BlockEntityWithoutLe
             int packedOverlay
     ) {
         poseStack.pushPose();
-        var renderState = new AbilityControlTabletRenderState(OPEN_ANIMATION_MILLIS);
+        // 手持时播放展开动画, 物品栏/掉落等无手持上下文时回退为完全展开姿态。
+        var renderState = AbilityControlTabletSpecialRenderer.extractRenderState();
 
         // 与 26.2 AbilityControlTabletSpecialRenderer 一致的姿态。
         poseStack.translate(0.5F, 1.5F, 0.5F);

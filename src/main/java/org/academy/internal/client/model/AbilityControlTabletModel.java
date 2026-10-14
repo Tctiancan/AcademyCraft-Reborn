@@ -101,11 +101,14 @@ public final class AbilityControlTabletModel {
     }
 
     public void setupAnim(AbilityControlTabletRenderState renderState) {
+        // 关键帧通道通过 += 累加到位姿偏移, 需在每帧应用前复位整棵骨骼树,
+        // 否则偏移会逐帧累积导致平板乱飞、尺寸异常 (等价于 26.2 Model.setupAnim 先调用 resetPose)。
+        resetPose();
         KeyframeAnimationApplier.apply(open, renderState.animationTimeMillis(), 1.0F, root, new org.joml.Vector3f());
     }
 
     public void resetPose() {
-        root.resetPose();
+        KeyframeAnimationApplier.resetPoseTree(root);
     }
 
     public void render(PoseStack poseStack, MultiBufferSource bufferSource, RenderType renderType, int packedLight, int packedOverlay) {

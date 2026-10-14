@@ -492,7 +492,7 @@ final class TemporalTickDebugCommands {
 
     private static int help(CommandContext<CommandSourceStack> context) {
         var message = """
-                搂e[AC Tick Debug Commands]搂r
+                §e[AC Tick Debug Commands]§r
                 inspect entities <selector>
                 inspect position <dimension> <x y z>
                 field add entities <selector> <scale> [pause_source]
@@ -533,7 +533,7 @@ final class TemporalTickDebugCommands {
                 BlockPos.containing(source.getPosition()),
                 source.getEntity()
         );
-        var text = new StringBuilder("搂e[AC Tick Controls]搂r\n");
+        var text = new StringBuilder("§e[AC Tick Controls]§r\n");
         var count = 0;
         if (includeFields) {
             text.append("Fields:\n");
@@ -569,7 +569,7 @@ final class TemporalTickDebugCommands {
     static String format(TemporalTickDiagnostics snapshot) {
         var vanilla = snapshot.vanilla();
         var text = new StringBuilder()
-                .append("搂e[AC Tick Debug]搂r ")
+                .append("§e[AC Tick Debug]§r ")
                 .append(snapshot.dimension())
                 .append(" @ ")
                 .append(formatPosition(snapshot.position()))
@@ -577,7 +577,7 @@ final class TemporalTickDebugCommands {
                 .append(" clock=").append(snapshot.clockTime())
                 .append(" heartbeat=").append(snapshot.heartbeat())
                 .append(" runtime=")
-                .append(snapshot.runtimeStopped() ? "搂cstopped搂r" : "搂arunning搂r")
+                .append(snapshot.runtimeStopped() ? "§cstopped§r" : "§arunning§r")
                 .append('\n')
                 .append("Vanilla: rate=")
                 .append(String.format(Locale.ROOT, "%.2f", vanilla.tickRate()))
@@ -604,7 +604,7 @@ final class TemporalTickDebugCommands {
         text.append("):\n");
         for (var channel : snapshot.channels()) {
             text.append("  ")
-                    .append(channel.integrated() ? "搂aactive搂r " : "搂8planned搂r ")
+                    .append(channel.integrated() ? "§aactive§r " : "§8planned§r ")
                     .append(channel.channel()).append(' ')
                     .append(formatScale(channel.levelScale())).append('/')
                     .append(formatScale(channel.localScale()));
@@ -646,7 +646,7 @@ final class TemporalTickDebugCommands {
             TemporalTickDiagnostics.FieldState field
     ) {
         text.append("  ")
-                .append(field.matchesPosition() ? "搂bmatch搂r " : "搂8outside搂r ")
+                .append(field.matchesPosition() ? "§bmatch§r " : "§8outside§r ")
                 .append(field.debugControlled() ? "debug " : "owned ")
                 .append(field.id()).append(' ')
                 .append(formatScale(field.scale()))
@@ -826,7 +826,7 @@ final class TemporalTickDebugCommands {
     }
 
     private static String formatScale(double scale) {
-        if (scale == 0.0D) return "搂cPAUSED搂r";
+        if (scale == 0.0D) return "§cPAUSED§r";
         return String.format(Locale.ROOT, "%.3fx", scale);
     }
 
