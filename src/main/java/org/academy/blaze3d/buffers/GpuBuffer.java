@@ -1,4 +1,4 @@
-package org.com.mojang.blaze3d.buffers;
+package org.academy.blaze3d.buffers;
 
 import java.nio.ByteBuffer;
 import java.util.function.Supplier;

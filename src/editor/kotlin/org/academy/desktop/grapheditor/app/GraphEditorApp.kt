@@ -25,6 +25,8 @@ import org.academy.api.client.render.vfxgraph.operator.VfxOperatorRegistry
 import org.academy.api.client.render.vfxgraph.operator.VfxOperators
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec
 import org.academy.api.client.render.vfxgraph.serialize.VfxGraphSchemaVersion
+import org.academy.blaze3d.textures.GpuTexture
+import org.academy.blaze3d.textures.GpuTextureView
 import org.academy.desktop.grapheditor.bridge.VfxGraphMcpBridge
 import org.academy.desktop.grapheditor.canvas.*
 import org.academy.desktop.grapheditor.clipboard.GraphClipboard
@@ -52,8 +54,6 @@ import org.academy.desktop.platform.DesktopEnvironment
 import org.academy.desktop.platform.EditorApp
 import org.academy.desktop.platform.GraphHotReload
 import org.academy.desktop.platform.ShaderHotReload
-import org.com.mojang.blaze3d.textures.GpuTexture
-import org.com.mojang.blaze3d.textures.GpuTextureView
 import java.nio.file.Files
 import java.nio.file.Path
 import imgui.internal.ImGui as ImGuiDock

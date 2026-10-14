@@ -1,11 +1,11 @@
-package org.com.mojang.blaze3d.systems;
+package org.academy.blaze3d.systems;
 
 import org.academy.api.client.render.RenderPipeline;
 import org.academy.api.client.render.shader.pipeline.CompiledRenderPipeline;
-import org.com.mojang.blaze3d.GpuFormat;
-import org.com.mojang.blaze3d.buffers.GpuBuffer;
-import org.com.mojang.blaze3d.shaders.ShaderSource;
-import org.com.mojang.blaze3d.textures.*;
+import org.academy.blaze3d.GpuFormat;
+import org.academy.blaze3d.buffers.GpuBuffer;
+import org.academy.blaze3d.shaders.ShaderSource;
+import org.academy.blaze3d.textures.*;
 import org.jspecify.annotations.Nullable;
 
 import java.util.OptionalDouble;

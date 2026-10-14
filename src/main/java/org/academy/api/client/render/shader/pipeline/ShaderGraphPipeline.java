@@ -9,7 +9,7 @@ import org.academy.api.client.render.graph.compile.CompiledGraph;
 import org.academy.api.client.render.graph.model.Graph;
 import org.academy.api.client.render.shader.codegen.GlslGenerator;
 import org.academy.api.client.render.shader.codegen.GlslNodeRegistry;
-import org.com.mojang.blaze3d.systems.GpuDevice;
+import org.academy.blaze3d.systems.GpuDevice;
 
 /**
  * Shader 图管线：代码生成 → 动态着色器源注册 → RenderPipeline 构建 → 预编译。

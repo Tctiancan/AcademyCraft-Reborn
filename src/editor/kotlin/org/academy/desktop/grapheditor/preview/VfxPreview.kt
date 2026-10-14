@@ -12,6 +12,7 @@ import org.academy.api.client.render.vfxgraph.render.WorldTransform
 import org.academy.api.client.render.vfxgraph.shape.MeshAssets
 import org.academy.api.client.render.vfxgraph.sim.VfxSimulator
 import org.academy.api.client.render.vfxgraph.sim.VfxSystemSimulator
+import org.academy.blaze3d.textures.GpuTextureView
 import org.academy.desktop.grapheditor.canvas.GraphEditorModel
 import org.academy.desktop.grapheditor.canvas.GraphEditorModelRef
 import org.academy.desktop.grapheditor.container.VfxContainerModel
@@ -20,7 +21,6 @@ import org.academy.desktop.grapheditor.preview.VfxPreview.Companion.LOOP_RESTART
 import org.academy.desktop.grapheditor.viewport.EditorGlow
 import org.academy.desktop.platform.getColorTextureView
 import org.academy.desktop.platform.getDepthTextureView
-import org.com.mojang.blaze3d.textures.GpuTextureView
 
 /**
  * VFX 实时预览：支持两种模型——扁平（[GraphEditorModel] → [VfxSimulator]，过渡期兼容）与

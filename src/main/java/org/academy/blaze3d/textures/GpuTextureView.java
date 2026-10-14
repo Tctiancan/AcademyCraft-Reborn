@@ -1,4 +1,4 @@
-package org.com.mojang.blaze3d.textures;
+package org.academy.blaze3d.textures;
 
 import net.minecraft.resources.ResourceLocation;
 

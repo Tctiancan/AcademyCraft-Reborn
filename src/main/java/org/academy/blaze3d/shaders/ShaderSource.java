@@ -1,4 +1,4 @@
-package org.com.mojang.blaze3d.shaders;
+package org.academy.blaze3d.shaders;
 
 import net.minecraft.resources.ResourceLocation;
 import org.jspecify.annotations.Nullable;

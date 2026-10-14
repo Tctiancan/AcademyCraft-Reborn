@@ -1,6 +1,6 @@
-package org.com.mojang.blaze3d.systems;
+package org.academy.blaze3d.systems;
 
-import org.com.mojang.blaze3d.PrimitiveTopology;
+import org.academy.blaze3d.PrimitiveTopology;
 
 import java.nio.ByteBuffer;
 

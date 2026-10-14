@@ -6,6 +6,7 @@ import net.minecraft.client.Camera;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.LevelRenderer;
+import net.minecraft.world.entity.Entity;
 import net.neoforged.neoforge.common.NeoForge;
 import org.academy.api.client.render.LevelRenderEvent;
 import org.academy.api.client.render.MatrixStack;
@@ -29,7 +30,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.world.entity.Entity;
 
 @Mixin(LevelRenderer.class)
 public abstract class MixinLevelRenderer {

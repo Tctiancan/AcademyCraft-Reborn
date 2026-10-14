@@ -1,7 +1,7 @@
-package org.com.mojang.blaze3d.systems;
+package org.academy.blaze3d.systems;
 
-import org.com.mojang.blaze3d.textures.GpuTexture;
-import org.com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.blaze3d.textures.GpuTexture;
+import org.academy.blaze3d.textures.GpuTextureView;
 import org.joml.Vector4f;
 
 import java.nio.ByteBuffer;

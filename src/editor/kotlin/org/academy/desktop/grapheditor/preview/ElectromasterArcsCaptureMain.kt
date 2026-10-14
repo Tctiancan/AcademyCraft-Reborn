@@ -17,9 +17,9 @@ import org.academy.api.client.render.vfxgraph.render.VfxGraphRenderer
 import org.academy.api.client.render.vfxgraph.render.WorldTransform
 import org.academy.api.client.render.vfxgraph.serialize.JsonVfxGraphCodec
 import org.academy.api.client.render.vfxgraph.sim.VfxSystemSimulator
+import org.academy.blaze3d.GpuFormat
 import org.academy.desktop.grapheditor.viewport.EditorGlow
 import org.academy.desktop.platform.*
-import org.com.mojang.blaze3d.GpuFormat
 import org.joml.Matrix4f
 import org.joml.Vector3f
 import java.nio.file.Files

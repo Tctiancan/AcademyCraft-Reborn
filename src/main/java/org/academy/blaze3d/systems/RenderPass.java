@@ -1,9 +1,9 @@
-package org.com.mojang.blaze3d.systems;
+package org.academy.blaze3d.systems;
 
 import org.academy.api.client.render.RenderPipeline;
-import org.com.mojang.blaze3d.PrimitiveTopology;
-import org.com.mojang.blaze3d.textures.GpuSampler;
-import org.com.mojang.blaze3d.textures.GpuTextureView;
+import org.academy.blaze3d.PrimitiveTopology;
+import org.academy.blaze3d.textures.GpuSampler;
+import org.academy.blaze3d.textures.GpuTextureView;
 
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;

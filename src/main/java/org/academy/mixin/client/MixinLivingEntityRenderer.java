@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.entity.LivingEntityRenderer;
 import net.minecraft.util.FastColor;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
-import org.academy.internal.client.ability.mentalout.MentaloutRosterClientState;
 import org.academy.internal.client.renderer.entity.layers.quantum.QuantumInterferenceLayer;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;

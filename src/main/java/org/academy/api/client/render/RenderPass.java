@@ -2,7 +2,7 @@ package org.academy.api.client.render;
 
 import org.academy.api.client.render.texture.GpuSampler;
 import org.academy.api.client.render.texture.GpuTextureView;
-import org.com.mojang.blaze3d.PrimitiveTopology;
+import org.academy.blaze3d.PrimitiveTopology;
 
 import java.nio.ByteBuffer;
 import java.util.function.Consumer;
