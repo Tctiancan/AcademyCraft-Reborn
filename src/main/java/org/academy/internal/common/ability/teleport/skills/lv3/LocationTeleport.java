@@ -63,7 +63,7 @@ import java.util.*;
 public final class LocationTeleport extends Skill {
     public static final int MAX_MARKS = 32;
     public static final int MILESTONE_MAX_MARKS = 48;
-    static final String DEATH_MARK_PREFIX = "姝讳骸鍦扮偣 ";
+    static final String DEATH_MARK_PREFIX = "死亡地点 ";
     private static final DateTimeFormatter DEATH_MARK_TIME =
             DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 

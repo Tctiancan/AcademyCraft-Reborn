@@ -20,6 +20,7 @@ public final class RenderPipeline {
     private final List<VertexFormat> vertexFormatBindings;
     private final VertexFormat.Mode primitiveTopology;
     private final RenderType renderType;
+    private final List<String> samplers;
 
     public RenderPipeline(
             String name,
@@ -27,10 +28,21 @@ public final class RenderPipeline {
             VertexFormat.Mode primitiveTopology,
             RenderType renderType
     ) {
+        this(name, vertexFormatBindings, primitiveTopology, renderType, List.of());
+    }
+
+    private RenderPipeline(
+            String name,
+            List<VertexFormat> vertexFormatBindings,
+            VertexFormat.Mode primitiveTopology,
+            RenderType renderType,
+            List<String> samplers
+    ) {
         this.name = name;
         this.vertexFormatBindings = vertexFormatBindings;
         this.primitiveTopology = primitiveTopology;
         this.renderType = renderType;
+        this.samplers = samplers;
     }
 
     public String getName() {
@@ -47,6 +59,17 @@ public final class RenderPipeline {
 
     public RenderType getRenderType() {
         return renderType;
+    }
+
+    /** 返回克隆管线并追加一块纹理绑定槽位, 沿用 26.2 `withSampler` 契约. */
+    public RenderPipeline withSampler(String samplerName) {
+        var extended = new ArrayList<>(this.samplers);
+        extended.add(samplerName);
+        return new RenderPipeline(name, vertexFormatBindings, primitiveTopology, renderType, List.copyOf(extended));
+    }
+
+    public List<String> getSamplers() {
+        return samplers;
     }
 
     public VertexFormat getVertexFormatBinding(int slot) {

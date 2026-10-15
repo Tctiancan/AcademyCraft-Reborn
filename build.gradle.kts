@@ -285,8 +285,8 @@ neoForge {
     version = neoVersion
     ideSyncTask(generateModMetadata)
     parchment {
-        minecraftVersion.set(project.property("parchment_minecraft_version").toString())
-        mappingsVersion.set(project.property("parchment_mappings_version").toString())
+        minecraftVersion.set(libs.versions.parchment.minecraft.version.get())
+        mappingsVersion.set(libs.versions.parchment.mappings.version.get())
     }
     interfaceInjectionData {
         val path = "src/main/resources/interface_injections.json"
@@ -494,7 +494,7 @@ dependencies {
         "arm", "arm32" -> "-arm32"
         else -> ""
     }
-//    testRuntimeOnly("org.lwjgl:lwjgl::natives-$lwjglNativeOs$lwjglNativeArch")
+    testRuntimeOnly("org.lwjgl:lwjgl:${libs.versions.lwjgl.get()}:natives-$lwjglNativeOs$lwjglNativeArch")
 
     "editorTestImplementation"(platform("org.junit:junit-bom:5.10.2"))
     "editorTestImplementation"("org.junit.jupiter:junit-jupiter")

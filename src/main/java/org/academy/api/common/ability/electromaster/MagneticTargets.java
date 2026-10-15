@@ -56,7 +56,7 @@ public final class MagneticTargets {
     public static boolean hasMagneticKeyword(String path) {
         if (path == null || path.isBlank()) return false;
         var normalized = path.toLowerCase(Locale.ROOT).replace('-', '_');
-        var tokens = normalized.split("[/unused158.]");
+        var tokens = normalized.split("[/_.]");
         for (var token : tokens) {
             if (MAGNETIC_KEYWORDS.contains(token)) return true;
         }

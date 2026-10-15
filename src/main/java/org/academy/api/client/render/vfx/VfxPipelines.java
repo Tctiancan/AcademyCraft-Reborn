@@ -68,7 +68,19 @@ public final class VfxPipelines {
 
     /** Applies the scene slide from the world-space mask to the copied main scene. */
     public static final RenderPipeline SPATIAL_CUT_POST =
-            pipeline("pipeline/spatial_cut_post", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS);
+            pipeline("pipeline/spatial_cut_post", DefaultVertexFormat.POSITION, VertexFormat.Mode.QUADS)
+                    .withSampler("Sampler0")
+                    .withSampler("Sampler3")
+                    .withSampler("Sampler4")
+                    .withSampler("Sampler5")
+                    .withSampler("Sampler6")
+                    .withSampler("Sampler7")
+                    .withSampler("Sampler8")
+                    .withSampler("Sampler9")
+                    .withSampler("Sampler10")
+                    .withSampler("Sampler11")
+                    .withSampler("Sampler12")
+                    .withSampler("Sampler13");
 
     public static final RenderPipeline PARTICLE_ADDITIVE =
             pipeline("pipeline/vfx_particle", DefaultVertexFormat.POSITION_TEX_COLOR, VertexFormat.Mode.QUADS);

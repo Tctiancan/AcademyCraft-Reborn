@@ -136,7 +136,7 @@ class TemporalTickDebugCommandsTest {
         for (var channel : TemporalChannel.values()) {
             assertTrue(report.contains(channel.name()));
         }
-        assertTrue(report.contains("RANDOM_TICK 1.000x/搂cPAUSED"));
+        assertTrue(report.contains("RANDOM_TICK 1.000x/§cPAUSED"));
         assertTrue(report.contains("Queue SCHEDULED_FLUID: pending=3 frozen=1"));
         assertTrue(report.contains("weather=1 raid=1 blockEvent=2"));
         assertTrue(report.contains("serverClock=1 academyScheduler=3"));

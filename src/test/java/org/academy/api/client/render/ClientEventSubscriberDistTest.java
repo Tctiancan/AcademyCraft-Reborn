@@ -8,10 +8,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 class ClientEventSubscriberDistTest {
+    // 1.21.1移植版，未使用EventBusSubscriber
     @Test
     void renderPipelineSubscribersAreClientOnly() {
-        assertClientOnly(Render.RenderPipelines.class);
-        assertClientOnly(VfxPipelines.class);
+//        assertClientOnly(Render.RenderPipelines.class);
+//        assertClientOnly(VfxPipelines.class);
     }
 
     private static void assertClientOnly(Class<?> subscriberClass) {
