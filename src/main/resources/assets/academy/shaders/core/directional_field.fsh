@@ -1,5 +1,4 @@
-#version 330
-precision highp float;
+#version 150
 
 #define MAX_FIELDS 16
 

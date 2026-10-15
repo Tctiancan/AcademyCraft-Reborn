@@ -35,17 +35,17 @@ public final class AcademyShaders {
     private static @org.jspecify.annotations.Nullable RenderType distortionRingType;
 
     /** 向量爆发 (VectorBlast) 粒子云实例化顶点格式: 四角 Position + 每粒子 Instance* 属性. */
-    private static final VertexFormatElement INSTANCE_POS = VertexFormatElement.register(6, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 3);
-    private static final VertexFormatElement INSTANCE_VEL = VertexFormatElement.register(7, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 3);
-    private static final VertexFormatElement INSTANCE_SIZE = VertexFormatElement.register(8, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
-    private static final VertexFormatElement INSTANCE_COLOR = VertexFormatElement.register(9, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 4);
-    private static final VertexFormatElement INSTANCE_ROT = VertexFormatElement.register(10, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
-    private static final VertexFormatElement INSTANCE_SEED = VertexFormatElement.register(11, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
-    private static final VertexFormatElement INSTANCE_AGE = VertexFormatElement.register(12, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_POS = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 3);
+    private static final VertexFormatElement INSTANCE_VEL = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 3);
+    private static final VertexFormatElement INSTANCE_SIZE = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_COLOR = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 4);
+    private static final VertexFormatElement INSTANCE_ROT = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_SEED = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+    private static final VertexFormatElement INSTANCE_AGE = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
     /** 弧管使用 FLOAT 版法线/颜色元素: 内置 NORMAL(BYTE,3)/COLOR(UBYTE,4) 字节数与
      *  CurveToMeshBuilder 的 12float 交错布局不匹配, 会导致顶点属性错位与颜色/几何错乱. */
-    private static final VertexFormatElement ARC_NORMAL = VertexFormatElement.register(13, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.NORMAL, 3);
-    private static final VertexFormatElement ARC_COLOR = VertexFormatElement.register(14, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
+    private static final VertexFormatElement ARC_NORMAL = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.NORMAL, 3);
+    private static final VertexFormatElement ARC_COLOR = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
 
     public static final VertexFormat VFX_GRAPH_CLOUD_VORTEX = VertexFormat.builder()
             .add("Position", VertexFormatElement.POSITION)
@@ -77,7 +77,7 @@ public final class AcademyShaders {
     private static ShaderInstance screenBlitShader;
 
     /** 简单实例(non-instanced)顶点格式: 相机相对 Position + FLOAT Color，供拖尾条带等 vfxgraph_simple 绘制。 */
-    private static final VertexFormatElement SIMPLE_COLOR = VertexFormatElement.register(15, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
+    private static final VertexFormatElement SIMPLE_COLOR = VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
     public static final VertexFormat VFX_GRAPH_SIMPLE = VertexFormat.builder()
             .add("Position", VertexFormatElement.POSITION)
             .add("Color", SIMPLE_COLOR)

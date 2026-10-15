@@ -1,5 +1,6 @@
 package org.academy.mixin.plugin;
 
+import net.neoforged.fml.loading.FMLLoader;
 import org.academy.api.client.compatibility.IrisIntegration;
 import org.jspecify.annotations.Nullable;
 import org.objectweb.asm.tree.ClassNode;
@@ -22,6 +23,9 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
+        if (isModLoad("lithium")) {
+            return !mixinClassName.equals("org.academy.mixin.common.MixinServerLevelTemporalScalingRandomTick");
+        }
         return true;
     }
 
@@ -40,5 +44,9 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void postApply(String targetClassName, ClassNode targetClass, String mixinClassName, IMixinInfo mixinInfo) {
+    }
+
+    private static boolean isModLoad(String modId) {
+        return FMLLoader.getLoadingModList().getMods().stream().anyMatch(modInfo -> modInfo.getModId().equals(modId));
     }
 }

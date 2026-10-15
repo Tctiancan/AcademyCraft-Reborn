@@ -4,6 +4,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import org.academy.internal.client.data.AcademyCraftClientData;
+import org.misaka.MisakaNetwork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

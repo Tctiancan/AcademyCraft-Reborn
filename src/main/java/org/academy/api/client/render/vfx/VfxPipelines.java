@@ -29,13 +29,13 @@ public final class VfxPipelines {
 
     /** spatial_cut_line 线条的 FLOAT 版颜色元素 (内置 COLOR 是 UBYTE, 与 10-float 交错布局不匹配). */
     private static final VertexFormatElement SPATIAL_LINE_FLOAT_COLOR =
-            VertexFormatElement.register(16, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
+            VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.COLOR, 4);
     /** 沿裂缝前进的流动坐标. */
     private static final VertexFormatElement SPATIAL_LINE_FLOW =
-            VertexFormatElement.register(17, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
+            VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 1);
     /** 材质/辉光双通道的 (速度, 横向位置) 参数. */
     private static final VertexFormatElement SPATIAL_LINE_UV =
-            VertexFormatElement.register(18, 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 2);
+            VertexFormatElement.register(VertexFormatElement.findNextId(), 0, VertexFormatElement.Type.FLOAT, VertexFormatElement.Usage.GENERIC, 2);
 
     /** Position, color, flow, and portal UV for the main spatial fissure.
      *  40 字节/顶点 (3+4+1+2 个 float), 与 CPU 侧 SpacialExcisionVfxClient.putLineVertex 布局一致,

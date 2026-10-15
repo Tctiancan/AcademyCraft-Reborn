@@ -59,6 +59,7 @@
     "common.MixinServerEntity",
     "common.MixinServerGamePacketListenerImpl",
     "common.MixinServerGamePacketListenerTemporal",
+    "common.MixinServerLevelTemporalScalingRandomTick",
     "common.MixinServerLevelTemporalScaling",
     "common.MixinServerLevelTimeImmunity",
     "common.MixinServerLevelVectorDefenseFeedback",
