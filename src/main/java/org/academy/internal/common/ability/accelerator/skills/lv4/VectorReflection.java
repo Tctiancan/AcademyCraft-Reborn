@@ -239,6 +239,9 @@ public class VectorReflection extends Skill {
         }
 
         public static boolean isActive(ServerPlayer player) {
+            if (player.level().getServer() instanceof MinecraftServerContext context && !context.hasAcademyCraftServer()) {
+                return false;
+            }
             var system = AbilitySystemServer.getSystem(player);
             return canMaintainLinearReflectionLease(player)
                     && (system.isPlayerSkillDebugMode(player.getUUID())

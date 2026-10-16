@@ -233,6 +233,9 @@ public class VectorDeviation extends Skill {
         }
 
         public static boolean isActive(ServerPlayer player) {
+            if (player.level().getServer() instanceof MinecraftServerContext context && !context.hasAcademyCraftServer()) {
+                return false;
+            }
             var system = AbilitySystemServer.getSystem(player);
             return canMaintain(player)
                     && !VectorReflection.Server.canMaintainLinearReflectionLease(player)

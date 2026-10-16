@@ -23,8 +23,13 @@ public class MixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public boolean shouldApplyMixin(String targetClassName, String mixinClassName) {
-        if (isModLoad("lithium")) {
-            return !mixinClassName.equals("org.academy.mixin.common.MixinServerLevelTemporalScalingRandomTick");
+        if (isModLoad("lithium")
+                && mixinClassName.equals("org.academy.mixin.common.MixinServerLevelTemporalScalingRandomTick")) {
+            return false;
+        }
+        if (isModLoad("observable")
+                && mixinClassName.equals("org.academy.mixin.common.MixinLevelTemporalScaling")) {
+            return false;
         }
         return true;
     }
